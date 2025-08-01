@@ -37,7 +37,7 @@
     }
   ],
   "env": {
-    "REACT_APP_API_URL": "https://tabib-iq-backend.onrender.com",
+    "REACT_APP_API_URL": "https://tabib-iq-backend.railway.app",
     "REACT_APP_ENV": "production"
   },
   "headers": [
