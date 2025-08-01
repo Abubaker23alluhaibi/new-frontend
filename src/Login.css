@@ -1,0 +1,118 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #00bcd4 0%, #009688 100%);
+}
+
+.login-box {
+  background: #fff;
+  padding: 2.7rem 2.2rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 40px 0 rgba(0, 188, 212, 0.18), 0 1.5px 8px 0 rgba(0,0,0,0.10);
+  min-width: 340px;
+  max-width: 95vw;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  border: 1.5px solid #e0e0e0;
+  animation: fadeIn 0.8s cubic-bezier(.39,.575,.56,1.000);
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.login-box h2 {
+  margin: 0 0 0.5rem 0;
+  color: #009688;
+  text-align: center;
+  font-size: 2.1rem;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.login-box input {
+  padding: 1rem 1.1rem;
+  border: 1.5px solid #b2dfdb;
+  border-radius: 12px;
+  font-size: 1.08rem;
+  outline: none;
+  background: #f8fafd;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1.5px 6px 0 rgba(0, 188, 212, 0.04);
+  color: #222;
+}
+
+.login-box input:focus {
+  border-color: #00bcd4;
+  box-shadow: 0 0 0 2px #00bcd433;
+  background: #fff;
+}
+
+.login-box button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: linear-gradient(90deg, #00bcd4 0%, #009688 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 1.1rem 0;
+  font-size: 1.18rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 12px 0 rgba(0, 188, 212, 0.13);
+  transition: background 0.2s, transform 0.1s;
+  letter-spacing: 1px;
+}
+
+.login-box button:hover {
+  background: linear-gradient(90deg, #009688 0%, #00bcd4 100%);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.login-error {
+  color: #e53935;
+  background: #fff3f3;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  font-size: 1.05rem;
+  text-align: center;
+  border: 1px solid #ffd6d6;
+  box-shadow: 0 1px 4px 0 #ffd6d633;
+}
+
+.signup-link-btn {
+  background: #e0f7fa;
+  color: #009688;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.18s, color 0.18s;
+  box-shadow: 0 1px 4px 0 #b2dfdb55;
+}
+.signup-link-btn:hover {
+  background: #b2ebf2;
+  color: #00796b;
+}
+
+@media (max-width: 480px) {
+  .login-box {
+    min-width: 98vw;
+    padding: 1.2rem 0.3rem;
+    border-radius: 18px;
+  }
+  .login-box h2 {
+    font-size: 1.3rem;
+  }
+}
