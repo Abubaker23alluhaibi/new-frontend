@@ -259,6 +259,32 @@ function Login() {
             autoComplete="current-password"
           />
           {error && <div className="login-error">{error}</div>}
+          
+          {/* زر إنشاء الحساب - تم نقله للأعلى */}
+          <div style={{textAlign: 'center', marginTop: '1.2rem', marginBottom: '1rem'}}>
+            <button
+              type="button"
+              className="signup-link-btn"
+              onClick={() => setShowSignupChoice(true)}
+              style={{
+                background: 'linear-gradient(90deg,#7c4dff 0%,#00bcd4 100%)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 12,
+                padding: window.innerWidth < 500 ? '0.7rem 1.2rem' : '0.9rem 2rem',
+                fontWeight: 700,
+                fontSize: window.innerWidth < 500 ? 14 : 16,
+                cursor: 'pointer',
+                width: '100%',
+                maxWidth: 340,
+                boxShadow: '0 2px 8px #7c4dff22',
+                transition: 'all 0.2s'
+              }}
+            >
+              {t('create_account')}
+            </button>
+          </div>
+          
           <button type="submit" style={{
             fontSize: window.innerWidth < 500 ? 15 : 18,
             padding: window.innerWidth < 500 ? '0.7rem 1.2rem' : '1rem 2.2rem',
@@ -281,15 +307,6 @@ function Login() {
             {t('login_button')}
           </button>
         </form>
-        <div style={{textAlign: 'center', marginTop: '1.2rem'}}>
-          <button
-            type="button"
-            className="signup-link-btn"
-            onClick={() => setShowSignupChoice(true)}
-          >
-            {t('create_account')}
-          </button>
-        </div>
         {showSignupChoice && (
           <div style={{
             position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
