@@ -40,25 +40,39 @@ function Login() {
     }
     
     try {
+      console.log('🔐 Login: بدء عملية تسجيل الدخول...');
       // توحيد رقم الهاتف إذا كان المدخل رقم هاتف
       const normalizedInput = !input.includes('@') ? normalizePhone(input) : input;
       const { data, error } = await signIn(normalizedInput, password, loginType);
 
       if (error) throw new Error(error);
+      
+      console.log('✅ Login: تم تسجيل الدخول بنجاح');
       setWelcome(true);
+      
       // استخراج redirect من الرابط إذا كان موجوداً
       const params = new URLSearchParams(location.search);
       const redirect = params.get('redirect');
+      
+      console.log('🔄 Login: إعادة التوجيه بعد تسجيل الدخول:', { 
+        redirect, 
+        loginType 
+      });
+      
       if (redirect) {
+        console.log('🎯 Login: إعادة توجيه للرابط المحفوظ:', redirect);
         navigate(redirect, { replace: true });
       } else if (loginType === 'doctor') {
+        console.log('👨‍⚕️ Login: إعادة توجيه لصفحة الطبيب');
         navigate('/doctor-dashboard');
       } else {
+        console.log('🏠 Login: إعادة توجيه للصفحة الرئيسية');
         navigate('/home');
       }
     } catch (err) {
+      console.error('❌ Login: خطأ في تسجيل الدخول:', err.message);
       // إذا كانت رسالة الخطأ هي الحساب مسجل كطبيب، استخدم الترجمة
-              if (err.message && err.message.includes(t('registered_as_doctor'))) {
+      if (err.message && err.message.includes(t('registered_as_doctor'))) {
         setError(t('doctor_account_login_error'));
       } else {
         setError(err.message);

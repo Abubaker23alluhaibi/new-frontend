@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabib IQ - الصفحة غير موجودة</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #00bcd4 0%, #009688 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00bcd4;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: white;
+            color: #00bcd4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🏥</div>
+        <h1>الصفحة غير موجودة</h1>
+        <p>عذراً، الصفحة التي تبحث عنها غير موجودة</p>
+        <a href="/" class="btn">العودة للصفحة الرئيسية</a>
+    </div>
+    <script>
+        // إعادة توجيه تلقائي للصفحة الرئيسية بعد 5 ثوانٍ
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 5000);
+    </script>
+</body>
+</html> 

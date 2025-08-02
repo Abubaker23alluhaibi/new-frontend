@@ -42,15 +42,29 @@ function App() {
 
   // تطبيق اللغة المحفوظة عند تحميل التطبيق
   useEffect(() => {
+    console.log('🌐 App: تطبيق اللغة:', lang);
     i18n.changeLanguage(lang);
   }, [lang]);
 
   // جلب المواعيد عند الدخول
   useEffect(() => {
+    console.log('📅 App: جلب المواعيد للطبيب...');
     // يمكن تحسين هذا لاحقاً ليعتمد على تسجيل الدخول
     fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/1`)
       .then(res => res.json())
-      .then(data => setDoctorAppointments(Array.isArray(data) ? data : []));
+      .then(data => {
+        console.log('✅ App: تم جلب المواعيد:', data);
+        setDoctorAppointments(Array.isArray(data) ? data : []);
+      })
+      .catch(error => {
+        console.error('❌ App: خطأ في جلب المواعيد:', error);
+      });
+  }, []);
+
+  // إضافة console.log عند تحميل التطبيق
+  useEffect(() => {
+    console.log('🚀 App: تم تحميل التطبيق بنجاح');
+    console.log('🔗 App: API URL:', process.env.REACT_APP_API_URL);
   }, []);
 
   return (

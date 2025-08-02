@@ -13,36 +13,45 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('🔄 AuthContext: بدء التحقق من حالة المستخدم...');
+    
     // استرجاع بيانات المستخدم من localStorage عند تحميل الصفحة
     const savedUser = localStorage.getItem('user');
     const savedProfile = localStorage.getItem('profile');
     
+    console.log('📦 AuthContext: البيانات المحفوظة:', { 
+      hasSavedUser: !!savedUser, 
+      hasSavedProfile: !!savedProfile 
+    });
 
-    
     if (savedUser) {
       try {
         const userData = JSON.parse(savedUser);
+        console.log('✅ AuthContext: تم استرجاع بيانات المستخدم:', userData.user_type);
         setUser(userData);
-    
-              } catch (error) {
-          // Error parsing user data
-        }
+      } catch (error) {
+        console.error('❌ AuthContext: خطأ في تحليل بيانات المستخدم:', error);
+        localStorage.removeItem('user');
+      }
     }
     
     if (savedProfile) {
       try {
         const profileData = JSON.parse(savedProfile);
+        console.log('✅ AuthContext: تم استرجاع بيانات الملف الشخصي');
         setProfile(profileData);
-    
-              } catch (error) {
-          // Error parsing profile data
-        }
+      } catch (error) {
+        console.error('❌ AuthContext: خطأ في تحليل بيانات الملف الشخصي:', error);
+        localStorage.removeItem('profile');
+      }
     }
     
+    console.log('🏁 AuthContext: انتهى التحقق من حالة المستخدم');
     setLoading(false);
 
     // تحديث تلقائي عند أي تغيير في localStorage (مثلاً عند تسجيل دخول الأدمن)
     const handleStorage = () => {
+      console.log('🔄 AuthContext: تم اكتشاف تغيير في localStorage');
       const newUser = localStorage.getItem('user');
       const newProfile = localStorage.getItem('profile');
       setUser(newUser ? JSON.parse(newUser) : null);
