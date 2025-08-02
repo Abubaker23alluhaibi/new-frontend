@@ -198,5 +198,116 @@
   "important_note": "Important Note",
   "appointment_note": "Please ensure your personal information is correct before booking. If you are booking an appointment for someone else, make sure to enter their correct name and phone number in your profile page.",
   "appointment": "appointment",
-  "profile_update_note": "You can update your personal information from your profile page at any time"
+  "profile_update_note": "You can update your personal information from your profile page at any time",
+  "landing_page": {
+    "header": {
+      "logo_text": "TabibiQ",
+      "subtitle": "Iraq Medical Platform",
+      "nav": {
+        "home": "Home",
+        "about": "About Us",
+        "how_to_use": "How to Use",
+        "booking": "Booking Instructions"
+      },
+      "login_button": "Login"
+    },
+    "hero": {
+      "title": "Welcome to",
+      "highlight": "TabibiQ",
+      "subtitle": "Book your appointment with the best doctors in Iraq easily and safely",
+      "stats": {
+        "doctors": "Verified Doctors",
+        "patients": "Satisfied Patients",
+        "appointments": "Successful Appointments"
+      },
+      "buttons": {
+        "start_now": "Start Now",
+        "learn_more": "Learn More"
+      }
+    },
+    "about": {
+      "title": "About Us",
+      "subtitle": "Learn about TabibiQ platform and how we help you in your health journey",
+      "main_title": "Comprehensive Medical Platform for Iraq",
+      "description": "TabibiQ is a leading medical platform in Iraq, aiming to facilitate communication between patients, doctors, and medical centers. We believe that healthcare should be easy and accessible to everyone.",
+      "features": {
+        "security": {
+          "title": "Complete Security",
+          "description": "Your data is protected and encrypted with the latest technologies"
+        },
+        "speed": {
+          "title": "Fast Booking",
+          "description": "Book your appointment in less than a minute"
+        },
+        "verified": {
+          "title": "Verified Doctors",
+          "description": "All doctors are reviewed and verified"
+        },
+        "easy_use": {
+          "title": "Easy to Use",
+          "description": "Simple and easy interface for everyone"
+        }
+      }
+    },
+    "how_to_use": {
+      "title": "How to Use",
+      "subtitle": "Simple steps to book your appointment with a doctor",
+      "steps": {
+        "step1": {
+          "title": "Choose Doctor",
+          "description": "Search for the right doctor by specialty and location"
+        },
+        "step2": {
+          "title": "Select Appointment",
+          "description": "Choose the date and time that suits you"
+        },
+        "step3": {
+          "title": "Confirm Booking",
+          "description": "Review details and confirm booking"
+        },
+        "step4": {
+          "title": "Receive Confirmation",
+          "description": "You will receive a confirmation message"
+        }
+      }
+    },
+    "booking": {
+      "title": "Booking Instructions",
+      "subtitle": "Important tips before booking your appointment",
+      "instructions": {
+        "data_accuracy": {
+          "title": "Ensure Data Accuracy",
+          "description": "Enter your personal information accurately to avoid any problems"
+        },
+        "temporary": {
+          "title": "Temporary Booking",
+          "description": "Booking is temporary until confirmed by the doctor within 24 hours"
+        },
+        "communication": {
+          "title": "Contact Doctor",
+          "description": "You can communicate directly with the doctor through the platform"
+        },
+        "cancellation": {
+          "title": "Cancellation Option",
+          "description": "You can cancel the appointment 24 hours before the appointment"
+        }
+      },
+      "demo": {
+        "title": "Booking Process Example",
+        "steps": {
+          "step1": "Choose doctor from the list",
+          "step2": "Select date and time",
+          "step3": "Confirm booking"
+        }
+      }
+    },
+    "footer": {
+      "description": "Comprehensive Medical Platform for Iraq",
+      "quick_links": "Quick Links",
+      "contact": "Contact Us",
+      "email": "📧 support@tabib-iq.com",
+      "phone": "📞 +964 776 901 2619",
+      "copyright": "© 2024 TabibiQ. All rights reserved."
+    }
+  }
 } 

@@ -2,6 +2,117 @@
   "welcome": "بەخێربێیت بۆ Tabib IQ",
   "change_language": "گۆڕینی زمان",
   "description": "پلاتفۆرمی پزیشکییەکی زیرەک بۆ حجز و بەڕێوەبردنی چاوپێکەوتنەکان.",
+  "landing_page": {
+    "header": {
+      "logo_text": "TabibiQ",
+      "subtitle": "پلاتفۆرمی پزیشکی عێراق",
+      "nav": {
+        "home": "سەرەکی",
+        "about": "دەربارەی ئێمە",
+        "how_to_use": "چۆن بەکاربهێنیت",
+        "booking": "ڕێنمایی حجزکردن"
+      },
+      "login_button": "چوونەژوورەوە"
+    },
+    "hero": {
+      "title": "بەخێربێیت بۆ پلاتفۆرمی",
+      "highlight": "TabibiQ",
+      "subtitle": "چاوپێکەوتنەکەت بە پزیشکانی باشتری عێراق بە ئاسانی و پارێزراوی بکە",
+      "stats": {
+        "doctors": "پزیشکی پەسەندکراو",
+        "patients": "نەخۆشی دڵخۆش",
+        "appointments": "چاوپێکەوتنی سەرکەوتوو"
+      },
+      "buttons": {
+        "start_now": "ئێستا دەست پێبکە",
+        "learn_more": "زیاتر بزانە"
+      }
+    },
+    "about": {
+      "title": "دەربارەی ئێمە",
+      "subtitle": "دەربارەی پلاتفۆرمی TabibiQ و چۆن یارمەتیت دەدەین لە گەشتە تەندروستیەکەت",
+      "main_title": "پلاتفۆرمی پزیشکی تەواو بۆ عێراق",
+      "description": "TabibiQ پلاتفۆرمێکی پزیشکی پێشەنگە لە عێراق، ئامانجی ئاسانکردنەوەی پەیوەندی نێوان نەخۆشەکان، پزیشکان و ناوەندی پزیشکییەکانە. ئێمە باوەڕمان وایە کە چاودێری تەندروستی دەبێت ئاسان و بەردەست بۆ هەموو کەسێک بێت.",
+      "features": {
+        "security": {
+          "title": "پارێزراوی تەواو",
+          "description": "داتاکان پارێزراون و بە تەکنەلۆجیای نوێ پەرۆش کراون"
+        },
+        "speed": {
+          "title": "خێرایی لە حجزکردن",
+          "description": "چاوپێکەوتنەکەت لە کەمتر لە خولەکێکدا بکە"
+        },
+        "verified": {
+          "title": "پزیشکی پەسەندکراو",
+          "description": "هەموو پزیشکان پشکنراو و پەسەندکراون"
+        },
+        "easy_use": {
+          "title": "ئاسانی بەکارهێنان",
+          "description": "ڕووکاری سادە و ئاسان بۆ هەموو کەسێک"
+        }
+      }
+    },
+    "how_to_use": {
+      "title": "چۆن بەکاربهێنیت",
+      "subtitle": "هەنگاوە سادەکان بۆ حجزکردنی چاوپێکەوتنەکەت لەگەڵ پزیشک",
+      "steps": {
+        "step1": {
+          "title": "پزیشک هەلبژێرە",
+          "description": "بە پسپۆڕی و شوێن بۆ پزیشکی گونجاو بگەڕێ"
+        },
+        "step2": {
+          "title": "چاوپێکەوتن دیاری بکە",
+          "description": "بەروار و کاتی گونجاو بۆ خۆت هەلبژێرە"
+        },
+        "step3": {
+          "title": "حجزکردن دووپات بکەرەوە",
+          "description": "وردەکارییەکان پشکنەوە و حجزکردنەکە دووپات بکەرەوە"
+        },
+        "step4": {
+          "title": "دووپاتکردنەوە وەربگرە",
+          "description": "پەیامێکی دووپاتکردنەوە وەردەگریتەوە"
+        }
+      }
+    },
+    "booking": {
+      "title": "ڕێنمایی حجزکردن",
+      "subtitle": "ڕێنمایی گرنگ پێش حجزکردنی چاوپێکەوتنەکەت",
+      "instructions": {
+        "data_accuracy": {
+          "title": "دڵنیابە لە دروستی داتاکان",
+          "description": "زانیاری کەسی خۆت بە وردی بنووسە بۆ ڕێگری لە هەر کێشەیەک"
+        },
+        "temporary": {
+          "title": "حجزکردنی کاتی",
+          "description": "حجزکردن کاتییە تا دووپات بکرێتەوە لەلایەن پزیشک لە ماوەی 24 کاتژمێردا"
+        },
+        "communication": {
+          "title": "پەیوەندی لەگەڵ پزیشک",
+          "description": "دەتوانیت ڕاستەوخۆ لەگەڵ پزیشک پەیوەندی بکەیت لە ڕێگەی پلاتفۆرمەکەوە"
+        },
+        "cancellation": {
+          "title": "دەرفەتی هەڵوەشاندنەوە",
+          "description": "دەتوانیت چاوپێکەوتنەکە 24 کاتژمێر پێش چاوپێکەوتنەکە هەڵیوەشێنیتەوە"
+        }
+      },
+      "demo": {
+        "title": "نموونەی پرۆسەی حجزکردن",
+        "steps": {
+          "step1": "پزیشک لە لیستەکە هەلبژێرە",
+          "step2": "بەروار و کات دیاری بکە",
+          "step3": "حجزکردن دووپات بکەرەوە"
+        }
+      }
+    },
+    "footer": {
+      "description": "پلاتفۆرمی پزیشکی تەواو بۆ عێراق",
+      "quick_links": "لینکی خێرا",
+      "contact": "پەیوەندی پێوە بکە",
+      "email": "📧 support@tabib-iq.com",
+      "phone": "📞 +964 776 901 2619",
+      "copyright": "© 2024 TabibiQ. هەموو مافەکان پارێزراون."
+    }
+  },
   "login": {
     "title": "چوونەژوورەوە",
     "email_or_phone": "ئیمەیڵ یان ژمارەی مۆبایل",
@@ -79,7 +190,6 @@
   "health_center": "ناوەندی تەندروستی",
   "phone_or_email_placeholder": "ژمارەی مۆبایل (بێ سێفر) یان ئیمەیڵ",
   "email_or_phone": "ئیمەیڵ یان ژمارەی مۆبایل",
-  "password": "وشەی نهێنی",
   "login_button": "چوونەژوورەوە",
   "create_account": "دروستکردنی هەژمارێکی نوێ",
   "choose_account_type": "جۆری هەژمار هەلبژێرە",
@@ -97,16 +207,9 @@
   "passwords_not_match": "وشەی نهێنی یەکسان نییە",
   "doctor_signup_title": "تۆمارکردنی پزیشکی نوێ",
   "next": "دواتر",
-  "back": "گەڕانەوە",
-  "create_account": "دروستکردنی هەژمار",
   "doctor_signup_success": "هەژمارت بەسەرکەوتوویی دروستکرا!",
   "doctor_signup_wait": "تکایە چاوەڕێی پەسەندکردنی بەڕێوەبەر بن بەرەوە چوونەژوورەوە",
   "register_another_doctor": "تۆمارکردنی پزیشکی تر",
-  "full_name": "ناوی تەواو",
-  "email": "ئیمەیڵ",
-  "phone_placeholder": "ژمارەی مۆبایل (بێ سێفر)",
-  "password": "وشەی نهێنی",
-  "confirm_password": "دووبارە وشەی نهێنی",
   "choose_specialty": "پسپۆری گشتی هەلبژێرە",
   "choose_category": "هاوپۆلی پزیشکی هەلبژێرە",
   "choose_subspecialty": "پسپۆری ورد هەلبژێرە",
@@ -125,8 +228,6 @@
   "add": "زیادکردن",
   "no_times_added": "هێشتا هیچ کاتێک زیاد نەکراوە.",
   "about_optional": "دەربارەی خۆت بنووسە، چی بەدەست هێناوت (هەلبژێرە)",
-  "fill_all_fields": "تکایە هەموو خانەکان پڕبکەوە",
-  "passwords_not_match": "وشەی نهێنی یەکسان نییە",
   "fill_all_fields_and_files": "تکایە هەموو خانەکان و فایلەکان پڕبکەوە",
   "choose_day_and_time": "تکایە ڕۆژ و کات هەلبژێرە",
   "add_at_least_one_time": "تکایە بەلایەنی کەم یەک کات زیاد بکە",
@@ -151,7 +252,6 @@
   "confirm_cancel_appointment": "دووپاتکردنەوەی لابردنی چاوپێکەوتن",
   "are_you_sure_cancel": "دڵنیایت لە لابردنی ئەم چاوپێکەوتنە؟",
   "confirm": "دووپاتکردنەوە",
-  "cancel": "هەڵوەشاندنەوە",
   "book_new_appointment": "چاوپێکەوتنی نوێ بکە",
   "manage_appointments": "بەڕێوەبردنی چاوپێکەوتنەکان",
   "appointment_cancelled_success": "چاوپێکەوتن بەسەرکەوتوویی لابرا!",
@@ -162,7 +262,6 @@
   "appointment_status_upcoming": "چاوپێکەوتنی داهاتوو",
   "special_appointment": "چاوپێکەوتنی تایبەتی",
   "add_to_special_appointments": "زیادکردن بۆ چاوپێکەوتنە تایبەتیەکان",
-  "search": "گەڕان...",
   "filter_by_status": "پاڵاوتن بە پەی دۆخ",
   "sort_by": "ڕیزکردن بە پەی",
   "sort_order": "ڕیزکردن بە شێوەی",
@@ -176,10 +275,8 @@
   "patient_phone": "ژمارەی نەخۆش",
   "reason": "هۆکار",
   "notes": "تێبینیەکان",
-  "close": "داخستن",
   "medicine_reminder_title": "بیرخەرەوەی دەرمانەکانت",
   "add_medicine": "زیادکردنی دەرمان",
-  "back_to_home": "گەڕانەوە بۆ سەرەکی",
   "add_medicines_and_times": "دەرمانەکانت و کاتەکانی خواردن زیاد بکە بۆ ئەوەی لە کاتەکانی دیاریکراو ئاگادارت بکەین",
   "total_medicines": "کۆی گشتی دەرمانەکان",
   "active_medicines": "دەرمانە چالاکەکان",
@@ -193,7 +290,6 @@
   "deactivate": "ناچالاککردن",
   "delete": "سڕینەوە",
   "dosage": "جرعة",
-  "description": "وەسف",
   "reminder_times_label": "کاتەکانی بیرخەرەوە:",
   "medicine_name": "ناوی دەرمان *",
   "enter_medicine_name": "ناوی دەرمان بنووسە",
@@ -202,9 +298,6 @@
   "enter_medicine_description": "وەسف یان تێبینی زیاد بکە...",
   "reminder_times_header": "⏰ کاتەکانی بیرخەرەوە",
   "add_reminder_time": "زیادکردنی کات",
-  "remove": "لابردن",
-  "cancel": "هەڵوەشاندنەوە",
-  "add": "زیادکردن",
   "add_medicine_button": "زیادکردنی دەرمان",
   "adding_medicine": "...زیادکردنەوەی دەرمان",
   "fill_medicine_name_and_dosage": "تکایە ناوی دەرمان و جرعة پڕبکەوە",
@@ -212,7 +305,6 @@
   "delete_medicine_confirm": "دڵنیایت لە سڕینەوەی ئەم دەرمانە؟",
   "doctor_account_login_error": "ئەم هەژمارە تۆمارکراوە وەک پزیشک. تکایە بچۆ ژوورەوە وەک 'پزیشک'",
   "doctor_dashboard": "پەڕەی بەڕێوەبردنی پزیشک",
-  "notifications": "ئاگادارکردنەوەکان",
   "new_notifications": "ئاگادارکردنەوەی نوێ",
   "all_appointments": "هەموو چاوپێکەوتنەکان",
   "my_calendar": "ڕۆژنامەی چاوپێکەوتنەکانم",
@@ -224,11 +316,8 @@
   "manage_all_appointments": "بەڕێوەبردنی هەموو چاوپێکەوتنەکان",
   "appointments_analysis": "تحلیلی چاوپێکەوتنەکان",
   "statistics_and_analysis": "ئامار و تحلیلی گشتی",
-  "today_appointments": "چاوپێکەوتنی ئەمڕۆ",
-  "special_appointment": "چاوپێکەوتنی تایبەتی",
   "manage": "بەڕێوەبردن",
   "add_special_appointment": "زیادکردنی چاوپێکەوتنی تایبەتی",
-  "close": "داخستن",
   "profile": "پروفایل",
   "edit_profile": "دەستکاری پروفایل",
   "pending_account_message": "هەژمارت چاوەڕێی پەسەندکردنی بەڕێوەبەرە، دواتر ئاگادارت دەکەین.",
@@ -245,24 +334,15 @@
   "appointments_by_month": "📆 چاوپێکەوتن بە مانگ",
   "appointment_count": "چاوپێکەوتن",
   "no_data": "هیچ داتا نییە",
-  "upcoming_appointments": "چاوپێکەوتنی داهاتوو",
   "confirmed": "دووپاتکراو",
   "pending": "چاوەڕێدەکرێت",
   "urgent": "فوریت",
   "edit": "دەستکاری",
-  "delete": "سڕینەوە",
-  "patient_name": "ناوی نەخۆش",
-  "patient_phone": "ژمارەی نەخۆش",
-  "date": "بەروار",
-  "time": "کات",
-  "reason": "هۆکار",
-  "notes": "تێبینیەکان",
+ 
   "priority": "پێشوازی",
   "duration": "ماوە",
   "status": "دۆخ",
-  "save": "پاشەکەوتکردن",
   "update": "نوێکردنەوە",
-  "search": "گەڕان",
   "no_special_appointments": "هیچ چاوپێکەوتنی تایبەتی نییە",
   "add_new_appointment": "چاوپێکەوتنی نوێ زیاد بکە",
   "no_matching_appointments": "هیچ چاوپێکەوتنێک پێک نەهاتەوە",
@@ -308,27 +388,20 @@
   "whatsapp_note_doctor_ar": "يجب أن يكون الرقم يحتوي على واتساب للتواصل مع المرضى",
   "doctor_profile_title": "پروفایلی پزیشک",
   "edit_doctor_account_data": "دەستکاری زانیاری هەژماری پزیشکی",
-  "full_name": "ناوی تەواو",
   "enter_full_name": "ناوی تەواو بنووسە",
-  "email": "ئیمەیڵ",
   "enter_email": "ئیمەیڵ بنووسە",
   "phone": "ژمارەی تەلەفۆن",
   "enter_phone": "ژمارەی تەلەفۆن بنووسە",
   "specialty": "پسپۆر",
-  "choose_specialty": "پسپۆر هەلبژێرە",
   "province": "پارێزگا",
-  "choose_province": "پارێزگا هەلبژێرە",
   "area": "ناوچە",
   "enter_area": "ناوچە بنووسە",
-  "clinic_location": "شوێنی کلینیک (دەستیکراو یان لە نەخشەدا)",
   "enter_clinic_address": "ناونیشانی نەخۆشخانە بنووسە",
   "about_doctor": "دەربارەی پزیشک",
   "write_brief_about_experience": "کورتەیەک بنووسە دەربارەی تاقیکردنەوەکانت و پسپۆرت...",
   "edit_data": "دەستکاری زانیاری",
   "change_password": "گۆڕینی وشەی نهێنی",
-  "back_to_dashboard": "گەڕانەوە بۆ پەڕەی بەڕێوەبردن",
   "save_changes": "پاشەکەوتکردنی گۆڕانکارییەکان",
-  "cancel": "هەڵوەشاندنەوە",
   "user_profile_title": "پروفایل",
   "edit_user_account_data": "دەستکاری زانیاری هەژماری کەسی",
   "fill_required_fields": "تکایە هەموو خانە پێویستەکان پڕبکەوە",
@@ -341,31 +414,10 @@
   "image_upload_error": "هەڵە لە بەرزکردنەوەی وێنە",
   "image_size_error": "قەبارەی وێنە دەبێت لە 5 مێگابایت کەمتر بێت",
   "image_type_error": "تکایە فایلێکی وێنەی دروست هەلبژێرە",
-  "pending_account_message": "هەژمارەکەت لە ژێر پشکنینە لەلایەن بەڕێوەبەرەوە. دەت بەتەوەدەر دەکرێت کاتێک پەسەند دەکرێت.",
-  "loading_doctor_data": "داتاکانی دکتۆر باردەکرێت...",
-  "total_appointments": "کۆی چاوپێکەوتنەکان",
-  "today_appointments": "چاوپێکەوتنەکانی ئەمڕۆ",
-  "new_notifications": "ئاگادارکردنەوە نوێیەکان",
-  "doctor_dashboard": "داشبۆردی دکتۆر",
-  "my_calendar": "ڕۆژژمێرەکەم",
-  "view_calendar": "بینینی ڕۆژژمێر",
-  "all_appointments": "هەموو چاوپێکەوتنەکان",
-  "view_all_appointments": "بینینی هەموو چاوپێکەوتنەکان",
-  "analytics": "شیکردنەوە",
-  "view_analytics": "بینینی شیکردنەوە",
-  "add_special_appointment": "زیادکردنی چاوپێکەوتنی تایبەت",
-  "special_appointments": "چاوپێکەوتنە تایبەتەکان",
-  "view_special_appointments": "بینینی چاوپێکەوتنە تایبەتەکان",
-  "no_appointments": "هیچ چاوپێکەوتنێک نییە",
-  "calendar_today": "ئەمڕۆ",
-  "calendar_has_appointments": "چاوپێکەوتن هەیە",
-  "calendar_selected": "هەڵبژێردراو",
-  "appointments_for_date": "چاوپێکەوتنەکان لە {date}",
   "notification_sent_to_patient": "ئاگادارکردنەوە نێردرا بۆ نەخۆش",
   "medicine_reminder": "بیرخەرەوەی دەرمان",
   "medicine_reminder_message": "بیرخەرەوە: کاتی خواردنی {medicine} - {dosage} هاتووە",
   "add_medicine_reminder": "زیادکردنی بیرخەرەوەی دەرمان",
-  "medicine_name": "ناوی دەرمان",
   "medicine_dosage": "دەرمان",
   "medicine_time": "کاتی خواردن",
   "medicine_frequency": "دووبارەبوونەوە",
@@ -381,7 +433,6 @@
   "reminder_added_successfully": "بیرخەرەوە بە سەرکەوتوویی زیادکرا",
   "reminder_updated_successfully": "بیرخەرەوە بە سەرکەوتوویی نوێکرایەوە",
   "reminder_deleted_successfully": "بیرخەرەوە بە سەرکەوتوویی سڕایەوە",
-  "error_adding_medicine": "هەڵە لە زیادکردنی دەرمان",
   "error_fetching_medicines": "هەڵە لە هێنانی دەرمانەکان",
   "error_updating_medicine": "هەڵە لە نوێکردنەوەی دەرمان",
   "error_deleting_medicine": "هەڵە لە سڕینەوەی دەرمان",
@@ -430,22 +481,15 @@
   "confirm_remove_featured_doctor": "دڵنیای لە لابردنی ئەم دکتۆرە لە دیارکراوەکان؟",
   "yes": "بەڵێ",
   "no": "نەخێر",
-  "cancel": "هەڵوەشاندنەوە",
-  "confirm": "دووپاتکردنەوە",
-  "delete": "سڕینەوە",
   "approve": "پەسەندکردن",
   "reject": "ڕەتکردنەوە",
   "add_to_featured": "زیادکردن بۆ دیارکراوەکان",
   "remove_from_featured": "لابردن لە دیارکراوەکان",
-  "active": "چالاک",
-  "inactive": "ناچالاک",
   "enabled": "چالاککراوە",
   "disabled": "ناچالاککراوە",
-  "status": "دۆخ",
   "actions": "کردارەکان",
   "no_data_available": "هیچ داتایەک بەردەست نییە",
-  "loading": "بارکردن...",
-  "search": "گەڕان",
+
   "filter": "فلتەر",
   "sort": "ڕێکخستن",
   "refresh": "نوێکردنەوە",
@@ -454,15 +498,8 @@
   "print": "چاپکردن",
   "download": "داگرتن",
   "upload": "بەرزکردنەوە",
-  "save": "پاشەکەوتکردن",
-  "update": "نوێکردنەوە",
-  "edit": "دەستکاریکردن",
   "create": "دروستکردن",
-  "add": "زیادکردن",
-  "remove": "لابردن",
-  "close": "داخستن",
-  "back": "گەڕانەوە",
-  "next": "دواتر",
+  
   "previous": "پێشوو",
   "first": "یەکەم",
   "last": "دوایین",
@@ -478,7 +515,6 @@
   "no_results_found": "هیچ ئەنجامێک نەدۆزرایەوە",
   "try_again": "دووبارە هەوڵبدە",
   "retry": "دووبارە هەوڵدان",
-  "error_occurred": "هەڵەیەک ڕوویدا",
   "something_went_wrong": "شتێکی هەڵە ڕوویدا",
   "please_try_again": "تکایە دووبارە هەوڵبدە",
   "connection_error": "هەڵە لە پەیوەندی",
@@ -495,10 +531,7 @@
   "unknown_error": "هەڵەی نەناسراو",
   "notification_new_appointment": "چاوپێکەوتنی نوێ لەلایەن {{name}} لە {{date}} کاتژمێر {{time}} تۆمارکرا",
   "notification_special_appointment": "چاوپێکەوتنی تایبەتی بۆ تۆ لەگەڵ پزیشک {{doctor}} لە {{date}} کاتژمێر {{time}} تۆمارکرا",
-  "day": "ڕۆژ",
-  "time": "کاتژمێر",
   "appointments_count": "ژمارەی چاوپێکەوتنەکان",
-  "status": "دۆخ",
   "show_more": "زیاتر پیش بدە",
   "show_less": "کەمتر پیش بدە",
   "more": "زیاتر",
