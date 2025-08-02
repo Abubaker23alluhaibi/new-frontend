@@ -20,6 +20,7 @@ import CenterLogin from './CenterLogin';
 import CenterHome from './CenterHome';
 import DoctorCalendar from './DoctorCalendar';
 import DoctorAnalyticsPage from './DoctorAnalyticsPage';
+import LandingPage from './LandingPage';
 import i18n from './i18n';
 
 function App() {
@@ -73,6 +74,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/landing" element={<LandingPage />} />
           <Route path="/signup" element={<UserSignUp />} />
           <Route path="/signup-doctor" element={<DoctorSignUp />} />
           <Route path="/home" element={

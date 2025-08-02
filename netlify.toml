@@ -18,11 +18,11 @@
   to = "/404.html"
   status = 404
 
-# إضافة redirect للـ Landing Page
-[[redirects]]
-  from = "/landing"
-  to = "https://tabibiq-landing.netlify.app"
-  status = 302
+# Landing Page موجودة الآن في الفرونت إند
+# [[redirects]]
+#   from = "/landing"
+#   to = "https://tabibiq-landing.netlify.app"
+#   status = 302
 
 [[headers]]
   for = "/*"
