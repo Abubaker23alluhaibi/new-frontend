@@ -84,11 +84,36 @@
   box-shadow: 0 4px 16px rgba(0, 188, 212, 0.3);
   object-fit: cover;
   transition: all 0.3s ease;
+  min-width: 50px;
+  min-height: 50px;
 }
 
 .landing-page .logo-image:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(0, 188, 212, 0.4);
+}
+
+.landing-page .logo-fallback {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 16px rgba(0, 188, 212, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.landing-page .logo-fallback:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 188, 212, 0.4);
+}
+
+.landing-page .logo-icon {
+  font-size: 2rem;
+  color: #00bcd4;
 }
 
 .landing-page .logo-text h1 {
@@ -616,6 +641,19 @@
   .landing-page .logo-image {
     width: 35px;
     height: 35px;
+    min-width: 35px;
+    min-height: 35px;
+  }
+  
+  .landing-page .logo-fallback {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    min-height: 35px;
+  }
+  
+  .landing-page .logo-icon {
+    font-size: 1.5rem;
   }
   
   .landing-page .logo-text h1 {
@@ -729,6 +767,19 @@
   .landing-page .logo-image {
     width: 30px;
     height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+  }
+  
+  .landing-page .logo-fallback {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+  }
+  
+  .landing-page .logo-icon {
+    font-size: 1.2rem;
   }
   
   .landing-page .logo-text h1 {

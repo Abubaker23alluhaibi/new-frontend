@@ -1,6 +1,6 @@
 {
-  "short_name": "Tabib IQ",
-  "name": "Tabib IQ - منصة طبيب",
+  "short_name": "منصة طبيب",
+  "name": "منصة طبيب العراق - Tabib IQ",
   "icons": [
     {
       "src": "/favicon.ico",
@@ -23,5 +23,9 @@
   "theme_color": "#00bcd4",
   "background_color": "#ffffff",
   "scope": "/",
-  "orientation": "portrait"
+  "orientation": "portrait",
+  "description": "منصة طبية شاملة لحجز المواعيد مع أفضل الأطباء في العراق",
+  "categories": ["medical", "health", "appointments"],
+  "lang": "ar",
+  "dir": "rtl"
 }

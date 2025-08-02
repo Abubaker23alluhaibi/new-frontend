@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://tabibiq.netlify.app/sitemap.xml
+Sitemap: https://tabibiq.vercel.app/sitemap-vercel.xml
 
 # Crawl-delay
-Crawl-delay: 1
+Crawl-delay: 1 

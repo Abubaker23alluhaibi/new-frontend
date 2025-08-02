@@ -25,6 +25,7 @@ This is the frontend application for Tabib IQ medical platform.
 - `REACT_APP_API_URL`: Your backend API URL
 
 ### Features:
+- **Landing Page as Homepage** - Beautiful landing page as the main entry point
 - Multi-language support (Arabic, English, Kurdish)
 - Responsive design
 - Medical appointment booking system

@@ -36,7 +36,7 @@ const LandingPage = () => {
   };
 
   const goToLogin = () => {
-    navigate('/');
+    navigate('/login');
   };
 
   const getLanguageDisplay = () => {
@@ -49,21 +49,33 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="landing-page">
+    <div className="landing-page" itemScope itemType="https://schema.org/MedicalOrganization">
       {/* Header */}
-      <header className="header" id="header">
+      <header className="header" id="header" role="banner">
         <div className="header-container">
           <div className="logo">
             <div className="logo-container">
-              <img src="/images/logo192.png" alt="TabibiQ Logo" className="logo-image" />
+              <img 
+                src="/logo192.png" 
+                alt="منصة طبيب العراق - Tabib IQ Logo" 
+                className="logo-image"
+                itemProp="logo"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              <div className="logo-fallback" style={{ display: 'none' }}>
+                <span className="logo-icon">🏥</span>
+              </div>
               <div className="logo-text">
-                <h1>{t('landing_page.header.logo_text')}</h1>
-                <span>{t('landing_page.header.subtitle')}</span>
+                <h1 itemProp="name">{t('landing_page.header.logo_text')}</h1>
+                <span itemProp="description">{t('landing_page.header.subtitle')}</span>
               </div>
             </div>
           </div>
           
-          <nav className="nav-menu">
+          <nav className="nav-menu" role="navigation" aria-label="القائمة الرئيسية">
             <ul>
               <li><button onClick={() => scrollToSection('home')}>{t('landing_page.header.nav.home')}</button></li>
               <li><button onClick={() => scrollToSection('about')}>{t('landing_page.header.nav.about')}</button></li>
@@ -92,7 +104,7 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section id="home" className="hero-section">
+      <section id="home" className="hero-section" role="main">
         <div className="hero-container">
           <div className="hero-content">
             <h1 className="hero-title">
@@ -126,7 +138,7 @@ const LandingPage = () => {
             </div>
           </div>
           <div className="hero-image">
-            <img src="/images/logo192.png" alt="TabibiQ Logo" className="hero-logo" />
+            <img src="/logo192.png" alt="منصة طبيب العراق - Tabib IQ" className="hero-logo" />
           </div>
         </div>
       </section>
@@ -291,12 +303,12 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="footer">
+      <footer className="footer" role="contentinfo">
         <div className="container">
           <div className="footer-content">
             <div className="footer-section">
-              <h3>TabibiQ</h3>
-              <p>{t('landing_page.footer.description')}</p>
+              <h3 itemProp="name">TabibiQ</h3>
+              <p itemProp="description">{t('landing_page.footer.description')}</p>
             </div>
             <div className="footer-section">
               <h4>{t('landing_page.footer.quick_links')}</h4>

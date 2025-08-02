@@ -5,6 +5,12 @@
       "destination": "/index.html"
     }
   ],
+  "routes": [
+    {
+      "src": "/login",
+      "dest": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/manifest.json",
@@ -12,6 +18,19 @@
         {
           "key": "Content-Type",
           "value": "application/json"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "index, follow"
+        },
+        {
+          "key": "Content-Language",
+          "value": "ar, en, ku"
         }
       ]
     }

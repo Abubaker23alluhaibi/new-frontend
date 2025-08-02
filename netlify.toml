@@ -12,6 +12,11 @@
   to = "/index.html"
   status = 200
 
+[[redirects]]
+  from = "/login"
+  to = "/index.html"
+  status = 200
+
 # إضافة redirect للصفحات غير الموجودة
 [[redirects]]
   from = "/404"
@@ -32,6 +37,8 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    X-Robots-Tag = "index, follow"
+    Content-Language = "ar, en, ku"
 
 [[headers]]
   for = "/static/*"
