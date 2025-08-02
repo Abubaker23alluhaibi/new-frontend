@@ -9,6 +9,34 @@
     {
       "src": "/login",
       "dest": "/index.html"
+    },
+    {
+      "src": "/signup",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/home",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/doctor-dashboard",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/profile",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/my-appointments",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/medicine-reminder",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/health-centers",
+      "dest": "/index.html"
     }
   ],
   "headers": [
@@ -34,5 +62,8 @@
         }
       ]
     }
-  ]
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "installCommand": "npm install"
 } 
