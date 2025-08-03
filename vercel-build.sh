@@ -6,7 +6,7 @@ echo "🚀 Starting Vercel build process..."
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-npm ci
+npm install
 
 # Set environment variables
 export NODE_ENV=production
@@ -14,7 +14,7 @@ export GENERATE_SOURCEMAP=false
 
 # Build the application
 echo "🔨 Building application..."
-npm run build
+npx react-scripts build
 
 # Check if build was successful
 if [ -d "build" ]; then
