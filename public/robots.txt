@@ -1,4 +1,4 @@
-# https://www.robotstxt.org/robotstxt.html
+# Robots.txt for Tabib IQ - منصة طبيب العراق
 User-agent: *
 Allow: /
 
@@ -7,3 +7,18 @@ Sitemap: https://tabibiq.netlify.app/sitemap.xml
 
 # Crawl-delay
 Crawl-delay: 1
+
+# Disallow admin areas
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /doctor-dashboard
+Disallow: /profile
+Disallow: /my-appointments
+
+# Allow important pages
+Allow: /
+Allow: /login
+Allow: /signup
+Allow: /health-centers
+Allow: /doctor/*
+Allow: /medicine-reminder
