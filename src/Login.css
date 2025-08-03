@@ -98,21 +98,128 @@
   font-weight: 500;
   cursor: pointer;
   margin-top: 0.5rem;
-  transition: background 0.18s, color 0.18s;
-  box-shadow: 0 1px 4px 0 #b2dfdb55;
-}
-.signup-link-btn:hover {
-  background: #b2ebf2;
-  color: #00796b;
+  transition: all 0.2s;
 }
 
+.signup-link-btn:hover {
+  background: #b2dfdb;
+  transform: translateY(-1px);
+}
+
+/* أنماط زر إنشاء حساب في الزاوية */
+.corner-signup-btn {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 10000;
+  background: linear-gradient(90deg, #7c4dff 0%, #00bcd4 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(124, 77, 255, 0.3);
+  transition: all 0.2s;
+  white-space: nowrap;
+  min-width: 100px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.corner-signup-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 77, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.corner-signup-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(124, 77, 255, 0.3);
+  background: linear-gradient(90deg, #6a3de8 0%, #00a5b8 100%);
+}
+
+/* أنماط زر تغيير اللغة في الزاوية */
+.corner-language-select {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 10000;
+  background: rgba(0, 188, 212, 0.1);
+  color: #009688;
+  border: none;
+  border-radius: 8px;
+  padding: 0.3rem 0.8rem;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s;
+  border: 1px solid rgba(0, 150, 136, 0.2);
+}
+
+.corner-language-select:hover {
+  background: rgba(0, 188, 212, 0.2);
+  transform: translateY(-1px);
+  border-color: rgba(0, 150, 136, 0.4);
+}
+
+.corner-language-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.3);
+  border-color: rgba(0, 150, 136, 0.6);
+  background: rgba(0, 188, 212, 0.15);
+}
+
+.corner-language-select:active {
+  transform: translateY(0);
+  background: rgba(0, 188, 212, 0.25);
+  box-shadow: 0 1px 4px rgba(0, 188, 212, 0.2);
+}
+
+/* تحسينات للموبايل */
 @media (max-width: 480px) {
   .login-box {
-    min-width: 98vw;
-    padding: 1.2rem 0.3rem;
-    border-radius: 18px;
+    padding: 2rem 1.5rem;
+    margin: 1rem;
   }
+
   .login-box h2 {
-    font-size: 1.3rem;
+    font-size: 1.8rem;
+  }
+
+  .corner-signup-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 12px;
+    min-width: 80px;
+    top: 8px;
+    right: 8px;
+  }
+
+  .corner-language-select {
+    padding: 0.25rem 0.6rem;
+    font-size: 13px;
+    top: 8px;
+    left: 8px;
+  }
+}
+
+/* تحسينات للشاشات الصغيرة جداً */
+@media (max-width: 360px) {
+  .corner-signup-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 11px;
+    min-width: 70px;
+    top: 6px;
+    right: 6px;
+  }
+
+  .corner-language-select {
+    padding: 0.2rem 0.5rem;
+    font-size: 12px;
+    top: 6px;
+    left: 6px;
   }
 }

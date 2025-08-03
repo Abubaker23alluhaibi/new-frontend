@@ -106,24 +106,26 @@ function Login() {
           {t('login_required')}
         </div>
       )}
-      {/* زر تغيير اللغة في الزاوية العلوية */}
-      <div style={{position:'fixed', top:10, left:10, zIndex:10000}}>
-        <select value={lang} onChange={handleLangChange} style={{
-          background: 'rgba(0, 188, 212, 0.1)',
-          color: '#009688',
-          border: 'none',
-          borderRadius: 8,
-          padding: '0.3rem 0.8rem',
-          fontWeight: 700,
-          fontSize: 15,
-          cursor: 'pointer',
-          boxShadow: '0 2px 8px rgba(0, 188, 212, 0.2)'
-        }}>
-          <option value="ar">عربي</option>
-          <option value="ku">کوردی</option>
-          <option value="en">English</option>
-        </select>
-      </div>
+      
+      {/* زر تغيير اللغة في الزاوية العلوية اليسرى */}
+      <select 
+        value={lang} 
+        onChange={handleLangChange} 
+        className="corner-language-select"
+      >
+        <option value="ar">عربي</option>
+        <option value="ku">کوردی</option>
+        <option value="en">English</option>
+      </select>
+      
+      {/* زر إنشاء حساب في الزاوية العلوية اليمنى */}
+      <button
+        type="button"
+        onClick={() => setShowSignupChoice(true)}
+        className="corner-signup-btn"
+      >
+        {window.innerWidth < 500 ? t('signup_short') : t('create_account')}
+      </button>
       
       {/* خلفية إضافية للعمق */}
       <div style={{
@@ -259,31 +261,6 @@ function Login() {
             autoComplete="current-password"
           />
           {error && <div className="login-error">{error}</div>}
-          
-          {/* زر إنشاء الحساب - تم نقله للأعلى */}
-          <div style={{textAlign: 'center', marginTop: '1.2rem', marginBottom: '1rem'}}>
-            <button
-              type="button"
-              className="signup-link-btn"
-              onClick={() => setShowSignupChoice(true)}
-              style={{
-                background: 'linear-gradient(90deg,#7c4dff 0%,#00bcd4 100%)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 12,
-                padding: window.innerWidth < 500 ? '0.7rem 1.2rem' : '0.9rem 2rem',
-                fontWeight: 700,
-                fontSize: window.innerWidth < 500 ? 14 : 16,
-                cursor: 'pointer',
-                width: '100%',
-                maxWidth: 340,
-                boxShadow: '0 2px 8px #7c4dff22',
-                transition: 'all 0.2s'
-              }}
-            >
-              {t('create_account')}
-            </button>
-          </div>
           
           <button type="submit" style={{
             fontSize: window.innerWidth < 500 ? 15 : 18,

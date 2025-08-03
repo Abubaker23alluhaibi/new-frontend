@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
@@ -8,6 +8,8 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const [currentLanguage, setCurrentLanguage] = useState('ar');
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const moreMenuRef = useRef(null);
 
   useEffect(() => {
     // استرجاع اللغة المحفوظة
@@ -15,6 +17,21 @@ const LandingPage = () => {
     setCurrentLanguage(savedLanguage);
     i18n.changeLanguage(savedLanguage);
   }, [i18n]);
+
+  useEffect(() => {
+    // إغلاق القائمة عند النقر خارجها
+    const handleClickOutside = (event) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(event.target)) {
+        setShowMoreMenu(false);
+        setShowLanguageDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const changeLanguage = (lang) => {
     setCurrentLanguage(lang);
@@ -33,6 +50,7 @@ const LandingPage = () => {
         behavior: 'smooth'
       });
     }
+    setShowMoreMenu(false);
   };
 
   const goToLogin = () => {
@@ -75,7 +93,8 @@ const LandingPage = () => {
             </div>
           </div>
           
-          <nav className="nav-menu" role="navigation" aria-label="القائمة الرئيسية">
+          {/* Navigation Menu - Hidden on mobile */}
+          <nav className="nav-menu desktop-nav" role="navigation" aria-label="القائمة الرئيسية">
             <ul>
               <li><button onClick={() => scrollToSection('home')}>{t('landing_page.header.nav.home')}</button></li>
               <li><button onClick={() => scrollToSection('about')}>{t('landing_page.header.nav.about')}</button></li>
@@ -85,7 +104,43 @@ const LandingPage = () => {
           </nav>
 
           <div className="header-actions">
-            <div className="language-selector">
+            {/* More Menu Button - Mobile Only */}
+            <div className="more-menu mobile-only" ref={moreMenuRef}>
+              <button 
+                className="more-btn" 
+                onClick={() => setShowMoreMenu(!showMoreMenu)}
+                aria-label="قائمة إضافية"
+              >
+                <span className="more-icon">☰</span>
+                <span className="more-text">مزيد</span>
+              </button>
+              
+              {/* More Menu Dropdown */}
+              {showMoreMenu && (
+                <div className="more-dropdown">
+                  <button onClick={() => scrollToSection('home')}>{t('landing_page.header.nav.home')}</button>
+                  <button onClick={() => scrollToSection('about')}>{t('landing_page.header.nav.about')}</button>
+                  <button onClick={() => scrollToSection('how-to-use')}>{t('landing_page.header.nav.how_to_use')}</button>
+                  <button onClick={() => scrollToSection('booking')}>{t('landing_page.header.nav.booking')}</button>
+                  <div className="dropdown-divider"></div>
+                  <div className="language-selector-mobile">
+                    <button className="language-btn-mobile" onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}>
+                      🌐 <span>{getLanguageDisplay()}</span>
+                    </button>
+                    {showLanguageDropdown && (
+                      <div className="language-dropdown-mobile">
+                        <button onClick={() => changeLanguage('ar')}>العربية</button>
+                        <button onClick={() => changeLanguage('en')}>English</button>
+                        <button onClick={() => changeLanguage('ku')}>کوردی</button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Language Selector - Desktop Only */}
+            <div className="language-selector desktop-only">
               <button className="language-btn" onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}>
                 🌐 <span>{getLanguageDisplay()}</span>
               </button>

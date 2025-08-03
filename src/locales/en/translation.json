@@ -143,6 +143,8 @@
   "update": "Update",
   "edit": "Edit",
   "create": "Create",
+  "create_account": "Create Account",
+  "signup_short": "Sign Up",
   "add": "Add",
   "remove": "Remove",
   "close": "Close",
