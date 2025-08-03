@@ -32,7 +32,8 @@
     "deploy:preview": "npm run build && netlify deploy --dir=build",
     "clean": "rm -rf build node_modules package-lock.json && npm install",
     "update-deps": "npm update && npm audit fix",
-    "dev": "REACT_APP_API_URL=http://localhost:5000 npm start"
+    "dev": "REACT_APP_API_URL=http://localhost:5000 npm start",
+    "vercel-build": "npm run build"
   },
   "eslintConfig": {
     "extends": [
