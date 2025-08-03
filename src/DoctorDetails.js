@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 function DoctorDetails() {
   const { id } = useParams();
-  const { user, profile } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -54,13 +54,22 @@ function DoctorDetails() {
 
   // التحقق من حالة تسجيل الدخول والتوجيه
   useEffect(() => {
-    // إذا لم يكن المستخدم مسجل دخول، توجيه لصفحة تسجيل الدخول مع حفظ الرابط الحالي
-    if (!user && !profile) {
+    // انتظار حتى يتم تحميل AuthContext بالكامل
+    if (authLoading) return;
+    
+    // التحقق من وجود بيانات المستخدم في localStorage أو وجود user/profile
+    const savedUser = localStorage.getItem('user');
+    const savedProfile = localStorage.getItem('profile');
+    const hasUser = user || profile;
+    const hasSavedData = savedUser || savedProfile;
+    
+    // إذا لم يكن هناك بيانات محفوظة ولا user، توجيه لصفحة تسجيل الدخول
+    if (!hasSavedData && !hasUser) {
       const currentUrl = window.location.pathname + window.location.search;
       navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
       return;
     }
-  }, [user, profile, navigate]);
+  }, [user, profile, navigate, authLoading]);
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/doctors`)
@@ -225,6 +234,7 @@ const bookingData = {
     setBooking(false);
   };
 
+  if (authLoading) return <div style={{textAlign:'center', marginTop:40}}>جاري التحقق من حالة تسجيل الدخول...</div>;
   if (loading) return <div style={{textAlign:'center', marginTop:40}}>جاري التحميل...</div>;
   if (error || !doctor) return <div style={{textAlign:'center', marginTop:40, color:'#e53935'}}>{error || 'لم يتم العثور على الطبيب'}</div>;
 
