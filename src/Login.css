@@ -108,41 +108,42 @@
 
 /* أنماط زر إنشاء حساب في الزاوية */
 .corner-signup-btn {
-  position: fixed;
+  position: absolute;
   top: 10px;
   right: 10px;
   z-index: 10000;
-  background: linear-gradient(90deg, #7c4dff 0%, #00bcd4 100%);
-  color: #fff;
-  border: none;
+  background: #fff;
+  color: #00bcd4;
+  border: 2px solid #00bcd4;
   border-radius: 8px;
   padding: 0.5rem 1rem;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(124, 77, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.2);
   transition: all 0.2s;
   white-space: nowrap;
   min-width: 100px;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .corner-signup-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(124, 77, 255, 0.4);
-  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+  border-color: #009688;
+  background: #f0f9ff;
 }
 
 .corner-signup-btn:active {
   transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(124, 77, 255, 0.3);
-  background: linear-gradient(90deg, #6a3de8 0%, #00a5b8 100%);
+  box-shadow: 0 2px 6px rgba(0, 188, 212, 0.2);
+  background: #e0f7fa;
+  border-color: #00bcd4;
 }
 
 /* أنماط زر تغيير اللغة في الزاوية */
 .corner-language-select {
-  position: fixed;
+  position: absolute;
   top: 10px;
   left: 10px;
   z-index: 10000;
@@ -196,6 +197,7 @@
     min-width: 80px;
     top: 8px;
     right: 8px;
+    position: absolute;
   }
 
   .corner-language-select {
@@ -203,6 +205,7 @@
     font-size: 13px;
     top: 8px;
     left: 8px;
+    position: absolute;
   }
 }
 
@@ -214,6 +217,7 @@
     min-width: 70px;
     top: 6px;
     right: 6px;
+    position: absolute;
   }
 
   .corner-language-select {
@@ -221,5 +225,6 @@
     font-size: 12px;
     top: 6px;
     left: 6px;
+    position: absolute;
   }
 }

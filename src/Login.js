@@ -108,24 +108,28 @@ function Login() {
       )}
       
       {/* زر تغيير اللغة في الزاوية العلوية اليسرى */}
-      <select 
-        value={lang} 
-        onChange={handleLangChange} 
-        className="corner-language-select"
-      >
-        <option value="ar">عربي</option>
-        <option value="ku">کوردی</option>
-        <option value="en">English</option>
-      </select>
+      <div style={{position: 'relative', width: '100%'}}>
+        <select 
+          value={lang} 
+          onChange={handleLangChange} 
+          className="corner-language-select"
+        >
+          <option value="ar">عربي</option>
+          <option value="ku">کوردی</option>
+          <option value="en">English</option>
+        </select>
+      </div>
       
       {/* زر إنشاء حساب في الزاوية العلوية اليمنى */}
-      <button
-        type="button"
-        onClick={() => setShowSignupChoice(true)}
-        className="corner-signup-btn"
-      >
-        {window.innerWidth < 500 ? t('signup_short') : t('create_account')}
-      </button>
+      <div style={{position: 'relative', width: '100%'}}>
+        <button
+          type="button"
+          onClick={() => setShowSignupChoice(true)}
+          className="corner-signup-btn"
+        >
+          {window.innerWidth < 500 ? t('signup_short') : t('create_account')}
+        </button>
+      </div>
       
       {/* خلفية إضافية للعمق */}
       <div style={{
