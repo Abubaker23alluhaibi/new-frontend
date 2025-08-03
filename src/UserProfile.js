@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 function UserProfile() {
+  console.log('🔍 UserProfile - تم تحميل المكون');
   const { profile, updateProfile, user } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -20,6 +21,12 @@ function UserProfile() {
   const [imagePreview, setImagePreview] = useState(null);
   const [imageLoadError, setImageLoadError] = useState(false);
   const [edit, setEdit] = useState(false);
+  
+  // إضافة console.log للتأكد من حالة edit
+  console.log('🔍 UserProfile - edit state:', edit);
+  console.log('🔍 UserProfile - profile data:', profile);
+  console.log('🔍 UserProfile - user data:', user);
+  console.log('🔍 UserProfile - form data:', form);
 
   // دالة مساعدة لمسار صورة المستخدم
   const getImageUrl = img => {
@@ -37,13 +44,17 @@ function UserProfile() {
     newPassword: '',
     confirmPassword: ''
   });
-
-  // إضافة console.log للتأكد من حالة edit
-  console.log('🔍 UserProfile - edit state:', edit);
+  console.log('🔍 UserProfile - profile data:', profile);
+  console.log('🔍 UserProfile - user data:', user);
 
   // تحديث النموذج عند تغيير البيانات الشخصية
   useEffect(() => {
+    console.log('🔍 useEffect - تم تحديث البيانات الشخصية');
+    console.log('🔍 useEffect - profile:', profile);
+    console.log('🔍 useEffect - user:', user);
+    
     if (profile) {
+      console.log('🔍 useEffect - استخدام بيانات profile');
       setForm({
         first_name: profile.first_name || '',
         email: profile.email || '',
@@ -53,6 +64,7 @@ function UserProfile() {
       setImageLoadError(false);
     } else if (user) {
       // إذا لم يكن هناك profile، استخدم user
+      console.log('🔍 useEffect - استخدام بيانات user');
       setForm({
         first_name: user.first_name || '',
         email: user.email || '',
@@ -64,6 +76,7 @@ function UserProfile() {
   }, [profile, user]);
 
   const handleChange = e => {
+    console.log('🔍 handleChange - تم تغيير الحقل:', e.target.name, 'القيمة الجديدة:', e.target.value);
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -96,6 +109,9 @@ function UserProfile() {
 
   const handleSave = async e => {
     e.preventDefault();
+    
+    console.log('🔍 handleSave - تم استدعاء دالة الحفظ');
+    console.log('🔍 handleSave - edit state:', edit);
     
     // إذا لم يكن في وضع التعديل، لا تفعل شيئاً
     if (!edit) {
@@ -152,6 +168,7 @@ function UserProfile() {
   };
 
   const handleCancel = () => {
+    console.log('🔍 handleCancel - تم استدعاء دالة الإلغاء');
     setEdit(false);
     setError('');
     setMsg('');
@@ -357,7 +374,7 @@ function UserProfile() {
         </div>
         {/* Form */}
         <div style={{padding: '2rem'}}>
-          <form onSubmit={handleSave}>
+          <form onSubmit={handleSave} style={{display: 'block'}}>
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px'}}>
               {/* الاسم الكامل */}
               <div style={{marginBottom: 20}}>
@@ -383,7 +400,8 @@ function UserProfile() {
                     border: edit ? '2px solid #7c4dff' : '2px solid #e0e0e0',
                     fontSize: 16,
                     transition: 'all 0.3s ease',
-                    background: edit ? '#fff' : '#f8f9fa'
+                    background: edit ? '#fff' : '#f8f9fa',
+                    cursor: edit ? 'text' : 'not-allowed'
                   }}
                   placeholder={t('enter_full_name')}
                 />
@@ -412,7 +430,8 @@ function UserProfile() {
                     border: edit ? '2px solid #7c4dff' : '2px solid #e0e0e0',
                     fontSize: 16,
                     transition: 'all 0.3s ease',
-                    background: edit ? '#fff' : '#f8f9fa'
+                    background: edit ? '#fff' : '#f8f9fa',
+                    cursor: edit ? 'text' : 'not-allowed'
                   }}
                   placeholder={t('enter_email')}
                 />
@@ -441,7 +460,8 @@ function UserProfile() {
                     border: edit ? '2px solid #7c4dff' : '2px solid #e0e0e0',
                     fontSize: 16,
                     transition: 'all 0.3s ease',
-                    background: edit ? '#fff' : '#f8f9fa'
+                    background: edit ? '#fff' : '#f8f9fa',
+                    cursor: edit ? 'text' : 'not-allowed'
                   }}
                   placeholder={t('enter_phone')}
                 />
@@ -492,9 +512,8 @@ function UserProfile() {
                 <>
                   <button 
                     type="button" 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+                    onClick={() => {
+                      console.log('🔍 UserProfile - زر التعديل تم النقر عليه');
                       setEdit(true);
                     }}
                     style={{
@@ -536,6 +555,14 @@ function UserProfile() {
                   <button 
                     type="submit"
                     disabled={loading}
+                    onClick={(e) => {
+                      console.log('🔍 زر الحفظ تم النقر عليه');
+                      if (!edit) {
+                        e.preventDefault();
+                        console.log('🔍 زر الحفظ - ليس في وضع التعديل، تم منع الإرسال');
+                        return;
+                      }
+                    }}
                     style={{
                       background: loading ? '#ccc' : 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
                       color: '#fff',
@@ -553,7 +580,10 @@ function UserProfile() {
                   </button>
                   <button 
                     type="button" 
-                    onClick={handleCancel}
+                    onClick={() => {
+                      console.log('🔍 زر الإلغاء تم النقر عليه');
+                      handleCancel();
+                    }}
                     style={{
                       background: '#f5f5f5',
                       color: '#666',
