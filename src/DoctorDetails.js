@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 function DoctorDetails() {
   const { id } = useParams();
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -51,10 +52,15 @@ function DoctorDetails() {
     return '/logo.png';
   };
 
-  // إضافة console.log لرؤية بيانات المستخدم
-useEffect(() => {
-  // console.log for debugging
-}, [user, profile]);
+  // التحقق من حالة تسجيل الدخول والتوجيه
+  useEffect(() => {
+    // إذا لم يكن المستخدم مسجل دخول، توجيه لصفحة تسجيل الدخول مع حفظ الرابط الحالي
+    if (!user && !profile) {
+      const currentUrl = window.location.pathname + window.location.search;
+      navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
+      return;
+    }
+  }, [user, profile, navigate]);
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/doctors`)
@@ -299,50 +305,51 @@ const bookingData = {
         <div style={{display:'flex', justifyContent:'flex-end', marginBottom:8}}>
           <button
             onClick={() => {
-              if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(window.location.href)
-                  .then(() => {
-                    setCopySuccess(true);
-                    setTimeout(() => setCopySuccess(false), 2000);
-                  })
-                  .catch(() => {
-                    alert('تعذر النسخ تلقائياً. يرجى تحديد الرابط ونسخه يدوياً.');
-                  });
-              } else {
-                // fallback: تحديد النص يدوياً
-                const textArea = document.createElement("textarea");
-                textArea.value = window.location.href;
+              const currentUrl = window.location.href;
+              navigator.clipboard.writeText(currentUrl).then(() => {
+                setCopySuccess(true);
+                setTimeout(() => setCopySuccess(false), 2000);
+              }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = currentUrl;
                 document.body.appendChild(textArea);
-                textArea.focus();
                 textArea.select();
-                try {
-                  document.execCommand('copy');
-                  setCopySuccess(true);
-                  setTimeout(() => setCopySuccess(false), 2000);
-                } catch (err) {
-                  alert('تعذر النسخ تلقائياً. يرجى تحديد الرابط ونسخه يدوياً.');
-                }
+                document.execCommand('copy');
                 document.body.removeChild(textArea);
-              }
+                setCopySuccess(true);
+                setTimeout(() => setCopySuccess(false), 2000);
+              });
             }}
             style={{
-              background:'#e0f7fa', 
-              color:'#009688', 
-              border:'1.5px solid #b2dfdb', 
-              borderRadius:8, 
-              padding: window.innerWidth < 500 ? '0.4rem 0.8rem' : '0.5rem 1.1rem', 
-              fontWeight:700, 
-              fontSize: window.innerWidth < 500 ? 13 : 15, 
-              cursor:'pointer', 
-              boxShadow:'0 2px 8px #00bcd422', 
-              display:'flex', 
-              alignItems:'center', 
-              gap:6
+              background: copySuccess ? '#4caf50' : 'linear-gradient(90deg, #00bcd4 0%, #009688 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '20px',
+              padding: '0.5rem 1rem',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 8px rgba(0, 188, 212, 0.2)'
             }}
-            title="نسخ رابط صفحة الدكتور"
+            onMouseEnter={(e) => {
+              if (!copySuccess) {
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 4px 12px rgba(0, 188, 212, 0.3)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!copySuccess) {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 2px 8px rgba(0, 188, 212, 0.2)';
+              }
+            }}
           >
-            <span style={{fontSize: window.innerWidth < 500 ? 16 : 18}}>🔗</span> 
-            {window.innerWidth < 500 ? 'نسخ' : 'نسخ رابط الصفحة'}
+            {copySuccess ? '✅ تم نسخ الرابط!' : '📋 نسخ الرابط'}
           </button>
         </div>
         {copySuccess && <div style={{color:'#00c853', textAlign:'center', fontWeight:700, marginBottom:8}}>تم نسخ الرابط!</div>}

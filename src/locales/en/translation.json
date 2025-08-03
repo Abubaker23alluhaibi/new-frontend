@@ -218,6 +218,7 @@
   "appointment_note": "Please ensure your personal information is correct before booking. If you are booking an appointment for someone else, make sure to enter their correct name and phone number in your profile page.",
   "appointment": "appointment",
   "profile_update_note": "You can update your personal information from your profile page at any time",
+  "login_required": "Please login first to access this page.",
   "landing_page": {
     "header": {
       "logo_text": "Iraq Medical Platform",

@@ -87,11 +87,7 @@ function App() {
               <DoctorDashboard appointments={doctorAppointments} setAppointments={setDoctorAppointments} />
             </ProtectedRoute>
           } />
-          <Route path="/doctor/:id" element={
-            <ProtectedRoute requiredUserType="user">
-              <DoctorDetails />
-            </ProtectedRoute>
-          } />
+          <Route path="/doctor/:id" element={<DoctorDetails />} />
           <Route path="/my-appointments" element={
             <ProtectedRoute requiredUserType="user">
               <MyAppointments />

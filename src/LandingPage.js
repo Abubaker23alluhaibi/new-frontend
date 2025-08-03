@@ -203,8 +203,8 @@ const LandingPage = () => {
               </div>
             </div>
             <div className="hero-buttons">
-              <button className="cta-btn primary" onClick={() => scrollToSection('how-to-use')}>
-                {t('landing_page.hero.buttons.start_now')}
+              <button className="cta-btn primary" onClick={goToLogin}>
+                {t('landing_page.header.login_button')}
               </button>
               <button className="cta-btn secondary" onClick={() => scrollToSection('about')}>
                 {t('landing_page.hero.buttons.learn_more')}
