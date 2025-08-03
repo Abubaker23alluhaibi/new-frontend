@@ -1,29 +1,21 @@
 #!/bin/bash
 
-# Vercel Build Script for TabibiQ Frontend
-
-echo "🚀 Starting Vercel build process..."
-
-# Install dependencies
-echo "📦 Installing dependencies..."
-npm install
-
-# Set environment variables
-export NODE_ENV=production
+# Set environment variables for production
+export REACT_APP_API_URL=https://web-production-78766.up.railway.app
+export REACT_APP_ENV=production
 export GENERATE_SOURCEMAP=false
 
-# Build the application
-echo "🔨 Building application..."
-npx react-scripts build
+# Clean install dependencies
+npm ci --only=production
 
-# Check if build was successful
+# Build the application
+npm run build
+
+# Verify build output
 if [ -d "build" ]; then
-    echo "✅ Build completed successfully!"
-    echo "📁 Build directory contents:"
+    echo "Build completed successfully!"
     ls -la build/
 else
-    echo "❌ Build failed!"
+    echo "Build failed!"
     exit 1
-fi
-
-echo "🎉 Vercel build process completed!" 
+fi 
