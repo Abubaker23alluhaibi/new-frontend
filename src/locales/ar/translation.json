@@ -190,6 +190,8 @@
   "login_button": "دخول",
   "create_account": "إنشاء حساب جديد",
   "signup_short": "حساب جديد",
+  "book_for_other_user": "حجز موعد لمستخدم آخر",
+  "book_for_other_user_short": "حجز لمستخدم آخر",
   "choose_account_type": "اختر نوع الحساب",
   "whatsapp_number": "واتساب: +9647769012619",
   "we_are_here": "نحن هنا لمساعدتك!",

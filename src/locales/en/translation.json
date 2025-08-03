@@ -145,6 +145,8 @@
   "create": "Create",
   "create_account": "Create Account",
   "signup_short": "Sign Up",
+  "book_for_other_user": "Book Appointment for Another User",
+  "book_for_other_user_short": "Book for Other User",
   "add": "Add",
   "remove": "Remove",
   "close": "Close",
