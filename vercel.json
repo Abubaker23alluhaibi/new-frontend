@@ -1,42 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/((?!manifest.json|favicon.ico|logo.*\\.png|robots.txt|sitemap.xml|static/|_next/|api/).*)",
+      "source": "/((?!static/|favicon.ico|manifest.json|logo.*\\.png).*)",
       "destination": "/index.html"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/login",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/signup",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/home",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/doctor-dashboard",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/profile",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/my-appointments",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/medicine-reminder",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/health-centers",
-      "dest": "/index.html"
     }
   ],
   "headers": [
@@ -62,8 +28,5 @@
         }
       ]
     }
-  ],
-  "buildCommand": "npm run build",
-  "outputDirectory": "build",
-  "installCommand": "npm install"
+  ]
 } 

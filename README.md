@@ -1,39 +1,87 @@
-# Tabib IQ - Frontend
+# 🏥 TabibiQ Frontend - منصة طبيب العراق
 
-## 🚀 Deploy to Vercel
+## 🚀 Vercel Deployment Guide
 
-This is the frontend application for Tabib IQ medical platform.
+### Quick Deploy to Vercel
 
-### Setup Instructions:
+1. **Fork/Clone Repository**
+2. **Connect to Vercel**
+   - Go to [vercel.com](https://vercel.com)
+   - Import your GitHub repository
+   - Set Root Directory to `frontend-iq`
 
-1. **Clone this repository**
-2. **Install dependencies:**
-   ```bash
-   npm install
+3. **Environment Variables**
+   Add these in Vercel Dashboard > Settings > Environment Variables:
+   ```
+   REACT_APP_API_URL=https://web-production-78766.up.railway.app
+   REACT_APP_ENV=production
+   GENERATE_SOURCEMAP=false
    ```
 
-3. **Set up environment variables in Vercel:**
-   - Go to your Vercel project settings
-   - Add environment variable: `REACT_APP_API_URL`
-   - Set it to your backend API URL (e.g., `https://your-backend.railway.app`)
+4. **Build Settings**
+   - Framework Preset: Create React App
+   - Build Command: `npm run build`
+   - Output Directory: `build`
+   - Install Command: `npm install`
 
-4. **Deploy:**
-   - Connect your GitHub repository to Vercel
-   - Vercel will automatically build and deploy
+5. **Deploy**
+   - Click "Deploy"
+   - Wait for build to complete
 
-### Environment Variables:
-- `REACT_APP_API_URL`: Your backend API URL
+### Local Development
 
-### Features:
-- **Landing Page as Homepage** - Beautiful landing page as the main entry point
-- Multi-language support (Arabic, English, Kurdish)
-- Responsive design
-- Medical appointment booking system
-- Doctor and patient dashboards
-- Admin panel
+```bash
+# Install dependencies
+npm install
 
-### Tech Stack:
-- React.js
-- React Router
+# Start development server
+npm start
+
+# Build for production
+npm run build
+```
+
+### Features
+
+- ✅ Landing Page as first page
+- ✅ Multi-language support (Arabic, English, Kurdish)
+- ✅ User authentication
+- ✅ Doctor appointments booking
+- ✅ Medicine reminders
+- ✅ Health centers directory
+- ✅ Responsive design
+
+### Tech Stack
+
+- React 18.2.0
+- React Router 6.20.1
 - i18next for internationalization
-- CSS3 with modern styling 
+- CSS3 with modern design
+
+### Project Structure
+
+```
+src/
+├── components/          # React components
+├── pages/              # Page components
+├── utils/              # Utility functions
+├── locales/            # Translation files
+└── App.js              # Main app component
+```
+
+### API Endpoints
+
+- Backend: `https://web-production-78766.up.railway.app`
+- Health Check: `/api/health`
+
+### Support
+
+For deployment issues, check:
+1. Environment variables are set correctly
+2. Build command is `npm run build`
+3. Output directory is `build`
+4. Root directory is `frontend-iq`
+
+---
+
+**TabibiQ Team** 🏥 | **2024** 
