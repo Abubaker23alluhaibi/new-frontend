@@ -89,6 +89,36 @@ function Login() {
       justifyContent:'flex-start',
       paddingTop:'3.5rem',
     }}>
+      {/* زر العودة للصفحة الرئيسية */}
+      <button 
+        onClick={() => navigate('/')}
+        style={{
+          position: 'absolute',
+          top: '1rem',
+          right: '1rem',
+          background: 'rgba(255, 255, 255, 0.2)',
+          border: '2px solid rgba(255, 255, 255, 0.3)',
+          color: 'white',
+          padding: '0.5rem 1rem',
+          borderRadius: '20px',
+          cursor: 'pointer',
+          fontSize: '0.9rem',
+          fontWeight: '500',
+          backdropFilter: 'blur(10px)',
+          zIndex: 1000,
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.background = 'rgba(255, 255, 255, 0.3)';
+          e.target.style.transform = 'translateY(-2px)';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+          e.target.style.transform = 'translateY(0)';
+        }}
+      >
+        🏠 {t('back_to_home')}
+      </button>
       {/* رسالة إذا كان هناك redirect */}
       {redirect && (
         <div style={{
@@ -144,9 +174,24 @@ function Login() {
       }} />
       <div style={{position:'relative', zIndex:1, width:'100%'}}>
         <div style={{textAlign:'center', marginBottom:'2.2rem', padding:'0 1.2rem'}}>
-          <img src="/logo192.png" alt="Logo" style={{width: window.innerWidth < 500 ? 64 : 90, height: window.innerWidth < 500 ? 64 : 90, borderRadius: '50%', background: '#fff', border: '5px solid #fff', boxShadow: '0 4px 18px #00968855, 0 1.5px 8px #00bcd433', marginBottom: window.innerWidth < 500 ? 8 : 12, marginTop: window.innerWidth < 500 ? 8 : 0, objectFit: 'cover'}} />
-          <div style={{fontWeight:900, fontSize: '2rem', color:'#fff', letterSpacing:0.5, marginBottom:7, textShadow:'0 2px 8px #00968855'}}>{t('platform_name')}</div>
-          <div style={{color:'#fff', fontSize:'1.15rem', fontWeight:600, textShadow:'0 1px 6px #7c4dff55'}}>{t('platform_desc')}</div>
+          <div 
+            onClick={() => navigate('/')}
+            style={{
+              cursor: 'pointer',
+              display: 'inline-block',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <img src="/logo192.png" alt="Logo" style={{width: window.innerWidth < 500 ? 64 : 90, height: window.innerWidth < 500 ? 64 : 90, borderRadius: '50%', background: '#fff', border: '5px solid #fff', boxShadow: '0 4px 18px #00968855, 0 1.5px 8px #00bcd433', marginBottom: window.innerWidth < 500 ? 8 : 12, marginTop: window.innerWidth < 500 ? 8 : 0, objectFit: 'cover'}} />
+            <div style={{fontWeight:900, fontSize: '2rem', color:'#fff', letterSpacing:0.5, marginBottom:7, textShadow:'0 2px 8px #00968855'}}>{t('platform_name')}</div>
+            <div style={{color:'#fff', fontSize:'1.15rem', fontWeight:600, textShadow:'0 1px 6px #7c4dff55'}}>{t('platform_desc')}</div>
+          </div>
         </div>
         <form className="login-box" onSubmit={handleSubmit}>
           <h2>{t('login_title')}</h2>

@@ -80,7 +80,11 @@ const LandingPage = () => {
       <header className="header" id="header" role="banner">
         <div className="header-container">
           <div className="logo">
-            <div className="logo-container">
+            <div 
+              className="logo-container"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              style={{ cursor: 'pointer' }}
+            >
               <img 
                 src="/logo192.png" 
                 alt="منصة طبيب العراق - Tabib IQ Logo" 
@@ -110,13 +114,6 @@ const LandingPage = () => {
               <li><button onClick={() => scrollToSection('booking')}>{t('landing_page.header.nav.booking')}</button></li>
             </ul>
           </nav>
-
-          {/* About Us Button - Top Right Corner */}
-          <div className="about-us-corner">
-            <button className="about-us-btn" onClick={goToAbout}>
-              {t('landing_page.header.about_us')}
-            </button>
-          </div>
 
           <div className="header-actions">
             {/* More Menu Button - Mobile Only */}
@@ -215,7 +212,13 @@ const LandingPage = () => {
             </div>
           </div>
           <div className="hero-image">
-            <img src="/logo192.png" alt="منصة طبيب العراق - Tabib IQ" className="hero-logo" />
+            <img 
+              src="/logo192.png" 
+              alt="منصة طبيب العراق - Tabib IQ" 
+              className="hero-logo" 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              style={{ cursor: 'pointer' }}
+            />
           </div>
         </div>
       </section>

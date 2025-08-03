@@ -298,7 +298,22 @@ function UserHome() {
         borderBottom: '1px solid rgba(0, 188, 212, 0.1)'
       }}>
         {/* شعار مع أيقونة */}
-        <div style={{display:'flex', alignItems:'center', gap:8}}>
+        <div 
+          onClick={() => navigate('/')}
+          style={{
+            display:'flex', 
+            alignItems:'center', 
+            gap:8, 
+            cursor: 'pointer',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+        >
           <img src="/logo192.png" alt="Logo" style={{width: isMobile() ? 38 : 44, height: isMobile() ? 38 : 44, borderRadius: '50%', background: '#fff', border: '4px solid #fff', boxShadow: '0 4px 16px #00bcd455', objectFit: 'cover', marginRight: 4}} />
           <span style={{color:'#009688', fontWeight:900, fontSize: isMobile() ? 20 : 24, letterSpacing:1, marginRight:4}}>{t('app_name')}</span>
         </div>
@@ -337,6 +352,7 @@ function UserHome() {
         <div onClick={()=>setDrawerOpen(false)} style={{position:'fixed', top:0, left:isRTL ? 'unset' : 0, right:isRTL ? 0 : 'unset', width:'100vw', height:'100vh', background:'rgba(0,0,0,0.25)', zIndex:2000, display:'flex', justifyContent:isRTL ? 'flex-end' : 'flex-start'}}>
           <div onClick={e=>e.stopPropagation()} style={{width:260, height:'100%', background:'#fff', boxShadow:'0 2px 16px #00bcd422', padding:'2rem 1.2rem', display:'flex', flexDirection:'column', gap:18, direction:isRTL ? 'rtl' : 'ltr'}}>
             <button onClick={()=>setDrawerOpen(false)} style={{background:'none', border:'none', color:'#e53935', fontSize:26, fontWeight:900, alignSelf:isRTL ? 'flex-start' : 'flex-end', cursor:'pointer', marginBottom:8}}>&times;</button>
+            <button onClick={() => navigate('/')} style={{background:'linear-gradient(90deg,#00bcd4 0%,#009688 100%)', color:'#fff', border:'none', borderRadius:12, padding:'0.7rem 1.1rem', fontWeight:800, fontSize:15, cursor:'pointer', boxShadow:'0 2px 8px #00bcd422', display:'flex', alignItems:'center', gap:6}}><span style={{fontSize:18}}>🏠</span>{t('back_to_home')}</button>
             <button onClick={() => {setShowContactModal(true); setDrawerOpen(false);}} style={{background:'linear-gradient(90deg,#00bcd4 0%,#7c4dff 100%)', color:'#fff', border:'none', borderRadius:12, padding:'0.7rem 1.1rem', fontWeight:800, fontSize:15, cursor:'pointer', boxShadow:'0 2px 8px #7c4dff22', display:'flex', alignItems:'center', gap:6}}><span style={{fontSize:18}}>📞</span>{t('contact_us')}</button>
             <button onClick={()=>{setShowFavorites(!showFavorites); setDrawerOpen(false);}} style={{background: showFavorites ? '#00bcd4' : 'rgba(0, 188, 212, 0.1)', border:'none', borderRadius:12, padding:'0.7rem 1.1rem', fontWeight:600, fontSize:15, cursor:'pointer', color: showFavorites ? '#fff' : '#009688', boxShadow:'0 2px 8px rgba(0, 188, 212, 0.2)', display:'flex', alignItems:'center', gap:6}}><span role="img" aria-label="favorites">❤️</span>{t('favorites')}</button>
             <button onClick={()=>{navigate('/profile'); setDrawerOpen(false);}} style={{background:'rgba(0, 188, 212, 0.1)', border:'none', borderRadius:12, padding:'0.7rem 1.1rem', fontWeight:600, fontSize:15, cursor:'pointer', color:'#009688', boxShadow:'0 2px 8px rgba(0, 188, 212, 0.2)', display:'flex', alignItems:'center', gap:6}}><svg width={20} height={20} fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="#009688" strokeWidth="2"/><path d="M4 20c0-2.21 3.58-4 8-4s8 1.79 8 4" stroke="#009688" strokeWidth="2"/></svg>{t('my_profile')}</button>

@@ -306,7 +306,22 @@ function DoctorDashboard() {
         position: 'relative',
         zIndex: 2
       }}>
-        <div style={{display:'flex', alignItems:'center', gap:7}}>
+        <div 
+          onClick={() => navigate('/')}
+          style={{
+            display:'flex', 
+            alignItems:'center', 
+            gap:7, 
+            cursor: 'pointer',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+        >
           <img src="/logo192.png" alt="Logo" style={{width: 32, height: 32, borderRadius: '50%', background: '#fff', border: '4px solid #fff', boxShadow: '0 2px 12px #00bcd455', objectFit: 'cover', marginRight: 4}} />
         </div>
         <div style={{display:'flex', alignItems:'center', gap:7}}>
@@ -338,6 +353,9 @@ function DoctorDashboard() {
             fetchAllAppointments();
           }}>
             <div style={{background:'#fff', width:260, height:'100%', boxShadow:'2px 0 16px #7c4dff22', padding:'2rem 1.2rem', display:'flex', flexDirection:'column', gap:18}} onClick={e=>e.stopPropagation()}>
+              <button onClick={() => navigate('/')} style={{background: 'linear-gradient(90deg,#00bcd4 0%,#009688 100%)', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8}}>
+                <span role="img" aria-label="العودة للصفحة الرئيسية">🏠</span> {t('back_to_home')}
+              </button>
               <button onClick={()=>{
                 setShowAdd(true); 
                 setShowSidebar(false);
