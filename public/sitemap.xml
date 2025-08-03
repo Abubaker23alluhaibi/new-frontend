@@ -6,7 +6,7 @@
   
   <!-- Homepage -->
   <url>
-    <loc>https://tabibiq.netlify.app/</loc>
+    <loc>https://tabibiq.vercel.app/</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -14,7 +14,7 @@
   
   <!-- Login Page -->
   <url>
-    <loc>https://tabibiq.netlify.app/login</loc>
+    <loc>https://tabibiq.vercel.app/login</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -22,7 +22,7 @@
   
   <!-- Signup Page -->
   <url>
-    <loc>https://tabibiq.netlify.app/signup</loc>
+    <loc>https://tabibiq.vercel.app/signup</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -30,7 +30,7 @@
   
   <!-- Doctor Signup -->
   <url>
-    <loc>https://tabibiq.netlify.app/signup-doctor</loc>
+    <loc>https://tabibiq.vercel.app/signup-doctor</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -38,7 +38,7 @@
   
   <!-- Health Centers -->
   <url>
-    <loc>https://tabibiq.netlify.app/health-centers</loc>
+    <loc>https://tabibiq.vercel.app/health-centers</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -46,7 +46,7 @@
   
   <!-- Medicine Reminder -->
   <url>
-    <loc>https://tabibiq.netlify.app/medicine-reminder</loc>
+    <loc>https://tabibiq.vercel.app/medicine-reminder</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -54,7 +54,7 @@
   
   <!-- Center Login -->
   <url>
-    <loc>https://tabibiq.netlify.app/center-login</loc>
+    <loc>https://tabibiq.vercel.app/center-login</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -62,10 +62,32 @@
   
   <!-- Admin Login -->
   <url>
-    <loc>https://tabibiq.netlify.app/admin-login</loc>
+    <loc>https://tabibiq.vercel.app/admin-login</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
+  </url>
+  
+  <!-- Logo and Brand Assets -->
+  <url>
+    <loc>https://tabibiq.vercel.app/logo512.png</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.1</priority>
+  </url>
+  
+  <url>
+    <loc>https://tabibiq.vercel.app/logo192.png</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.1</priority>
+  </url>
+  
+  <url>
+    <loc>https://tabibiq.vercel.app/favicon.ico</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.1</priority>
   </url>
   
 </urlset> 

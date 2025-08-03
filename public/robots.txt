@@ -3,10 +3,17 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://tabibiq.netlify.app/sitemap.xml
+Sitemap: https://tabibiq.vercel.app/sitemap.xml
+Sitemap: https://tabibiq.vercel.app/logo-sitemap.xml
 
 # Crawl-delay
 Crawl-delay: 1
+
+# Allow logo and images
+Allow: /logo*.png
+Allow: /favicon*.png
+Allow: /apple-touch-icon.png
+Allow: /images/
 
 # Disallow admin areas
 Disallow: /admin
@@ -22,3 +29,13 @@ Allow: /signup
 Allow: /health-centers
 Allow: /doctor/*
 Allow: /medicine-reminder
+
+# Additional SEO directives
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
