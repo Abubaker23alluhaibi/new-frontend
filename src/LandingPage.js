@@ -57,6 +57,14 @@ const LandingPage = () => {
     navigate('/login');
   };
 
+  const goToAbout = () => {
+    scrollToSection('about');
+  };
+
+  const goToHome = () => {
+    scrollToSection('home');
+  };
+
   const getLanguageDisplay = () => {
     switch (currentLanguage) {
       case 'ar': return 'العربية';
@@ -103,6 +111,13 @@ const LandingPage = () => {
             </ul>
           </nav>
 
+          {/* About Us Button - Top Right Corner */}
+          <div className="about-us-corner">
+            <button className="about-us-btn" onClick={goToAbout}>
+              {t('landing_page.header.about_us')}
+            </button>
+          </div>
+
           <div className="header-actions">
             {/* More Menu Button - Mobile Only */}
             <div className="more-menu mobile-only" ref={moreMenuRef}>
@@ -122,6 +137,13 @@ const LandingPage = () => {
                   <button onClick={() => scrollToSection('about')}>{t('landing_page.header.nav.about')}</button>
                   <button onClick={() => scrollToSection('how-to-use')}>{t('landing_page.header.nav.how_to_use')}</button>
                   <button onClick={() => scrollToSection('booking')}>{t('landing_page.header.nav.booking')}</button>
+                  <div className="dropdown-divider"></div>
+                  <button className="login-btn-mobile" onClick={goToLogin}>
+                    {t('landing_page.header.login_button')}
+                  </button>
+                  <button className="back-home-btn-mobile" onClick={goToHome}>
+                    {t('landing_page.header.back_to_home')}
+                  </button>
                   <div className="dropdown-divider"></div>
                   <div className="language-selector-mobile">
                     <button className="language-btn-mobile" onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}>

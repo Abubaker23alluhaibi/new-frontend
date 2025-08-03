@@ -1,4 +1,19 @@
 {
+  "landing_page": {
+    "header": {
+      "logo_text": "Iraq Medical Platform",
+      "subtitle": "TabibiQ - Comprehensive Medical Platform",
+      "nav": {
+        "home": "Home",
+        "about": "About Us",
+        "how_to_use": "How to Use",
+        "booking": "Booking Instructions"
+      },
+      "login_button": "Login",
+      "about_us": "About Us",
+      "back_to_home": "Back to Home"
+    }
+  },
   "welcome": "Welcome to Tabib IQ",
   "change_language": "Change Language",
   "description": "A smart medical platform for booking and managing appointments.",
