@@ -1001,9 +1001,12 @@ function DoctorDashboard() {
               onClose={()=>setShowWorkTimesModal(false)}
               onUpdate={(updatedWorkTimes) => {
                 setShowWorkTimesModal(false);
-                // تحديث البيانات المحلية مباشرة
+                // تحديث البيانات المحلية مباشرة مع الحفاظ على الصورة الشخصية
                 if (updatedWorkTimes) {
-                  const updatedProfile = { ...profile, workTimes: updatedWorkTimes };
+                  const updatedProfile = { 
+                    ...profile, 
+                    workTimes: updatedWorkTimes 
+                  };
                   localStorage.setItem('profile', JSON.stringify(updatedProfile));
                   // إعادة تحميل الصفحة لتحديث البيانات
                   window.location.reload();
@@ -1027,9 +1030,12 @@ function DoctorDashboard() {
               onClose={()=>setShowAppointmentDurationModal(false)}
               onUpdate={(updatedDuration) => {
                 setShowAppointmentDurationModal(false);
-                // تحديث البيانات المحلية مباشرة
+                // تحديث البيانات المحلية مباشرة مع الحفاظ على الصورة الشخصية
                 if (updatedDuration) {
-                  const updatedProfile = { ...profile, appointmentDuration: updatedDuration };
+                  const updatedProfile = { 
+                    ...profile, 
+                    appointmentDuration: updatedDuration 
+                  };
                   localStorage.setItem('profile', JSON.stringify(updatedProfile));
                   // إعادة تحميل الصفحة لتحديث البيانات
                   window.location.reload();
