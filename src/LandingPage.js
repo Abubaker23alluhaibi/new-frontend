@@ -197,6 +197,11 @@ const LandingPage = () => {
             <p className="hero-subtitle">
               {t('landing_page.hero.subtitle')}
             </p>
+            <div className="doctor-message">
+              <p className="doctor-message-text">
+                {t('landing_page.hero.doctor_message')}
+              </p>
+            </div>
             <div className="hero-stats">
               <div className="stat">
                 <span className="stat-number">500+</span>
@@ -362,15 +367,33 @@ const LandingPage = () => {
             </div>
             
             <div className="service-card">
-              <div className="service-icon">💊</div>
-              <h3>{t('landing_page.doctor_services.services.medicine_reminder.title')}</h3>
-              <p>{t('landing_page.doctor_services.services.medicine_reminder.description')}</p>
-            </div>
-            
-            <div className="service-card">
               <div className="service-icon">🏥</div>
               <h3>{t('landing_page.doctor_services.services.health_centers.title')}</h3>
               <p>{t('landing_page.doctor_services.services.health_centers.description')}</p>
+            </div>
+            
+            <div className="service-card">
+              <div className="service-icon">👥</div>
+              <h3>{t('landing_page.doctor_services.services.patient_management.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.patient_management.description')}</p>
+            </div>
+            
+            <div className="service-card">
+              <div className="service-icon">💰</div>
+              <h3>{t('landing_page.doctor_services.services.revenue_tracking.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.revenue_tracking.description')}</p>
+            </div>
+            
+            <div className="service-card">
+              <div className="service-icon">💻</div>
+              <h3>{t('landing_page.doctor_services.services.online_consultations.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.online_consultations.description')}</p>
+            </div>
+            
+            <div className="service-card">
+              <div className="service-icon">📈</div>
+              <h3>{t('landing_page.doctor_services.services.marketing_tools.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.marketing_tools.description')}</p>
             </div>
           </div>
           
@@ -381,6 +404,52 @@ const LandingPage = () => {
             <button className="cta-btn secondary" onClick={goToLogin}>
               {t('landing_page.doctor_services.login_button')}
             </button>
+          </div>
+          
+          {/* Benefits Section */}
+          <div className="benefits-section">
+            <div className="section-header">
+              <h2>{t('landing_page.doctor_services.benefits.title')}</h2>
+              <p>{t('landing_page.doctor_services.benefits.subtitle')}</p>
+            </div>
+            
+            <div className="benefits-grid">
+              <div className="benefit-card">
+                <div className="benefit-icon">🎁</div>
+                <h3>{t('landing_page.doctor_services.benefits.items.free_registration.title')}</h3>
+                <p>{t('landing_page.doctor_services.benefits.items.free_registration.description')}</p>
+              </div>
+              
+              <div className="benefit-card">
+                <div className="benefit-icon">👁️</div>
+                <h3>{t('landing_page.doctor_services.benefits.items.increased_visibility.title')}</h3>
+                <p>{t('landing_page.doctor_services.benefits.items.increased_visibility.description')}</p>
+              </div>
+              
+              <div className="benefit-card">
+                <div className="benefit-icon">📋</div>
+                <h3>{t('landing_page.doctor_services.benefits.items.patient_management.title')}</h3>
+                <p>{t('landing_page.doctor_services.benefits.items.patient_management.description')}</p>
+              </div>
+              
+              <div className="benefit-card">
+                <div className="benefit-icon">📊</div>
+                <h3>{t('landing_page.doctor_services.benefits.items.analytics.title')}</h3>
+                <p>{t('landing_page.doctor_services.benefits.items.analytics.description')}</p>
+              </div>
+              
+              <div className="benefit-card">
+                <div className="benefit-icon">🛠️</div>
+                <h3>{t('landing_page.doctor_services.benefits.items.support.title')}</h3>
+                <p>{t('landing_page.doctor_services.benefits.items.support.description')}</p>
+              </div>
+              
+              <div className="benefit-card">
+                <div className="benefit-icon">🚀</div>
+                <h3>{t('landing_page.doctor_services.benefits.items.growth.title')}</h3>
+                <p>{t('landing_page.doctor_services.benefits.items.growth.description')}</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

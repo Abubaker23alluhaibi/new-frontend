@@ -6,7 +6,7 @@
           "nav": {
       "home": "Home",
       "about": "About Us",
-      "doctor_services": "Doctor Services",
+      "doctor_services": "Our Services for Doctors",
       "how_to_use": "How to Use",
       "booking": "Booking Instructions"
     },
@@ -235,6 +235,7 @@
       "title": "Welcome to",
       "highlight": "TabibiQ",
       "subtitle": "Book your appointment with the best doctors in Iraq easily and safely",
+      "doctor_message": "If you are a doctor: Easy platform to manage your work - You will earn a lot with us",
       "stats": {
         "doctors": "Verified Doctors",
         "patients": "Satisfied Patients",
@@ -322,52 +323,94 @@
       }
     },
     "doctor_services": {
-      "title": "Doctor Services",
-      "subtitle": "Comprehensive platform for clinic and patient management",
+      "title": "Our Services for Doctors",
+      "subtitle": "Comprehensive platform for clinic and patient management - Join us today!",
       "services": {
         "dashboard": {
           "title": "Comprehensive Dashboard",
-          "description": "Manage all appointments and patients from one place with an easy-to-use interface"
+          "description": "Manage all appointments and patients from one place with an easy-to-use interface - Save your time and energy!"
         },
         "calendar": {
           "title": "Smart Calendar",
-          "description": "View and manage appointments in calendar format with filtering and search capabilities"
+          "description": "View and manage appointments in calendar format with filtering and search capabilities - Organize your work smartly!"
         },
         "analytics": {
           "title": "Analytics & Statistics",
-          "description": "Detailed statistics about appointments, patients, and overall clinic performance"
+          "description": "Detailed statistics about appointments, patients, and overall clinic performance - Make informed decisions!"
         },
         "profile": {
           "title": "Profile Management",
-          "description": "Update clinic information, specialty, and personal photos"
+          "description": "Update clinic information, specialty, and personal photos - Present yourself in the best way!"
         },
         "special_appointments": {
           "title": "Special Appointments",
-          "description": "Add and manage special appointments with the ability to add notes"
+          "description": "Add and manage special appointments with the ability to add notes - Provide personalized care!"
         },
         "notifications": {
           "title": "Notification System",
-          "description": "Instant notifications for new appointments and important updates"
+          "description": "Instant notifications for new appointments and important updates - Stay informed always!"
         },
         "images": {
           "title": "Image Management",
-          "description": "Upload and update personal photos and clinic images easily"
+          "description": "Upload and update personal photos and clinic images easily - Make your clinic stand out!"
         },
         "location": {
           "title": "Location Setting",
-          "description": "Add clinic location on the map to facilitate patient access"
-        },
-        "medicine_reminder": {
-          "title": "Medicine Reminder",
-          "description": "System to remind patients about medicines and their intake times"
+          "description": "Add clinic location on the map to facilitate patient access - Help patients find you easily!"
         },
         "health_centers": {
           "title": "Health Centers Management",
-          "description": "Connect clinics with health centers and manage relationships"
+          "description": "Connect clinics with health centers and manage relationships - Expand your network!"
+        },
+        "patient_management": {
+          "title": "Patient Management",
+          "description": "Comprehensive medical record for each patient with appointment history and notes - Provide integrated care!"
+        },
+        "revenue_tracking": {
+          "title": "Revenue Tracking",
+          "description": "Detailed statistics about revenue and profits with monthly reports - Grow your business!"
+        },
+        "online_consultations": {
+          "title": "Online Consultations",
+          "description": "Ability to provide remote medical consultations - Expand your practice!"
+        },
+        "marketing_tools": {
+          "title": "Marketing Tools",
+          "description": "Featured display on the platform with view statistics - Attract more patients!"
         }
       },
-      "register_button": "Register as Doctor",
-      "login_button": "Doctor Login"
+      "register_button": "Join Us as Doctor",
+      "login_button": "Doctor Login",
+      "benefits": {
+        "title": "Why Should You Join Us, Doctor?",
+        "subtitle": "Exclusive benefits for member doctors",
+        "items": {
+          "free_registration": {
+            "title": "Free Registration",
+            "description": "Join for free and enjoy all benefits"
+          },
+          "increased_visibility": {
+            "title": "Increased Visibility",
+            "description": "Get featured display in search results"
+          },
+          "patient_management": {
+            "title": "Patient Management",
+            "description": "Comprehensive tool for managing patient records and appointments"
+          },
+          "analytics": {
+            "title": "Advanced Analytics",
+            "description": "Detailed statistics to improve your practice"
+          },
+          "support": {
+            "title": "24/7 Technical Support",
+            "description": "Specialized support team to help you always"
+          },
+          "growth": {
+            "title": "Grow Your Practice",
+            "description": "Expand your patient base and increase your revenue"
+          }
+        }
+      }
     },
     "footer": {
       "description": "Comprehensive Medical Platform for Iraq",
