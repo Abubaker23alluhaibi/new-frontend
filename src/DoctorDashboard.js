@@ -8,6 +8,8 @@ import DoctorCalendar from './DoctorCalendar';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { normalizePhone } from './utils/phoneUtils';
+import WorkTimesEditor from './WorkTimesEditor';
+import AppointmentDurationEditor from './AppointmentDurationEditor';
 
 function getToday() {
   const d = new Date();
@@ -49,6 +51,8 @@ function DoctorDashboard() {
   const { t, i18n } = useTranslation();
   const [showSidebar, setShowSidebar] = useState(false);
   const [lang, setLang] = useState('AR');
+  const [showWorkTimesModal, setShowWorkTimesModal] = useState(false);
+  const [showAppointmentDurationModal, setShowAppointmentDurationModal] = useState(false);
 
   // جلب إشعارات الدكتور
   useEffect(() => {
@@ -371,6 +375,22 @@ function DoctorDashboard() {
                 fetchAllAppointments();
               }} style={{background: 'linear-gradient(90deg,#00bcd4 0%,#7c4dff 100%)', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8}}>
                 <span role="img" aria-label="اتصل بنا">📞</span> {t('contact_us')}
+              </button>
+              <button onClick={()=>{
+                setShowWorkTimesModal(true); 
+                setShowSidebar(false);
+                // إعادة تحميل المواعيد عند فتح تعديل الدوام
+                fetchAllAppointments();
+              }} style={{background: 'linear-gradient(90deg,#4caf50 0%,#2e7d32 100%)', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8}}>
+                <span role="img" aria-label="تعديل الدوام">⏰</span> تعديل الدوام
+              </button>
+              <button onClick={()=>{
+                setShowAppointmentDurationModal(true); 
+                setShowSidebar(false);
+                // إعادة تحميل المواعيد عند فتح تعديل مدة الموعد
+                fetchAllAppointments();
+              }} style={{background: 'linear-gradient(90deg,#ff9800 0%,#f57c00 100%)', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8}}>
+                <span role="img" aria-label="تعديل مدة الموعد">⏱️</span> تعديل مدة الموعد
               </button>
               <button onClick={()=>{
                 console.log('🔍 تم الضغط على الملف الشخصي');
@@ -967,6 +987,48 @@ function DoctorDashboard() {
           </div>
         )}
       </div>
+      
+      {/* مودال تعديل الدوام */}
+      {showWorkTimesModal && (
+        <div style={{position:'fixed', top:0, left:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.5)', zIndex:5000, display:'flex', alignItems:'center', justifyContent:'center'}} onClick={()=>setShowWorkTimesModal(false)}>
+          <div style={{background:'#fff', borderRadius:16, padding:'2rem', maxWidth:'90vw', maxHeight:'80vh', overflow:'auto', width:400}} onClick={e=>e.stopPropagation()}>
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem'}}>
+              <h3 style={{color:'#7c4dff', margin:0, fontWeight:700}}>⏰ تعديل أوقات الدوام</h3>
+              <button onClick={()=>setShowWorkTimesModal(false)} style={{background:'#e53935', color:'#fff', border:'none', borderRadius:8, fontSize:20, fontWeight:900, padding:'0.2rem 0.8rem', cursor:'pointer'}}>×</button>
+            </div>
+            <WorkTimesEditor 
+              profile={profile} 
+              onClose={()=>setShowWorkTimesModal(false)}
+              onUpdate={()=>{
+                setShowWorkTimesModal(false);
+                // إعادة تحميل البيانات بعد التحديث
+                window.location.reload();
+              }}
+            />
+          </div>
+        </div>
+      )}
+      
+      {/* مودال تعديل مدة الموعد */}
+      {showAppointmentDurationModal && (
+        <div style={{position:'fixed', top:0, left:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.5)', zIndex:5000, display:'flex', alignItems:'center', justifyContent:'center'}} onClick={()=>setShowAppointmentDurationModal(false)}>
+          <div style={{background:'#fff', borderRadius:16, padding:'2rem', maxWidth:'90vw', maxHeight:'80vh', overflow:'auto', width:400}} onClick={e=>e.stopPropagation()}>
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem'}}>
+              <h3 style={{color:'#7c4dff', margin:0, fontWeight:700}}>⏱️ تعديل مدة الموعد الافتراضية</h3>
+              <button onClick={()=>setShowAppointmentDurationModal(false)} style={{background:'#e53935', color:'#fff', border:'none', borderRadius:8, fontSize:20, fontWeight:900, padding:'0.2rem 0.8rem', cursor:'pointer'}}>×</button>
+            </div>
+            <AppointmentDurationEditor 
+              profile={profile} 
+              onClose={()=>setShowAppointmentDurationModal(false)}
+              onUpdate={()=>{
+                setShowAppointmentDurationModal(false);
+                // إعادة تحميل البيانات بعد التحديث
+                window.location.reload();
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

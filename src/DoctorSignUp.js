@@ -553,6 +553,8 @@ function DoctorSignUp() {
                     }}
                     required
                   >
+                    <option value="5">5 دقائق</option>
+                    <option value="10">10 دقائق</option>
                     <option value="15">15 دقيقة</option>
                     <option value="20">20 دقيقة</option>
                     <option value="30">30 دقيقة</option>
