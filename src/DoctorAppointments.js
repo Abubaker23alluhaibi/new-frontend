@@ -49,28 +49,18 @@ function DoctorAppointments() {
       if (res.ok) {
         const data = await res.json();
         
-        // إزالة التكرار بشكل أكثر دقة باستخدام مفتاح فريد
+        // إزالة التكرار بشكل أكثر دقة
         const uniqueMap = new Map();
         data.forEach(appointment => {
-          // استخدام مفتاح فريد يجمع بين التاريخ والوقت واسم المريض ونوع الموعد
-          const key = `${appointment.date}_${appointment.time}_${appointment.userName || appointment.userId?.first_name || ''}_${appointment.type || 'normal'}`;
+          const key = appointment._id;
           if (!uniqueMap.has(key)) {
             uniqueMap.set(key, appointment);
-          } else {
-            // إذا كان هناك تكرار، احتفظ بالموعد الأحدث (بناءً على createdAt)
-            const existing = uniqueMap.get(key);
-            if (appointment.createdAt && existing.createdAt) {
-              if (new Date(appointment.createdAt) > new Date(existing.createdAt)) {
-                uniqueMap.set(key, appointment);
-              }
-            }
           }
         });
         
         const uniqueAppointments = Array.from(uniqueMap.values());
         
-        console.log('🔍 المواعيد الأصلية:', data.length);
-        console.log('🔍 المواعيد بعد إزالة التكرار:', uniqueAppointments.length);
+        
         
         setAppointments(uniqueAppointments);
       } else {
@@ -147,67 +137,51 @@ function DoctorAppointments() {
   };
 
   const addToSpecialAppointments = (appointment) => {
-    // التحقق من أن الموعد ليس موعداً خاصاً بالفعل
-    if (appointment.type === 'special_appointment') {
-      alert(t('appointment_already_special'));
-      return;
-    }
-    
     setSelectedAppointmentForSpecial(appointment);
     setShowAddToSpecial(true);
   };
 
   const handleAddToSpecial = async (specialAppointmentData) => {
-    try {
-      // بدلاً من إنشاء موعد جديد، نقوم بتحديث الموعد الموجود
-      const updateData = {
-        type: 'special_appointment',
-        date: specialAppointmentData.date,
-        time: specialAppointmentData.time,
-        duration: specialAppointmentData.duration,
-        priority: specialAppointmentData.priority,
-        status: specialAppointmentData.status,
-        reason: selectedAppointmentForSpecial.reason || specialAppointmentData.reason,
-        notes: specialAppointmentData.notes,
-        patientPhone: normalizePhone(selectedAppointmentForSpecial.userId?.phone || '')
-      };
-
-      // تحديث الموعد الموجود بدلاً من إنشاء موعد جديد
-      const updateResponse = await fetch(`${process.env.REACT_APP_API_URL}/appointments/${selectedAppointmentForSpecial._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateData)
-      });
-
-      if (updateResponse.ok) {
-        // إرسال إشعار للمريض
-        const normalizedPhone = normalizePhone(selectedAppointmentForSpecial.userId?.phone || '');
-        await fetch(`${process.env.REACT_APP_API_URL}/send-special-appointment-notification`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            patientPhone: normalizedPhone,
-            patientName: selectedAppointmentForSpecial.userName || selectedAppointmentForSpecial.userId?.first_name || t('patient'),
-            newDate: specialAppointmentData.date,
-            newTime: specialAppointmentData.time,
-            doctorName: profile?.name || t('doctor'),
-            reason: updateData.reason,
-            notes: specialAppointmentData.notes
-          })
-        });
-
-        // إعادة تحميل المواعيد
-        fetchDoctorAppointments();
-        alert(t('patient_added_to_special_appointments_success'));
-        setShowAddToSpecial(false);
-        setSelectedAppointmentForSpecial(null);
-      } else {
-        alert(t('error_adding_to_special_appointments'));
-      }
-    } catch (err) {
-      console.error('خطأ في إضافة الموعد الخاص:', err);
-      alert(t('error_adding_to_special_appointments'));
-    }
+    // تجهيز بيانات الموعد الخاص
+    const normalizedPhone = normalizePhone(selectedAppointmentForSpecial.userId?.phone || '');
+    const newSpecialAppointment = {
+      doctorId: profile?._id,
+      userName: selectedAppointmentForSpecial.userName || selectedAppointmentForSpecial.userId?.first_name || t('patient'),
+      patientPhone: normalizedPhone,
+      date: specialAppointmentData.date,
+      time: specialAppointmentData.time,
+      duration: specialAppointmentData.duration,
+      priority: specialAppointmentData.priority,
+      status: specialAppointmentData.status,
+      reason: selectedAppointmentForSpecial.reason || specialAppointmentData.reason,
+      notes: specialAppointmentData.notes,
+      type: 'special_appointment'
+    };
+    // أرسل الموعد للباكند
+    await fetch(`${process.env.REACT_APP_API_URL}/add-special-appointment`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newSpecialAppointment)
+    });
+    // أرسل إشعار للمريض
+    await fetch(`${process.env.REACT_APP_API_URL}/send-special-appointment-notification`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        patientPhone: normalizedPhone,
+        patientName: newSpecialAppointment.userName,
+        newDate: newSpecialAppointment.date,
+        newTime: newSpecialAppointment.time,
+        doctorName: profile?.name || t('doctor'),
+        reason: newSpecialAppointment.reason,
+        notes: newSpecialAppointment.notes
+      })
+    });
+    // أعد تحميل قائمة المواعيد الخاصة (أو كل المواعيد)
+    fetchDoctorAppointments();
+    alert(t('patient_added_to_special_appointments_success'));
+    setShowAddToSpecial(false);
+    setSelectedAppointmentForSpecial(null);
   };
 
   const sendNotificationToPatient = async (phone, notificationData) => {
@@ -372,25 +346,10 @@ function DoctorAppointments() {
     ? [...todayAppointments, ...upcomingAppointments, ...pastAppointments]
     : [...todayAppointments, ...upcomingAppointments];
 
-  // إزالة التكرار من المواعيد المعروضة باستخدام مفتاح فريد
-  const uniqueAllAppointmentsMap = new Map();
-  allAppointments.forEach(appointment => {
-    // استخدام مفتاح فريد يجمع بين التاريخ والوقت واسم المريض ونوع الموعد
-    const key = `${appointment.date}_${appointment.time}_${appointment.userName || appointment.userId?.first_name || ''}_${appointment.type || 'normal'}`;
-    if (!uniqueAllAppointmentsMap.has(key)) {
-      uniqueAllAppointmentsMap.set(key, appointment);
-    } else {
-      // إذا كان هناك تكرار، احتفظ بالموعد الأحدث
-      const existing = uniqueAllAppointmentsMap.get(key);
-      if (appointment.createdAt && existing.createdAt) {
-        if (new Date(appointment.createdAt) > new Date(existing.createdAt)) {
-          uniqueAllAppointmentsMap.set(key, appointment);
-        }
-      }
-    }
-  });
-
-  const uniqueAllAppointments = Array.from(uniqueAllAppointmentsMap.values());
+  // إزالة التكرار من المواعيد المعروضة
+  const uniqueAllAppointments = allAppointments.filter((appointment, index, self) => 
+    index === self.findIndex(a => a._id === appointment._id)
+  );
 
   // تطبيق التصفية والترتيب
   const displayedAppointments = sortAppointments(filterAppointments(uniqueAllAppointments));
@@ -436,12 +395,6 @@ function DoctorAppointments() {
               style={{background:'#009688', color:'#fff', border:'none', borderRadius:8, padding:'0.7rem 1.5rem', fontWeight:700, cursor:'pointer'}}
             >
               {t('print_appointments')}
-            </button>
-            <button 
-              onClick={cleanDuplicateAppointments}
-              style={{background:'#ff5722', color:'#fff', border:'none', borderRadius:8, padding:'0.7rem 1.5rem', fontWeight:700, cursor:'pointer'}}
-            >
-              🧹 {t('clean_duplicates')}
             </button>
           </div>
         </div>
