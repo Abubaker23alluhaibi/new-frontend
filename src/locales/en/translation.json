@@ -3,12 +3,13 @@
     "header": {
       "logo_text": "Iraq Medical Platform",
       "subtitle": "TabibiQ - Comprehensive Medical Platform",
-      "nav": {
-        "home": "Home",
-        "about": "About Us",
-        "how_to_use": "How to Use",
-        "booking": "Booking Instructions"
-      },
+          "nav": {
+      "home": "Home",
+      "about": "About Us",
+      "doctor_services": "Doctor Services",
+      "how_to_use": "How to Use",
+      "booking": "Booking Instructions"
+    },
       "login_button": "Login",
       "about_us": "About Us",
       "back_to_home": "Back to Home"
@@ -320,6 +321,54 @@
           "step3": "Confirm booking"
         }
       }
+    },
+    "doctor_services": {
+      "title": "Doctor Services",
+      "subtitle": "Comprehensive platform for clinic and patient management",
+      "services": {
+        "dashboard": {
+          "title": "Comprehensive Dashboard",
+          "description": "Manage all appointments and patients from one place with an easy-to-use interface"
+        },
+        "calendar": {
+          "title": "Smart Calendar",
+          "description": "View and manage appointments in calendar format with filtering and search capabilities"
+        },
+        "analytics": {
+          "title": "Analytics & Statistics",
+          "description": "Detailed statistics about appointments, patients, and overall clinic performance"
+        },
+        "profile": {
+          "title": "Profile Management",
+          "description": "Update clinic information, specialty, and personal photos"
+        },
+        "special_appointments": {
+          "title": "Special Appointments",
+          "description": "Add and manage special appointments with the ability to add notes"
+        },
+        "notifications": {
+          "title": "Notification System",
+          "description": "Instant notifications for new appointments and important updates"
+        },
+        "images": {
+          "title": "Image Management",
+          "description": "Upload and update personal photos and clinic images easily"
+        },
+        "location": {
+          "title": "Location Setting",
+          "description": "Add clinic location on the map to facilitate patient access"
+        },
+        "medicine_reminder": {
+          "title": "Medicine Reminder",
+          "description": "System to remind patients about medicines and their intake times"
+        },
+        "health_centers": {
+          "title": "Health Centers Management",
+          "description": "Connect clinics with health centers and manage relationships"
+        }
+      },
+      "register_button": "Register as Doctor",
+      "login_button": "Doctor Login"
     },
     "footer": {
       "description": "Comprehensive Medical Platform for Iraq",

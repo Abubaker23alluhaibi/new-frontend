@@ -1,9 +1,41 @@
-# https://www.robotstxt.org/robotstxt.html
+# Robots.txt for Tabib IQ - منصة طبيب العراق (Vercel)
 User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://tabibiq.vercel.app/sitemap-vercel.xml
+Sitemap: https://tabibiq.vercel.app/sitemap.xml
+Sitemap: https://tabibiq.vercel.app/logo-sitemap.xml
 
 # Crawl-delay
-Crawl-delay: 1 
+Crawl-delay: 1
+
+# Allow logo and images
+Allow: /logo*.png
+Allow: /favicon*.png
+Allow: /apple-touch-icon.png
+Allow: /images/
+
+# Disallow admin areas
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /doctor-dashboard
+Disallow: /profile
+Disallow: /my-appointments
+
+# Allow important pages
+Allow: /
+Allow: /login
+Allow: /signup
+Allow: /health-centers
+Allow: /doctor/*
+Allow: /medicine-reminder
+
+# Additional SEO directives
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: / 

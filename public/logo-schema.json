@@ -1,0 +1,38 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Tabib IQ",
+  "alternateName": "منصة طبيب العراق",
+  "url": "https://tabibiq.vercel.app",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://tabibiq.vercel.app/logo512.png",
+    "width": 512,
+    "height": 512,
+    "caption": "Tabib IQ - منصة طبيب العراق Logo"
+  },
+  "image": {
+    "@type": "ImageObject",
+    "url": "https://tabibiq.vercel.app/logo512.png",
+    "width": 512,
+    "height": 512
+  },
+  "description": "منصة طبية شاملة لحجز المواعيد مع أفضل الأطباء في العراق",
+  "foundingDate": "2024",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "IQ",
+    "addressRegion": "Iraq"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+9647769012619",
+    "contactType": "customer service",
+    "availableLanguage": ["Arabic", "English", "Kurdish"]
+  },
+  "sameAs": [
+    "https://wa.me/9647769012619"
+  ],
+  "serviceType": "Medical Appointment Booking Platform",
+  "areaServed": "Iraq"
+} 

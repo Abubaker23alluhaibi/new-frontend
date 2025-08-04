@@ -110,6 +110,7 @@ const LandingPage = () => {
             <ul>
               <li><button onClick={() => scrollToSection('home')}>{t('landing_page.header.nav.home')}</button></li>
               <li><button onClick={() => scrollToSection('about')}>{t('landing_page.header.nav.about')}</button></li>
+              <li><button onClick={() => scrollToSection('doctor-services')}>{t('landing_page.header.nav.doctor_services')}</button></li>
               <li><button onClick={() => scrollToSection('how-to-use')}>{t('landing_page.header.nav.how_to_use')}</button></li>
               <li><button onClick={() => scrollToSection('booking')}>{t('landing_page.header.nav.booking')}</button></li>
             </ul>
@@ -132,6 +133,7 @@ const LandingPage = () => {
                 <div className="more-dropdown">
                   <button onClick={() => scrollToSection('home')}>{t('landing_page.header.nav.home')}</button>
                   <button onClick={() => scrollToSection('about')}>{t('landing_page.header.nav.about')}</button>
+                  <button onClick={() => scrollToSection('doctor-services')}>{t('landing_page.header.nav.doctor_services')}</button>
                   <button onClick={() => scrollToSection('how-to-use')}>{t('landing_page.header.nav.how_to_use')}</button>
                   <button onClick={() => scrollToSection('booking')}>{t('landing_page.header.nav.booking')}</button>
                   <div className="dropdown-divider"></div>
@@ -303,6 +305,87 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Doctor Services Section */}
+      <section id="doctor-services" className="doctor-services-section">
+        <div className="container">
+          <div className="section-header">
+            <h2>{t('landing_page.doctor_services.title')}</h2>
+            <p>{t('landing_page.doctor_services.subtitle')}</p>
+          </div>
+          
+          <div className="services-grid">
+            <div className="service-card">
+              <div className="service-icon">📊</div>
+              <h3>{t('landing_page.doctor_services.services.dashboard.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.dashboard.description')}</p>
+            </div>
+            
+            <div className="service-card">
+              <div className="service-icon">📅</div>
+              <h3>{t('landing_page.doctor_services.services.calendar.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.calendar.description')}</p>
+            </div>
+            
+            <div className="service-card">
+              <div className="service-icon">📈</div>
+              <h3>{t('landing_page.doctor_services.services.analytics.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.analytics.description')}</p>
+            </div>
+            
+            <div className="service-card">
+              <div className="service-icon">👤</div>
+              <h3>{t('landing_page.doctor_services.services.profile.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.profile.description')}</p>
+            </div>
+            
+            <div className="service-card">
+              <div className="service-icon">⭐</div>
+              <h3>{t('landing_page.doctor_services.services.special_appointments.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.special_appointments.description')}</p>
+            </div>
+            
+            <div className="service-card">
+              <div className="service-icon">🔔</div>
+              <h3>{t('landing_page.doctor_services.services.notifications.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.notifications.description')}</p>
+            </div>
+            
+            <div className="service-card">
+              <div className="service-icon">📸</div>
+              <h3>{t('landing_page.doctor_services.services.images.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.images.description')}</p>
+            </div>
+            
+            <div className="service-card">
+              <div className="service-icon">🗺️</div>
+              <h3>{t('landing_page.doctor_services.services.location.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.location.description')}</p>
+            </div>
+            
+            <div className="service-card">
+              <div className="service-icon">💊</div>
+              <h3>{t('landing_page.doctor_services.services.medicine_reminder.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.medicine_reminder.description')}</p>
+            </div>
+            
+            <div className="service-card">
+              <div className="service-icon">🏥</div>
+              <h3>{t('landing_page.doctor_services.services.health_centers.title')}</h3>
+              <p>{t('landing_page.doctor_services.services.health_centers.description')}</p>
+            </div>
+          </div>
+          
+          <div className="services-cta">
+            <button className="cta-btn primary" onClick={() => navigate('/signup-doctor')}>
+              {t('landing_page.doctor_services.register_button')}
+            </button>
+            <button className="cta-btn secondary" onClick={goToLogin}>
+              {t('landing_page.doctor_services.login_button')}
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* Booking Section */}
       <section id="booking" className="booking-section">
         <div className="container">
@@ -395,6 +478,7 @@ const LandingPage = () => {
               <ul>
                 <li><button onClick={() => scrollToSection('home')}>{t('landing_page.header.nav.home')}</button></li>
                 <li><button onClick={() => scrollToSection('about')}>{t('landing_page.header.nav.about')}</button></li>
+                <li><button onClick={() => scrollToSection('doctor-services')}>{t('landing_page.header.nav.doctor_services')}</button></li>
                 <li><button onClick={() => scrollToSection('how-to-use')}>{t('landing_page.header.nav.how_to_use')}</button></li>
               </ul>
             </div>

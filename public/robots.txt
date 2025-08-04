@@ -3,22 +3,19 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://tabibiq.netlify.app/sitemap.xml
+Sitemap: https://tabibiq.vercel.app/sitemap.xml
 
-# Crawl-delay
-Crawl-delay: 1
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /admin-dashboard/
 
-# Disallow admin areas
-Disallow: /admin
-Disallow: /admin-login
-Disallow: /doctor-dashboard
-Disallow: /profile
-Disallow: /my-appointments
-
-# Allow important pages
-Allow: /
+# Allow all other pages
 Allow: /login
 Allow: /signup
-Allow: /health-centers
-Allow: /doctor/*
-Allow: /medicine-reminder
+Allow: /doctors
+Allow: /centers
+Allow: /appointments
+Allow: /profile
+
+# Crawl delay
+Crawl-delay: 1

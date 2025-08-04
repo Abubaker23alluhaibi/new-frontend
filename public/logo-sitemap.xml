@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   
-  <!-- Homepage -->
+  <!-- Main Logo -->
   <url>
     <loc>https://tabibiq.vercel.app/</loc>
     <image:image>
@@ -11,40 +11,8 @@
       <image:caption>منصة طبية شاملة لحجز المواعيد مع أفضل الأطباء في العراق</image:caption>
     </image:image>
     <lastmod>2024-12-19</lastmod>
-    <changefreq>daily</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>1.0</priority>
-  </url>
-  
-  <!-- Login Page -->
-  <url>
-    <loc>https://tabibiq.vercel.app/login</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  
-  <!-- Signup Page -->
-  <url>
-    <loc>https://tabibiq.vercel.app/signup</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <!-- Doctor Signup -->
-  <url>
-    <loc>https://tabibiq.vercel.app/signup-doctor</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <!-- Health Centers -->
-  <url>
-    <loc>https://tabibiq.vercel.app/health-centers</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
   </url>
   
   <!-- Logo Files -->
@@ -64,6 +32,27 @@
   
   <url>
     <loc>https://tabibiq.vercel.app/favicon.ico</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.1</priority>
+  </url>
+  
+  <url>
+    <loc>https://tabibiq.vercel.app/favicon-32x32.png</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.1</priority>
+  </url>
+  
+  <url>
+    <loc>https://tabibiq.vercel.app/favicon-16x16.png</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.1</priority>
+  </url>
+  
+  <url>
+    <loc>https://tabibiq.vercel.app/apple-touch-icon.png</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.1</priority>
