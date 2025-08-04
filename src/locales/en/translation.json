@@ -378,5 +378,11 @@
       "phone": "📞 +964 776 901 2619",
       "copyright": "© 2024 TabibiQ. All rights reserved."
     }
-  }
+  },
+  "appointments_cleared_success": "Duplicate appointments cleaned successfully",
+  "appointments_cleared_fail": "Failed to clean duplicate appointments",
+  "appointments_cleared_error": "Error occurred while cleaning duplicate appointments",
+  "duplicates_deleted": "Duplicates deleted",
+  "clean_duplicates": "Clean Duplicates",
+  "error_adding_to_special_appointments": "Error occurred while adding appointment to special appointments"
 } 

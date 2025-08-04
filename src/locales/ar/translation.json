@@ -598,5 +598,11 @@
   "important_note": "ملاحظة مهمة",
   "appointment_note": "يرجى التأكد من صحة معلوماتك الشخصية قبل الحجز. إذا كنت تحجز موعداً لشخص آخر، تأكد من إدخال اسمه ورقم هاتفه الصحيحين في الصفحة الشخصية.",
   "appointment": "موعد",
-  "profile_update_note": "يمكنك تحديث معلوماتك الشخصية من الصفحة الشخصية في أي وقت"
+  "profile_update_note": "يمكنك تحديث معلوماتك الشخصية من الصفحة الشخصية في أي وقت",
+  "appointments_cleared_success": "تم تنظيف المواعيد المكررة بنجاح",
+  "appointments_cleared_fail": "فشل في تنظيف المواعيد المكررة",
+  "appointments_cleared_error": "حدث خطأ أثناء تنظيف المواعيد المكررة",
+  "duplicates_deleted": "المواعيد المكررة المحذوفة",
+  "clean_duplicates": "تنظيف المكررات",
+  "error_adding_to_special_appointments": "حدث خطأ أثناء إضافة الموعد للمواعيد الخاصة"
 }

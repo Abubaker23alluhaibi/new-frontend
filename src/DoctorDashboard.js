@@ -203,15 +203,28 @@ function DoctorDashboard() {
   // استخدم appointmentsArray دائماً
   const appointmentsArray = Array.isArray(appointments) ? appointments : [];
 
-  // حساب عدد مواعيد اليوم
+  // حساب عدد مواعيد اليوم مع إزالة التكرار
   const today = getToday();
-  const todayAppointments = appointmentsArray.filter(a => a.date === today);
+  
+  // إزالة التكرار من المواعيد اليومية
+  const todayAppointmentsMap = new Map();
+  appointmentsArray
+    .filter(a => a.date === today)
+    .forEach(appointment => {
+      // استخدام مفتاح فريد يجمع بين التاريخ والوقت واسم المريض
+      const key = `${appointment.date}_${appointment.time}_${appointment.userName || appointment.userId?.first_name || ''}`;
+      if (!todayAppointmentsMap.has(key)) {
+        todayAppointmentsMap.set(key, appointment);
+      }
+    });
+  
+  const todayAppointments = Array.from(todayAppointmentsMap.values());
   const todayCount = todayAppointments.length;
   
   // إضافة console.log للتشخيص
   console.log('🔍 التاريخ الحالي:', today);
-  console.log('🔍 مواعيد اليوم:', todayAppointments);
-  console.log('🔍 جميع المواعيد:', appointmentsArray.map(a => ({ date: a.date, time: a.time, name: a.userId?.first_name || a.userName })));
+  console.log('🔍 مواعيد اليوم (بعد إزالة التكرار):', todayAppointments);
+  console.log('🔍 جميع المواعيد:', appointmentsArray.map(a => ({ date: a.date, time: a.time, name: a.userId?.first_name || a.userName, type: a.type })));
   
   // حساب إحصائيات سريعة
   const totalAppointments = appointmentsArray.length;
