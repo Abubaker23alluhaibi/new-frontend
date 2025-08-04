@@ -999,10 +999,15 @@ function DoctorDashboard() {
             <WorkTimesEditor 
               profile={profile} 
               onClose={()=>setShowWorkTimesModal(false)}
-              onUpdate={()=>{
+              onUpdate={(updatedWorkTimes) => {
                 setShowWorkTimesModal(false);
-                // إعادة تحميل البيانات بعد التحديث
-                window.location.reload();
+                // تحديث البيانات المحلية مباشرة
+                if (updatedWorkTimes) {
+                  const updatedProfile = { ...profile, workTimes: updatedWorkTimes };
+                  localStorage.setItem('profile', JSON.stringify(updatedProfile));
+                  // إعادة تحميل الصفحة لتحديث البيانات
+                  window.location.reload();
+                }
               }}
             />
           </div>
@@ -1020,10 +1025,15 @@ function DoctorDashboard() {
             <AppointmentDurationEditor 
               profile={profile} 
               onClose={()=>setShowAppointmentDurationModal(false)}
-              onUpdate={()=>{
+              onUpdate={(updatedDuration) => {
                 setShowAppointmentDurationModal(false);
-                // إعادة تحميل البيانات بعد التحديث
-                window.location.reload();
+                // تحديث البيانات المحلية مباشرة
+                if (updatedDuration) {
+                  const updatedProfile = { ...profile, appointmentDuration: updatedDuration };
+                  localStorage.setItem('profile', JSON.stringify(updatedProfile));
+                  // إعادة تحميل الصفحة لتحديث البيانات
+                  window.location.reload();
+                }
               }}
             />
           </div>

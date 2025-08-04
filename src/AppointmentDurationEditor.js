@@ -34,7 +34,7 @@ function AppointmentDurationEditor({ profile, onClose, onUpdate }) {
       if (response.ok) {
         setSuccess('تم تحديث مدة الموعد الافتراضية بنجاح!');
         setTimeout(() => {
-          onUpdate();
+          onUpdate(Number(duration)); // إرسال البيانات المحدثة
         }, 1500);
       } else {
         setError(data.error || 'حدث خطأ أثناء تحديث مدة الموعد');

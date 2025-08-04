@@ -50,7 +50,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
       if (response.ok) {
         setSuccess('تم تحديث أوقات الدوام بنجاح!');
         setTimeout(() => {
-          onUpdate();
+          onUpdate(workTimes); // إرسال البيانات المحدثة
         }, 1500);
       } else {
         setError(data.error || 'حدث خطأ أثناء تحديث أوقات الدوام');
