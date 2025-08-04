@@ -91,30 +91,25 @@ function DoctorDetails() {
     return doctor.workTimes.map(wt => wt.day).filter(Boolean);
   };
 
-  // تقسيم الفترة الزمنية إلى مواعيد منفصلة كل 30 دقيقة
+  // تقسيم الفترة الزمنية إلى مواعيد منفصلة حسب مدة الموعد الافتراضية للطبيب
   const generateTimeSlots = (from, to) => {
     const slots = [];
-    
-    // التأكد من أن from و to هما strings
     if (typeof from !== 'string' || typeof to !== 'string') {
-      
       return [];
     }
-    
     try {
       const start = new Date(`2000-01-01 ${from}`);
       const end = new Date(`2000-01-01 ${to}`);
-      
+      // استخدم مدة الموعد الافتراضية للطبيب أو 30 دقيقة كافتراضي
+      const duration = doctor?.appointmentDuration ? Number(doctor.appointmentDuration) : 30;
       while (start < end) {
         const timeString = start.toTimeString().slice(0, 5);
         slots.push(timeString);
-        start.setMinutes(start.getMinutes() + 30); // كل 30 دقيقة
+        start.setMinutes(start.getMinutes() + duration);
       }
     } catch (error) {
-      
       return [];
     }
-    
     return slots;
   };
 
@@ -206,7 +201,8 @@ const bookingData = {
       doctorName: doctor.name,
       date: dateString,
       time: selectedTime,
-      reason: reason || ''
+      reason: reason || '',
+      duration: doctor?.appointmentDuration || 30 // إرسال مدة الموعد الافتراضية للطبيب
     };
     
     

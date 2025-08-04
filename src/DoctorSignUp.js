@@ -88,7 +88,8 @@ function DoctorSignUp() {
     mapLocation: '', // رابط الموقع على الخريطة
     image: null, // الصورة الشخصية فقط
     about: '',
-    experienceYears: ''
+    experienceYears: '',
+    appointmentDuration: '30' // مدة الموعد الافتراضية بالدقائق
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -170,7 +171,8 @@ function DoctorSignUp() {
       mapLocation: '', // رابط الموقع على الخريطة
       image: null, // الصورة الشخصية فقط
       about: '',
-      experienceYears: ''
+      experienceYears: '',
+      appointmentDuration: '30'
     });
     setPreviewUrls({
       image: null // الصورة الشخصية فقط
@@ -237,6 +239,7 @@ function DoctorSignUp() {
     formData.append('about', form.about);
     if (form.experienceYears) formData.append('experienceYears', form.experienceYears);
     formData.append('workTimes', JSON.stringify(workTimes));
+    formData.append('appointmentDuration', form.appointmentDuration);
     
     // إضافة الصورة الشخصية فقط (اختيارية)
     if (form.image) {
@@ -530,6 +533,32 @@ function DoctorSignUp() {
                 </div>
                 <div>
                   <input type="number" name="experienceYears" placeholder={t('experience_years')} value={form.experienceYears} onChange={handleChange} min={0} style={{width:'100%', padding:'1rem 1.1rem', borderRadius:12, border:'1.5px solid #b2dfdb'}} />
+                </div>
+                {/* حقل اختيار مدة الموعد الافتراضية */}
+                <div style={{ marginBottom: 10 }}>
+                  <label style={{ fontWeight: 600, color: '#333', marginBottom: 4, display: 'block' }}>
+                    مدة الموعد الافتراضية (بالدقائق)
+                  </label>
+                  <select
+                    value={form.appointmentDuration}
+                    onChange={e => setForm(prev => ({ ...prev, appointmentDuration: e.target.value }))}
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem',
+                      borderRadius: 8,
+                      border: '1.5px solid #00bcd4',
+                      fontSize: 16,
+                      background: '#f7fafd',
+                      marginTop: 2
+                    }}
+                    required
+                  >
+                    <option value="15">15 دقيقة</option>
+                    <option value="20">20 دقيقة</option>
+                    <option value="30">30 دقيقة</option>
+                    <option value="45">45 دقيقة</option>
+                    <option value="60">60 دقيقة</option>
+                  </select>
                 </div>
               </div>
               {error && <div className="login-error">{error}</div>}
