@@ -180,7 +180,14 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section id="home" className="hero-section" role="main">
+      <section 
+        id="home" 
+        className="hero-section" 
+        role="main"
+        style={{
+          background: `url('/images/doctor-capsule.jpg') center center/cover no-repeat`
+        }}
+      >
         <div className="hero-container">
           <div className="hero-content">
             <h1 className="hero-title">
@@ -213,15 +220,7 @@ const LandingPage = () => {
               </button>
             </div>
           </div>
-          <div className="hero-image">
-            <img 
-              src="/logo192.png" 
-              alt="منصة طبيب العراق - Tabib IQ" 
-              className="hero-logo" 
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              style={{ cursor: 'pointer' }}
-            />
-          </div>
+
         </div>
       </section>
 
