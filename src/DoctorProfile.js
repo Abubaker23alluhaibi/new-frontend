@@ -36,23 +36,33 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
 
   // دالة مساعدة لمسار صورة الطبيب
   const getImageUrl = img => {
-    if (!img) return null;
+    console.log('🔍 getImageUrl input:', img);
+    
+    if (!img) {
+      console.log('❌ لا توجد صورة');
+      return null;
+    }
     
     // إذا كانت الصورة من Cloudinary (تبدأ بـ https://res.cloudinary.com)
     if (img.startsWith('https://res.cloudinary.com')) {
+      console.log('✅ صورة Cloudinary:', img);
       return img;
     }
     
     // إذا كانت الصورة محلية (تبدأ بـ /uploads/)
     if (img.startsWith('/uploads/')) {
-      return process.env.REACT_APP_API_URL + img;
+      const fullUrl = process.env.REACT_APP_API_URL + img;
+      console.log('📁 صورة محلية:', fullUrl);
+      return fullUrl;
     }
     
     // إذا كانت الصورة رابط كامل
     if (img.startsWith('http')) {
+      console.log('🌐 صورة رابط كامل:', img);
       return img;
     }
     
+    console.log('❌ نوع صورة غير معروف:', img);
     return null;
   };
   const [msg, setMsg] = useState('');
@@ -75,7 +85,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
 
   useEffect(() => {
     if (profile) {
-      console.log('🔍 profile data:', profile);
+      console.log('🔄 تحديث البيانات من profile:', profile);
       console.log('🔍 profile.image:', profile.image);
       console.log('🔍 profile.profileImage:', profile.profileImage);
       setForm({
@@ -91,9 +101,10 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
         profileImage: profile.profileImage || profile.image || ''
       });
       setImageLoadError(false);
+      console.log('✅ تم تحديث البيانات من profile');
     } else if (user) {
       // إذا لم يكن هناك profile، استخدم user
-      console.log('🔍 user data:', user);
+      console.log('🔄 تحديث البيانات من user:', user);
       console.log('🔍 user.image:', user.image);
       console.log('🔍 user.profileImage:', user.profileImage);
       setForm({
@@ -109,6 +120,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
         profileImage: user.profileImage || user.image || ''
       });
       setImageLoadError(false);
+      console.log('✅ تم تحديث البيانات من user');
     }
   }, [profile, user]);
 
@@ -212,9 +224,49 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
         console.log('✅ تم تحديث الملف الشخصي بنجاح:', data);
         setMsg('تم تحديث الملف الشخصي بنجاح!');
         setEdit(false);
+        // لا نمسح الصورة المختارة حتى نتأكد من تحديث البيانات
         setSelectedImage(null);
         setImagePreview(null);
         setImageLoadError(false);
+        
+        // إعادة تحميل البيانات من الخادم للتأكد من تحديثها
+        console.log('🔄 إعادة تحميل البيانات من الخادم...');
+        setTimeout(() => {
+          // إعادة تحميل البيانات من localStorage
+          const updatedProfile = localStorage.getItem('profile');
+          const updatedUser = localStorage.getItem('user');
+          
+          if (updatedProfile) {
+            const profileData = JSON.parse(updatedProfile);
+            console.log('🔄 البيانات المحدثة من localStorage:', profileData);
+            setForm({
+              ...form,
+              image: profileData.image || form.image,
+              profileImage: profileData.profileImage || form.profileImage
+            });
+          }
+        }, 500);
+        
+        // تحديث البيانات المحلية لتظهر الصورة الجديدة
+        if (data) {
+          const updatedData = { ...data };
+          if (updatedForm.image) {
+            updatedData.image = updatedForm.image;
+            updatedData.profileImage = updatedForm.profileImage;
+          }
+          // تحديث البيانات في localStorage
+          localStorage.setItem('profile', JSON.stringify(updatedData));
+          localStorage.setItem('user', JSON.stringify(updatedData));
+          
+          // تحديث البيانات في الواجهة الأمامية
+          setForm({
+            ...form,
+            image: updatedForm.image || form.image,
+            profileImage: updatedForm.profileImage || form.profileImage
+          });
+          
+          console.log('🔄 تم تحديث البيانات المحلية:', updatedData);
+        }
       }
     } catch (err) {
       console.error('❌ خطأ في حفظ البيانات:', err);
@@ -225,13 +277,18 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
   };
 
   const handleCancel = () => {
+    console.log('🔄 إلغاء التعديل وإعادة تحميل البيانات الأصلية');
     setEdit(false);
     setError('');
     setMsg('');
     setSelectedImage(null);
     setImagePreview(null);
     setImageLoadError(false);
+    
+    // إعادة تحميل البيانات الأصلية من profile أو user
     const currentData = profile || user;
+    console.log('🔄 البيانات الأصلية:', currentData);
+    
     setForm({
       name: currentData?.name || '',
       email: currentData?.email || '',
@@ -244,6 +301,8 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
       about: currentData?.about || '',
       profileImage: currentData?.profileImage || currentData?.image || ''
     });
+    
+    console.log('🔄 تم إعادة تحميل البيانات الأصلية');
   };
 
   const handlePasswordChange = async (e) => {
@@ -401,6 +460,10 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                   console.log('🔍 form.profileImage:', form.profileImage);
                   console.log('🔍 getImageUrl result:', getImageUrl(form.profileImage));
                   setImageLoadError(true);
+                  // إعادة المحاولة بعد ثانية
+                  setTimeout(() => {
+                    setImageLoadError(false);
+                  }, 1000);
                 }}
                 onLoad={() => {
                   console.log('✅ تم تحميل الصورة بنجاح');
