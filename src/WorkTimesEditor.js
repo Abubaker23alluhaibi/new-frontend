@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 function WorkTimesEditor({ profile, onClose, onUpdate }) {
-  const { t } = useTranslation();
   const [workTimes, setWorkTimes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -37,6 +36,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
     setSuccess('');
 
     try {
+      console.log('📤 WorkTimesEditor: إرسال أوقات الدوام المحدثة:', workTimes);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctor/${profile._id}/work-times`, {
         method: 'PUT',
         headers: {
@@ -48,14 +48,20 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
       const data = await response.json();
 
       if (response.ok) {
+        console.log('✅ WorkTimesEditor: تم تحديث أوقات الدوام بنجاح:', data);
         setSuccess('تم تحديث أوقات الدوام بنجاح!');
+        // إرسال البيانات المحدثة فوراً مع البيانات المستلمة من السيرفر
         setTimeout(() => {
-          onUpdate(workTimes); // إرسال البيانات المحدثة
+          const updatedWorkTimes = data.workTimes || workTimes;
+          console.log('🔄 WorkTimesEditor: إرسال البيانات المحدثة:', updatedWorkTimes);
+          onUpdate(updatedWorkTimes); // استخدام البيانات من السيرفر إذا كانت متوفرة
         }, 1500);
       } else {
+        console.error('❌ WorkTimesEditor: خطأ من السيرفر:', data);
         setError(data.error || 'حدث خطأ أثناء تحديث أوقات الدوام');
       }
     } catch (err) {
+      console.error('❌ WorkTimesEditor: خطأ في تحديث أوقات الدوام:', err);
       setError('حدث خطأ في الاتصال');
     } finally {
       setLoading(false);
@@ -82,7 +88,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
                 <select
                   value={time.day}
                   onChange={(e) => updateWorkTime(index, 'day', e.target.value)}
-                  style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }}
+                  style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #b2dfdb' }}
                   required
                 >
                   <option value="">اختر اليوم</option>
@@ -94,7 +100,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
                   type="time"
                   value={time.from}
                   onChange={(e) => updateWorkTime(index, 'from', e.target.value)}
-                  style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }}
+                  style={{ padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #b2dfdb' }}
                   required
                 />
                 <span style={{ alignSelf: 'center' }}>إلى</span>
@@ -102,7 +108,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
                   type="time"
                   value={time.to}
                   onChange={(e) => updateWorkTime(index, 'to', e.target.value)}
-                  style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }}
+                  style={{ padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #b2dfdb' }}
                   required
                 />
                 <button

@@ -22,7 +22,7 @@ function getToday() {
 
 
 function DoctorDashboard() {
-  const { profile, signOut } = useAuth();
+  const { profile, setProfile, signOut } = useAuth();
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1013,6 +1013,7 @@ function DoctorDashboard() {
               profile={profile} 
               onClose={()=>setShowWorkTimesModal(false)}
               onUpdate={(updatedWorkTimes) => {
+                console.log('🔄 DoctorDashboard: استلام أوقات الدوام المحدثة:', updatedWorkTimes);
                 setShowWorkTimesModal(false);
                 // تحديث البيانات المحلية مباشرة مع الحفاظ على الصورة الشخصية
                 if (updatedWorkTimes) {
@@ -1020,9 +1021,12 @@ function DoctorDashboard() {
                     ...profile, 
                     workTimes: updatedWorkTimes 
                   };
+                  console.log('💾 DoctorDashboard: حفظ البيانات المحدثة في localStorage:', updatedProfile);
                   localStorage.setItem('profile', JSON.stringify(updatedProfile));
-                  // إعادة تحميل الصفحة لتحديث البيانات
-                  window.location.reload();
+                  // تحديث state بدلاً من إعادة تحميل الصفحة
+                  setProfile(updatedProfile);
+                  // إعادة جلب المواعيد لتحديث البيانات
+                  fetchAllAppointments();
                 }
               }}
             />
@@ -1050,8 +1054,10 @@ function DoctorDashboard() {
                     appointmentDuration: updatedDuration 
                   };
                   localStorage.setItem('profile', JSON.stringify(updatedProfile));
-                  // إعادة تحميل الصفحة لتحديث البيانات
-                  window.location.reload();
+                  // تحديث state بدلاً من إعادة تحميل الصفحة
+                  setProfile(updatedProfile);
+                  // إعادة جلب المواعيد لتحديث البيانات
+                  fetchAllAppointments();
                 }
               }}
             />

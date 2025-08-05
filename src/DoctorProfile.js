@@ -37,8 +37,22 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
   // دالة مساعدة لمسار صورة الطبيب
   const getImageUrl = img => {
     if (!img) return null;
-    if (img.startsWith('/uploads/')) return process.env.REACT_APP_API_URL + img;
-    if (img.startsWith('http')) return img;
+    
+    // إذا كانت الصورة من Cloudinary (تبدأ بـ https://res.cloudinary.com)
+    if (img.startsWith('https://res.cloudinary.com')) {
+      return img;
+    }
+    
+    // إذا كانت الصورة محلية (تبدأ بـ /uploads/)
+    if (img.startsWith('/uploads/')) {
+      return process.env.REACT_APP_API_URL + img;
+    }
+    
+    // إذا كانت الصورة رابط كامل
+    if (img.startsWith('http')) {
+      return img;
+    }
+    
     return null;
   };
   const [msg, setMsg] = useState('');

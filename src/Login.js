@@ -563,7 +563,7 @@ function Login() {
                     cursor:'pointer',
                     width: isMobile ? '100%' : 'auto'
                   }}
-                  onClick={()=>{ setShowSignupChoice(false); navigate('/signup'); }}
+                  onClick={()=>{ setShowSignupChoice(false); navigate(`/signup${redirect ? `?redirect=${redirect}` : ''}`); }}
                 >
                   {t('user')}
                 </button>

@@ -202,8 +202,22 @@ function UserHome() {
   // دالة مساعدة لمسار صورة الدكتور
   const getImageUrl = img => {
     if (!img) return 'https://randomuser.me/api/portraits/men/32.jpg';
-    if (img.startsWith('/uploads/')) return process.env.REACT_APP_API_URL + img;
-    if (img.startsWith('http')) return img;
+    
+    // إذا كانت الصورة من Cloudinary (تبدأ بـ https://res.cloudinary.com)
+    if (img.startsWith('https://res.cloudinary.com')) {
+      return img;
+    }
+    
+    // إذا كانت الصورة محلية (تبدأ بـ /uploads/)
+    if (img.startsWith('/uploads/')) {
+      return process.env.REACT_APP_API_URL + img;
+    }
+    
+    // إذا كانت الصورة رابط كامل
+    if (img.startsWith('http')) {
+      return img;
+    }
+    
     return 'https://randomuser.me/api/portraits/men/32.jpg';
   };
 

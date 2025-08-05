@@ -17,11 +17,23 @@ const DoctorCard = ({ doctor }) => {
       // إرجاع شعار المشروع كصورة افتراضية
       return '/logo.png';
     }
+    
+    // إذا كانت الصورة من Cloudinary (تبدأ بـ https://res.cloudinary.com)
+    if (img.startsWith('https://res.cloudinary.com')) {
+      return img;
+    }
+    
+    // إذا كانت الصورة محلية (تبدأ بـ /uploads/)
     if (img.startsWith('/uploads/')) {
       // محاولة تحميل الصورة الحقيقية من الخادم
       return process.env.REACT_APP_API_URL + img;
     }
-    if (img.startsWith('http')) return img;
+    
+    // إذا كانت الصورة رابط كامل
+    if (img.startsWith('http')) {
+      return img;
+    }
+    
     // إرجاع شعار المشروع كصورة افتراضية
     return '/logo.png';
   };
@@ -116,8 +128,12 @@ const DoctorCard = ({ doctor }) => {
             src={getImageUrl(doctor)} 
             alt={doctor.name} 
             onError={(e) => {
+              console.log('❌ فشل تحميل صورة الطبيب في البطاقة:', getImageUrl(doctor));
               // إذا فشل تحميل الصورة الحقيقية، استخدم شعار المشروع
               e.target.src = '/logo.png';
+            }}
+            onLoad={(e) => {
+              console.log('✅ تم تحميل صورة الطبيب في البطاقة بنجاح:', getImageUrl(doctor));
             }}
             style={{
             width: isMobile() ? 32 : 60, 

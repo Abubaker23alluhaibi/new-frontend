@@ -43,11 +43,23 @@ function DoctorDetails() {
       // إرجاع شعار المشروع كصورة افتراضية
       return '/logo.png';
     }
+    
+    // إذا كانت الصورة من Cloudinary (تبدأ بـ https://res.cloudinary.com)
+    if (img.startsWith('https://res.cloudinary.com')) {
+      return img;
+    }
+    
+    // إذا كانت الصورة محلية (تبدأ بـ /uploads/)
     if (img.startsWith('/uploads/')) {
       // محاولة تحميل الصورة الحقيقية من الخادم
       return process.env.REACT_APP_API_URL + img;
     }
-    if (img.startsWith('http')) return img;
+    
+    // إذا كانت الصورة رابط كامل
+    if (img.startsWith('http')) {
+      return img;
+    }
+    
     // إرجاع شعار المشروع كصورة افتراضية
     return '/logo.png';
   };
@@ -176,7 +188,10 @@ function DoctorDetails() {
     
     // فحص البيانات قبل الإرسال
     if (!user?._id) {
-      setSuccess('يجب تسجيل الدخول أولاً');
+      // توجيه المستخدم لصفحة التسجيل مع حفظ الرابط الحالي
+      const currentUrl = window.location.pathname + window.location.search;
+      console.log('🔄 DoctorDetails: توجيه المستخدم غير المسجل لصفحة التسجيل مع redirect:', currentUrl);
+      navigate(`/signup?redirect=${encodeURIComponent(currentUrl)}`);
       return;
     }
     
@@ -256,15 +271,19 @@ const bookingData = {
       {showImageModal && (
         <div onClick={()=>setShowImageModal(false)} style={{position:'fixed', top:0, left:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.55)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:10000}}>
           <div style={{position:'relative', background:'none'}} onClick={e=>e.stopPropagation()}>
-            <img 
-              src={getImageUrl(doctor)} 
-              alt={doctor.name} 
-              onError={(e) => {
-                // إذا فشل تحميل الصورة الحقيقية، استخدم شعار المشروع
-                e.target.src = '/logo.png';
-              }}
-              style={{maxWidth:'90vw', maxHeight:'80vh', borderRadius:18, boxShadow:'0 4px 32px #0008'}} 
-            />
+                          <img 
+                src={getImageUrl(doctor)} 
+                alt={doctor.name} 
+                onError={(e) => {
+                  console.log('❌ فشل تحميل الصورة:', getImageUrl(doctor));
+                  // إذا فشل تحميل الصورة الحقيقية، استخدم شعار المشروع
+                  e.target.src = '/logo.png';
+                }}
+                onLoad={(e) => {
+                  console.log('✅ تم تحميل الصورة بنجاح:', getImageUrl(doctor));
+                }}
+                style={{maxWidth:'90vw', maxHeight:'80vh', borderRadius:18, boxShadow:'0 4px 32px #0008'}} 
+              />
             <button onClick={()=>setShowImageModal(false)} style={{position:'absolute', top:10, left:10, background:'#e53935', color:'#fff', border:'none', borderRadius:8, fontSize:22, fontWeight:900, padding:'0.2rem 0.8rem', cursor:'pointer'}}>×</button>
           </div>
         </div>
@@ -397,8 +416,12 @@ const bookingData = {
             src={getImageUrl(doctor)} 
             alt={doctor.name} 
             onError={(e) => {
+              console.log('❌ فشل تحميل الصورة الرئيسية:', getImageUrl(doctor));
               // إذا فشل تحميل الصورة الحقيقية، استخدم شعار المشروع
               e.target.src = '/logo.png';
+            }}
+            onLoad={(e) => {
+              console.log('✅ تم تحميل الصورة الرئيسية بنجاح:', getImageUrl(doctor));
             }}
             style={{
               width: window.innerWidth < 500 ? 70 : 90, 

@@ -559,6 +559,8 @@
   font-weight: bold;
   margin-bottom: 0.8rem;
   line-height: 1.2;
+  color: #ffffff;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
 }
 
 .landing-page .highlight {
@@ -575,6 +577,9 @@
   line-height: 1.6;
   margin-left: 0;
   margin-right: auto;
+  color: #FFD700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: 500;
 }
 
 .landing-page .doctor-message {
@@ -598,8 +603,8 @@
 .landing-page .doctor-message-text {
   font-size: 1rem;
   font-weight: 700;
-  color: #fff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  color: #FFD700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   margin: 0;
   line-height: 1.4;
   text-align: center;
@@ -1185,6 +1190,8 @@
   
   .landing-page .hero-title {
     font-size: 1.6rem;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
   }
   
   .landing-page .hero-subtitle {
@@ -1192,6 +1199,9 @@
     max-width: 350px;
     text-align: left;
     margin-left: 0;
+    color: #FFD700;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
   }
   
   .landing-page .doctor-message {
