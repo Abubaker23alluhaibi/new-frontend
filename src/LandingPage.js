@@ -13,10 +13,40 @@ const LandingPage = () => {
   const moreMenuRef = useRef(null);
 
   useEffect(() => {
+    // إضافة timestamp لمنع التخزين المؤقت
+    const timestamp = Date.now();
+    
     // استرجاع اللغة المحفوظة
     const savedLanguage = localStorage.getItem('selectedLanguage') || 'ar';
     setCurrentLanguage(savedLanguage);
+    
+    // إعادة تحميل الترجمة مع timestamp لمنع التخزين المؤقت
     i18n.changeLanguage(savedLanguage);
+    
+    // إضافة meta tags لمنع التخزين المؤقت
+    const metaTags = [
+      { name: 'Cache-Control', content: 'no-cache, no-store, must-revalidate' },
+      { name: 'Pragma', content: 'no-cache' },
+      { name: 'Expires', content: '0' }
+    ];
+    
+    metaTags.forEach(tag => {
+      let meta = document.querySelector(`meta[name="${tag.name}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = tag.name;
+        document.head.appendChild(meta);
+      }
+      meta.content = tag.content;
+    });
+    
+    // إضافة timestamp للصفحة لمنع التخزين المؤقت
+    if (!document.querySelector('meta[name="timestamp"]')) {
+      const timestampMeta = document.createElement('meta');
+      timestampMeta.name = 'timestamp';
+      timestampMeta.content = timestamp.toString();
+      document.head.appendChild(timestampMeta);
+    }
   }, [i18n]);
 
   useEffect(() => {
@@ -33,6 +63,22 @@ const LandingPage = () => {
   }, []);
 
   useEffect(() => {
+    // فحص وتحديث الترجمة عند تحميل الصفحة
+    checkAndReloadIfNeeded();
+    
+    // إضافة event listener لتحديث الترجمة عند التركيز على الصفحة
+    const handleFocus = () => {
+      checkAndReloadIfNeeded();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
+  useEffect(() => {
     // إغلاق القائمة عند النقر خارجها
     const handleClickOutside = (event) => {
       if (moreMenuRef.current && !moreMenuRef.current.contains(event.target)) {
@@ -41,17 +87,43 @@ const LandingPage = () => {
       }
     };
 
+    // تأثير التمرير للـ header
+    const handleScroll = () => {
+      const header = document.querySelector('.header');
+      if (header) {
+        if (window.scrollY > 50) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+      }
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
+    window.addEventListener('scroll', handleScroll);
+    
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
   const changeLanguage = (lang) => {
     setCurrentLanguage(lang);
+    
+    // إعادة تحميل الترجمة بشكل قوي
     i18n.changeLanguage(lang);
+    
+    // إضافة تأخير قصير ثم إعادة تحميل الترجمة مرة أخرى
+    setTimeout(() => {
+      i18n.changeLanguage(lang);
+    }, 100);
+    
     localStorage.setItem('selectedLanguage', lang);
     setShowLanguageDropdown(false);
+    
+    // إضافة timestamp للـ localStorage لمنع التخزين المؤقت
+    localStorage.setItem('translationTimestamp', Date.now().toString());
   };
 
   const scrollToSection = (sectionId) => {
@@ -85,6 +157,27 @@ const LandingPage = () => {
       case 'en': return 'English';
       case 'ku': return 'کوردی';
       default: return 'العربية';
+    }
+  };
+
+  // دالة لإعادة تحميل الترجمة بشكل قوي
+  const forceReloadTranslation = () => {
+    const currentLang = i18n.language;
+    i18n.changeLanguage('en'); // تغيير مؤقت
+    setTimeout(() => {
+      i18n.changeLanguage(currentLang); // العودة للغة الحالية
+    }, 50);
+  };
+
+  // دالة لإعادة تحميل الصفحة إذا كانت البيانات قديمة
+  const checkAndReloadIfNeeded = () => {
+    const lastUpdate = localStorage.getItem('translationTimestamp');
+    const currentTime = Date.now();
+    
+    // إذا مر أكثر من 5 دقائق منذ آخر تحديث، أعد تحميل الترجمة
+    if (lastUpdate && (currentTime - parseInt(lastUpdate)) > 300000) {
+      forceReloadTranslation();
+      localStorage.setItem('translationTimestamp', currentTime.toString());
     }
   };
 
