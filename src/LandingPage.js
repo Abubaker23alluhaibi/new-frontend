@@ -9,6 +9,7 @@ const LandingPage = () => {
   const [currentLanguage, setCurrentLanguage] = useState('ar');
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [backgroundImageLoaded, setBackgroundImageLoaded] = useState(false);
   const moreMenuRef = useRef(null);
 
   useEffect(() => {
@@ -17,6 +18,19 @@ const LandingPage = () => {
     setCurrentLanguage(savedLanguage);
     i18n.changeLanguage(savedLanguage);
   }, [i18n]);
+
+  useEffect(() => {
+    // تحميل الصورة الخلفية مسبقاً
+    const backgroundImage = new Image();
+    backgroundImage.onload = () => {
+      setBackgroundImageLoaded(true);
+    };
+    backgroundImage.onerror = () => {
+      console.warn('فشل تحميل الصورة الخلفية، سيتم استخدام الخلفية الافتراضية');
+      setBackgroundImageLoaded(true);
+    };
+    backgroundImage.src = '/images/doctor-capsule.jpg';
+  }, []);
 
   useEffect(() => {
     // إغلاق القائمة عند النقر خارجها
@@ -185,7 +199,10 @@ const LandingPage = () => {
         className="hero-section" 
         role="main"
         style={{
-          background: `url('/images/doctor-capsule.jpg') center center/cover no-repeat`
+          background: backgroundImageLoaded 
+            ? `url('/images/doctor-capsule.jpg') center center/cover no-repeat`
+            : `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
+          transition: 'background 0.3s ease-in-out'
         }}
       >
         <div className="hero-container">

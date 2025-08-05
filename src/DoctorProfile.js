@@ -97,7 +97,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
         
         // حل مؤقت: استخدام endpoint رفع الصورة العادي
         // نحتاج لرفع صورة جديدة بدلاً من تحويل الصورة القديمة
-        setMsg('⚠️ لا يمكن تحويل الصورة القديمة تلقائياً. يرجى رفع صورة جديدة من زر الكاميرا.');
+        setMsg('⚠️ لا يمكن تحويل الصورة القديمة تلقائياً. يرجى رفع صورة جديدة من زر الكاميرا 📷 أو المعرض 🖼️');
         return null;
       } else {
         console.log('❌ فشل تحويل الصورة المفقودة');
@@ -108,7 +108,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
       
       // إذا كان الخطأ 404، فهذا يعني أن endpoint غير متوفر
       if (error.message.includes('404') || error.message.includes('Not Found')) {
-        setMsg('⚠️ لا يمكن تحويل الصورة القديمة تلقائياً. يرجى رفع صورة جديدة من زر الكاميرا.');
+        setMsg('⚠️ لا يمكن تحويل الصورة القديمة تلقائياً. يرجى رفع صورة جديدة من زر الكاميرا 📷 أو المعرض 🖼️');
       }
       
       return null;
@@ -153,7 +153,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
       
       // رسالة ترحيب
       if (!edit) {
-        setMsg('مرحباً! اضغط على زر "✏️ تعديل البيانات" لتعديل معلوماتك الشخصية والصورة.');
+        setMsg('مرحباً! اضغط على زر "✏️ تعديل البيانات" لتعديل معلوماتك الشخصية والصورة. يمكنك الآن اختيار الصورة من الكاميرا أو المعرض.');
       }
       
       // فحص الصور المحلية المفقودة
@@ -197,7 +197,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
       
       // رسالة ترحيب
       if (!edit) {
-        setMsg('مرحباً! اضغط على زر "✏️ تعديل البيانات" لتعديل معلوماتك الشخصية والصورة.');
+        setMsg('مرحباً! اضغط على زر "✏️ تعديل البيانات" لتعديل معلوماتك الشخصية والصورة. يمكنك الآن اختيار الصورة من الكاميرا أو المعرض.');
       }
       
       // فحص الصور المحلية المفقودة
@@ -252,13 +252,43 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
         console.log('✅ تم إنشاء معاينة للصورة');
         setImagePreview(e.target.result);
         // إظهار رسالة تأكيد
-        setMsg('تم اختيار صورة جديدة! اضغط "حفظ التغييرات" لحفظ الصورة.');
+        setMsg('تم اختيار صورة جديدة! اضغط "حفظ التغييرات" لحفظ الصورة. يمكنك اختيار صورة أخرى من الكاميرا 📷 أو المعرض 🖼️ إذا أردت.');
       };
       reader.onerror = () => {
         console.error('❌ خطأ في قراءة الصورة');
         alert('خطأ في قراءة الصورة المختارة');
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  // دالة جديدة لفتح الكاميرا مباشرة
+  const openCamera = () => {
+    try {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.capture = 'camera'; // يفتح الكاميرا مباشرة
+      input.onchange = (e) => handleImageChange(e);
+      input.click();
+    } catch (error) {
+      console.error('❌ خطأ في فتح الكاميرا:', error);
+      // إذا فشل فتح الكاميرا، افتح المعرض كبديل
+      openGallery();
+    }
+  };
+
+  // دالة جديدة لفتح المعرض
+  const openGallery = () => {
+    try {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (e) => handleImageChange(e);
+      input.click();
+    } catch (error) {
+      console.error('❌ خطأ في فتح المعرض:', error);
+      alert('خطأ في فتح معرض الصور. يرجى المحاولة مرة أخرى.');
     }
   };
 
@@ -557,7 +587,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                     setForm(updatedForm);
                     setImageLoadError(false);
                   } else {
-                    setError('فشل تحويل الصورة إلى Cloudinary. يرجى رفع صورة جديدة.');
+                    setError('فشل تحويل الصورة إلى Cloudinary. يرجى رفع صورة جديدة من زر الكاميرا 📷 أو المعرض 🖼️');
                   }
                 }}
                 style={{
@@ -577,7 +607,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                   fontWeight: 'bold',
                   boxShadow: '0 2px 8px rgba(255, 152, 0, 0.4)'
                 }}
-                title="تحويل الصورة المفقودة إلى Cloudinary (قد لا يعمل - يرجى رفع صورة جديدة)"
+                title="تحويل الصورة المفقودة إلى Cloudinary (قد لا يعمل - يرجى رفع صورة جديدة من الكاميرا أو المعرض)"
               >
                 ☁️ تحويل
               </button>
@@ -622,7 +652,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                       return;
                     } else {
                       // إذا فشل التحويل، اعرض رسالة واضحة
-                      setMsg('⚠️ الصورة القديمة مفقودة. يرجى رفع صورة جديدة من زر الكاميرا 📷');
+                      setMsg('⚠️ الصورة القديمة مفقودة. يرجى رفع صورة جديدة من زر الكاميرا 📷 أو المعرض 🖼️');
                     }
                   }
                   
@@ -641,46 +671,93 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
               <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>👨‍⚕️</span>
             )}
             {edit && (
-              <label style={{
+              <div style={{
                 position: 'absolute',
-                bottom: 0,
-                right: 0,
-                background: '#7c4dff',
-                color: '#fff',
-                borderRadius: '50%',
-                width: 28,
-                height: 28,
+                bottom: -10,
+                right: -10,
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                fontSize: 14,
-                boxShadow: '0 2px 8px rgba(124, 77, 255, 0.4)',
-                transition: 'all 0.3s ease',
-                border: '2px solid #fff'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'scale(1.1)';
-                e.target.style.boxShadow = '0 4px 12px rgba(124, 77, 255, 0.6)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'scale(1)';
-                e.target.style.boxShadow = '0 2px 8px rgba(124, 77, 255, 0.4)';
-              }}
-              title="تغيير الصورة الشخصية"
-              >
-                📷
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  style={{ display: 'none' }}
-                />
-              </label>
+                gap: 8,
+                background: '#fff',
+                borderRadius: 20,
+                padding: 4,
+                boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                border: '2px solid #7c4dff'
+              }}>
+                <button
+                  onClick={openCamera}
+                  style={{
+                    background: 'linear-gradient(135deg, #7c4dff 0%, #00bcd4 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: 32,
+                    height: 32,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: 16,
+                    transition: 'all 0.3s ease',
+                    boxShadow: '0 2px 8px rgba(124, 77, 255, 0.4)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = 'scale(1.1)';
+                    e.target.style.boxShadow = '0 4px 12px rgba(124, 77, 255, 0.6)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'scale(1)';
+                    e.target.style.boxShadow = '0 2px 8px rgba(124, 77, 255, 0.4)';
+                  }}
+                  title="التقاط صورة من الكاميرا"
+                >
+                  📷
+                </button>
+                <button
+                  onClick={openGallery}
+                  style={{
+                    background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: 32,
+                    height: 32,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: 16,
+                    transition: 'all 0.3s ease',
+                    boxShadow: '0 2px 8px rgba(76, 175, 80, 0.4)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = 'scale(1.1)';
+                    e.target.style.boxShadow = '0 4px 12px rgba(76, 175, 80, 0.6)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'scale(1)';
+                    e.target.style.boxShadow = '0 2px 8px rgba(76, 175, 80, 0.4)';
+                  }}
+                  title="اختيار صورة من المعرض"
+                >
+                  🖼️
+                </button>
+              </div>
             )}
           </div>
           <h2 style={{margin: 0, fontWeight: 900, fontSize: 24}}>{t('doctor_profile_title')}</h2>
           <p style={{margin: '0.5rem 0 0', opacity: 0.9}}>{t('edit_doctor_account_data')}</p>
+          {edit && (
+            <div style={{
+              background: 'rgba(255,255,255,0.2)',
+              borderRadius: 8,
+              padding: '0.5rem',
+              marginTop: '0.5rem',
+              fontSize: '0.8rem',
+              textAlign: 'center'
+            }}>
+              📷 كاميرا | 🖼️ معرض
+            </div>
+          )}
         </div>
 
         {/* Form */}
@@ -701,7 +778,29 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
               </div>
               <div style={{fontSize: 14, color: '#856404', lineHeight: 1.5}}>
                 الصورة الحالية محفوظة محلياً وقد تختفي عند تحديث الموقع.<br/>
-                <strong>الحل:</strong> اضغط على زر الكاميرا 📷 لرفع صورة جديدة.
+                <strong>الحل:</strong> اضغط على زر الكاميرا 📷 أو المعرض 🖼️ لرفع صورة جديدة.
+              </div>
+            </div>
+          )}
+
+          {/* رسالة توضيحية لخيارات الصورة الجديدة */}
+          {edit && (
+            <div style={{
+              background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+              border: '2px solid #4CAF50',
+              borderRadius: 12,
+              padding: '1rem',
+              marginBottom: '20px',
+              textAlign: 'center',
+              boxShadow: '0 2px 8px #4CAF5022'
+            }}>
+              <div style={{fontSize: 16, fontWeight: 700, color: '#2e7d32', marginBottom: 8}}>
+                📸 خيارات الصورة الجديدة
+              </div>
+              <div style={{fontSize: 14, color: '#2e7d32', lineHeight: 1.5}}>
+                يمكنك الآن اختيار الصورة بطريقتين:<br/>
+                <strong>📷 الكاميرا:</strong> التقاط صورة جديدة مباشرة<br/>
+                <strong>🖼️ المعرض:</strong> اختيار صورة من معرض الصور
               </div>
             </div>
           )}
@@ -1087,7 +1186,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                     e.preventDefault();
                     e.stopPropagation();
                     setEdit(true);
-                    setMsg('تم تفعيل وضع التعديل! يمكنك الآن تعديل البيانات والصورة الشخصية.');
+                    setMsg('تم تفعيل وضع التعديل! يمكنك الآن تعديل البيانات والصورة الشخصية. استخدم زر الكاميرا 📷 أو المعرض 🖼️ لاختيار صورة جديدة.');
                   }}
                   style={{
                     background: 'linear-gradient(135deg, #7c4dff 0%, #00bcd4 100%)',
@@ -1173,7 +1272,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                       minWidth: '200px',
                       justifyContent: 'center'
                     }}
-                    title={selectedImage ? 'حفظ التغييرات والصورة الجديدة' : 'حفظ التغييرات'}
+                    title={selectedImage ? 'حفظ التغييرات والصورة الجديدة (يمكنك اختيار صورة أخرى من الكاميرا أو المعرض)' : 'حفظ التغييرات'}
                     onMouseEnter={(e) => {
                       if (!loading) {
                         e.target.style.transform = 'translateY(-2px)';

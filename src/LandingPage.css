@@ -537,6 +537,15 @@
   align-items: center;
   justify-content: flex-start;
   position: relative;
+  /* تحسين تحميل الصورة الخلفية */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  /* إضافة تأثير تحميل تدريجي */
+  transition: background-image 0.3s ease-in-out;
+  /* إضافة خلفية احتياطية */
+  background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 
