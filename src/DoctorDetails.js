@@ -372,12 +372,12 @@ const bookingData = {
       )}
 
       <div style={{
-        maxWidth: window.innerWidth < 500 ? '95vw' : 500, 
-        margin: window.innerWidth < 500 ? '1rem auto' : '2rem auto', 
+        maxWidth: window.innerWidth < 500 ? '92vw' : 480, 
+        margin: window.innerWidth < 500 ? '0.8rem auto' : '1.5rem auto', 
         background:'#fff', 
-        borderRadius: window.innerWidth < 500 ? 12 : 18, 
-        boxShadow:'0 2px 16px #7c4dff22', 
-        padding: window.innerWidth < 500 ? '1.5rem 1rem' : '2.5rem 2rem', 
+        borderRadius: window.innerWidth < 500 ? 10 : 16, 
+        boxShadow:'0 2px 12px #7c4dff22', 
+        padding: window.innerWidth < 500 ? '1.2rem 0.8rem' : '2rem 1.5rem', 
         position:'relative', 
         zIndex:1
       }}>
@@ -434,32 +434,32 @@ const bookingData = {
         </div>
         {copySuccess && <div style={{color:'#00c853', textAlign:'center', fontWeight:700, marginBottom:8}}>تم نسخ الرابط!</div>}
         
-        <div style={{display:'flex', flexDirection:'column', alignItems:'center', gap: window.innerWidth < 500 ? 8 : 12}}>
+        <div style={{display:'flex', flexDirection:'column', alignItems:'center', gap: window.innerWidth < 500 ? 6 : 10}}>
           {/* مستطيل ملون لاسم الطبيب والتخصص فقط */}
           <div style={{
             background:'linear-gradient(90deg,#7c4dff 0%,#00bcd4 100%)', 
-            borderRadius: window.innerWidth < 500 ? 12 : 16, 
-            padding: window.innerWidth < 500 ? '1rem 1.2rem' : '1.2rem 1.5rem', 
-            marginBottom: window.innerWidth < 500 ? 12 : 18, 
+            borderRadius: window.innerWidth < 500 ? 10 : 14, 
+            padding: window.innerWidth < 500 ? '0.8rem 1rem' : '1rem 1.2rem', 
+            marginBottom: window.innerWidth < 500 ? 10 : 15, 
             width:'100%', 
-            maxWidth: window.innerWidth < 500 ? 300 : 340, 
-            boxShadow:'0 2px 12px #00bcd422', 
+            maxWidth: window.innerWidth < 500 ? 280 : 320, 
+            boxShadow:'0 2px 8px #00bcd422', 
             display:'flex', 
             flexDirection:'column', 
             alignItems:'center'
           }}>
             <div style={{
               fontWeight:900, 
-              fontSize: window.innerWidth < 500 ? 18 : 22, 
+              fontSize: window.innerWidth < 500 ? 16 : 20, 
               color:'#fff', 
-              marginBottom:6
+              marginBottom:4
             }}>
               {doctor.name}
             </div>
             <div style={{
               color:'#fff', 
               fontWeight:700, 
-              fontSize: window.innerWidth < 500 ? 14 : 17, 
+              fontSize: window.innerWidth < 500 ? 12 : 15, 
               letterSpacing:0.5
             }}>
               {specialties[doctor.specialty] || doctor.specialty}
@@ -471,19 +471,15 @@ const bookingData = {
             src={getImageUrl(doctor)} 
             alt={doctor.name} 
             onError={(e) => {
-              console.log('❌ فشل تحميل الصورة الرئيسية:', getImageUrl(doctor));
               // إذا فشل تحميل الصورة الحقيقية، استخدم شعار المشروع
               e.target.src = '/logo.png';
             }}
-            onLoad={(e) => {
-              console.log('✅ تم تحميل الصورة الرئيسية بنجاح:', getImageUrl(doctor));
-            }}
             style={{
-              width: window.innerWidth < 500 ? 70 : 90, 
-              height: window.innerWidth < 500 ? 70 : 90, 
+              width: window.innerWidth < 500 ? 60 : 80, 
+              height: window.innerWidth < 500 ? 60 : 80, 
               borderRadius:'50%', 
               objectFit:'cover', 
-              border:'3px solid #7c4dff', 
+              border:'2px solid #7c4dff', 
               cursor:'pointer'
             }} 
             title="اضغط لتكبير الصورة" 
@@ -517,21 +513,25 @@ const bookingData = {
           )}
           <div style={{
             fontWeight:900, 
-            fontSize: window.innerWidth < 500 ? 20 : 26, 
-            color:'#222'
+            fontSize: window.innerWidth < 500 ? 18 : 22, 
+            color:'#222',
+            textAlign: 'center'
           }}>
             {doctor.name}
           </div>
           <div style={{
             color:'#7c4dff', 
             fontWeight:700, 
-            fontSize: window.innerWidth < 500 ? 15 : 18
+            fontSize: window.innerWidth < 500 ? 13 : 16,
+            textAlign: 'center'
           }}>
             {specialties[doctor.specialty] || doctor.specialty}
           </div>
           <div style={{
-            fontSize: window.innerWidth < 500 ? 14 : 16, 
-            color:'#888'
+            fontSize: window.innerWidth < 500 ? 12 : 14, 
+            color:'#888',
+            textAlign: 'center',
+            marginTop: 4
           }}>
             <span role="img" aria-label="governorate">🏛️</span> {provinces[doctor.province] || doctor.province} &nbsp;
             <span role="img" aria-label="area">📍</span> {doctor.area}
@@ -539,8 +539,9 @@ const bookingData = {
           {doctor.clinicLocation && (
             <div style={{
               color:'#444', 
-              fontSize: window.innerWidth < 500 ? 13 : 15, 
-              marginTop:6
+              fontSize: window.innerWidth < 500 ? 12 : 14, 
+              marginTop:6,
+              textAlign: 'center'
             }}>
               <b>{t('clinic_location_label')}:</b> {doctor.clinicLocation}
             </div>
@@ -572,8 +573,9 @@ const bookingData = {
           {doctor.phone && (
             <div style={{
               color:'#444', 
-              fontSize: window.innerWidth < 500 ? 13 : 15, 
-              marginTop:6
+              fontSize: window.innerWidth < 500 ? 12 : 14, 
+              marginTop:6,
+              textAlign: 'center'
             }}>
               <b>{t('phone_label')}:</b> {doctor.phone}
             </div>
@@ -581,13 +583,13 @@ const bookingData = {
           {doctor.about && (
             <div style={{
               color:'#333', 
-              fontSize: window.innerWidth < 500 ? 14 : 16, 
-              marginTop: window.innerWidth < 500 ? 12 : 18, 
+              fontSize: window.innerWidth < 500 ? 12 : 14, 
+              marginTop: window.innerWidth < 500 ? 10 : 15, 
               textAlign:'center', 
-              lineHeight:1.8, 
+              lineHeight:1.6, 
               background:'#f7fafd', 
-              borderRadius:10, 
-              padding: window.innerWidth < 500 ? '0.8rem 0.5rem' : '1rem 0.7rem'
+              borderRadius:8, 
+              padding: window.innerWidth < 500 ? '0.6rem 0.4rem' : '0.8rem 0.6rem'
             }}>
               <b>{t('about_doctor_label')}:</b><br/>{doctor.about}
             </div>
@@ -626,12 +628,13 @@ const bookingData = {
         </div>
         
         {/* الأوقات المتاحة */}
-        <div style={{marginTop: window.innerWidth < 500 ? 20 : 30}}>
+        <div style={{marginTop: window.innerWidth < 500 ? 15 : 25}}>
           <div style={{
             fontWeight:700, 
-            fontSize: window.innerWidth < 500 ? 16 : 18, 
+            fontSize: window.innerWidth < 500 ? 14 : 16, 
             color:'#7c4dff', 
-            marginBottom:10
+            marginBottom:8,
+            textAlign: 'center'
           }}>
             {t('choose_booking_day')}
           </div>
@@ -639,10 +642,10 @@ const bookingData = {
           <div style={{
             display:'flex', 
             justifyContent:'space-between', 
-            margin:'0 0 6px 0', 
+            margin:'0 0 4px 0', 
             fontWeight:700, 
             color:'#7c4dff', 
-            fontSize: window.innerWidth < 500 ? 12 : 15
+            fontSize: window.innerWidth < 500 ? 10 : 13
           }}>
             {weekdays.map(day => (
               <div key={day} style={{width:'14.2%', textAlign:'center'}}>{day}</div>
@@ -726,17 +729,18 @@ const bookingData = {
         
         {/* نموذج الحجز */}
         <form onSubmit={handleBook} style={{
-          marginTop: window.innerWidth < 500 ? 12 : 18, 
+          marginTop: window.innerWidth < 500 ? 10 : 15, 
           display:'flex', 
           flexDirection:'column', 
-          gap: window.innerWidth < 500 ? 8 : 10
+          gap: window.innerWidth < 500 ? 6 : 8
         }}>
           <input type="hidden" value={selectedDate ? selectedDate.toISOString().slice(0,10) : ''} />
           <input type="hidden" value={selectedTime} />
           <label style={{
-            fontSize: window.innerWidth < 500 ? 14 : 16,
+            fontSize: window.innerWidth < 500 ? 12 : 14,
             fontWeight: 600,
-            color: '#333'
+            color: '#333',
+            textAlign: 'center'
           }}>
             {t('reason_optional')}
           </label>
@@ -745,12 +749,12 @@ const bookingData = {
             onChange={e=>setReason(e.target.value)} 
             rows={2} 
             style={{
-              padding: window.innerWidth < 500 ? 6 : 8, 
-              borderRadius:7, 
+              padding: window.innerWidth < 500 ? 5 : 7, 
+              borderRadius:6, 
               border:'2px solid #00bcd4', 
               outline:'none', 
-              fontSize: window.innerWidth < 500 ? 14 : 16, 
-              minHeight: window.innerWidth < 500 ? 40 : 48, 
+              fontSize: window.innerWidth < 500 ? 12 : 14, 
+              minHeight: window.innerWidth < 500 ? 35 : 40, 
               background:'#f7fafd'
             }} 
           />
@@ -762,11 +766,11 @@ const bookingData = {
               color:'#fff', 
               border:'none', 
               borderRadius:8, 
-              padding: window.innerWidth < 500 ? '0.6rem 0' : '0.7rem 0', 
+              padding: window.innerWidth < 500 ? '0.5rem 0' : '0.6rem 0', 
               fontWeight:700, 
-              fontSize: window.innerWidth < 500 ? 15 : 17, 
+              fontSize: window.innerWidth < 500 ? 13 : 15, 
               cursor:'pointer', 
-              marginTop:8
+              marginTop:6
             }}
           >
             {booking ? t('booking_in_progress') : t('book_appointment_button')}
