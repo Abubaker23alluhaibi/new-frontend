@@ -82,6 +82,9 @@ function AdminDashboard() {
     return dateFilter && statusFilter;
   });
 
+  const [migratingImages, setMigratingImages] = useState(false);
+  const [migrationResult, setMigrationResult] = useState(null);
+
   useEffect(() => {
     console.log('🔍 تحميل AdminDashboard...');
     
@@ -638,6 +641,51 @@ function AdminDashboard() {
     alert('تم إضافة الطبيب للمركز بنجاح');
     setDoctorWorkTimes([]);
     setDoctorNewTime({ day: '', from: '', to: '' });
+  };
+
+  // دالة تحويل الصور المحلية إلى Cloudinary
+  const migrateLocalImages = async () => {
+    if (!window.confirm('هل تريد تحويل جميع الصور المحلية إلى Cloudinary؟ هذا قد يستغرق بعض الوقت.')) {
+      return;
+    }
+
+    setMigratingImages(true);
+    setMigrationResult(null);
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/migrate-local-images`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMigrationResult({
+          success: true,
+          message: data.message,
+          results: data.results
+        });
+        alert('تم تحويل الصور بنجاح!');
+      } else {
+        setMigrationResult({
+          success: false,
+          message: data.error || 'حدث خطأ أثناء تحويل الصور'
+        });
+        alert('حدث خطأ أثناء تحويل الصور: ' + (data.error || 'خطأ غير معروف'));
+      }
+    } catch (error) {
+      console.error('خطأ في تحويل الصور:', error);
+      setMigrationResult({
+        success: false,
+        message: 'حدث خطأ في الاتصال بالخادم'
+      });
+      alert('حدث خطأ في الاتصال بالخادم');
+    } finally {
+      setMigratingImages(false);
+    }
   };
 
   if (loading) {
@@ -2846,6 +2894,63 @@ function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* قسم إدارة الصور */}
+        <div style={{
+          background: '#fff',
+          padding: '20px',
+          borderRadius: '10px',
+          marginBottom: '20px',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+        }}>
+          <h3 style={{ marginBottom: '15px', color: '#333' }}>إدارة الصور</h3>
+          
+          <button
+            onClick={migrateLocalImages}
+            disabled={migratingImages}
+            style={{
+              background: migratingImages ? '#ccc' : '#4CAF50',
+              color: 'white',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: '5px',
+              cursor: migratingImages ? 'not-allowed' : 'pointer',
+              fontSize: '14px',
+              marginBottom: '10px'
+            }}
+          >
+            {migratingImages ? 'جاري التحويل...' : 'تحويل الصور المحلية إلى Cloudinary'}
+          </button>
+
+          {migrationResult && (
+            <div style={{
+              padding: '10px',
+              borderRadius: '5px',
+              marginTop: '10px',
+              background: migrationResult.success ? '#d4edda' : '#f8d7da',
+              color: migrationResult.success ? '#155724' : '#721c24',
+              border: `1px solid ${migrationResult.success ? '#c3e6cb' : '#f5c6cb'}`
+            }}>
+              <strong>{migrationResult.message}</strong>
+              {migrationResult.results && (
+                <div style={{ marginTop: '10px', fontSize: '14px' }}>
+                  <div>الأطباء: {migrationResult.results.doctors.migrated} من {migrationResult.results.doctors.total} تم تحويلهم</div>
+                  <div>المستخدمين: {migrationResult.results.users.migrated} من {migrationResult.results.users.total} تم تحويلهم</div>
+                  {migrationResult.results.errors.length > 0 && (
+                    <div style={{ marginTop: '10px' }}>
+                      <strong>الأخطاء:</strong>
+                      <ul style={{ margin: '5px 0', paddingLeft: '20px' }}>
+                        {migrationResult.results.errors.map((error, index) => (
+                          <li key={index}>{error}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

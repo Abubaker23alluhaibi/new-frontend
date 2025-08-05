@@ -34,6 +34,7 @@ function DoctorDetails() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
+  const [migratingImage, setMigratingImage] = useState(false);
 
   // دالة مساعدة لمسار صورة الدكتور
   const getImageUrl = (doctor) => {
@@ -96,6 +97,52 @@ function DoctorDetails() {
         setLoading(false);
       });
   }, [id]);
+
+  // دالة تحويل الصورة المحلية إلى Cloudinary
+  const migrateImageToCloudinary = async () => {
+    if (!doctor) return;
+    
+    const imagePath = doctor.image || doctor.profileImage;
+    if (!imagePath || !imagePath.startsWith('/uploads/')) {
+      alert('لا توجد صورة محلية للتحويل');
+      return;
+    }
+
+    if (!window.confirm('هل تريد تحويل هذه الصورة إلى Cloudinary؟')) {
+      return;
+    }
+
+    setMigratingImage(true);
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/migrate-single-image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imagePath,
+          userId: doctor._id,
+          userType: 'doctor'
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('تم تحويل الصورة إلى Cloudinary بنجاح!');
+        // إعادة تحميل بيانات الطبيب
+        window.location.reload();
+      } else {
+        alert('حدث خطأ أثناء تحويل الصورة: ' + (data.error || 'خطأ غير معروف'));
+      }
+    } catch (error) {
+      console.error('خطأ في تحويل الصورة:', error);
+      alert('حدث خطأ في الاتصال بالخادم');
+    } finally {
+      setMigratingImage(false);
+    }
+  };
 
   // استخراج الأيام المتاحة من workTimes
   const getAvailableDays = () => {
@@ -434,6 +481,32 @@ const bookingData = {
             title="اضغط لتكبير الصورة" 
             onClick={()=>setShowImageModal(true)} 
           />
+          
+          {/* زر تحويل الصورة المحلية إلى Cloudinary */}
+          {(doctor.image?.startsWith('/uploads/') || doctor.profileImage?.startsWith('/uploads/')) && (
+            <button
+              onClick={migrateImageToCloudinary}
+              disabled={migratingImage}
+              style={{
+                background: migratingImage ? '#ccc' : '#ff9800',
+                color: 'white',
+                border: 'none',
+                borderRadius: '20px',
+                padding: '0.5rem 1rem',
+                fontSize: '0.8rem',
+                fontWeight: '600',
+                cursor: migratingImage ? 'not-allowed' : 'pointer',
+                marginTop: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                transition: 'all 0.3s ease'
+              }}
+              title="تحويل الصورة إلى Cloudinary لمنع فقدانها عند تحديث الموقع"
+            >
+              {migratingImage ? '🔄 جاري التحويل...' : '☁️ تحويل للـ Cloudinary'}
+            </button>
+          )}
           <div style={{
             fontWeight:900, 
             fontSize: window.innerWidth < 500 ? 20 : 26, 

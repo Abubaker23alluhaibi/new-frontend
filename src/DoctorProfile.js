@@ -119,15 +119,17 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      console.log('📸 تم اختيار صورة جديدة:', file.name, file.size, file.type);
+      
       // التحقق من نوع الملف
       if (!file.type.startsWith('image/')) {
-        alert(t('image_type_error'));
+        alert('يجب أن يكون الملف صورة (JPG, PNG, GIF, etc.)');
         return;
       }
       
       // التحقق من حجم الملف (أقل من 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert(t('image_size_error'));
+        alert('حجم الصورة يجب أن يكون أقل من 5 ميجابايت');
         return;
       }
 
@@ -137,7 +139,14 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
       // إنشاء معاينة للصورة
       const reader = new FileReader();
       reader.onload = (e) => {
+        console.log('✅ تم إنشاء معاينة للصورة');
         setImagePreview(e.target.result);
+        // إظهار رسالة تأكيد
+        setMsg('تم اختيار صورة جديدة! اضغط "حفظ التغييرات" لحفظ الصورة.');
+      };
+      reader.onerror = () => {
+        console.error('❌ خطأ في قراءة الصورة');
+        alert('خطأ في قراءة الصورة المختارة');
       };
       reader.readAsDataURL(file);
     }
@@ -155,8 +164,10 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
     setMsg('');
     setLoading(true);
     
+    console.log('💾 بدء حفظ بيانات الملف الشخصي...');
+    
     if (!form.name || !form.email || !form.phone || !form.specialty) {
-      setError(t('fill_required_fields'));
+      setError('يرجى ملء جميع الحقول المطلوبة');
       setLoading(false);
       return;
     }
@@ -166,6 +177,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
       
       // إذا كان هناك صورة جديدة، ارفعها أولاً
       if (selectedImage) {
+        console.log('📤 رفع الصورة الجديدة...');
         const formData = new FormData();
         formData.append('image', selectedImage);
         
@@ -174,28 +186,39 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
           body: formData
         });
         
+        console.log('📤 استجابة رفع الصورة:', uploadRes.status);
+        
         if (uploadRes.ok) {
           const uploadData = await uploadRes.json();
+          console.log('✅ تم رفع الصورة بنجاح:', uploadData.imageUrl);
+          
           // تحديث حقل image بدلاً من profileImage للتوافق مع تسجيل الحساب
           updatedForm.image = uploadData.imageUrl;
           updatedForm.profileImage = uploadData.imageUrl;
         } else {
-          throw new Error(t('image_upload_error'));
+          const errorData = await uploadRes.json();
+          console.error('❌ خطأ في رفع الصورة:', errorData);
+          throw new Error(errorData.error || 'خطأ في رفع الصورة');
         }
       }
 
-      const { error } = await updateProfile(updatedForm);
+      console.log('💾 تحديث بيانات الملف الشخصي...');
+      const { error, data } = await updateProfile(updatedForm);
+      
       if (error) {
+        console.error('❌ خطأ في تحديث الملف الشخصي:', error);
         setError(error);
       } else {
-        setMsg(t('profile_updated_successfully'));
+        console.log('✅ تم تحديث الملف الشخصي بنجاح:', data);
+        setMsg('تم تحديث الملف الشخصي بنجاح!');
         setEdit(false);
         setSelectedImage(null);
         setImagePreview(null);
         setImageLoadError(false);
       }
     } catch (err) {
-      setError(err.message || t('error_saving_changes'));
+      console.error('❌ خطأ في حفظ البيانات:', err);
+      setError(err.message || 'حدث خطأ أثناء حفظ التغييرات');
     } finally {
       setLoading(false);
     }
@@ -395,15 +418,27 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                 background: '#7c4dff',
                 color: '#fff',
                 borderRadius: '50%',
-                width: 24,
-                height: 24,
+                width: 28,
+                height: 28,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                fontSize: 12,
-                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-              }}>
+                fontSize: 14,
+                boxShadow: '0 2px 8px rgba(124, 77, 255, 0.4)',
+                transition: 'all 0.3s ease',
+                border: '2px solid #fff'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'scale(1.1)';
+                e.target.style.boxShadow = '0 4px 12px rgba(124, 77, 255, 0.6)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'scale(1)';
+                e.target.style.boxShadow = '0 2px 8px rgba(124, 77, 255, 0.4)';
+              }}
+              title="تغيير الصورة الشخصية"
+              >
                 📷
                 <input
                   type="file"
@@ -787,6 +822,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                     e.preventDefault();
                     e.stopPropagation();
                     setEdit(true);
+                    setMsg('تم تفعيل وضع التعديل! يمكنك الآن تعديل البيانات والصورة الشخصية.');
                   }}
                   style={{
                     background: 'linear-gradient(135deg, #7c4dff 0%, #00bcd4 100%)',
@@ -798,10 +834,14 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                     fontSize: 16,
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
-                    boxShadow: '0 4px 15px rgba(124, 77, 255, 0.3)'
+                    boxShadow: '0 4px 15px rgba(124, 77, 255, 0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
                   }}
+                  title="تعديل البيانات الشخصية والصورة"
                 >
-                  ✏️ {t('edit_data')}
+                  ✏️ تعديل البيانات
                 </button>
                 <button 
                   type="button" 
@@ -816,10 +856,14 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                     fontSize: 16,
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
-                    boxShadow: '0 4px 15px rgba(255, 152, 0, 0.3)'
+                    boxShadow: '0 4px 15px rgba(255, 152, 0, 0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
                   }}
+                  title="تغيير كلمة المرور"
                 >
-                  🔒 {t('change_password')}
+                  🔒 تغيير كلمة المرور
                 </button>
             </>
           ) : (
@@ -837,10 +881,14 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                       fontSize: 16,
                       cursor: loading ? 'not-allowed' : 'pointer',
                       transition: 'all 0.3s ease',
-                      boxShadow: loading ? 'none' : '0 4px 15px rgba(0, 188, 212, 0.3)'
+                      boxShadow: loading ? 'none' : '0 4px 15px rgba(0, 188, 212, 0.3)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
                     }}
+                    title={selectedImage ? 'حفظ التغييرات والصورة الجديدة' : 'حفظ التغييرات'}
                   >
-                    {loading ? t('saving') : t('save_changes')}
+                    {loading ? '⏳ جاري الحفظ...' : selectedImage ? '💾 حفظ الصورة والتغييرات' : '💾 حفظ التغييرات'}
                   </button>
                   <button 
                     type="button" 
@@ -854,10 +902,14 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                       fontWeight: 700,
                       fontSize: 16,
                       cursor: 'pointer',
-                      transition: 'all 0.3s ease'
+                      transition: 'all 0.3s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem'
                     }}
+                    title="إلغاء التعديل والعودة للعرض"
                   >
-                    ❌ {t('cancel')}
+                    ❌ إلغاء التعديل
                   </button>
             </>
           )}
