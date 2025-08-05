@@ -75,6 +75,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
     console.log('🔄 محاولة تحويل الصورة المفقودة:', imagePath);
     
     try {
+      // محاولة استخدام endpoint الجديد
       const response = await fetch(`${process.env.REACT_APP_API_URL}/migrate-single-image`, {
         method: 'POST',
         headers: {
@@ -91,12 +92,25 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
         const data = await response.json();
         console.log('✅ تم تحويل الصورة المفقودة بنجاح:', data.cloudinaryUrl);
         return data.cloudinaryUrl;
+      } else if (response.status === 404) {
+        console.log('⚠️ endpoint migrate-single-image غير متوفر، محاولة استخدام upload-profile-image...');
+        
+        // حل مؤقت: استخدام endpoint رفع الصورة العادي
+        // نحتاج لرفع صورة جديدة بدلاً من تحويل الصورة القديمة
+        setMsg('⚠️ لا يمكن تحويل الصورة القديمة تلقائياً. يرجى رفع صورة جديدة من زر الكاميرا.');
+        return null;
       } else {
         console.log('❌ فشل تحويل الصورة المفقودة');
         return null;
       }
     } catch (error) {
       console.error('❌ خطأ في تحويل الصورة المفقودة:', error);
+      
+      // إذا كان الخطأ 404، فهذا يعني أن endpoint غير متوفر
+      if (error.message.includes('404') || error.message.includes('Not Found')) {
+        setMsg('⚠️ لا يمكن تحويل الصورة القديمة تلقائياً. يرجى رفع صورة جديدة من زر الكاميرا.');
+      }
+      
       return null;
     }
   };
@@ -543,7 +557,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                     setForm(updatedForm);
                     setImageLoadError(false);
                   } else {
-                    setError('فشل تحويل الصورة إلى Cloudinary');
+                    setError('فشل تحويل الصورة إلى Cloudinary. يرجى رفع صورة جديدة.');
                   }
                 }}
                 style={{
@@ -555,13 +569,15 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                   color: 'white',
                   border: 'none',
                   borderRadius: '8px',
-                  padding: '4px 8px',
-                  fontSize: '10px',
+                  padding: '6px 12px',
+                  fontSize: '11px',
                   cursor: 'pointer',
                   zIndex: 1000,
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap',
+                  fontWeight: 'bold',
+                  boxShadow: '0 2px 8px rgba(255, 152, 0, 0.4)'
                 }}
-                title="تحويل الصورة المفقودة إلى Cloudinary"
+                title="تحويل الصورة المفقودة إلى Cloudinary (قد لا يعمل - يرجى رفع صورة جديدة)"
               >
                 ☁️ تحويل
               </button>
@@ -604,6 +620,9 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                       e.target.src = cloudinaryUrl;
                       setImageLoadError(false);
                       return;
+                    } else {
+                      // إذا فشل التحويل، اعرض رسالة واضحة
+                      setMsg('⚠️ الصورة القديمة مفقودة. يرجى رفع صورة جديدة من زر الكاميرا 📷');
                     }
                   }
                   
@@ -666,6 +685,27 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
 
         {/* Form */}
         <div style={{padding: '2rem'}}>
+          {/* رسالة توضيحية للصور المفقودة */}
+          {form.profileImage && form.profileImage.startsWith('/uploads/') && (
+            <div style={{
+              background: 'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)',
+              border: '2px solid #ffc107',
+              borderRadius: 12,
+              padding: '1rem',
+              marginBottom: '20px',
+              textAlign: 'center',
+              boxShadow: '0 2px 8px #ffc10722'
+            }}>
+              <div style={{fontSize: 16, fontWeight: 700, color: '#856404', marginBottom: 8}}>
+                ⚠️ تنبيه: صورة قديمة
+              </div>
+              <div style={{fontSize: 14, color: '#856404', lineHeight: 1.5}}>
+                الصورة الحالية محفوظة محلياً وقد تختفي عند تحديث الموقع.<br/>
+                <strong>الحل:</strong> اضغط على زر الكاميرا 📷 لرفع صورة جديدة.
+              </div>
+            </div>
+          )}
+          
           <form onSubmit={handleSave}>
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px'}}>
               {/* الاسم الكامل */}
