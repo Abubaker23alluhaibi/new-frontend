@@ -32,7 +32,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [imageLoadError, setImageLoadError] = useState(false);
-  const [edit, setEdit] = useState(editProp || false);
+  const [edit, setEdit] = useState(false); // دائماً نبدأ بوضع العرض
 
   // دالة مساعدة لمسار صورة الطبيب
   const getImageUrl = img => {
@@ -65,6 +65,41 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
     console.log('❌ نوع صورة غير معروف:', img);
     return null;
   };
+
+  // دالة تحويل الصورة المحلية المفقودة إلى Cloudinary
+  const migrateMissingImage = async (imagePath) => {
+    if (!imagePath || !imagePath.startsWith('/uploads/')) {
+      return null;
+    }
+
+    console.log('🔄 محاولة تحويل الصورة المفقودة:', imagePath);
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/migrate-single-image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imagePath,
+          userId: profile?._id || user?._id,
+          userType: 'doctor'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ تم تحويل الصورة المفقودة بنجاح:', data.cloudinaryUrl);
+        return data.cloudinaryUrl;
+      } else {
+        console.log('❌ فشل تحويل الصورة المفقودة');
+        return null;
+      }
+    } catch (error) {
+      console.error('❌ خطأ في تحويل الصورة المفقودة:', error);
+      return null;
+    }
+  };
   const [msg, setMsg] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -77,11 +112,10 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
 
   // تحديث النموذج عند تغيير البيانات الشخصية
   useEffect(() => {
-    // إذا تم تمرير editProp، استخدمه. وإلا اترك الحالة الحالية
-    if (editProp !== undefined) {
-      setEdit(editProp);
-    }
-  }, [editProp]);
+    // لا نغير حالة edit تلقائياً، المستخدم يتحكم بها
+    console.log('🔍 editProp received:', editProp);
+    console.log('🔍 current edit state:', edit);
+  }, [editProp, edit]);
 
   useEffect(() => {
     if (profile) {
@@ -102,6 +136,31 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
       });
       setImageLoadError(false);
       console.log('✅ تم تحديث البيانات من profile');
+      
+      // رسالة ترحيب
+      if (!edit) {
+        setMsg('مرحباً! اضغط على زر "✏️ تعديل البيانات" لتعديل معلوماتك الشخصية والصورة.');
+      }
+      
+      // فحص الصور المحلية المفقودة
+      const imagePath = profile.profileImage || profile.image;
+      if (imagePath && imagePath.startsWith('/uploads/')) {
+        console.log('🔍 فحص الصورة المحلية:', imagePath);
+        // فحص إذا كانت الصورة موجودة
+        const testImage = new Image();
+        testImage.onload = () => {
+          console.log('✅ الصورة المحلية موجودة');
+        };
+        testImage.onerror = async () => {
+          console.log('❌ الصورة المحلية مفقودة، محاولة التحويل...');
+          const cloudinaryUrl = await migrateMissingImage(imagePath);
+          if (cloudinaryUrl) {
+            console.log('✅ تم تحويل الصورة المفقودة تلقائياً');
+            setMsg('تم تحويل الصورة المفقودة إلى Cloudinary تلقائياً!');
+          }
+        };
+        testImage.src = process.env.REACT_APP_API_URL + imagePath;
+      }
     } else if (user) {
       // إذا لم يكن هناك profile، استخدم user
       console.log('🔄 تحديث البيانات من user:', user);
@@ -121,6 +180,31 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
       });
       setImageLoadError(false);
       console.log('✅ تم تحديث البيانات من user');
+      
+      // رسالة ترحيب
+      if (!edit) {
+        setMsg('مرحباً! اضغط على زر "✏️ تعديل البيانات" لتعديل معلوماتك الشخصية والصورة.');
+      }
+      
+      // فحص الصور المحلية المفقودة
+      const imagePath = user.profileImage || user.image;
+      if (imagePath && imagePath.startsWith('/uploads/')) {
+        console.log('🔍 فحص الصورة المحلية:', imagePath);
+        // فحص إذا كانت الصورة موجودة
+        const testImage = new Image();
+        testImage.onload = () => {
+          console.log('✅ الصورة المحلية موجودة');
+        };
+        testImage.onerror = async () => {
+          console.log('❌ الصورة المحلية مفقودة، محاولة التحويل...');
+          const cloudinaryUrl = await migrateMissingImage(imagePath);
+          if (cloudinaryUrl) {
+            console.log('✅ تم تحويل الصورة المفقودة تلقائياً');
+            setMsg('تم تحويل الصورة المفقودة إلى Cloudinary تلقائياً!');
+          }
+        };
+        testImage.src = process.env.REACT_APP_API_URL + imagePath;
+      }
     }
   }, [profile, user]);
 
@@ -445,6 +529,43 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
             overflow: 'hidden',
             position: 'relative'
           }}>
+            {/* زر تحويل الصورة المحلية المفقودة */}
+            {form.profileImage && form.profileImage.startsWith('/uploads/') && imageLoadError && (
+              <button
+                onClick={async () => {
+                  console.log('🔄 تحويل يدوي للصورة المحلية المفقودة...');
+                  const cloudinaryUrl = await migrateMissingImage(form.profileImage);
+                  if (cloudinaryUrl) {
+                    console.log('✅ تم التحويل اليدوي بنجاح');
+                    setMsg('تم تحويل الصورة إلى Cloudinary بنجاح!');
+                    // تحديث البيانات
+                    const updatedForm = { ...form, profileImage: cloudinaryUrl, image: cloudinaryUrl };
+                    setForm(updatedForm);
+                    setImageLoadError(false);
+                  } else {
+                    setError('فشل تحويل الصورة إلى Cloudinary');
+                  }
+                }}
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  background: '#ff9800',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '4px 8px',
+                  fontSize: '10px',
+                  cursor: 'pointer',
+                  zIndex: 1000,
+                  whiteSpace: 'nowrap'
+                }}
+                title="تحويل الصورة المفقودة إلى Cloudinary"
+              >
+                ☁️ تحويل
+              </button>
+            )}
             {(imagePreview || (form.profileImage && !imageLoadError)) ? (
               <img 
                 src={imagePreview || getImageUrl(form.profileImage)}
@@ -455,10 +576,37 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                   objectFit: 'cover',
                   borderRadius: '50%'
                 }}
-                onError={(e) => {
+                onError={async (e) => {
                   console.log('❌ فشل تحميل الصورة:', e.target.src);
                   console.log('🔍 form.profileImage:', form.profileImage);
                   console.log('🔍 getImageUrl result:', getImageUrl(form.profileImage));
+                  
+                  // إذا كانت الصورة محلية وفشل تحميلها، حاول تحويلها إلى Cloudinary
+                  if (form.profileImage && form.profileImage.startsWith('/uploads/')) {
+                    console.log('🔄 محاولة تحويل الصورة المحلية المفقودة...');
+                    const cloudinaryUrl = await migrateMissingImage(form.profileImage);
+                    
+                    if (cloudinaryUrl) {
+                      console.log('✅ تم تحويل الصورة، تحديث البيانات...');
+                      // تحديث البيانات المحلية
+                      const updatedForm = { ...form, profileImage: cloudinaryUrl, image: cloudinaryUrl };
+                      setForm(updatedForm);
+                      
+                      // تحديث localStorage
+                      const currentData = profile || user;
+                      if (currentData) {
+                        const updatedData = { ...currentData, profileImage: cloudinaryUrl, image: cloudinaryUrl };
+                        localStorage.setItem('profile', JSON.stringify(updatedData));
+                        localStorage.setItem('user', JSON.stringify(updatedData));
+                      }
+                      
+                      // إعادة تحميل الصورة
+                      e.target.src = cloudinaryUrl;
+                      setImageLoadError(false);
+                      return;
+                    }
+                  }
+                  
                   setImageLoadError(true);
                   // إعادة المحاولة بعد ثانية
                   setTimeout(() => {
@@ -875,8 +1023,22 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
               gap: 12,
               justifyContent: 'center',
               marginTop: 24,
-              flexWrap: 'wrap'
+              flexWrap: 'wrap',
+              padding: '20px',
+              background: '#f8f9fa',
+              borderRadius: '12px',
+              border: '2px solid #e9ecef'
             }}>
+              <div style={{
+                fontSize: '14px',
+                color: '#666',
+                marginBottom: '10px',
+                textAlign: 'center',
+                width: '100%'
+              }}>
+                {edit ? 'وضع التعديل مفعل - يمكنك تعديل البيانات والصورة' : 'وضع العرض - اضغط على زر التعديل لتغيير البيانات'}
+              </div>
+              
           {!edit ? (
             <>
                 <button 
@@ -892,7 +1054,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                     color: '#fff',
                     border: 'none',
                     borderRadius: 12,
-                    padding: '0.8rem 2rem',
+                    padding: '1rem 2rem',
                     fontWeight: 700,
                     fontSize: 16,
                     cursor: 'pointer',
@@ -900,9 +1062,19 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                     boxShadow: '0 4px 15px rgba(124, 77, 255, 0.3)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem'
+                    gap: '0.5rem',
+                    minWidth: '200px',
+                    justifyContent: 'center'
                   }}
                   title="تعديل البيانات الشخصية والصورة"
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 6px 20px rgba(124, 77, 255, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 4px 15px rgba(124, 77, 255, 0.3)';
+                  }}
                 >
                   ✏️ تعديل البيانات
                 </button>
@@ -914,7 +1086,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                     color: '#fff',
                     border: 'none',
                     borderRadius: 12,
-                    padding: '0.8rem 2rem',
+                    padding: '1rem 2rem',
                     fontWeight: 700,
                     fontSize: 16,
                     cursor: 'pointer',
@@ -922,9 +1094,19 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                     boxShadow: '0 4px 15px rgba(255, 152, 0, 0.3)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem'
+                    gap: '0.5rem',
+                    minWidth: '200px',
+                    justifyContent: 'center'
                   }}
                   title="تغيير كلمة المرور"
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = '0 6px 20px rgba(255, 152, 0, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = '0 4px 15px rgba(255, 152, 0, 0.3)';
+                  }}
                 >
                   🔒 تغيير كلمة المرور
                 </button>
@@ -939,7 +1121,7 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                       color: '#fff',
                       border: 'none',
                       borderRadius: 12,
-                      padding: '0.8rem 2rem',
+                      padding: '1rem 2rem',
                       fontWeight: 700,
                       fontSize: 16,
                       cursor: loading ? 'not-allowed' : 'pointer',
@@ -947,9 +1129,23 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                       boxShadow: loading ? 'none' : '0 4px 15px rgba(0, 188, 212, 0.3)',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.5rem'
+                      gap: '0.5rem',
+                      minWidth: '200px',
+                      justifyContent: 'center'
                     }}
                     title={selectedImage ? 'حفظ التغييرات والصورة الجديدة' : 'حفظ التغييرات'}
+                    onMouseEnter={(e) => {
+                      if (!loading) {
+                        e.target.style.transform = 'translateY(-2px)';
+                        e.target.style.boxShadow = '0 6px 20px rgba(0, 188, 212, 0.4)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!loading) {
+                        e.target.style.transform = 'translateY(0)';
+                        e.target.style.boxShadow = '0 4px 15px rgba(0, 188, 212, 0.3)';
+                      }
+                    }}
                   >
                     {loading ? '⏳ جاري الحفظ...' : selectedImage ? '💾 حفظ الصورة والتغييرات' : '💾 حفظ التغييرات'}
                   </button>
@@ -961,16 +1157,26 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                       color: '#666',
                       border: '2px solid #e0e0e0',
                       borderRadius: 12,
-                      padding: '0.8rem 2rem',
+                      padding: '1rem 2rem',
                       fontWeight: 700,
                       fontSize: 16,
                       cursor: 'pointer',
                       transition: 'all 0.3s ease',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.5rem'
+                      gap: '0.5rem',
+                      minWidth: '200px',
+                      justifyContent: 'center'
                     }}
                     title="إلغاء التعديل والعودة للعرض"
+                    onMouseEnter={(e) => {
+                      e.target.style.transform = 'translateY(-2px)';
+                      e.target.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   >
                     ❌ إلغاء التعديل
                   </button>
