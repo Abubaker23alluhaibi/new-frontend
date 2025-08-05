@@ -3,6 +3,8 @@
 .landing-page {
   direction: rtl;
   text-align: right;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .landing-page[dir="ltr"] {
@@ -1168,8 +1170,6 @@
     font-size: 0.55rem;
   }
   
-
-  
   .landing-page .header-actions {
     flex-direction: row;
     gap: 0.4rem;
@@ -1215,8 +1215,6 @@
     font-size: 2.2rem;
   }
   
-
-  
   .landing-page .hero-stats {
     justify-content: flex-start;
   }
@@ -1243,6 +1241,51 @@
   
   .landing-page .steps-container {
     grid-template-columns: 1fr;
+  }
+  
+  /* تحسينات إضافية للموبايل */
+  .landing-page .hero-section {
+    padding: 100px 0 40px;
+    min-height: 80vh;
+  }
+  
+  .landing-page .hero-subtitle {
+    font-size: 1rem;
+    max-width: 100%;
+  }
+  
+  .landing-page .doctor-message {
+    max-width: 100%;
+    padding: 0.6rem 1rem;
+  }
+  
+  .landing-page .doctor-message-text {
+    font-size: 0.9rem;
+  }
+  
+  .landing-page .hero-stats {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .landing-page .stat-number {
+    font-size: 1.8rem;
+  }
+  
+  .landing-page .section-header h2 {
+    font-size: 1.8rem;
+  }
+  
+  .landing-page .about-section,
+  .landing-page .how-to-use-section,
+  .landing-page .booking-section {
+    padding: 40px 0;
+  }
+  
+  .landing-page .hero-buttons {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
   }
 }
 
@@ -1328,8 +1371,6 @@
     font-size: 0.5rem;
   }
   
-
-  
   .landing-page .header-actions {
     gap: 0.3rem;
   }
@@ -1398,8 +1439,6 @@
     font-size: 0.9rem;
   }
   
-
-  
   .landing-page .hero-stats {
     flex-direction: column;
     gap: 0.8rem;
@@ -1429,6 +1468,77 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.6rem;
+  }
+  
+  /* تحسينات إضافية للشاشات الصغيرة جداً */
+  .landing-page .hero-container {
+    padding: 0 0.8rem;
+  }
+  
+  .landing-page .hero-title {
+    font-size: 1.4rem;
+    line-height: 1.3;
+  }
+  
+  .landing-page .hero-subtitle {
+    font-size: 0.8rem;
+    max-width: 100%;
+  }
+  
+  .landing-page .doctor-message {
+    max-width: 100%;
+    padding: 0.5rem 0.8rem;
+  }
+  
+  .landing-page .doctor-message-text {
+    font-size: 0.8rem;
+  }
+  
+  .landing-page .hero-stats {
+    gap: 0.6rem;
+  }
+  
+  .landing-page .stat-number {
+    font-size: 1.3rem;
+  }
+  
+  .landing-page .stat-label {
+    font-size: 0.7rem;
+  }
+  
+  .landing-page .cta-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+    min-height: 32px;
+  }
+  
+  .landing-page .section-header h2 {
+    font-size: 1.6rem;
+  }
+  
+  .landing-page .section-header p {
+    font-size: 0.9rem;
+  }
+  
+  .landing-page .feature h4,
+  .landing-page .step h3,
+  .landing-page .service-card h3,
+  .landing-page .benefit-card h3 {
+    font-size: 1.1rem;
+  }
+  
+  .landing-page .feature p,
+  .landing-page .step p,
+  .landing-page .service-card p,
+  .landing-page .benefit-card p {
+    font-size: 0.85rem;
+  }
+  
+  .landing-page .feature-icon,
+  .landing-page .step-icon,
+  .landing-page .service-icon,
+  .landing-page .benefit-icon {
+    font-size: 2.5rem;
   }
 }
 

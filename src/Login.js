@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Login.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
@@ -22,6 +22,18 @@ function Login() {
   const [lang, setLang] = useState(i18n.language || 'ku');
   const [showContactModal, setShowContactModal] = useState(false);
 
+  // مسح الكاش عند تحميل الصفحة
+  useEffect(() => {
+    // إجبار المتصفح على تحميل الملفات الجديدة
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          caches.delete(name);
+        });
+      });
+    }
+  }, []);
+
   const handleLangChange = (e) => {
     const newLang = e.target.value;
     setLang(newLang);
@@ -37,35 +49,24 @@ function Login() {
     }
     
     try {
-      console.log('🔐 Login: بدء عملية تسجيل الدخول...');
       const normalizedInput = !input.includes('@') ? normalizePhone(input) : input;
       const { data, error } = await signIn(normalizedInput, password, loginType);
 
       if (error) throw new Error(error);
       
-      console.log('✅ Login: تم تسجيل الدخول بنجاح');
       setWelcome(true);
       
       const params = new URLSearchParams(location.search);
       const redirect = params.get('redirect');
       
-      console.log('🔄 Login: إعادة التوجيه بعد تسجيل الدخول:', { 
-        redirect, 
-        loginType 
-      });
-      
       if (redirect) {
-        console.log('🎯 Login: إعادة توجيه للرابط المحفوظ:', redirect);
         navigate(redirect, { replace: true });
       } else if (loginType === 'doctor') {
-        console.log('👨‍⚕️ Login: إعادة توجيه لصفحة الطبيب');
         navigate('/doctor-dashboard');
       } else {
-        console.log('🏠 Login: إعادة توجيه للصفحة الرئيسية');
         navigate('/home');
       }
     } catch (err) {
-      console.error('❌ Login: خطأ في تسجيل الدخول:', err.message);
       if (err.message && err.message.includes(t('registered_as_doctor'))) {
         setError(t('doctor_account_login_error'));
       } else {
@@ -78,13 +79,13 @@ function Login() {
 
   return (
     <div className="login-container" style={{
-      background: 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
-      minHeight: isMobile ? '100vh' : '100vh',
+      background: `linear-gradient(135deg, rgba(0, 188, 212, 0.4) 0%, rgba(0, 150, 136, 0.4) 100%), url('/images/login-hero.jpg?v=${Date.now()}') center center/cover no-repeat`,
+      minHeight: isMobile ? '120vh' : '130vh',
       position: 'relative',
       flexDirection: 'column',
       justifyContent: 'flex-start',
-      paddingTop: isMobile ? '1rem' : '3.5rem',
-      paddingBottom: isMobile ? '1rem' : '0',
+      paddingTop: isMobile ? '2rem' : '4rem',
+      paddingBottom: isMobile ? '2rem' : '2rem',
     }}>
       {/* زر العودة للصفحة الرئيسية */}
       <button 
@@ -178,9 +179,9 @@ function Login() {
         zIndex: 0
       }} />
       
-      <div style={{position:'relative', zIndex:1, width:'100%'}}>
+      <div style={{position:'relative', zIndex:1, width:'100%', marginTop: isMobile ? '2rem' : '1rem'}}>
         {/* Logo Section - أصغر للموبايل */}
-        <div style={{textAlign:'center', marginBottom: isMobile ? '1.5rem' : '2.2rem', padding:'0 1.2rem'}}>
+        <div style={{textAlign:'center', marginBottom: isMobile ? '2.5rem' : '2.2rem', padding:'0 1.2rem'}}>
           <div 
             onClick={() => navigate('/')}
             style={{
@@ -234,14 +235,14 @@ function Login() {
         {/* Login Form - أصغر للموبايل */}
         <form className="login-box" onSubmit={handleSubmit} style={{
           background: '#fff',
-          padding: isMobile ? '1.5rem 1.2rem' : '2.7rem 2.2rem',
+          padding: isMobile ? '2rem 1.5rem' : '2.7rem 2.2rem',
           borderRadius: '20px',
           boxShadow: '0 8px 40px 0 rgba(0, 188, 212, 0.18), 0 1.5px 8px 0 rgba(0,0,0,0.10)',
-          minWidth: isMobile ? 280 : 340,
-          maxWidth: isMobile ? '90vw' : '95vw',
+          minWidth: isMobile ? 300 : 340,
+          maxWidth: isMobile ? '85vw' : '95vw',
           display: 'flex',
           flexDirection: 'column',
-          gap: isMobile ? '1rem' : '1.5rem',
+          gap: isMobile ? '1.2rem' : '1.5rem',
           alignItems: 'center',
           border: '1.5px solid #e0e0e0',
           animation: 'fadeIn 0.8s cubic-bezier(.39,.575,.56,1.000)',

@@ -36,6 +36,18 @@ function DoctorDetails() {
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [migratingImage, setMigratingImage] = useState(false);
 
+  // مسح الكاش عند تحميل الصفحة
+  useEffect(() => {
+    // إجبار المتصفح على تحميل الملفات الجديدة
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          caches.delete(name);
+        });
+      });
+    }
+  }, []);
+
   // دالة مساعدة لمسار صورة الدكتور
   const getImageUrl = (doctor) => {
     // التحقق من كلا الحقلين: image و profileImage
@@ -298,7 +310,7 @@ const bookingData = {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
+      background: `linear-gradient(135deg, rgba(0, 188, 212, 0.7) 0%, rgba(0, 150, 136, 0.7) 100%), url('/images/det.jpg?v=${Date.now()}') center center/cover no-repeat`,
       minHeight: '100vh',
       position: 'relative'
     }}>
@@ -322,12 +334,8 @@ const bookingData = {
                 src={getImageUrl(doctor)} 
                 alt={doctor.name} 
                 onError={(e) => {
-                  console.log('❌ فشل تحميل الصورة:', getImageUrl(doctor));
                   // إذا فشل تحميل الصورة الحقيقية، استخدم شعار المشروع
                   e.target.src = '/logo.png';
-                }}
-                onLoad={(e) => {
-                  console.log('✅ تم تحميل الصورة بنجاح:', getImageUrl(doctor));
                 }}
                 style={{maxWidth:'90vw', maxHeight:'80vh', borderRadius:18, boxShadow:'0 4px 32px #0008'}} 
               />

@@ -9,13 +9,11 @@ const getSavedLanguage = () => {
   try {
     const savedLang = localStorage.getItem('selectedLanguage');
     if (savedLang && ['ar', 'en', 'ku'].includes(savedLang)) {
-      console.log('تم العثور على اللغة المحفوظة:', savedLang);
       return savedLang;
     }
   } catch (error) {
-    console.error('خطأ في قراءة اللغة المحفوظة:', error);
+    // تجاهل الأخطاء في الإنتاج
   }
-  console.log('استخدام اللغة الافتراضية: ar');
   return 'ar'; // اللغة الافتراضية
 };
 
@@ -25,7 +23,6 @@ const reapplyLanguage = () => {
   const savedLang = localStorage.getItem('selectedLanguage');
   
   if (savedLang && savedLang !== currentLang) {
-    console.log('إعادة تطبيق اللغة من', currentLang, 'إلى', savedLang);
     i18n.changeLanguage(savedLang);
   }
 };
@@ -51,6 +48,12 @@ i18n
     // منع التخزين المؤقت
     caches: {
       enabled: false
+    },
+    // إعدادات إضافية لتحسين التحديث
+    updateMissing: true,
+    saveMissing: false,
+    missingKeyHandler: (lng, ns, key, fallbackValue) => {
+      return fallbackValue;
     }
   });
 
@@ -58,5 +61,12 @@ i18n
 setTimeout(() => {
   reapplyLanguage();
 }, 100);
+
+// إضافة event listener لتحديث اللغة عند تغييرها في localStorage
+window.addEventListener('storage', (event) => {
+  if (event.key === 'selectedLanguage' && event.newValue) {
+    i18n.changeLanguage(event.newValue);
+  }
+});
 
 export default i18n; 

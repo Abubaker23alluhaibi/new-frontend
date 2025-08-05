@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 function UserProfile() {
-  console.log('🔍 UserProfile - تم تحميل المكون');
   const { profile, updateProfile, user } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -22,11 +21,7 @@ function UserProfile() {
   const [imageLoadError, setImageLoadError] = useState(false);
   const [edit, setEdit] = useState(false);
   
-  // إضافة console.log للتأكد من حالة edit
-  console.log('🔍 UserProfile - edit state:', edit);
-  console.log('🔍 UserProfile - profile data:', profile);
-  console.log('🔍 UserProfile - user data:', user);
-  console.log('🔍 UserProfile - form data:', form);
+
 
   // دالة مساعدة لمسار صورة المستخدم
   const getImageUrl = img => {
@@ -44,17 +39,11 @@ function UserProfile() {
     newPassword: '',
     confirmPassword: ''
   });
-  console.log('🔍 UserProfile - profile data:', profile);
-  console.log('🔍 UserProfile - user data:', user);
+
 
   // تحديث النموذج عند تغيير البيانات الشخصية
   useEffect(() => {
-    console.log('🔍 useEffect - تم تحديث البيانات الشخصية');
-    console.log('🔍 useEffect - profile:', profile);
-    console.log('🔍 useEffect - user:', user);
-    
     if (profile) {
-      console.log('🔍 useEffect - استخدام بيانات profile');
       setForm({
         first_name: profile.first_name || '',
         email: profile.email || '',
@@ -64,7 +53,6 @@ function UserProfile() {
       setImageLoadError(false);
     } else if (user) {
       // إذا لم يكن هناك profile، استخدم user
-      console.log('🔍 useEffect - استخدام بيانات user');
       setForm({
         first_name: user.first_name || '',
         email: user.email || '',
@@ -76,7 +64,6 @@ function UserProfile() {
   }, [profile, user]);
 
   const handleChange = e => {
-    console.log('🔍 handleChange - تم تغيير الحقل:', e.target.name, 'القيمة الجديدة:', e.target.value);
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 

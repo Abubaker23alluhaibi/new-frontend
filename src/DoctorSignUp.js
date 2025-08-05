@@ -279,7 +279,11 @@ function DoctorSignUp() {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-container" style={{
+      background: `linear-gradient(135deg, rgba(0, 188, 212, 0.9) 0%, rgba(0, 150, 136, 0.9) 100%), url('/images/doctor-capsule.jpg') center center/cover no-repeat`,
+      minHeight: '100vh',
+      position: 'relative',
+    }}>
       <form className="login-box" onSubmit={step === 1 ? handleFirstStep : step === 2 ? handleSecondStep : step === 3 ? handleFourthStep : handleThirdStep} encType="multipart/form-data">
         {success ? (
           <div style={{

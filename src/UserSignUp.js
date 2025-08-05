@@ -108,7 +108,7 @@ function UserSignUp() {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
+      background: `linear-gradient(135deg, rgba(0, 188, 212, 0.9) 0%, rgba(0, 150, 136, 0.9) 100%), url('/images/doctor-capsule.jpg') center center/cover no-repeat`,
       minHeight: '100vh',
       position: 'relative',
     }}>
