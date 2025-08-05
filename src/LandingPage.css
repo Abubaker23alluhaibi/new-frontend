@@ -330,6 +330,61 @@
   align-items: center;
   justify-content: space-between;
   font-weight: 500;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* زر اللغة الجديد للموبايل - مثل صفحة تسجيل الدخول */
+.landing-page .language-select-mobile-new {
+  background: rgba(0, 188, 212, 0.1);
+  color: #009688;
+  border: none;
+  border-radius: 8px;
+  padding: 0.3rem 0.8rem;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s;
+  border: 1px solid rgba(0, 150, 136, 0.2);
+  min-height: 36px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  margin: 0.3rem 0;
+}
+
+.landing-page .language-select-mobile-new:hover {
+  background: rgba(0, 188, 212, 0.15);
+  box-shadow: 0 3px 12px rgba(0, 188, 212, 0.3);
+  border-color: rgba(0, 150, 136, 0.3);
+}
+
+.landing-page .language-select-mobile-new:focus {
+  outline: none;
+  background: rgba(0, 188, 212, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);
+  border-color: rgba(0, 150, 136, 0.4);
+}
+
+.landing-page .language-select-mobile-new option {
+  background: white;
+  color: #009688;
+  font-weight: 600;
+  padding: 0.5rem;
+}
+
+.landing-page .language-select-mobile-new option:hover {
+  background: rgba(0, 188, 212, 0.1);
 }
 
 .landing-page .language-btn-mobile:hover {
@@ -367,6 +422,12 @@
   color: #333;
   font-size: 0.85rem;
   font-weight: 500;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .landing-page .language-dropdown-mobile button:hover {
@@ -420,6 +481,54 @@
 .landing-page .language-selector {
   position: relative;
   z-index: 1002;
+  pointer-events: auto;
+}
+
+/* زر اللغة الجديد - مثل صفحة تسجيل الدخول */
+.landing-page .language-select-new {
+  background: rgba(0, 188, 212, 0.1);
+  color: #009688;
+  border: none;
+  border-radius: 8px;
+  padding: 0.3rem 0.8rem;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s;
+  border: 1px solid rgba(0, 150, 136, 0.2);
+  min-height: 36px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.landing-page .language-select-new:hover {
+  background: rgba(0, 188, 212, 0.15);
+  box-shadow: 0 3px 12px rgba(0, 188, 212, 0.3);
+  border-color: rgba(0, 150, 136, 0.3);
+}
+
+.landing-page .language-select-new:focus {
+  outline: none;
+  background: rgba(0, 188, 212, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);
+  border-color: rgba(0, 150, 136, 0.4);
+}
+
+.landing-page .language-select-new option {
+  background: white;
+  color: #009688;
+  font-weight: 600;
+  padding: 0.5rem;
+}
+
+.landing-page .language-select-new option:hover {
+  background: rgba(0, 188, 212, 0.1);
 }
 
 .landing-page .language-btn {
@@ -438,6 +547,12 @@
   font-weight: 500;
   backdrop-filter: blur(10px);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .landing-page .language-btn:hover {
@@ -461,6 +576,7 @@
   border: 1px solid rgba(0, 0, 0, 0.1);
   animation: slideDown 0.2s ease-out;
   backdrop-filter: blur(10px);
+  pointer-events: auto;
 }
 
 .landing-page .language-dropdown.show {
@@ -480,6 +596,12 @@
   color: #333;
   font-size: 0.85rem;
   font-weight: 500;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .landing-page .language-dropdown button:hover {
@@ -989,6 +1111,19 @@
     margin-left: 0;
     width: 100%;
   }
+
+  /* تحسينات زر اللغة الجديد للموبايل */
+  .landing-page .language-select-new {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8rem;
+    min-height: 32px;
+  }
+
+  .landing-page .language-select-mobile-new {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8rem;
+    min-height: 32px;
+  }
   
   /* Hide desktop nav, show mobile menu */
   .landing-page .desktop-nav {
@@ -1134,6 +1269,19 @@
   .landing-page .header.scrolled {
     background: rgba(0, 188, 212, 0.98);
     backdrop-filter: blur(18px);
+  }
+
+  /* تحسينات زر اللغة الجديد للشاشات الصغيرة */
+  .landing-page .language-select-new {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+    min-height: 30px;
+  }
+
+  .landing-page .language-select-mobile-new {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+    min-height: 30px;
   }
   
   .landing-page .header-container {

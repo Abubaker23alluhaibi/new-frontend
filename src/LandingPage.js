@@ -7,21 +7,131 @@ const LandingPage = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [currentLanguage, setCurrentLanguage] = useState('ar');
-  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [backgroundImageLoaded, setBackgroundImageLoaded] = useState(false);
   const moreMenuRef = useRef(null);
+
+  // دالة مساعدة لضمان تطبيق اللغة
+  const ensureLanguageApplied = (lang) => {
+    return new Promise((resolve) => {
+      let attempts = 0;
+      const maxAttempts = 5;
+      
+      const tryApplyLanguage = () => {
+        attempts++;
+        i18n.changeLanguage(lang);
+        
+        setTimeout(() => {
+          if (i18n.language === lang || attempts >= maxAttempts) {
+            resolve();
+          } else {
+            tryApplyLanguage();
+          }
+        }, 100);
+      };
+      
+      tryApplyLanguage();
+    });
+  };
+
+  // دالة لإعادة تحميل الترجمة بشكل قوي
+  const forceReloadTranslation = () => {
+    try {
+      const currentLang = i18n.language || 'ar';
+      const savedLang = localStorage.getItem('selectedLanguage') || 'ar';
+      
+      // تغيير مؤقت ثم العودة للغة المحفوظة
+      i18n.changeLanguage('en');
+      setTimeout(() => {
+        i18n.changeLanguage(savedLang);
+        
+        // إعادة تطبيق إضافية
+        setTimeout(() => {
+          i18n.changeLanguage(savedLang);
+        }, 100);
+      }, 50);
+    } catch (error) {
+      console.error('خطأ في إعادة تحميل الترجمة:', error);
+    }
+  };
+
+  // دالة لإعادة تحميل الصفحة إذا كانت البيانات قديمة
+  const checkAndReloadIfNeeded = () => {
+    try {
+      const lastUpdate = localStorage.getItem('translationTimestamp');
+      const currentTime = Date.now();
+      
+      // إذا مر أكثر من 3 دقائق منذ آخر تحديث، أعد تحميل الترجمة
+      if (lastUpdate && (currentTime - parseInt(lastUpdate)) > 180000) {
+        forceReloadTranslation();
+        localStorage.setItem('translationTimestamp', currentTime.toString());
+      }
+      
+      // التحقق من تطابق اللغة المحفوظة مع اللغة الحالية
+      const savedLang = localStorage.getItem('selectedLanguage');
+      const currentLang = i18n.language;
+      
+      if (savedLang && currentLang && savedLang !== currentLang) {
+        console.log('تصحيح عدم تطابق اللغة:', savedLang, currentLang);
+        i18n.changeLanguage(savedLang);
+        setCurrentLanguage(savedLang);
+      }
+    } catch (error) {
+      console.error('خطأ في فحص الترجمة:', error);
+    }
+  };
 
   useEffect(() => {
     // إضافة timestamp لمنع التخزين المؤقت
     const timestamp = Date.now();
     
-    // استرجاع اللغة المحفوظة
-    const savedLanguage = localStorage.getItem('selectedLanguage') || 'ar';
-    setCurrentLanguage(savedLanguage);
+    // استرجاع اللغة المحفوظة مع معالجة الأخطاء
+    let savedLanguage = 'ar'; // اللغة الافتراضية
+    try {
+      const storedLanguage = localStorage.getItem('selectedLanguage');
+      if (storedLanguage && ['ar', 'en', 'ku'].includes(storedLanguage)) {
+        savedLanguage = storedLanguage;
+        console.log('تم استرجاع اللغة المحفوظة:', savedLanguage);
+      } else {
+        console.log('لم يتم العثور على لغة محفوظة، استخدام الافتراضية:', savedLanguage);
+      }
+    } catch (error) {
+      console.error('خطأ في قراءة اللغة المحفوظة:', error);
+    }
     
-    // إعادة تحميل الترجمة مع timestamp لمنع التخزين المؤقت
-    i18n.changeLanguage(savedLanguage);
+    // تحديث الحالة المحلية
+    setCurrentLanguage(savedLanguage);
+    console.log('تم تحديث الحالة المحلية للغة:', savedLanguage);
+    
+    // تطبيق اللغة في i18n مع معالجة الأخطاء
+    const applyLanguage = async () => {
+      try {
+        // تطبيق اللغة مباشرة
+        i18n.changeLanguage(savedLanguage);
+        console.log('تم تطبيق اللغة في i18n:', savedLanguage);
+        
+        // التحقق من تطبيق اللغة
+        setTimeout(() => {
+          console.log('اللغة الحالية في i18n:', i18n.language);
+          if (i18n.language !== savedLanguage) {
+            console.log('إعادة تطبيق اللغة بعد فشل أولي');
+            i18n.changeLanguage(savedLanguage);
+            
+            // إعادة تحميل الصفحة إذا لم تتطبق اللغة
+            setTimeout(() => {
+              if (i18n.language !== savedLanguage) {
+                console.log('فشل في تطبيق اللغة، إعادة تحميل الصفحة');
+                window.location.reload();
+              }
+            }, 500);
+          }
+        }, 100);
+      } catch (error) {
+        console.error('خطأ في تطبيق اللغة:', error);
+      }
+    };
+    
+    applyLanguage();
     
     // إضافة meta tags لمنع التخزين المؤقت
     const metaTags = [
@@ -47,6 +157,9 @@ const LandingPage = () => {
       timestampMeta.content = timestamp.toString();
       document.head.appendChild(timestampMeta);
     }
+    
+    // إضافة timestamp للـ localStorage
+    localStorage.setItem('translationTimestamp', timestamp.toString());
   }, [i18n]);
 
   useEffect(() => {
@@ -71,10 +184,26 @@ const LandingPage = () => {
       checkAndReloadIfNeeded();
     };
     
+    // إضافة event listener لتحديث الترجمة عند تغيير الرؤية
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        checkAndReloadIfNeeded();
+      }
+    };
+    
+    // إضافة event listener لتحديث الترجمة عند العودة للصفحة
+    const handlePageShow = () => {
+      checkAndReloadIfNeeded();
+    };
+    
     window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pageshow', handlePageShow);
     
     return () => {
       window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pageshow', handlePageShow);
     };
   }, []);
 
@@ -83,7 +212,6 @@ const LandingPage = () => {
     const handleClickOutside = (event) => {
       if (moreMenuRef.current && !moreMenuRef.current.contains(event.target)) {
         setShowMoreMenu(false);
-        setShowLanguageDropdown(false);
       }
     };
 
@@ -99,31 +227,73 @@ const LandingPage = () => {
       }
     };
 
+    // إضافة event listeners متعددة لضمان العمل على جميع الأجهزة
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
     window.addEventListener('scroll', handleScroll);
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  const changeLanguage = (lang) => {
+  const changeLanguage = async (lang) => {
+    console.log('محاولة تغيير اللغة إلى:', lang);
+    
+    // تحديث الحالة المحلية أولاً
     setCurrentLanguage(lang);
     
-    // إعادة تحميل الترجمة بشكل قوي
-    i18n.changeLanguage(lang);
+    // حفظ اللغة في localStorage
+    try {
+      localStorage.setItem('selectedLanguage', lang);
+      localStorage.setItem('translationTimestamp', Date.now().toString());
+      console.log('تم حفظ اللغة في localStorage:', lang);
+    } catch (error) {
+      console.error('خطأ في حفظ اللغة في localStorage:', error);
+    }
     
-    // إضافة تأخير قصير ثم إعادة تحميل الترجمة مرة أخرى
-    setTimeout(() => {
+
+    
+    // تغيير اللغة في i18n مباشرة
+    try {
+      // تغيير اللغة بشكل مباشر
       i18n.changeLanguage(lang);
-    }, 100);
-    
-    localStorage.setItem('selectedLanguage', lang);
-    setShowLanguageDropdown(false);
-    
-    // إضافة timestamp للـ localStorage لمنع التخزين المؤقت
-    localStorage.setItem('translationTimestamp', Date.now().toString());
+      console.log('تم تطبيق اللغة في i18n:', lang);
+      
+      // إعادة تطبيق اللغة بعد تأخير قصير
+      setTimeout(() => {
+        i18n.changeLanguage(lang);
+        console.log('اللغة الحالية بعد التطبيق:', i18n.language);
+        
+        // التحقق من نجاح التطبيق
+        if (i18n.language === lang) {
+          console.log('تم تطبيق اللغة بنجاح:', lang);
+          // إضافة timestamp جديد
+          localStorage.setItem('translationTimestamp', Date.now().toString());
+          
+          // إعادة تحميل الصفحة لضمان تطبيق التغييرات
+          console.log('إعادة تحميل الصفحة لتطبيق التغييرات');
+          setTimeout(() => {
+            window.location.reload();
+          }, 300);
+        } else {
+          console.log('فشل في تطبيق اللغة، إعادة تحميل إجبارية');
+          // إعادة تحميل الصفحة كحل بديل
+          setTimeout(() => {
+            window.location.reload();
+          }, 300);
+        }
+      }, 200);
+      
+    } catch (error) {
+      console.error('خطأ في تغيير اللغة:', error);
+      // إعادة تحميل الصفحة كحل بديل
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
+    }
   };
 
   const scrollToSection = (sectionId) => {
@@ -151,35 +321,7 @@ const LandingPage = () => {
     scrollToSection('home');
   };
 
-  const getLanguageDisplay = () => {
-    switch (currentLanguage) {
-      case 'ar': return 'العربية';
-      case 'en': return 'English';
-      case 'ku': return 'کوردی';
-      default: return 'العربية';
-    }
-  };
 
-  // دالة لإعادة تحميل الترجمة بشكل قوي
-  const forceReloadTranslation = () => {
-    const currentLang = i18n.language;
-    i18n.changeLanguage('en'); // تغيير مؤقت
-    setTimeout(() => {
-      i18n.changeLanguage(currentLang); // العودة للغة الحالية
-    }, 50);
-  };
-
-  // دالة لإعادة تحميل الصفحة إذا كانت البيانات قديمة
-  const checkAndReloadIfNeeded = () => {
-    const lastUpdate = localStorage.getItem('translationTimestamp');
-    const currentTime = Date.now();
-    
-    // إذا مر أكثر من 5 دقائق منذ آخر تحديث، أعد تحميل الترجمة
-    if (lastUpdate && (currentTime - parseInt(lastUpdate)) > 300000) {
-      forceReloadTranslation();
-      localStorage.setItem('translationTimestamp', currentTime.toString());
-    }
-  };
 
   return (
     <div className="landing-page" itemScope itemType="https://schema.org/MedicalOrganization">
@@ -252,16 +394,15 @@ const LandingPage = () => {
                   </button>
                   <div className="dropdown-divider"></div>
                   <div className="language-selector-mobile">
-                    <button className="language-btn-mobile" onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}>
-                      🌐 <span>{getLanguageDisplay()}</span>
-                    </button>
-                    {showLanguageDropdown && (
-                      <div className="language-dropdown-mobile">
-                        <button onClick={() => changeLanguage('ar')}>العربية</button>
-                        <button onClick={() => changeLanguage('en')}>English</button>
-                        <button onClick={() => changeLanguage('ku')}>کوردی</button>
-                      </div>
-                    )}
+                    <select 
+                      value={currentLanguage} 
+                      onChange={(e) => changeLanguage(e.target.value)} 
+                      className="language-select-mobile-new"
+                    >
+                      <option value="ar">العربية</option>
+                      <option value="en">English</option>
+                      <option value="ku">کوردی</option>
+                    </select>
                   </div>
                 </div>
               )}
@@ -269,14 +410,15 @@ const LandingPage = () => {
 
             {/* Language Selector - Desktop Only */}
             <div className="language-selector desktop-only">
-              <button className="language-btn" onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}>
-                🌐 <span>{getLanguageDisplay()}</span>
-              </button>
-              <div className={`language-dropdown ${showLanguageDropdown ? 'show' : ''}`}>
-                <button onClick={() => changeLanguage('ar')}>العربية</button>
-                <button onClick={() => changeLanguage('en')}>English</button>
-                <button onClick={() => changeLanguage('ku')}>کوردی</button>
-              </div>
+              <select 
+                value={currentLanguage} 
+                onChange={(e) => changeLanguage(e.target.value)} 
+                className="language-select-new"
+              >
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+                <option value="ku">کوردی</option>
+              </select>
             </div>
             
             <button className="login-btn" onClick={goToLogin}>
