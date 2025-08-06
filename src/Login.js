@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './Login.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
@@ -34,11 +34,19 @@ function Login() {
     }
   }, []);
 
-  const handleLangChange = (e) => {
+  const handleLangChange = useCallback((e) => {
     const newLang = e.target.value;
     setLang(newLang);
     i18n.changeLanguage(newLang);
-  };
+  }, []);
+
+  const handleInputChange = useCallback((e) => {
+    setInput(e.target.value);
+  }, []);
+
+  const handlePasswordChange = useCallback((e) => {
+    setPassword(e.target.value);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -142,6 +150,7 @@ function Login() {
           value={lang} 
           onChange={handleLangChange} 
           className="corner-language-select"
+          key={lang}
           style={{
             position: 'absolute',
             top: isMobile ? '0.5rem' : '1rem',
@@ -313,70 +322,22 @@ function Login() {
           </div>
 
           {/* Input Fields - أصغر للموبايل */}
-          {(!input || !input.includes('@')) ? (
-            <div style={{display:'flex', alignItems:'center', width:'100%', maxWidth:'100%'}}>
-              <span style={{
-                background:'#e0f7fa', 
-                color:'#009688', 
-                borderRadius:'10px 0 0 10px', 
-                padding: isMobile ? '0.7rem 0.7rem' : '0.9rem 0.9rem', 
-                fontWeight:700, 
-                fontSize: isMobile ? '0.9rem' : '1.08rem', 
-                border:'1.5px solid #b2dfdb', 
-                borderRight:'none'
-              }}>
-                +964
-              </span>
-              <input
-                type="text"
-                placeholder={t('phone_or_email_placeholder')}
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                autoComplete="username"
-                style={{
-                  borderRadius:'0 12px 12px 0', 
-                  borderLeft:'none', 
-                  flex:1, 
-                  minWidth:0,
-                  padding: isMobile ? '0.7rem 0.9rem' : '1rem 1.1rem',
-                  border: '1.5px solid #b2dfdb',
-                  fontSize: isMobile ? '0.9rem' : '1.08rem',
-                  outline: 'none',
-                  background: '#f8fafd',
-                  transition: 'border 0.2s, box-shadow 0.2s',
-                  boxShadow: '0 1.5px 6px 0 rgba(0, 188, 212, 0.04)',
-                  color: '#222'
-                }}
-              />
-            </div>
-          ) : (
-            <input
-              type="text"
-              placeholder={t('email_or_phone')}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              autoComplete="username"
-              style={{
-                padding: isMobile ? '0.7rem 0.9rem' : '1rem 1.1rem',
-                border: '1.5px solid #b2dfdb',
-                borderRadius: '12px',
-                fontSize: isMobile ? '0.9rem' : '1.08rem',
-                outline: 'none',
-                background: '#f8fafd',
-                transition: 'border 0.2s, box-shadow 0.2s',
-                boxShadow: '0 1.5px 6px 0 rgba(0, 188, 212, 0.04)',
-                color: '#222',
-                width: '100%'
-              }}
-            />
-          )}
-          
           <input
-            type="password"
-            placeholder={t('password')}
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            autoComplete="current-password"
+            type="text"
+            placeholder={t('phone_or_email_placeholder')}
+            value={input}
+            onChange={handleInputChange}
+            autoComplete="username"
+            inputMode="text"
+            autoFocus={false}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#00bcd4';
+              e.target.style.boxShadow = '0 0 0 2px #00bcd433';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#b2dfdb';
+              e.target.style.boxShadow = '0 1.5px 6px 0 rgba(0, 188, 212, 0.04)';
+            }}
             style={{
               padding: isMobile ? '0.7rem 0.9rem' : '1rem 1.1rem',
               border: '1.5px solid #b2dfdb',
@@ -387,7 +348,41 @@ function Login() {
               transition: 'border 0.2s, box-shadow 0.2s',
               boxShadow: '0 1.5px 6px 0 rgba(0, 188, 212, 0.04)',
               color: '#222',
-              width: '100%'
+              width: '100%',
+              WebkitAppearance: 'none',
+              WebkitBorderRadius: '12px'
+            }}
+          />
+          
+          <input
+            type="password"
+            placeholder={t('password')}
+            value={password}
+            onChange={handlePasswordChange}
+            autoComplete="current-password"
+            inputMode="text"
+            autoFocus={false}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#00bcd4';
+              e.target.style.boxShadow = '0 0 0 2px #00bcd433';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#b2dfdb';
+              e.target.style.boxShadow = '0 1.5px 6px 0 rgba(0, 188, 212, 0.04)';
+            }}
+            style={{
+              padding: isMobile ? '0.7rem 0.9rem' : '1rem 1.1rem',
+              border: '1.5px solid #b2dfdb',
+              borderRadius: '12px',
+              fontSize: isMobile ? '0.9rem' : '1.08rem',
+              outline: 'none',
+              background: '#f8fafd',
+              transition: 'border 0.2s, box-shadow 0.2s',
+              boxShadow: '0 1.5px 6px 0 rgba(0, 188, 212, 0.04)',
+              color: '#222',
+              width: '100%',
+              WebkitAppearance: 'none',
+              WebkitBorderRadius: '12px'
             }}
           />
           
@@ -676,4 +671,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default React.memo(Login);

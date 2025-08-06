@@ -47,6 +47,12 @@
   transition: border 0.2s, box-shadow 0.2s;
   box-shadow: 0 1.5px 6px 0 rgba(0, 188, 212, 0.04);
   color: #222;
+  -webkit-appearance: none;
+  -webkit-border-radius: 12px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 .login-box input:focus {
@@ -207,6 +213,12 @@
   .login-box input {
     padding: 0.7rem 0.9rem;
     font-size: 0.9rem;
+    -webkit-appearance: none;
+    -webkit-border-radius: 12px;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: text;
+    user-select: text;
   }
 
   .login-box button {
@@ -243,6 +255,12 @@
   .login-box input {
     padding: 0.6rem 0.8rem;
     font-size: 0.85rem;
+    -webkit-appearance: none;
+    -webkit-border-radius: 12px;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: text;
+    user-select: text;
   }
 
   .login-box button {
@@ -279,6 +297,12 @@
   .login-box input {
     padding: 0.5rem 0.7rem;
     font-size: 0.8rem;
+    -webkit-appearance: none;
+    -webkit-border-radius: 12px;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: text;
+    user-select: text;
   }
 
   .login-box button {
