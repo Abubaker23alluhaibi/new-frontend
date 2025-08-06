@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './Login.css';
 import { normalizePhone } from './utils/phoneUtils';
 import { useAuth } from './AuthContext';
 
 function UserSignUp() {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -48,12 +50,12 @@ function UserSignUp() {
     setLoading(true);
     
     if (!form.name || !form.email || !form.phone || !form.password || !form.confirm) {
-      setError('يرجى ملء جميع الحقول');
+      setError(t('fill_all_fields'));
       setLoading(false);
       return;
     }
     if (form.password !== form.confirm) {
-      setError('كلمتا المرور غير متطابقتين');
+      setError(t('passwords_not_match'));
       setLoading(false);
       return;
     }
@@ -95,12 +97,12 @@ function UserSignUp() {
         } else if (data.message) {
           setError(data.message);
         } else {
-          setError('حدث خطأ أثناء التسجيل');
+          setError(t('error_occurred'));
         }
       }
           } catch (err) {
         console.error('❌ UserSignUp: خطأ في التسجيل:', err);
-        setError(err.message || 'حدث خطأ أثناء التسجيل');
+        setError(err.message || t('error_occurred'));
       } finally {
         setLoading(false);
       }
@@ -155,7 +157,7 @@ function UserSignUp() {
         </button>
         
         <form className="login-box" onSubmit={handleSubmit}>
-          <h2>تسجيل مستخدم جديد</h2>
+          <h2>{t('user_signup_title')}</h2>
           {redirect && (
             <div style={{
               background: '#e3f2fd',
@@ -167,21 +169,21 @@ function UserSignUp() {
               color: '#1976d2',
               textAlign: 'center'
             }}>
-              <div style={{fontWeight: 700, marginBottom: 4}}>💡 ملاحظة:</div>
-              <div>بعد التسجيل سيتم توجيهك تلقائياً لصفحة الطبيب</div>
+              <div style={{fontWeight: 700, marginBottom: 4}}>💡 {t('important_note')}:</div>
+              <div>{t('appointment_note')}</div>
             </div>
           )}
           <input
             type="text"
             name="name"
-            placeholder="الاسم الكامل"
+            placeholder={t('full_name')}
             value={form.name}
             onChange={handleChange}
           />
           <input
             type="email"
             name="email"
-            placeholder="البريد الإلكتروني"
+            placeholder={t('email')}
             value={form.email}
             onChange={handleChange}
           />
@@ -190,7 +192,7 @@ function UserSignUp() {
             <input
               type="text"
               name="phone"
-              placeholder="رقم الهاتف (بدون الصفر)"
+              placeholder={t('phone_placeholder')}
               value={form.phone}
               onChange={handleChange}
               style={{borderRadius:'0 12px 12px 0', borderLeft:'none', flex:1, minWidth:0}}
@@ -211,24 +213,21 @@ function UserSignUp() {
           }}>
             <span style={{fontSize: '1.2rem'}}>📱</span>
             <div>
-              <div style={{fontWeight: 700, marginBottom: 2}}>ملاحظة مهمة:</div>
-              <div>يجب أن يكون الرقم يحتوي على واتساب للتواصل مع الطبيب</div>
-              <div style={{fontSize: '0.8rem', marginTop: 4, opacity: 0.8}}>
-                <strong>تێبینی گرنگ:</strong> ژمارەکە دەبێت واتساپی تێدابێت بۆ پەیوەندی لەگەڵ دکتۆر
-              </div>
+              <div style={{fontWeight: 700, marginBottom: 2}}>{t('whatsapp_note_title')}:</div>
+              <div>{t('whatsapp_note_user')}</div>
             </div>
           </div>
           <input
             type="password"
             name="password"
-            placeholder="كلمة المرور"
+            placeholder={t('password')}
             value={form.password}
             onChange={handleChange}
           />
           <input
             type="password"
             name="confirm"
-            placeholder="تأكيد كلمة المرور"
+            placeholder={t('confirm_password')}
             value={form.confirm}
             onChange={handleChange}
           />
@@ -240,14 +239,14 @@ function UserSignUp() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{marginLeft: 6, animation: 'spin 1s linear infinite'}}>
                   <path d="M12 2V6M12 18V22M4.93 4.93L7.76 7.76M16.24 16.24L19.07 19.07M2 12H6M18 12H22M4.93 19.07L7.76 16.24M16.24 7.76L19.07 4.93" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                جاري التسجيل...
+                {t('loading')}
               </>
             ) : (
               <>
                 <svg width="22" height="22" fill="none" viewBox="0 0 24 24" style={{marginLeft: 6}} xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 4v16m8-8H4" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                تسجيل
+                {t('signup_button')}
               </>
             )}
           </button>

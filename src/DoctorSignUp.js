@@ -394,11 +394,8 @@ function DoctorSignUp() {
                   }}>
                     <span style={{fontSize: '1.2rem'}}>📱</span>
                     <div>
-                      <div style={{fontWeight: 700, marginBottom: 2}}>ملاحظة مهمة:</div>
-                      <div>يجب أن يكون الرقم يحتوي على واتساب للتواصل مع المرضى</div>
-                      <div style={{fontSize: '0.8rem', marginTop: 4, opacity: 0.8}}>
-                        <strong>تێبینی گرنگ:</strong> ژمارەکە دەبێت واتساپی تێدابێت بۆ پەیوەندی لەگەڵ نەخۆشەکان
-                      </div>
+                      <div style={{fontWeight: 700, marginBottom: 2}}>{t('whatsapp_note_title')}:</div>
+                      <div>{t('whatsapp_note_doctor')}</div>
                     </div>
                   </div>
                   <div>
@@ -485,7 +482,7 @@ function DoctorSignUp() {
                     <button
                       type="button"
                       onClick={() => {
-                        const url = prompt('أدخل رابط Google Maps لموقع العيادة:');
+                        const url = prompt(t('enter_map_location'));
                         if (url && url.trim()) {
                           setForm(prev => ({...prev, mapLocation: url.trim()}));
                           alert(t('map_location_added'));
@@ -541,7 +538,7 @@ function DoctorSignUp() {
                 {/* حقل اختيار مدة الموعد الافتراضية */}
                 <div style={{ marginBottom: 10 }}>
                   <label style={{ fontWeight: 600, color: '#333', marginBottom: 4, display: 'block' }}>
-                    مدة الموعد الافتراضية (بالدقائق)
+                    {t('appointment_duration_label')}
                   </label>
                   <select
                     value={form.appointmentDuration}
@@ -557,13 +554,13 @@ function DoctorSignUp() {
                     }}
                     required
                   >
-                    <option value="5">5 دقائق</option>
-                    <option value="10">10 دقائق</option>
-                    <option value="15">15 دقيقة</option>
-                    <option value="20">20 دقيقة</option>
-                    <option value="30">30 دقيقة</option>
-                    <option value="45">45 دقيقة</option>
-                    <option value="60">60 دقيقة</option>
+                    <option value="5">5 {t('minutes')}</option>
+                    <option value="10">10 {t('minutes')}</option>
+                    <option value="15">15 {t('minute')}</option>
+                    <option value="20">20 {t('minutes')}</option>
+                    <option value="30">30 {t('minutes')}</option>
+                    <option value="45">45 {t('minutes')}</option>
+                    <option value="60">60 {t('minutes')}</option>
                   </select>
                 </div>
               </div>
@@ -588,11 +585,11 @@ function DoctorSignUp() {
                 </select>
                     <div style={{display:'flex', gap:8}}>
                       <div style={{flex:1, display:'flex', flexDirection:'column'}}>
-                        <label style={{fontSize:13, color:'#009688', marginBottom:2}}>{t('from_time') || 'وقت البدء'}</label>
+                        <label style={{fontSize:13, color:'#009688', marginBottom:2}}>{t('from_time')}</label>
                         <input type="time" value={newTime.from} onChange={e=>setNewTime({...newTime, from: e.target.value})} style={{borderRadius:8, padding:'.7rem', width:'100%', fontSize:16}} />
                       </div>
                       <div style={{flex:1, display:'flex', flexDirection:'column'}}>
-                        <label style={{fontSize:13, color:'#009688', marginBottom:2}}>{t('to_time') || 'وقت النهاية'}</label>
+                        <label style={{fontSize:13, color:'#009688', marginBottom:2}}>{t('to_time')}</label>
                         <input type="time" value={newTime.to} onChange={e=>setNewTime({...newTime, to: e.target.value})} style={{borderRadius:8, padding:'.7rem', width:'100%', fontSize:16}} />
                       </div>
                     </div>
@@ -623,7 +620,7 @@ function DoctorSignUp() {
           ) : step === 4 ? (
             <div style={{maxWidth:400, margin:'0 auto', padding:'0 1rem'}}>
               <h2 style={{textAlign:'center', marginBottom:18}}>{t('doctor_signup_title')}</h2>
-              <h3 style={{color:'#009688', marginBottom:14, fontWeight:800}}>📱 إرسال الوثائق على الواتساب</h3>
+              <h3 style={{color:'#009688', marginBottom:14, fontWeight:800}}>📱 {t('send_documents_whatsapp')}</h3>
               
               {/* صورة شخصية فقط */}
               <div style={{display:'flex', flexDirection:'column', gap:18, maxWidth:400, margin:'0 auto', marginBottom: 24}}>
@@ -643,12 +640,12 @@ function DoctorSignUp() {
               <div style={{background: '#f8f9fa', padding: 20, borderRadius: 12, border: '2px solid #25d366', marginBottom: 20}}>
                 <div style={{textAlign: 'center', marginBottom: 16}}>
                   <div style={{fontSize: 32, marginBottom: 8}}>📱</div>
-                  <h4 style={{color: '#25d366', margin: 0, fontWeight: 700}}>إرسال الوثائق على الواتساب</h4>
+                  <h4 style={{color: '#25d366', margin: 0, fontWeight: 700}}>{t('send_documents_whatsapp')}</h4>
                 </div>
                 
                 <div style={{marginBottom: 16}}>
                   <p style={{color: '#333', fontSize: 14, marginBottom: 12, textAlign: 'right'}}>
-                    <strong>📞 رقم الواتساب:</strong>
+                    <strong>📞 {t('whatsapp_number_label')}:</strong>
                   </p>
                   <a 
                     href="https://wa.me/+9647769012619" 
@@ -674,19 +671,19 @@ function DoctorSignUp() {
 
                 <div style={{marginBottom: 16}}>
                   <p style={{color: '#333', fontSize: 14, marginBottom: 8, textAlign: 'right', fontWeight: 600}}>
-                    📋 الوثائق المطلوبة:
+                    📋 {t('required_documents')}:
                   </p>
                   <ul style={{color: '#555', fontSize: 13, textAlign: 'right', margin: 0, paddingRight: 20}}>
-                    <li>صورة الهوية الشخصية (الوجه)</li>
-                    <li>صورة الهوية الشخصية (الظهر)</li>
-                    <li>صورة شهادة النقابة (الوجه)</li>
-                    <li>صورة شهادة النقابة (الظهر)</li>
+                    <li>{t('id_front')}</li>
+                    <li>{t('id_back')}</li>
+                    <li>{t('syndicate_front')}</li>
+                    <li>{t('syndicate_back')}</li>
                   </ul>
                 </div>
 
                 <div style={{background: '#fff3cd', padding: 12, borderRadius: 8, border: '1px solid #ffeaa7'}}>
                   <p style={{color: '#856404', fontSize: 12, margin: 0, textAlign: 'center'}}>
-                    💡 <strong>ملاحظة:</strong> سيتم إرسال رسالة تلقائية تحتوي على معلوماتك عند الضغط على "إنشاء الحساب"
+                    💡 <strong>{t('note')}:</strong> {t('auto_message_note')}
                   </p>
                 </div>
               </div>
@@ -697,7 +694,7 @@ function DoctorSignUp() {
                     <svg width="22" height="22" fill="none" viewBox="0 0 24 24" style={{marginLeft: 6}} xmlns="http://www.w3.org/2000/svg">
                       <path d="M12 4v16m8-8H4" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
-                    إنشاء الحساب
+                    {t('create_account')}
                   </button>
                 <button type="button" className="signup-link-btn" style={{marginTop:0}} onClick={()=>setStep(3)}>{t('back')}</button>
               </div>
