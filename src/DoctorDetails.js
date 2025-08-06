@@ -437,13 +437,11 @@ const bookingData = {
         <div style={{display:'flex', flexDirection:'column', alignItems:'center', gap: window.innerWidth < 500 ? 6 : 10}}>
           {/* مستطيل ملون لاسم الطبيب والتخصص فقط */}
           <div style={{
-            background:'linear-gradient(90deg,#7c4dff 0%,#00bcd4 100%)', 
             borderRadius: window.innerWidth < 500 ? 10 : 14, 
             padding: window.innerWidth < 500 ? '0.8rem 1rem' : '1rem 1.2rem', 
             marginBottom: window.innerWidth < 500 ? 10 : 15, 
             width:'100%', 
             maxWidth: window.innerWidth < 500 ? 280 : 320, 
-            boxShadow:'0 2px 8px #00bcd422', 
             display:'flex', 
             flexDirection:'column', 
             alignItems:'center'
@@ -451,13 +449,13 @@ const bookingData = {
             <div style={{
               fontWeight:900, 
               fontSize: window.innerWidth < 500 ? 16 : 20, 
-              color:'#fff', 
+              color:'#222', 
               marginBottom:4
             }}>
               {doctor.name}
             </div>
             <div style={{
-              color:'#fff', 
+              color:'#7c4dff', 
               fontWeight:700, 
               fontSize: window.innerWidth < 500 ? 12 : 15, 
               letterSpacing:0.5
@@ -496,7 +494,7 @@ const bookingData = {
             {doctor.name}
           </div>
           <div style={{
-            color:'#7c4dff', 
+            color:'#495057', 
             fontWeight:700, 
             fontSize: window.innerWidth < 500 ? 13 : 16,
             textAlign: 'center'
@@ -507,11 +505,7 @@ const bookingData = {
             fontSize: window.innerWidth < 500 ? 12 : 14, 
             color:'#666',
             textAlign: 'center',
-            marginTop: 8,
-            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-            borderRadius: 12,
-            padding: '0.8rem',
-            border: '1px solid #dee2e6'
+            marginTop: 8
           }}>
             <span role="img" aria-label="governorate" style={{fontSize: '1.2em', marginRight: '4px'}}>🏛️</span> 
             <span style={{fontWeight: 600, color: '#495057'}}>{provinces[doctor.province] || doctor.province}</span> 
@@ -525,10 +519,6 @@ const bookingData = {
               fontSize: window.innerWidth < 500 ? 13 : 15, 
               marginTop: 12,
               textAlign: 'center',
-              background: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
-              borderRadius: 12,
-              padding: '0.8rem',
-              border: '1px solid #ce93d8',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -537,7 +527,7 @@ const bookingData = {
             }}>
               <span style={{fontSize: '1.2em'}}>🏥</span>
               <span style={{fontWeight: 600}}>{t('clinic_location_label')}:</span>
-              <span style={{fontWeight: 700, color: '#7b1fa2'}}>{doctor.clinicLocation}</span>
+              <span style={{fontWeight: 700, color: '#495057'}}>{doctor.clinicLocation}</span>
             </div>
           )}
           {doctor.mapLocation && (
@@ -580,10 +570,6 @@ const bookingData = {
               fontSize: window.innerWidth < 500 ? 13 : 15, 
               marginTop: 12,
               textAlign: 'center',
-              background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
-              borderRadius: 12,
-              padding: '0.8rem',
-              border: '1px solid #90caf9',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -591,7 +577,7 @@ const bookingData = {
             }}>
               <span style={{fontSize: '1.2em'}}>📞</span>
               <span style={{fontWeight: 600}}>{t('phone_label')}:</span>
-              <span style={{fontWeight: 700, color: '#1976d2'}}>{doctor.phone}</span>
+              <span style={{fontWeight: 700, color: '#495057'}}>{doctor.phone}</span>
             </div>
           )}
           {doctor.about && (
@@ -600,12 +586,7 @@ const bookingData = {
               fontSize: window.innerWidth < 500 ? 13 : 15, 
               marginTop: 16, 
               textAlign:'center', 
-              lineHeight:1.6, 
-              background:'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)', 
-              borderRadius:12, 
-              padding: window.innerWidth < 500 ? '1rem 0.8rem' : '1.2rem 1rem',
-              border: '1px solid #ffcc80',
-              position: 'relative'
+              lineHeight:1.6
             }}>
               <div style={{
                 display: 'flex',
@@ -615,10 +596,10 @@ const bookingData = {
                 marginBottom: '8px'
               }}>
                 <span style={{fontSize: '1.3em'}}>👨‍⚕️</span>
-                <span style={{fontWeight: 700, color: '#e65100'}}>{t('about_doctor_label')}:</span>
+                <span style={{fontWeight: 700, color: '#495057'}}>{t('about_doctor_label')}:</span>
               </div>
               <div style={{
-                color: '#424242',
+                color: '#495057',
                 fontWeight: 500,
                 lineHeight: 1.7
               }}>
