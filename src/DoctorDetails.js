@@ -402,7 +402,7 @@ const bookingData = {
               });
             }}
             style={{
-              background: copySuccess ? '#4caf50' : 'linear-gradient(90deg, #00bcd4 0%, #009688 100%)',
+              background: copySuccess ? '#4caf50' : 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
               color: 'white',
               border: 'none',
               borderRadius: '20px',
@@ -486,31 +486,7 @@ const bookingData = {
             onClick={()=>setShowImageModal(true)} 
           />
           
-          {/* زر تحويل الصورة المحلية إلى Cloudinary */}
-          {(doctor.image?.startsWith('/uploads/') || doctor.profileImage?.startsWith('/uploads/')) && (
-            <button
-              onClick={migrateImageToCloudinary}
-              disabled={migratingImage}
-              style={{
-                background: migratingImage ? '#ccc' : '#ff9800',
-                color: 'white',
-                border: 'none',
-                borderRadius: '20px',
-                padding: '0.5rem 1rem',
-                fontSize: '0.8rem',
-                fontWeight: '600',
-                cursor: migratingImage ? 'not-allowed' : 'pointer',
-                marginTop: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.3rem',
-                transition: 'all 0.3s ease'
-              }}
-              title="تحويل الصورة إلى Cloudinary لمنع فقدانها عند تحديث الموقع"
-            >
-              {migratingImage ? '🔄 جاري التحويل...' : '☁️ تحويل للـ Cloudinary'}
-            </button>
-          )}
+
           <div style={{
             fontWeight:900, 
             fontSize: window.innerWidth < 500 ? 18 : 22, 
@@ -529,69 +505,125 @@ const bookingData = {
           </div>
           <div style={{
             fontSize: window.innerWidth < 500 ? 12 : 14, 
-            color:'#888',
+            color:'#666',
             textAlign: 'center',
-            marginTop: 4
+            marginTop: 8,
+            background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+            borderRadius: 12,
+            padding: '0.8rem',
+            border: '1px solid #dee2e6'
           }}>
-            <span role="img" aria-label="governorate">🏛️</span> {provinces[doctor.province] || doctor.province} &nbsp;
-            <span role="img" aria-label="area">📍</span> {doctor.area}
+            <span role="img" aria-label="governorate" style={{fontSize: '1.2em', marginRight: '4px'}}>🏛️</span> 
+            <span style={{fontWeight: 600, color: '#495057'}}>{provinces[doctor.province] || doctor.province}</span> 
+            &nbsp;&nbsp;
+            <span role="img" aria-label="area" style={{fontSize: '1.2em', marginRight: '4px'}}>📍</span> 
+            <span style={{fontWeight: 600, color: '#495057'}}>{doctor.area}</span>
           </div>
           {doctor.clinicLocation && (
             <div style={{
-              color:'#444', 
-              fontSize: window.innerWidth < 500 ? 12 : 14, 
-              marginTop:6,
-              textAlign: 'center'
+              color:'#495057', 
+              fontSize: window.innerWidth < 500 ? 13 : 15, 
+              marginTop: 12,
+              textAlign: 'center',
+              background: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
+              borderRadius: 12,
+              padding: '0.8rem',
+              border: '1px solid #ce93d8',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              flexWrap: 'wrap'
             }}>
-              <b>{t('clinic_location_label')}:</b> {doctor.clinicLocation}
+              <span style={{fontSize: '1.2em'}}>🏥</span>
+              <span style={{fontWeight: 600}}>{t('clinic_location_label')}:</span>
+              <span style={{fontWeight: 700, color: '#7b1fa2'}}>{doctor.clinicLocation}</span>
             </div>
           )}
           {doctor.mapLocation && (
-            <div style={{marginTop: 8}}>
+            <div style={{marginTop: 12}}>
               <button
                 onClick={() => window.open(doctor.mapLocation, '_blank')}
                 style={{
-                  background: 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)',
+                  background: 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
                   color: '#fff',
                   border: 'none',
-                  borderRadius: 12,
-                  padding: window.innerWidth < 500 ? '0.6rem 1.2rem' : '0.8rem 1.5rem',
-                  fontWeight: 600,
+                  borderRadius: 16,
+                  padding: window.innerWidth < 500 ? '0.8rem 1.5rem' : '1rem 2rem',
+                  fontWeight: 700,
                   cursor: 'pointer',
-                  fontSize: window.innerWidth < 500 ? 12 : 14,
-                  boxShadow: '0 2px 8px #4CAF5033',
+                  fontSize: window.innerWidth < 500 ? 13 : 15,
+                  boxShadow: '0 4px 12px rgba(0, 188, 212, 0.3)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 8,
-                  margin: '0 auto'
+                      gap: 10,
+                  margin: '0 auto',
+                  transition: 'all 0.3s ease',
+                  transform: 'translateY(0)'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 6px 16px rgba(0, 188, 212, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 4px 12px rgba(0, 188, 212, 0.3)';
                 }}
               >
-                🗺️ {t('open_map_location')}
+                <span style={{fontSize: '1.3em'}}>🗺️</span> {t('open_map_location')}
               </button>
             </div>
           )}
           {doctor.phone && (
             <div style={{
-              color:'#444', 
-              fontSize: window.innerWidth < 500 ? 12 : 14, 
-              marginTop:6,
-              textAlign: 'center'
+              color:'#495057', 
+              fontSize: window.innerWidth < 500 ? 13 : 15, 
+              marginTop: 12,
+              textAlign: 'center',
+              background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+              borderRadius: 12,
+              padding: '0.8rem',
+              border: '1px solid #90caf9',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
             }}>
-              <b>{t('phone_label')}:</b> {doctor.phone}
+              <span style={{fontSize: '1.2em'}}>📞</span>
+              <span style={{fontWeight: 600}}>{t('phone_label')}:</span>
+              <span style={{fontWeight: 700, color: '#1976d2'}}>{doctor.phone}</span>
             </div>
           )}
           {doctor.about && (
             <div style={{
-              color:'#333', 
-              fontSize: window.innerWidth < 500 ? 12 : 14, 
-              marginTop: window.innerWidth < 500 ? 10 : 15, 
+              color:'#495057', 
+              fontSize: window.innerWidth < 500 ? 13 : 15, 
+              marginTop: 16, 
               textAlign:'center', 
               lineHeight:1.6, 
-              background:'#f7fafd', 
-              borderRadius:8, 
-              padding: window.innerWidth < 500 ? '0.6rem 0.4rem' : '0.8rem 0.6rem'
+              background:'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)', 
+              borderRadius:12, 
+              padding: window.innerWidth < 500 ? '1rem 0.8rem' : '1.2rem 1rem',
+              border: '1px solid #ffcc80',
+              position: 'relative'
             }}>
-              <b>{t('about_doctor_label')}:</b><br/>{doctor.about}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                marginBottom: '8px'
+              }}>
+                <span style={{fontSize: '1.3em'}}>👨‍⚕️</span>
+                <span style={{fontWeight: 700, color: '#e65100'}}>{t('about_doctor_label')}:</span>
+              </div>
+              <div style={{
+                color: '#424242',
+                fontWeight: 500,
+                lineHeight: 1.7
+              }}>
+                {doctor.about}
+              </div>
             </div>
           )}
           
@@ -599,31 +631,32 @@ const bookingData = {
           <button
             onClick={() => setShowNoteModal(true)}
             style={{
-              background: 'linear-gradient(90deg, #ff9800 0%, #ff5722 100%)',
+              background: 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
               color: '#fff',
               border: 'none',
-              borderRadius: 12,
-              padding: window.innerWidth < 500 ? '0.6rem 1.2rem' : '0.8rem 1.5rem',
-              fontWeight: 600,
+              borderRadius: 16,
+              padding: window.innerWidth < 500 ? '0.8rem 1.5rem' : '1rem 2rem',
+              fontWeight: 700,
               fontSize: window.innerWidth < 500 ? 13 : 15,
               cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(255, 152, 0, 0.3)',
+              boxShadow: '0 4px 12px rgba(0, 188, 212, 0.3)',
               display: 'flex',
               alignItems: 'center',
-              gap: 8,
-              marginTop: window.innerWidth < 500 ? 8 : 12,
-              transition: 'all 0.2s'
+              gap: 10,
+              marginTop: window.innerWidth < 500 ? 12 : 16,
+              transition: 'all 0.3s ease',
+              transform: 'translateY(0)'
             }}
             onMouseOver={(e) => {
-              e.target.style.transform = 'translateY(-1px)';
-              e.target.style.boxShadow = '0 4px 12px rgba(255, 152, 0, 0.4)';
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 6px 16px rgba(0, 188, 212, 0.4)';
             }}
             onMouseOut={(e) => {
               e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 2px 8px rgba(255, 152, 0, 0.3)';
+              e.target.style.boxShadow = '0 4px 12px rgba(0, 188, 212, 0.3)';
             }}
           >
-                         📝 {window.innerWidth < 500 ? t('book_for_other_user_short') : t('book_for_other_user')}
+            <span style={{fontSize: '1.2em'}}>📝</span> {window.innerWidth < 500 ? t('book_for_other_user_short') : t('book_for_other_user')}
           </button>
         </div>
         
@@ -703,7 +736,7 @@ const bookingData = {
                       disabled={isBooked}
                       onClick={()=>!isBooked && setSelectedTime(time)}
                       style={{
-                        background: isBooked ? '#f5f5f5' : (selectedTime === time ? '#7c4dff' : '#f0f0f0'),
+                        background: isBooked ? '#f5f5f5' : (selectedTime === time ? 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)' : '#f0f0f0'),
                         color: isBooked ? '#999' : (selectedTime === time ? '#fff' : '#333'),
                         border:'none', 
                         borderRadius:12, 
@@ -711,7 +744,7 @@ const bookingData = {
                         fontWeight:700, 
                         fontSize: window.innerWidth < 500 ? 12 : 14, 
                         cursor: isBooked ? 'not-allowed' : 'pointer', 
-                        boxShadow: selectedTime === time ? '0 2px 8px #7c4dff44' : '0 1px 4px #00000022',
+                        boxShadow: selectedTime === time ? '0 2px 8px rgba(0, 188, 212, 0.3)' : '0 1px 4px #00000022',
                         transition:'all 0.2s ease', 
                         minWidth: window.innerWidth < 500 ? 70 : 80, 
                         textAlign:'center',
@@ -762,17 +795,35 @@ const bookingData = {
             type="submit" 
             disabled={booking || !selectedDate || !selectedTime} 
             style={{
-              background:'#7c4dff', 
+              background: booking || !selectedDate || !selectedTime ? '#ccc' : 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
               color:'#fff', 
               border:'none', 
-              borderRadius:8, 
-              padding: window.innerWidth < 500 ? '0.5rem 0' : '0.6rem 0', 
+              borderRadius:16, 
+              padding: window.innerWidth < 500 ? '0.8rem 1.5rem' : '1rem 2rem', 
               fontWeight:700, 
-              fontSize: window.innerWidth < 500 ? 13 : 15, 
-              cursor:'pointer', 
-              marginTop:6
+              fontSize: window.innerWidth < 500 ? 14 : 16, 
+              cursor: booking || !selectedDate || !selectedTime ? 'not-allowed' : 'pointer', 
+              marginTop:12,
+              boxShadow: booking || !selectedDate || !selectedTime ? 'none' : '0 4px 12px rgba(0, 188, 212, 0.3)',
+              transition: 'all 0.3s ease',
+              transform: 'translateY(0)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+            onMouseEnter={(e) => {
+              if (!booking && selectedDate && selectedTime) {
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 6px 16px rgba(0, 188, 212, 0.4)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = booking || !selectedDate || !selectedTime ? 'none' : '0 4px 12px rgba(0, 188, 212, 0.3)';
             }}
           >
+            <span style={{fontSize: '1.2em'}}>📅</span>
             {booking ? t('booking_in_progress') : t('book_appointment_button')}
           </button>
           {success && (
