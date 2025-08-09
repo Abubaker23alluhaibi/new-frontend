@@ -282,15 +282,15 @@ const LandingPage = () => {
             </div>
             <div className="hero-stats">
               <div className="stat">
-                <span className="stat-number">500+</span>
+                <span className="stat-number number-fix">500+</span>
                 <span className="stat-label">{t('landing_page.hero.stats.doctors')}</span>
               </div>
               <div className="stat">
-                <span className="stat-number">10K+</span>
+                <span className="stat-number number-fix">10K+</span>
                 <span className="stat-label">{t('landing_page.hero.stats.patients')}</span>
               </div>
               <div className="stat">
-                <span className="stat-number">50K+</span>
+                <span className="stat-number number-fix">50K+</span>
                 <span className="stat-label">{t('landing_page.hero.stats.appointments')}</span>
               </div>
             </div>
@@ -356,28 +356,28 @@ const LandingPage = () => {
           
           <div className="steps-container">
             <div className="step">
-              <div className="step-number">1</div>
+              <div className="step-number number-fix">1</div>
               <div className="step-icon">🔍</div>
               <h3>{t('landing_page.how_to_use.steps.step1.title')}</h3>
               <p>{t('landing_page.how_to_use.steps.step1.description')}</p>
             </div>
             
             <div className="step">
-              <div className="step-number">2</div>
+              <div className="step-number number-fix">2</div>
               <div className="step-icon">📅</div>
               <h3>{t('landing_page.how_to_use.steps.step2.title')}</h3>
               <p>{t('landing_page.how_to_use.steps.step2.description')}</p>
             </div>
             
             <div className="step">
-              <div className="step-number">3</div>
+              <div className="step-number number-fix">3</div>
               <div className="step-icon">✅</div>
               <h3>{t('landing_page.how_to_use.steps.step3.title')}</h3>
               <p>{t('landing_page.how_to_use.steps.step3.description')}</p>
             </div>
             
             <div className="step">
-              <div className="step-number">4</div>
+              <div className="step-number number-fix">4</div>
               <div className="step-icon">🎉</div>
               <h3>{t('landing_page.how_to_use.steps.step4.title')}</h3>
               <p>{t('landing_page.how_to_use.steps.step4.description')}</p>
@@ -584,7 +584,7 @@ const LandingPage = () => {
                       <div className="demo-text">صورة الطبيب</div>
                     </div>
                   </div>
-                  <p>1. {t('landing_page.booking.demo.steps.step1')}</p>
+                  <p><span className="number-fix">1.</span> {t('landing_page.booking.demo.steps.step1')}</p>
                 </div>
                 <div className="demo-step">
                   <div className="demo-image-container">
@@ -593,7 +593,7 @@ const LandingPage = () => {
                       <div className="demo-text">تقويم المواعيد</div>
                     </div>
                   </div>
-                  <p>2. {t('landing_page.booking.demo.steps.step2')}</p>
+                  <p><span className="number-fix">2.</span> {t('landing_page.booking.demo.steps.step2')}</p>
                 </div>
                 <div className="demo-step">
                   <div className="demo-image-container">
@@ -602,7 +602,7 @@ const LandingPage = () => {
                       <div className="demo-text">تأكيد الحجز</div>
                     </div>
                   </div>
-                  <p>3. {t('landing_page.booking.demo.steps.step3')}</p>
+                  <p><span className="number-fix">3.</span> {t('landing_page.booking.demo.steps.step3')}</p>
                 </div>
               </div>
             </div>
@@ -632,7 +632,7 @@ const LandingPage = () => {
               <p>{t('landing_page.footer.email')}</p>
               <p>
                 <a href="https://wa.me/9647769012619" target="_blank" rel="noopener noreferrer" className="whatsapp-link">
-                  <span>{t('landing_page.footer.phone')}</span>
+                  <span className="number-fix">{t('landing_page.footer.phone')}</span>
                 </a>
               </p>
             </div>

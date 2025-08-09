@@ -31,6 +31,12 @@
   box-sizing: border-box;
 }
 
+/* حل مشكلة الأرقام في اللغات RTL */
+.landing-page .number-fix {
+  unicode-bidi: isolate;
+  direction: ltr;
+}
+
 .landing-page body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
@@ -773,6 +779,8 @@
   font-size: 2rem;
   font-weight: bold;
   color: #FFD700;
+  unicode-bidi: isolate;
+  direction: ltr;
 }
 
 .landing-page .hero-buttons {
@@ -913,6 +921,8 @@
   align-items: center;
   justify-content: center;
   font-weight: bold;
+  unicode-bidi: isolate;
+  direction: ltr;
 }
 
 .landing-page .step-icon {
@@ -1062,6 +1072,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  unicode-bidi: isolate;
+  direction: ltr;
 }
 
 .landing-page .whatsapp-link:hover {
@@ -1270,6 +1282,8 @@
   
   .landing-page .stat-number {
     font-size: 1.8rem;
+    unicode-bidi: isolate;
+    direction: ltr;
   }
   
   .landing-page .section-header h2 {
@@ -1446,6 +1460,8 @@
   
   .landing-page .stat-number {
     font-size: 1.5rem;
+    unicode-bidi: isolate;
+    direction: ltr;
   }
   
   .landing-page .section-header h2 {
@@ -1500,6 +1516,8 @@
   
   .landing-page .stat-number {
     font-size: 1.3rem;
+    unicode-bidi: isolate;
+    direction: ltr;
   }
   
   .landing-page .stat-label {
