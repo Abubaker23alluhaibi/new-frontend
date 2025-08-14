@@ -391,9 +391,8 @@
 .date-display {
   font-size: 0.85rem;
   color: #888;
-  direction: ltr;
-  text-align: left;
-  unicode-bidi: bidi-override;
+  direction: rtl;
+  text-align: right;
 }
 
 /* تحسينات الوقت والتاريخ للموبايل */

@@ -112,25 +112,25 @@ function DashboardPreview() {
                  {/* أزرار الوظائف الرئيسية */}
          <div className="actions-container">
            <div className="actions-grid">
-             <button className="action-button hover-lift">
-               <div className="action-icon">📅</div>
-               <div className="action-text">تقويمي</div>
-             </button>
-             
-             <button className="action-button orange hover-lift">
-               <div className="action-icon">📋</div>
-               <div className="action-text">جميع المواعيد</div>
-             </button>
+                           <button className="action-button hover-lift">
+                <div className="action-icon">📅</div>
+                <div className="action-text">التقويم</div>
+              </button>
 
-             <button className="action-button hover-lift">
-               <div className="action-icon">📊</div>
-               <div className="action-text">التحليل</div>
-             </button>
+              <button className="action-button hover-lift">
+                <div className="action-icon">📋</div>
+                <div className="action-text">كل المواعيد</div>
+              </button>
 
-             <button className="action-button orange hover-lift">
-               <div className="action-icon">👤</div>
-               <div className="action-text">الملف الشخصي</div>
-             </button>
+              <button className="action-button hover-lift">
+                <div className="action-icon">📊</div>
+                <div className="action-text">تحليل المواعيد</div>
+              </button>
+
+              <button className="action-button hover-lift">
+                <div className="action-icon">👤</div>
+                <div className="action-text">الملف الشخصي</div>
+              </button>
            </div>
          </div>
 
@@ -144,10 +144,7 @@ function DashboardPreview() {
               <div className="appointments-grid">
                 {mockData.todayAppointments.map(appointment => (
                   <div key={appointment._id} className="appointment-card hover-lift">
-                    {/* شارة "مؤكد" بلون برتقالي */}
-                    <div className="appointment-badge badge-confirmed">
-                      مؤكد
-                    </div>
+
                     
                     {/* شارة موعد خاص */}
                     {appointment.type === 'special_appointment' && (

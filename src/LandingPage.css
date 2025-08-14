@@ -60,20 +60,20 @@
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(0, 188, 212, 0.1);
+  background: #0A8F82;
   color: white;
   z-index: 1000;
   transition: all 0.3s ease;
   padding: 0.5rem 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(10, 143, 130, 0.3);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* تأثير الشفافية عند التمرير */
 .landing-page .header.scrolled {
-  background: rgba(0, 188, 212, 0.9);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  background: #0A8F82;
+  box-shadow: 0 4px 20px rgba(10, 143, 130, 0.4);
   backdrop-filter: blur(25px);
 }
 
@@ -1108,12 +1108,12 @@
   
   .landing-page .header {
     padding: 0.4rem 0;
-    background: rgba(0, 188, 212, 0.15);
+    background: #0A8F82;
     backdrop-filter: blur(15px);
   }
 
   .landing-page .header.scrolled {
-    background: rgba(0, 188, 212, 0.95);
+    background: #0A8F82;
     backdrop-filter: blur(20px);
   }
   
@@ -1319,12 +1319,12 @@
   
   .landing-page .header {
     padding: 0.3rem 0;
-    background: rgba(0, 188, 212, 0.2);
+    background: #0A8F82;
     backdrop-filter: blur(12px);
   }
 
   .landing-page .header.scrolled {
-    background: rgba(0, 188, 212, 0.98);
+    background: #0A8F82;
     backdrop-filter: blur(18px);
   }
 

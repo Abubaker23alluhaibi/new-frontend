@@ -508,38 +508,39 @@ function DoctorDashboard() {
         
         {/* أزرار المواعيد في الصفحة الرئيسية */}
         <div style={{maxWidth:700, margin:'1.5rem auto', padding:'0 1rem'}}>
-          <div style={{
-            display:'grid', 
-            gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(4, 1fr)' : 'repeat(auto-fit, minmax(140px, 1fr))', 
-            gap: window.innerWidth <= 768 ? '0.5rem' : '1rem'
-          }}>
-            {/* زر مواعيدي (تقويم) */}
+                      <div style={{
+              display:'grid', 
+              gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(4, 1fr)' : 'repeat(auto-fit, minmax(140px, 1fr))', 
+              gap: window.innerWidth <= 768 ? '0.5rem' : '1rem',
+              textAlign:'center'
+            }}>
+            {/* زر التقويم */}
             <button style={{
-              background:'#fff',
-              color:'#0A8F82',
-              border:'2px solid #0A8F82',
-              borderRadius:16,
-              padding:'1rem 0.8rem',
-              fontWeight:700,
-              fontSize:13,
+              background:'#0A8F82',
+              color:'#fff',
+              border:'none',
+              borderRadius:'50%',
+              width: window.innerWidth <= 768 ? 60 : 80,
+              height: window.innerWidth <= 768 ? 60 : 80,
               cursor:'pointer',
-              boxShadow:'0 2px 8px rgba(10, 143, 130, 0.15)',
+              transition:'all 0.3s ease',
               display:'flex',
               flexDirection:'column',
               alignItems:'center',
-              gap:6,
-              transition:'all 0.3s ease',
-              minHeight:80
+              justifyContent:'center',
+              gap:4,
+              boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
+              marginBottom: window.innerWidth <= 768 ? 8 : 12
             }} onClick={()=>{
           setShowCalendarModal(true);
           // إعادة تحميل المواعيد عند فتح التقويم
           fetchAllAppointments();
         }}>
-              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem'}}>📅</div>
-              <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700}}>{t('my_calendar')}</div>
+              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem', color:'#fff'}}>📅</div>
             </button>
+            <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>التقويم</div>
             
-            {/* زر جميع المواعيد */}
+            {/* زر كل المواعيد */}
             <button 
               onClick={() => {
                 navigate('/doctor-appointments');
@@ -547,53 +548,53 @@ function DoctorDashboard() {
                 fetchAllAppointments();
               }}
               style={{
-                background:'#fff',
-                color:'#0A8F82',
-                border:'2px solid #0A8F82',
-                borderRadius:16,
-                padding:'1rem 0.8rem',
-                fontWeight:700,
-                fontSize:13,
+                background:'#0A8F82',
+                color:'#fff',
+                border:'none',
+                borderRadius:'50%',
+                width: window.innerWidth <= 768 ? 60 : 80,
+                height: window.innerWidth <= 768 ? 60 : 80,
                 cursor:'pointer',
                 transition:'all 0.3s ease',
                 display:'flex',
                 flexDirection:'column',
                 alignItems:'center',
-                gap:6,
-                boxShadow:'0 2px 8px rgba(10, 143, 130, 0.15)',
-                minHeight:80
+                justifyContent:'center',
+                gap:4,
+                boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
+                marginBottom: window.innerWidth <= 768 ? 8 : 12
               }}
             >
-              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem'}}>📋</div>
-              <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700}}>{t('all_appointments')}</div>
+              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem', color:'#fff'}}>📋</div>
             </button>
+            <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>كل المواعيد</div>
 
-            {/* زر التحليل */}
+            {/* زر تحليل المواعيد */}
             <button 
               onClick={() => {
   navigate('/doctor-analytics');
 }}
               style={{
-                background:'#fff',
-                color:'#0A8F82',
-                border:'2px solid #0A8F82',
-                borderRadius:16,
-                padding:'1rem 0.8rem',
-                fontWeight:700,
-                fontSize:13,
+                background:'#0A8F82',
+                color:'#fff',
+                border:'none',
+                borderRadius:'50%',
+                width: window.innerWidth <= 768 ? 60 : 80,
+                height: window.innerWidth <= 768 ? 60 : 80,
                 cursor:'pointer',
                 transition:'all 0.3s ease',
                 display:'flex',
                 flexDirection:'column',
                 alignItems:'center',
-                gap:6,
-                boxShadow:'0 2px 8px rgba(10, 143, 130, 0.15)',
-                minHeight:80
+                justifyContent:'center',
+                gap:4,
+                boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
+                marginBottom: window.innerWidth <= 768 ? 8 : 12
               }}
             >
-              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem'}}>📊</div>
-              <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700}}>{t('appointments_analysis')}</div>
+              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
             </button>
+            <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>تحليل المواعيد</div>
 
 
 
@@ -603,26 +604,26 @@ function DoctorDashboard() {
                 navigate('/doctor-profile');
               }}
               style={{
-                background:'#fff',
-                color:'#0A8F82',
-                border:'2px solid #0A8F82',
-                borderRadius:16,
-                padding:'1rem 0.8rem',
-                fontWeight:700,
-                fontSize:13,
+                background:'#0A8F82',
+                color:'#fff',
+                border:'none',
+                borderRadius:'50%',
+                width: window.innerWidth <= 768 ? 60 : 80,
+                height: window.innerWidth <= 768 ? 60 : 80,
                 cursor:'pointer',
                 transition:'all 0.3s ease',
                 display:'flex',
                 flexDirection:'column',
                 alignItems:'center',
-                gap:6,
-                boxShadow:'0 2px 8px rgba(10, 143, 130, 0.15)',
-                minHeight:80
+                justifyContent:'center',
+                gap:4,
+                boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
+                marginBottom: window.innerWidth <= 768 ? 8 : 12
               }}
             >
-              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem'}}>👤</div>
-              <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700}}>الملف الشخصي</div>
+              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem', color:'#fff'}}>👤</div>
             </button>
+            <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>الملف الشخصي</div>
           </div>
         </div>
 
@@ -649,20 +650,7 @@ function DoctorDashboard() {
                     transition: 'all 0.3s ease'
                   }}>
                     {/* شارة "مؤكد" بلون أخضر */}
-                    <div style={{
-                      position:'absolute',
-                      top: window.innerWidth <= 768 ? 6 : 8,
-                      right:8,
-                      background:'#0A8F82',
-                      color:'#fff',
-                      borderRadius: window.innerWidth <= 768 ? 8 : 12,
-                      padding: window.innerWidth <= 768 ? '0.15rem 0.5rem' : '0.2rem 0.6rem',
-                      fontWeight:600,
-                      fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.75rem',
-                      zIndex:2
-                    }}>
-                      مؤكد
-                    </div>
+                    
                     
                     {/* شارة موعد خاص */}
                     {appointment.type === 'special_appointment' && (
@@ -699,7 +687,7 @@ function DoctorDashboard() {
                       <div style={{fontWeight:600, fontSize:'1rem', color:'#333', marginBottom:'0.2rem', direction:'ltr', textAlign:'left', unicodeBidi:'bidi-override'}}>
                         🕐 {appointment.time}
                       </div>
-                      <div style={{fontSize:'0.85rem', color:'#888', direction:'ltr', textAlign:'left', unicodeBidi:'bidi-override'}}>
+                      <div style={{fontSize:'0.85rem', color:'#888', direction:'rtl', textAlign:'right'}}>
                         📅 {formatDate(appointment.date)}
                       </div>
                     </div>

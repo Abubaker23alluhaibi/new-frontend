@@ -297,8 +297,8 @@ function UserHome() {
       }} />
       {/* الشريط العلوي العصري */}
       <div style={{
-        background: 'rgba(255, 255, 255, 0.95)',
-        boxShadow: '0 4px 20px rgba(0, 188, 212, 0.15)',
+        background: '#0A8F82',
+        boxShadow: '0 4px 20px rgba(10, 143, 130, 0.3)',
         borderBottomLeftRadius: 18, 
         borderBottomRightRadius: 18,
         padding: isMobile() ? '0.7rem 1rem' : '0.7rem 1.2rem', 
@@ -309,7 +309,7 @@ function UserHome() {
         position: 'relative', 
         minHeight: 64,
         backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(0, 188, 212, 0.1)'
+        borderBottom: '1px solid rgba(255, 255, 255, 0.2)'
       }}>
         {/* شعار مع أيقونة */}
         <div 
@@ -329,18 +329,18 @@ function UserHome() {
           }}
         >
           <img src="/logo192.png" alt="Logo" style={{width: isMobile() ? 38 : 44, height: isMobile() ? 38 : 44, borderRadius: '50%', background: '#fff', border: '4px solid #fff', boxShadow: '0 4px 16px #00bcd455', objectFit: 'cover', marginRight: 4}} />
-          <span style={{color:'#009688', fontWeight:900, fontSize: isMobile() ? 20 : 24, letterSpacing:1, marginRight:4}}>{t('app_name')}</span>
+          <span style={{color:'#ffffff', fontWeight:900, fontSize: isMobile() ? 20 : 24, letterSpacing:1, marginRight:4}}>{t('app_name')}</span>
         </div>
         {/* عناصر الزاوية: الهامبرغر والإشعارات */}
         <div style={{display:'flex', alignItems:'center', gap:8, flexDirection: isRTL ? 'row-reverse' : 'row'}}>
           {/* زر الهامبرغر */}
           <button onClick={()=>setDrawerOpen(true)} style={{background:'none', border:'none', cursor:'pointer', padding:8, display:'flex', alignItems:'center'}}>
-            <span style={{fontSize:28, color:'#009688', fontWeight:900}}>&#9776;</span>
+            <span style={{fontSize:28, color:'#ffffff', fontWeight:900}}>&#9776;</span>
           </button>
           {/* زر تنبيهات مصغر */}
           <div style={{position:'relative'}}>
             <button style={{
-              background: 'rgba(0, 188, 212, 0.1)', 
+              background: 'rgba(255, 255, 255, 0.2)', 
               border: 'none', 
               borderRadius: '50%', 
               width: isMobile() ? 28 : 32, 
@@ -350,11 +350,11 @@ function UserHome() {
               justifyContent: 'center', 
               fontSize: isMobile() ? 14 : 16, 
               cursor: 'pointer', 
-              boxShadow: '0 2px 8px rgba(0, 188, 212, 0.2)',
+              boxShadow: '0 2px 8px rgba(255, 255, 255, 0.2)',
               transition: 'all 0.3s ease'
             }} onClick={()=>setShowNotif(!showNotif)}>
               <svg width={isMobile() ? 16 : 18} height={isMobile() ? 16 : 18} fill="none" viewBox="0 0 24 24">
-                <path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z" stroke="#009688" strokeWidth="2"/>
+                <path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z" stroke="#ffffff" strokeWidth="2"/>
               </svg>
             </button>
             {notifCount > 0 && <span style={{position:'absolute', top:-2, right:-2, background:'#e53935', color:'#fff', borderRadius:'50%', fontSize: isMobile() ? 8 : 10, minWidth: isMobile() ? 14 : 16, height: isMobile() ? 14 : 16, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700}}>{notifCount}</span>}
