@@ -21,6 +21,7 @@ import CenterHome from './CenterHome';
 import DoctorCalendar from './DoctorCalendar';
 import DoctorAnalyticsPage from './DoctorAnalyticsPage';
 import LandingPage from './LandingPage';
+import DashboardPreview from './DashboardPreview';
 import i18n from './i18n';
 
 function App() {
@@ -74,6 +75,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/preview" element={<DashboardPreview />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<UserSignUp />} />
           <Route path="/signup-doctor" element={<DoctorSignUp />} />

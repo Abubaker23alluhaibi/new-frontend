@@ -1,0 +1,673 @@
+/* DoctorDashboard.css - التصميم المحسن للوحة الطبيب */
+
+/* الخلفية الرئيسية */
+.dashboard-container {
+  background: #ffffff;
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 4.5rem;
+}
+
+/* الشريط العلوي */
+.dashboard-header {
+  background: #0A8F82;
+  box-shadow: 0 2px 12px rgba(10, 143, 130, 0.3);
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  padding: 0.4rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  position: relative;
+  z-index: 2;
+}
+
+/* أزرار الشريط العلوي */
+.dashboard-header button {
+  color: #ffffff !important;
+}
+
+.dashboard-header .notification-icon {
+  color: #ffffff !important;
+}
+
+/* العنوان الرئيسي */
+.dashboard-title {
+  text-align: center;
+  color: #0A8F82;
+  margin-top: 30px;
+  font-size: 2.2rem;
+  font-weight: 800;
+}
+
+/* صناديق الإحصائيات */
+.stats-container {
+  max-width: 700px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 0.6rem 0.4rem;
+  text-align: center;
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.stat-icon {
+  font-size: 1.2rem;
+  margin-bottom: 0.3rem;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin-bottom: 0.2rem;
+  direction: ltr;
+  text-align: center;
+  unicode-bidi: bidi-override;
+}
+
+.stat-number.total { color: #0A8F82; }
+.stat-number.today { color: #0A8F82; }
+.stat-number.upcoming { color: #0A8F82; }
+.stat-number.notifications { color: #0A8F82; }
+
+.stat-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+}
+
+/* أزرار الوظائف الرئيسية */
+.actions-container {
+  max-width: 700px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.action-button {
+  background: #fff;
+  color: #0A8F82;
+  border: 2px solid #0A8F82;
+  border-radius: 16px;
+  padding: 1rem 0.8rem;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(10, 143, 130, 0.15);
+  min-height: 80px;
+}
+
+/* تصميم محسن للموبايل */
+@media (max-width: 768px) {
+  .actions-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .action-button {
+    min-height: 60px;
+    padding: 0.6rem 0.4rem;
+    border-radius: 12px;
+    font-size: 11px;
+  }
+  
+  .action-icon {
+    font-size: 1.2rem;
+  }
+  
+  .action-text {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .actions-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.3rem;
+  }
+  
+  .action-button {
+    min-height: 50px;
+    padding: 0.4rem 0.2rem;
+    border-radius: 8px;
+    font-size: 10px;
+  }
+  
+  .action-icon {
+    font-size: 1rem;
+  }
+  
+  .action-text {
+    font-size: 9px;
+  }
+}
+
+.action-button.orange {
+  color: #0A8F82;
+  border-color: #0A8F82;
+  box-shadow: 0 2px 8px rgba(10, 143, 130, 0.15);
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(10, 143, 130, 0.25);
+}
+
+.action-button.orange:hover {
+  box-shadow: 0 4px 12px rgba(10, 143, 130, 0.25);
+}
+
+.action-icon {
+  font-size: 1.6rem;
+}
+
+.action-text {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* بطاقات المواعيد */
+.appointments-container {
+  max-width: 700px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+.appointments-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 1.5rem;
+  border: 1px solid #f0f0f0;
+}
+
+.appointments-title {
+  color: #0A8F82;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.3rem;
+  direction: rtl;
+}
+
+.appointments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.appointment-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* تحسينات للموبايل */
+@media (max-width: 768px) {
+  .appointments-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 0.8rem;
+  }
+  
+  .appointment-card {
+    padding: 0.8rem;
+    border-radius: 8px;
+  }
+  
+  .appointments-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .appointments-grid {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+  
+  .appointment-card {
+    padding: 0.6rem;
+    border-radius: 6px;
+  }
+  
+  .appointments-title {
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+  }
+}
+
+.appointment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+/* شارات المواعيد */
+.appointment-badge {
+  position: absolute;
+  top: 8px;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  z-index: 2;
+}
+
+.badge-confirmed {
+  background: #0A8F82;
+  color: #fff;
+  right: 8px;
+}
+
+.badge-special {
+  background: #0A8F82;
+  color: #fff;
+  left: 8px;
+}
+
+/* تحسينات الشارات للموبايل */
+@media (max-width: 768px) {
+  .appointment-badge {
+    top: 6px;
+    padding: 0.15rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .appointment-badge {
+    top: 4px;
+    padding: 0.1rem 0.4rem;
+    border-radius: 6px;
+    font-size: 0.65rem;
+  }
+}
+
+/* معلومات المريض */
+.patient-info {
+  margin-bottom: 0.8rem;
+}
+
+.patient-name {
+  color: #0A8F82;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+  direction: rtl;
+  text-align: right;
+}
+
+.patient-phone {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.3rem;
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: bidi-override;
+}
+
+/* تحسينات معلومات المريض للموبايل */
+@media (max-width: 768px) {
+  .patient-info {
+    margin-bottom: 0.6rem;
+  }
+  
+  .patient-name {
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+  }
+  
+  .patient-phone {
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .patient-info {
+    margin-bottom: 0.5rem;
+  }
+  
+  .patient-name {
+    font-size: 0.9rem;
+    margin-bottom: 0.15rem;
+  }
+  
+  .patient-phone {
+    font-size: 0.75rem;
+    margin-bottom: 0.15rem;
+  }
+}
+
+/* وقت وتاريخ الموعد */
+.appointment-time {
+  margin-bottom: 0.8rem;
+}
+
+.time-display {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 0.2rem;
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: bidi-override;
+}
+
+.date-display {
+  font-size: 0.85rem;
+  color: #888;
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: bidi-override;
+}
+
+/* تحسينات الوقت والتاريخ للموبايل */
+@media (max-width: 768px) {
+  .appointment-time {
+    margin-bottom: 0.6rem;
+  }
+  
+  .time-display {
+    font-size: 0.9rem;
+    margin-bottom: 0.15rem;
+  }
+  
+  .date-display {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .appointment-time {
+    margin-bottom: 0.5rem;
+  }
+  
+  .time-display {
+    font-size: 0.8rem;
+    margin-bottom: 0.1rem;
+  }
+  
+  .date-display {
+    font-size: 0.7rem;
+  }
+}
+
+/* ملاحظات وسبب الموعد */
+.appointment-notes {
+  font-size: 0.85rem;
+  color: #ff9800;
+  margin-bottom: 0.8rem;
+  font-style: italic;
+  padding: 0.5rem;
+  background: #fff3e0;
+  border-radius: 6px;
+  direction: rtl;
+  text-align: right;
+}
+
+.appointment-reason {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.8rem;
+  padding: 0.5rem;
+  background: #f5f5f5;
+  border-radius: 6px;
+  direction: rtl;
+  text-align: right;
+}
+
+/* أزرار التحكم */
+.appointment-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+/* تحسينات أزرار التحكم للموبايل */
+@media (max-width: 768px) {
+  .appointment-actions {
+    gap: 0.4rem;
+  }
+  
+  .action-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+    border-radius: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .appointment-actions {
+    gap: 0.3rem;
+  }
+  
+  .action-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+    border-radius: 4px;
+  }
+}
+
+.btn-manage {
+  background: #0A8F82;
+  color: #fff;
+}
+
+.btn-note {
+  background: #0A8F82;
+  color: #fff;
+}
+
+.action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* القائمة الجانبية */
+.sidebar {
+  background: #fff;
+  width: 260px;
+  height: 100%;
+  box-shadow: 2px 0 16px rgba(0,0,0,0.1);
+  padding: 2rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sidebar-button {
+  border: none;
+  border-radius: 12px;
+  padding: 0.7rem 1.2rem;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.sidebar-button.primary {
+  background: #0A8F82;
+  color: #fff;
+}
+
+.sidebar-button.secondary {
+  background: #0A8F82;
+  color: #fff;
+}
+
+.sidebar-button.outline {
+  background: #fff;
+  color: #0A8F82;
+  border: 2px solid #0A8F82;
+}
+
+.sidebar-button.danger {
+  background: #e53935;
+  color: #fff;
+}
+
+.sidebar-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* قائمة اختيار اللغة */
+.language-selector {
+  margin-top: 18px;
+}
+
+.language-label {
+  font-weight: 700;
+  color: #0A8F82;
+  margin-bottom: 8px;
+  display: block;
+  font-size: 14px;
+}
+
+.language-select {
+  background: rgba(10, 143, 130, 0.1);
+  color: #0A8F82;
+  border: 2px solid #0A8F82;
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(10, 143, 130, 0.2);
+  width: 100%;
+}
+
+/* تحسينات للأجهزة المحمولة */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .stat-card {
+    padding: 0.5rem;
+    border-radius: 6px;
+  }
+  
+  .stat-icon {
+    font-size: 1rem;
+  }
+  
+  .stat-number {
+    font-size: 1.2rem;
+  }
+  
+  .stat-label {
+    font-size: 8px;
+  }
+  
+  .actions-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .appointments-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.3rem;
+  }
+  
+  .stat-card {
+    padding: 0.4rem;
+    border-radius: 4px;
+  }
+  
+  .stat-icon {
+    font-size: 0.9rem;
+  }
+  
+  .stat-number {
+    font-size: 1rem;
+  }
+  
+  .stat-label {
+    font-size: 7px;
+  }
+}
+
+/* تأثيرات الحركة */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* تحسينات إضافية */
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}

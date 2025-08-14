@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Login.css';
+import './DoctorDashboard.css';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { ar } from 'date-fns/locale';
@@ -293,36 +293,36 @@ function DoctorDashboard() {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
+      background: '#ffffff',
       minHeight: '100vh',
       position: 'relative',
-      paddingBottom: '4.5rem', // زيادة الفراغ السفلي
+      paddingBottom: '4.5rem',
     }}>
-      {/* خلفية إضافية للعمق */}
+      {/* إزالة الخلفية الزرقاء */}
       <div style={{
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'radial-gradient(circle at 20% 80%, rgba(0, 188, 212, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0, 150, 136, 0.1) 0%, transparent 50%)',
+        background: 'transparent',
         pointerEvents: 'none',
         zIndex: 0
       }} />
       {/* شريط علوي مبسط مع أزرار */}
-      <div style={{
-        background: 'rgba(255,255,255,0.97)',
-        boxShadow: '0 2px 12px #00bcd422',
-        borderBottomLeftRadius: 16,
-        borderBottomRightRadius: 16,
-        padding: '0.4rem 1rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        minHeight: 48,
-        position: 'relative',
-        zIndex: 2
-      }}>
+              <div style={{
+          background: '#0A8F82',
+          boxShadow: '0 2px 12px rgba(10, 143, 130, 0.3)',
+          borderBottomLeftRadius: 16,
+          borderBottomRightRadius: 16,
+          padding: '0.4rem 1rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          minHeight: 48,
+          position: 'relative',
+          zIndex: 2
+        }}>
         <div 
           onClick={() => navigate('/')}
           style={{
@@ -347,7 +347,7 @@ function DoctorDashboard() {
             setShowSidebar(true);
             // إعادة تحميل المواعيد عند فتح القائمة
             fetchAllAppointments();
-          }} style={{background:'none', border:'none', fontSize:28, color:'#7c4dff', cursor:'pointer', marginLeft:4}} title="القائمة">
+          }} style={{background:'none', border:'none', fontSize:28, color:'#ffffff', cursor:'pointer', marginLeft:4}} title="القائمة">
             <span role="img" aria-label="menu">☰</span>
           </button>
           {/* أيقونة الإشعارات مصغرة */}
@@ -356,7 +356,7 @@ function DoctorDashboard() {
             // إعادة تحميل المواعيد عند فتح الإشعارات
             fetchAllAppointments();
           }} title="الإشعارات">
-            <span style={{fontSize:22, color:'#ff9800'}} role="img" aria-label="notifications">🔔</span>
+            <span style={{fontSize:22, color:'#ffffff'}} role="img" aria-label="notifications">🔔</span>
             {notifCount > 0 && (
               <span style={{position:'absolute', top:-8, right:-8, background:'#e53935', color:'#fff', borderRadius:'50%', fontSize:10, fontWeight:700, padding:'1px 5px', minWidth:18, textAlign:'center'}}>{notifCount}</span>
             )}
@@ -369,8 +369,8 @@ function DoctorDashboard() {
             // إعادة تحميل المواعيد عند إغلاق القائمة
             fetchAllAppointments();
           }}>
-            <div style={{background:'#fff', width:260, height:'100%', boxShadow:'2px 0 16px #7c4dff22', padding:'2rem 1.2rem', display:'flex', flexDirection:'column', gap:18}} onClick={e=>e.stopPropagation()}>
-              <button onClick={() => navigate('/')} style={{background: 'linear-gradient(90deg,#00bcd4 0%,#009688 100%)', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8}}>
+            <div style={{background:'#fff', width:260, height:'100%', boxShadow:'2px 0 16px rgba(0,0,0,0.1)', padding:'2rem 1.2rem', display:'flex', flexDirection:'column', gap:18}} onClick={e=>e.stopPropagation()}>
+              <button onClick={() => navigate('/')} style={{background: '#4caf50', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
                 <span role="img" aria-label="العودة للصفحة الرئيسية">🏠</span> {t('back_to_home')}
               </button>
               <button onClick={()=>{
@@ -378,7 +378,7 @@ function DoctorDashboard() {
                 setShowSidebar(false);
                 // إعادة تحميل المواعيد عند فتح إضافة موعد خاص
                 fetchAllAppointments();
-              }} style={{background: 'linear-gradient(90deg,#ff9800 0%,#ff5722 100%)', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8}}>
+              }} style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
                 <span role="img" aria-label="إضافة موعد خاص">⭐</span> {t('add_special_appointment')}
               </button>
               <button onClick={()=>{
@@ -386,7 +386,7 @@ function DoctorDashboard() {
                 setShowSidebar(false);
                 // إعادة تحميل المواعيد عند فتح اتصل بنا
                 fetchAllAppointments();
-              }} style={{background: 'linear-gradient(90deg,#00bcd4 0%,#7c4dff 100%)', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8}}>
+              }} style={{background: '#0A8F82', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
                 <span role="img" aria-label="اتصل بنا">📞</span> {t('contact_us')}
               </button>
               <button onClick={()=>{
@@ -394,7 +394,7 @@ function DoctorDashboard() {
                 setShowSidebar(false);
                 // إعادة تحميل المواعيد عند فتح تعديل الدوام
                 fetchAllAppointments();
-              }} style={{background: 'linear-gradient(90deg,#4caf50 0%,#2e7d32 100%)', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8}}>
+              }} style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
                 <span role="img" aria-label="تعديل الدوام">⏰</span> تعديل الدوام
               </button>
               <button onClick={()=>{
@@ -402,7 +402,7 @@ function DoctorDashboard() {
                 setShowSidebar(false);
                 // إعادة تحميل المواعيد عند فتح تعديل مدة الموعد
                 fetchAllAppointments();
-              }} style={{background: 'linear-gradient(90deg,#ff9800 0%,#f57c00 100%)', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8}}>
+              }} style={{background: '#0A8F82', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
                 <span role="img" aria-label="تعديل مدة الموعد">⏱️</span> تعديل مدة الموعد
               </button>
               <button onClick={()=>{
@@ -411,21 +411,21 @@ function DoctorDashboard() {
                 setShowSidebar(false);
                 // إعادة تحميل المواعيد عند فتح الملف الشخصي
                 fetchAllAppointments();
-              }} style={{background: '#fff', color: '#7c4dff', border: '1.5px solid #7c4dff', borderRadius: 8, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8}}>
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="#7c4dff" strokeWidth="2"/><path d="M4 20c0-2.21 3.58-4 8-4s8 1.79 8 4" stroke="#7c4dff" strokeWidth="2"/></svg> {t('my_profile')}
+              }} style={{background: '#fff', color: '#0A8F82', border: '2px solid #0A8F82', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="#0A8F82" strokeWidth="2"/><path d="M4 20c0-2.21 3.58-4 8-4s8 1.79 8 4" stroke="#0A8F82" strokeWidth="2"/></svg> {t('my_profile')}
               </button>
               <button onClick={()=>{
                 signOut(); 
                 setShowSidebar(false);
                 // إعادة تحميل المواعيد عند تسجيل الخروج
                 fetchAllAppointments();
-              }} style={{background: '#e53935', color: '#fff', border: 'none', borderRadius: 8, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, marginTop: 18}}>
+              }} style={{background: '#e53935', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, marginTop: 18, transition:'all 0.3s ease'}}>
                 <span role="img" aria-label="خروج">🚪</span> {t('logout')}
               </button>
               
               {/* زر تغيير اللغة */}
               <div style={{marginTop: 18}}>
-                <label style={{fontWeight: 700, color: '#7c4dff', marginBottom: 8, display: 'block', fontSize: 14}}>🌐 {t('change_language')}</label>
+                <label style={{fontWeight: 700, color: '#0A8F82', marginBottom: 8, display: 'block', fontSize: 14}}>🌐 {t('change_language')}</label>
                 <select 
                   value={lang} 
                   onChange={(e) => {
@@ -436,15 +436,15 @@ function DoctorDashboard() {
                     else if (newLang === 'KU') i18n.changeLanguage('ku');
                   }} 
                   style={{
-                    background: 'rgba(124, 77, 255, 0.1)', 
-                    color: '#7c4dff', 
-                    border: '1.5px solid #7c4dff', 
+                    background: 'rgba(10, 143, 130, 0.1)', 
+                    color: '#0A8F82', 
+                    border: '2px solid #0A8F82', 
                     borderRadius: 8, 
                     padding: '0.5rem 0.8rem', 
                     fontWeight: 700, 
                     fontSize: 14, 
                     cursor: 'pointer', 
-                    boxShadow: '0 2px 8px rgba(124, 77, 255, 0.2)',
+                    boxShadow: '0 2px 8px rgba(10, 143, 130, 0.2)',
                     width: '100%'
                   }}
                 >
@@ -458,62 +458,85 @@ function DoctorDashboard() {
         )}
       </div>
       <div style={{position:'relative', zIndex:1}}>
-        <h2 style={{textAlign:'center', color:'#7c4dff', marginTop:30}}>{t('doctor_dashboard')}</h2>
+        <h2 style={{textAlign:'center', color:'#0A8F82', marginTop:30, fontSize: '2.2rem', fontWeight: 800}}>{t('doctor_dashboard')}</h2>
         
         {/* الإحصائيات السريعة */}
         <div style={{maxWidth:700, margin:'1.5rem auto', padding:'0 1rem'}}>
-          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px, 1fr))', gap:'1rem', marginBottom:'2rem'}}>
-            <div style={{background:'#fff', borderRadius:12, boxShadow:'0 2px 12px #7c4dff11', padding:'1rem', textAlign:'center'}}>
-              <div style={{fontSize:'1.5rem', marginBottom:'0.5rem'}}>📅</div>
-              <div style={{fontSize:'2.1rem', fontWeight:900, color:'#7c4dff', marginBottom:'0.3rem'}}>{totalAppointments}</div>
-              <div style={{fontSize:'1.1rem', fontWeight:700, color:'#7c4dff'}}>{t('total_appointments')}</div>
+          <div style={{
+            display:'grid', 
+            gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(4, 1fr)' : 'repeat(auto-fit, minmax(120px, 1fr))', 
+            gap: window.innerWidth <= 768 ? '0.5rem' : '0.8rem', 
+            marginBottom:'2rem'
+          }}>
+            <div style={{
+              background:'#fff', 
+              borderRadius: window.innerWidth <= 768 ? 6 : 8, 
+              boxShadow:'0 2px 8px rgba(0,0,0,0.08)', 
+              padding: window.innerWidth <= 768 ? '0.5rem' : '0.8rem', 
+              textAlign:'center', 
+              border: '1px solid #f0f0f0'
+            }}>
+              <div style={{fontSize: window.innerWidth <= 768 ? '1rem' : '1.2rem', marginBottom:'0.3rem'}}>📅</div>
+              <div style={{
+                fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.5rem', 
+                fontWeight:900, 
+                color:'#0A8F82', 
+                marginBottom:'0.2rem', 
+                direction:'ltr', 
+                textAlign:'center', 
+                unicodeBidi:'bidi-override'
+              }}>{totalAppointments}</div>
+              <div style={{fontSize: window.innerWidth <= 768 ? '8px' : '0.9rem', fontWeight:600, color:'#666'}}>{t('total_appointments')}</div>
             </div>
-            <div style={{background:'#fff', borderRadius:12, boxShadow:'0 2px 12px #7c4dff11', padding:'1rem', textAlign:'center'}}>
-              <div style={{fontSize:'1.5rem', marginBottom:'0.5rem'}}>🎯</div>
-              <div style={{fontSize:'2.1rem', fontWeight:900, color:'#ff9800', marginBottom:'0.3rem'}}>{todayCount}</div>
-              <div style={{fontSize:'1.1rem', fontWeight:700, color:'#ff9800'}}>{t('today_appointments')}</div>
+            <div style={{background:'#fff', borderRadius:8, boxShadow:'0 2px 8px rgba(0,0,0,0.08)', padding:'0.8rem', textAlign:'center', border: '1px solid #f0f0f0'}}>
+              <div style={{fontSize:'1.2rem', marginBottom:'0.3rem'}}>🎯</div>
+              <div style={{fontSize:'1.5rem', fontWeight:900, color:'#0A8F82', marginBottom:'0.2rem', direction:'ltr', textAlign:'center', unicodeBidi:'bidi-override'}}>{todayCount}</div>
+              <div style={{fontSize:'0.9rem', fontWeight:600, color:'#666'}}>{t('today_appointments')}</div>
             </div>
-            <div style={{background:'#fff', borderRadius:12, boxShadow:'0 2px 12px #7c4dff11', padding:'1rem', textAlign:'center'}}>
-              <div style={{fontSize:'1.5rem', marginBottom:'0.5rem'}}>⏰</div>
-              <div style={{fontSize:'2.1rem', fontWeight:900, color:'#4caf50', marginBottom:'0.3rem'}}>{upcomingAppointments.length}</div>
-              <div style={{fontSize:'1.1rem', fontWeight:700, color:'#4caf50'}}>{t('upcoming_appointments')}</div>
+            <div style={{background:'#fff', borderRadius:8, boxShadow:'0 2px 8px rgba(0,0,0,0.08)', padding:'0.8rem', textAlign:'center', border: '1px solid #f0f0f0'}}>
+              <div style={{fontSize:'1.2rem', marginBottom:'0.3rem'}}>⏰</div>
+              <div style={{fontSize:'1.5rem', fontWeight:900, color:'#0A8F82', marginBottom:'0.2rem', direction:'ltr', textAlign:'center', unicodeBidi:'bidi-override'}}>{upcomingAppointments.length}</div>
+              <div style={{fontSize:'0.9rem', fontWeight:600, color:'#666'}}>{t('upcoming_appointments')}</div>
             </div>
-            <div style={{background:'#fff', borderRadius:12, boxShadow:'0 2px 12px #7c4dff11', padding:'1rem', textAlign:'center'}}>
-              <div style={{fontSize:'1.5rem', marginBottom:'0.5rem'}}>📊</div>
-              <div style={{fontSize:'2.1rem', fontWeight:900, color:'#e53935', marginBottom:'0.3rem'}}>{notifCount}</div>
-              <div style={{fontSize:'1.1rem', fontWeight:700, color:'#e53935'}}>{t('new_notifications')}</div>
+            <div style={{background:'#fff', borderRadius:8, boxShadow:'0 2px 8px rgba(0,0,0,0.08)', padding:'0.8rem', textAlign:'center', border: '1px solid #f0f0f0'}}>
+              <div style={{fontSize:'1.2rem', marginBottom:'0.3rem'}}>📊</div>
+              <div style={{fontSize:'1.5rem', fontWeight:900, color:'#0A8F82', marginBottom:'0.2rem', direction:'ltr', textAlign:'center', unicodeBidi:'bidi-override'}}>{notifCount}</div>
+              <div style={{fontSize:'0.9rem', fontWeight:600, color:'#666'}}>{t('new_notifications')}</div>
             </div>
           </div>
         </div>
         
         {/* أزرار المواعيد في الصفحة الرئيسية */}
         <div style={{maxWidth:700, margin:'1.5rem auto', padding:'0 1rem'}}>
-          <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:'1rem'}}>
+          <div style={{
+            display:'grid', 
+            gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(4, 1fr)' : 'repeat(auto-fit, minmax(140px, 1fr))', 
+            gap: window.innerWidth <= 768 ? '0.5rem' : '1rem'
+          }}>
             {/* زر مواعيدي (تقويم) */}
             <button style={{
-              background:'linear-gradient(135deg, #ff9800 0%, #ff5722 100%)',
-              color:'#fff',
-              border:'none',
-              borderRadius:12,
-              padding:'1rem',
+              background:'#fff',
+              color:'#0A8F82',
+              border:'2px solid #0A8F82',
+              borderRadius:16,
+              padding:'1rem 0.8rem',
               fontWeight:700,
-              fontSize:14,
+              fontSize:13,
               cursor:'pointer',
-              boxShadow:'0 3px 15px rgba(255, 152, 0, 0.3)',
+              boxShadow:'0 2px 8px rgba(10, 143, 130, 0.15)',
               display:'flex',
               flexDirection:'column',
               alignItems:'center',
-              gap:8,
+              gap:6,
               transition:'all 0.3s ease',
-              minHeight:90
+              minHeight:80
             }} onClick={()=>{
           setShowCalendarModal(true);
           // إعادة تحميل المواعيد عند فتح التقويم
           fetchAllAppointments();
         }}>
-              <div style={{fontSize:'1.8rem'}}>📅</div>
-              <div style={{fontSize:14, fontWeight:700}}>{t('my_calendar')}</div>
-              <div style={{fontSize:10, opacity:0.9}}>{t('view_calendar')}</div>
+              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem'}}>📅</div>
+              <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700}}>{t('my_calendar')}</div>
             </button>
             
             {/* زر جميع المواعيد */}
@@ -524,26 +547,25 @@ function DoctorDashboard() {
                 fetchAllAppointments();
               }}
               style={{
-                background:'linear-gradient(135deg, #7c4dff 0%, #00bcd4 100%)',
-                color:'#fff',
-                border:'none',
-                borderRadius:12,
-                padding:'1rem',
+                background:'#fff',
+                color:'#0A8F82',
+                border:'2px solid #0A8F82',
+                borderRadius:16,
+                padding:'1rem 0.8rem',
                 fontWeight:700,
-                fontSize:14,
+                fontSize:13,
                 cursor:'pointer',
                 transition:'all 0.3s ease',
                 display:'flex',
                 flexDirection:'column',
                 alignItems:'center',
-                gap:8,
-                boxShadow:'0 3px 15px rgba(124, 77, 255, 0.3)',
-                minHeight:90
+                gap:6,
+                boxShadow:'0 2px 8px rgba(10, 143, 130, 0.15)',
+                minHeight:80
               }}
             >
-              <div style={{fontSize:'1.8rem'}}>📋</div>
-              <div style={{fontSize:14, fontWeight:700}}>{t('all_appointments')}</div>
-              <div style={{fontSize:10, opacity:0.9}}>{t('manage_all_appointments')}</div>
+              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem'}}>📋</div>
+              <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700}}>{t('all_appointments')}</div>
             </button>
 
             {/* زر التحليل */}
@@ -552,26 +574,54 @@ function DoctorDashboard() {
   navigate('/doctor-analytics');
 }}
               style={{
-                background:'linear-gradient(135deg, #9c27b0 0%, #673ab7 100%)',
-                color:'#fff',
-                border:'none',
-                borderRadius:12,
-                padding:'1rem',
+                background:'#fff',
+                color:'#0A8F82',
+                border:'2px solid #0A8F82',
+                borderRadius:16,
+                padding:'1rem 0.8rem',
                 fontWeight:700,
-                fontSize:14,
+                fontSize:13,
                 cursor:'pointer',
                 transition:'all 0.3s ease',
                 display:'flex',
                 flexDirection:'column',
                 alignItems:'center',
-                gap:8,
-                boxShadow:'0 3px 15px rgba(156, 39, 176, 0.3)',
-                minHeight:90
+                gap:6,
+                boxShadow:'0 2px 8px rgba(10, 143, 130, 0.15)',
+                minHeight:80
               }}
             >
-              <div style={{fontSize:'1.8rem'}}>📊</div>
-              <div style={{fontSize:14, fontWeight:700}}>{t('appointments_analysis')}</div>
-              <div style={{fontSize:10, opacity:0.9}}>{t('statistics_and_analysis')}</div>
+              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem'}}>📊</div>
+              <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700}}>{t('appointments_analysis')}</div>
+            </button>
+
+
+
+            {/* زر الملف الشخصي */}
+            <button 
+              onClick={() => {
+                navigate('/doctor-profile');
+              }}
+              style={{
+                background:'#fff',
+                color:'#0A8F82',
+                border:'2px solid #0A8F82',
+                borderRadius:16,
+                padding:'1rem 0.8rem',
+                fontWeight:700,
+                fontSize:13,
+                cursor:'pointer',
+                transition:'all 0.3s ease',
+                display:'flex',
+                flexDirection:'column',
+                alignItems:'center',
+                gap:6,
+                boxShadow:'0 2px 8px rgba(10, 143, 130, 0.15)',
+                minHeight:80
+              }}
+            >
+              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem'}}>👤</div>
+              <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700}}>الملف الشخصي</div>
             </button>
           </div>
         </div>
@@ -579,88 +629,128 @@ function DoctorDashboard() {
         {/* مواعيد اليوم */}
         {todayCount > 0 && (
           <div style={{maxWidth:700, margin:'1.5rem auto', padding:'0 1rem'}}>
-            <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem'}}>
-              <h3 style={{color:'#7c4dff', marginBottom:'1rem', textAlign:'center', fontWeight:700}}>
+            <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px rgba(0,0,0,0.08)', padding:'1.5rem', border: '1px solid #f0f0f0'}}>
+              <h3 style={{color:'#0A8F82', marginBottom:'1.5rem', textAlign:'center', fontWeight:700, fontSize: '1.3rem', direction:'rtl'}}>
                 🎯 {t('today_appointments')} ({formatDate(today)}) - {todayCount} {t('appointment')}
               </h3>
-              <div style={{display:'flex', flexDirection:'column', gap:'0.8rem'}}>
+              <div style={{
+                display:'grid', 
+                gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(auto-fit, minmax(280px, 1fr))' : 'repeat(auto-fit, minmax(300px, 1fr))', 
+                gap: window.innerWidth <= 768 ? '0.8rem' : '1rem'
+              }}>
                 {todayAppointments.map(appointment => (
                   <div key={appointment._id} style={{
-                    background:'#f8fafd',
-                    borderRadius:6,
-                    padding: window.innerWidth < 500 ? '0.45rem 0.5rem' : '0.6rem 0.8rem',
-                    borderLeft:'3px solid #7c4dff',
-                    boxShadow:'0 1px 4px #7c4dff11',
-                    display:'flex',
-                    alignItems:'center',
-                    gap: window.innerWidth < 500 ? 6 : 12,
-                    minHeight: window.innerWidth < 500 ? 36 : 48,
+                    background:'#fff',
+                    borderRadius: window.innerWidth <= 768 ? 8 : 12,
+                    padding: window.innerWidth <= 768 ? '0.8rem' : '1rem',
+                    border:'1px solid #e0e0e0',
+                    boxShadow:'0 2px 8px rgba(0,0,0,0.06)',
                     position:'relative',
-                    marginBottom:2
+                    transition: 'all 0.3s ease'
                   }}>
-                    {/* شارة موعد خاص في الأعلى */}
+                    {/* شارة "مؤكد" بلون أخضر */}
+                    <div style={{
+                      position:'absolute',
+                      top: window.innerWidth <= 768 ? 6 : 8,
+                      right:8,
+                      background:'#0A8F82',
+                      color:'#fff',
+                      borderRadius: window.innerWidth <= 768 ? 8 : 12,
+                      padding: window.innerWidth <= 768 ? '0.15rem 0.5rem' : '0.2rem 0.6rem',
+                      fontWeight:600,
+                      fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.75rem',
+                      zIndex:2
+                    }}>
+                      مؤكد
+                    </div>
+                    
+                    {/* شارة موعد خاص */}
                     {appointment.type === 'special_appointment' && (
-                      <span style={{
+                      <div style={{
                         position:'absolute',
-                        top:5,
-                        right:8,
-                        background:'#f8fafd', // نفس لون البطاقة
-                        color:'#a0aec0', // رمادي فاتح جدًا
-                        borderRadius:4,
-                        padding: window.innerWidth < 500 ? '0.07rem 0.32rem' : '0.09rem 0.5rem',
-                        fontWeight:500,
-                        fontSize: window.innerWidth < 500 ? '0.68rem' : '0.78rem',
-                        letterSpacing:0.5,
-                        zIndex:2,
-                        border:'none',
-                        boxShadow:'none'
+                        top: window.innerWidth <= 768 ? 6 : 8,
+                        left:8,
+                        background:'#0A8F82',
+                        color:'#fff',
+                        borderRadius: window.innerWidth <= 768 ? 8 : 12,
+                        padding: window.innerWidth <= 768 ? '0.15rem 0.5rem' : '0.2rem 0.6rem',
+                        fontWeight:600,
+                        fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.75rem',
+                        zIndex:2
                       }}>
                         {t('special_appointment')}
-                      </span>
+                      </div>
                     )}
-                    <div style={{display:'flex', alignItems:'center', gap:6, flex:1}}>
-                      <span style={{fontWeight:600, fontSize: window.innerWidth < 500 ? '0.95rem' : '1.1rem', color:'#222'}}>
-                        🕐 {appointment.time}
-                      </span>
-                    </div>
-                    <div style={{flex:1, minWidth:0}}>
-                      <div style={{color:'#7c4dff', fontWeight:700, fontSize: window.innerWidth < 500 ? '0.95rem' : '1rem', marginBottom:2}}>
+                    
+                    {/* معلومات المريض */}
+                    <div style={{marginBottom:'0.8rem'}}>
+                      <div style={{color:'#0A8F82', fontWeight:700, fontSize:'1.1rem', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
                         👤 {appointment.userId?.first_name || appointment.userName || t('patient_name')}
                       </div>
-                      {/* عرض رقم الهاتف - تحسين العرض */}
                       {(appointment.patientPhone || appointment.userId?.phone || (/^\+?\d{10,}$/.test(appointment.notes))) && (
-                        <div style={{fontSize: window.innerWidth < 500 ? '0.78rem' : '0.85rem', color:'#888', marginTop:1}}>
+                        <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'ltr', textAlign:'left', unicodeBidi:'bidi-override'}}>
                           📞 {appointment.patientPhone || appointment.userId?.phone || appointment.notes}
                         </div>
                       )}
-                      {/* عرض ملاحظة إذا كان الموعد لشخص آخر */}
-                      {appointment.type === 'special_appointment' && appointment.notes && !(/^\+?\d{10,}$/.test(appointment.notes)) && (
-                        <div style={{fontSize: window.innerWidth < 500 ? '0.78rem' : '0.85rem', color:'#ff9800', marginTop:1, fontStyle:'italic'}}>
-                          📝 {appointment.notes}
-                        </div>
-                      )}
-                      {appointment.reason && (
-                        <div style={{fontSize: window.innerWidth < 500 ? '0.78rem' : '0.85rem', color:'#888', marginTop:1, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>
-                          💬 {appointment.reason}
-                        </div>
-                      )}
                     </div>
-                    <button 
-                      onClick={() => navigate('/doctor-appointments')}
-                      style={{
-                        background:'#7c4dff',
-                        color:'#fff',
-                        border:'none',
-                        borderRadius:5,
-                        padding: window.innerWidth < 500 ? '0.22rem 0.5rem' : '0.3rem 0.7rem',
-                        fontWeight:700,
-                        cursor:'pointer',
-                        fontSize: window.innerWidth < 500 ? '0.75rem' : '0.85rem',
-                        marginLeft:6
-                      }}
-                    >
-                      {t('manage')}
-                    </button>
+                    
+                    {/* وقت وتاريخ الموعد */}
+                    <div style={{marginBottom:'0.8rem'}}>
+                      <div style={{fontWeight:600, fontSize:'1rem', color:'#333', marginBottom:'0.2rem', direction:'ltr', textAlign:'left', unicodeBidi:'bidi-override'}}>
+                        🕐 {appointment.time}
+                      </div>
+                      <div style={{fontSize:'0.85rem', color:'#888', direction:'ltr', textAlign:'left', unicodeBidi:'bidi-override'}}>
+                        📅 {formatDate(appointment.date)}
+                      </div>
+                    </div>
+                    
+                    {/* ملاحظة أو سبب */}
+                    {(appointment.type === 'special_appointment' && appointment.notes && !(/^\+?\d{10,}$/.test(appointment.notes))) && (
+                      <div style={{fontSize:'0.85rem', color:'#0A8F82', marginBottom:'0.8rem', fontStyle:'italic', padding:'0.5rem', background:'#e8f5e8', borderRadius:6, direction:'rtl', textAlign:'right'}}>
+                        📝 {appointment.notes}
+                      </div>
+                    )}
+                    {appointment.reason && (
+                      <div style={{fontSize:'0.85rem', color:'#666', marginBottom:'0.8rem', padding:'0.5rem', background:'#f5f5f5', borderRadius:6, direction:'rtl', textAlign:'right'}}>
+                        💬 {appointment.reason}
+                      </div>
+                    )}
+                    
+                    {/* أزرار التحكم */}
+                    <div style={{display:'flex', gap:'0.5rem', justifyContent:'flex-end'}}>
+                      <button 
+                        onClick={() => navigate('/doctor-appointments')}
+                        style={{
+                          background:'#0A8F82',
+                          color:'#fff',
+                          border:'none',
+                          borderRadius:8,
+                          padding:'0.4rem 0.8rem',
+                          fontWeight:600,
+                          cursor:'pointer',
+                          fontSize:'0.8rem',
+                          transition:'all 0.3s ease'
+                        }}
+                      >
+                        {t('manage')}
+                      </button>
+                                              <button 
+                          onClick={() => openNoteModal(appointment.patientPhone || appointment.userId?.phone || appointment.notes)}
+                          style={{
+                            background:'#0A8F82',
+                            color:'#fff',
+                            border:'none',
+                            borderRadius:8,
+                            padding:'0.4rem 0.8rem',
+                            fontWeight:600,
+                            cursor:'pointer',
+                            fontSize:'0.8rem',
+                            transition:'all 0.3s ease'
+                          }}
+                        >
+                          ملاحظة
+                        </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -705,7 +795,7 @@ function DoctorDashboard() {
           <div style={{position:'fixed', top:0, left:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.18)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:2000}}>
             <div style={{background:'#fff', borderRadius:20, boxShadow:'0 8px 32px rgba(0,0,0,0.2)', padding:'2.5rem 2rem', minWidth:450, maxWidth:600, maxHeight:'90vh', overflowY:'auto'}}>
               <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24}}>
-                <h3 style={{color:'#00bcd4', fontWeight:800, fontSize:24, margin:0}}>➕ {t('add_special_appointment')}</h3>
+                <h3 style={{color:'#4caf50', fontWeight:800, fontSize:24, margin:0}}>➕ {t('add_special_appointment')}</h3>
                 <button 
                   onClick={()=>{
   setShowAdd(false);
@@ -812,7 +902,7 @@ function DoctorDashboard() {
           <div style={{position:'fixed', top:0, left:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.18)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:2000, overflowY:'auto', padding:'2rem'}}>
             <div style={{background:'#fff', borderRadius:20, boxShadow:'0 8px 32px rgba(0,0,0,0.2)', padding:'2.5rem 2rem', minWidth:450, maxWidth:600, maxHeight:'90vh', overflowY:'auto'}}>
               <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24}}>
-                <h3 style={{color:'#ff5722', fontWeight:800, fontSize:24, margin:0, display:'flex', alignItems:'center', gap:'0.5rem'}}>
+                <h3 style={{color:'#ff9800', fontWeight:800, fontSize:24, margin:0, display:'flex', alignItems:'center', gap:'0.5rem'}}>
                   ✏️ {t('edit_special_appointment')}
                 </h3>
                 <button 
@@ -890,12 +980,12 @@ function DoctorDashboard() {
   // إعادة تحميل المواعيد عند إغلاق نافذة الاتصال
   fetchAllAppointments();
 }} style={{position:'absolute', top:10, left:10, background:'none', border:'none', color:'#e53935', fontSize:window.innerWidth < 500 ? 18 : 22, fontWeight:900, cursor:'pointer'}}>&times;</button>
-              <h3 style={{color:'#00bcd4', marginBottom:14, fontWeight:800, fontSize:window.innerWidth < 500 ? 16 : 22}}>{t('contact_info_title')}</h3>
+              <h3 style={{color:'#4caf50', marginBottom:14, fontWeight:800, fontSize:window.innerWidth < 500 ? 16 : 22}}>{t('contact_info_title')}</h3>
               <div style={{display:'flex', flexDirection:'column', gap:window.innerWidth < 500 ? 10 : 18}}>
-                <button onClick={()=>window.open('mailto:tabibiqapp@gmail.com','_blank')} style={{background:'linear-gradient(90deg,#00bcd4 0%,#7c4dff 100%)', color:'#fff', border:'none', borderRadius:14, padding:window.innerWidth < 500 ? '0.6rem 0.7rem' : '1rem 1.2rem', fontWeight:800, fontSize:window.innerWidth < 500 ? 13 : 16, display:'flex', alignItems:'center', gap:8, boxShadow:'0 2px 12px #00bcd422', cursor:'pointer'}}>
+                <button onClick={()=>window.open('mailto:tabibiqapp@gmail.com','_blank')} style={{background:'#4caf50', color:'#fff', border:'none', borderRadius:14, padding:window.innerWidth < 500 ? '0.6rem 0.7rem' : '1rem 1.2rem', fontWeight:800, fontSize:window.innerWidth < 500 ? 13 : 16, display:'flex', alignItems:'center', gap:8, boxShadow:'0 2px 12px rgba(76, 175, 80, 0.3)', cursor:'pointer'}}>
                   <span style={{fontSize:window.innerWidth < 500 ? 16 : 22}}>📧</span> {t('email')}: tabibiqapp@gmail.com
                 </button>
-                <button onClick={()=>window.open('https://wa.me/9647769012619','_blank')} style={{background:'linear-gradient(90deg,#7c4dff 0%,#00bcd4 100%)', color:'#fff', border:'none', borderRadius:14, padding:window.innerWidth < 500 ? '0.6rem 0.7rem' : '1rem 1.2rem', fontWeight:800, fontSize:window.innerWidth < 500 ? 13 : 16, display:'flex', alignItems:'center', gap:8, boxShadow:'0 2px 12px #7c4dff22', cursor:'pointer'}}>
+                <button onClick={()=>window.open('https://wa.me/9647769012619','_blank')} style={{background:'#ff9800', color:'#fff', border:'none', borderRadius:14, padding:window.innerWidth < 500 ? '0.6rem 0.7rem' : '1rem 1.2rem', fontWeight:800, fontSize:window.innerWidth < 500 ? 13 : 16, display:'flex', alignItems:'center', gap:8, boxShadow:'0 2px 12px rgba(255, 152, 0, 0.3)', cursor:'pointer'}}>
                   <span style={{fontSize:window.innerWidth < 500 ? 16 : 22}}>💬</span> {t('whatsapp')}: +964 776 901 2619
                 </button>
               </div>
