@@ -60,7 +60,16 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
   };
 
   const removeVacationDay = (index) => {
+    const removedVacation = vacationDays[index];
     setVacationDays(vacationDays.filter((_, i) => i !== index));
+    
+    // إضافة رسالة تأكيد
+    setSuccess(`تم إلغاء الإجازة: ${removedVacation.date || removedVacation.month || removedVacation.year} - ${removedVacation.description}`);
+    
+    // إزالة من الأيام المحددة إذا كان موجوداً
+    if (removedVacation.date) {
+      setSelectedDates(selectedDates.filter(date => date !== removedVacation.date));
+    }
   };
 
   const updateVacationDay = (index, field, value) => {
@@ -141,6 +150,22 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
     setSelectedDates([]);
   };
 
+  // دالة لحساب إجمالي أيام الإجازات
+  const getTotalVacationDays = () => {
+    let total = 0;
+    vacationDays.forEach(vacation => {
+      if (vacation.type === 'single') {
+        total += 1;
+      } else if (vacation.type === 'monthly') {
+        const daysInMonth = new Date(vacation.year, vacation.month, 0).getDate();
+        total += daysInMonth;
+      } else if (vacation.type === 'yearly') {
+        total += 365; // تقريبي
+      }
+    });
+    return total;
+  };
+
   const addSelectedDatesAsVacations = () => {
     const newVacations = selectedDates.map(date => ({
       type: 'single',
@@ -154,6 +179,29 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
     
     setVacationDays([...vacationDays, ...newVacations]);
     setSelectedDates([]);
+    setSuccess(`✅ تم حفظ ${newVacations.length} يوم كأيام إجازات بنجاح!`);
+  };
+
+  // دالة لإلغاء إجازة محددة وإعادتها كيوم متاح
+  const cancelVacation = (vacation) => {
+    if (vacation.type === 'single' && vacation.date) {
+      // إزالة من قائمة الإجازات
+      setVacationDays(vacationDays.filter(v => v !== vacation));
+      
+      // إضافة رسالة تأكيد
+      setSuccess(`تم إلغاء الإجازة وإعادة اليوم ${vacation.date} كيوم متاح للحجز`);
+      
+      // إزالة من الأيام المحددة إذا كان موجوداً
+      setSelectedDates(selectedDates.filter(date => date !== vacation.date));
+    } else if (vacation.type === 'monthly') {
+      // إزالة الإجازة الشهرية
+      setVacationDays(vacationDays.filter(v => v !== vacation));
+      setSuccess(`تم إلغاء الإجازة الشهرية لشهر ${vacation.month}/${vacation.year}`);
+    } else if (vacation.type === 'yearly') {
+      // إزالة الإجازة السنوية
+      setVacationDays(vacationDays.filter(v => v !== vacation));
+      setSuccess(`تم إلغاء الإجازة السنوية لسنة ${vacation.year}`);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -331,6 +379,41 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
           <div>
             <div style={{ marginBottom: '1rem' }}>
               <h4 style={{ color: '#333', marginBottom: '0.5rem' }}>{t('vacation_days_title')}:</h4>
+              
+              {/* ملخص الإجازات الحالية */}
+              {vacationDays.length > 0 && (
+                <div style={{ 
+                  background: '#e8f5e8', 
+                  border: '1px solid #4caf50', 
+                  borderRadius: '8px', 
+                  padding: '1rem',
+                  marginBottom: '1rem'
+                }}>
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    marginBottom: '0.5rem'
+                  }}>
+                    <div style={{ fontWeight: '600', color: '#2e7d32' }}>
+                      📊 ملخص الإجازات الحالية
+                    </div>
+                    <div style={{ 
+                      background: '#4caf50', 
+                      color: '#fff', 
+                      padding: '0.3rem 0.8rem', 
+                      borderRadius: '20px',
+                      fontSize: '12px',
+                      fontWeight: '600'
+                    }}>
+                      {getTotalVacationDays()} يوم إجازة
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#666' }}>
+                    عدد الإجازات: {vacationDays.length} إجازة
+                  </div>
+                </div>
+              )}
               
               {/* التقويم المتقدم */}
               <div style={{ 
@@ -579,21 +662,18 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
                   )}
                 </div>
 
-                {/* ملخص الأيام المحددة */}
+                {/* زر حفظ بسيط */}
                 {selectedDates.length > 0 && (
                   <div style={{ 
-                    background: '#f0f8ff', 
-                    border: '1px solid #0A8F82', 
-                    borderRadius: '8px', 
-                    padding: '1rem',
+                    textAlign: 'center',
                     marginBottom: '1rem'
                   }}>
-                    <div style={{ fontWeight: '600', color: '#0A8F82', marginBottom: '0.5rem' }}>
-                      الأيام المحددة: {selectedDates.length} يوم
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#666', marginBottom: '0.5rem' }}>
-                      {selectedDates.slice(0, 5).join('، ')}
-                      {selectedDates.length > 5 && `... و${selectedDates.length - 5} يوم آخر`}
+                    <div style={{ 
+                      fontSize: '14px', 
+                      color: '#666', 
+                      marginBottom: '0.5rem' 
+                    }}>
+                      تم تحديد {selectedDates.length} يوم
                     </div>
                     <button
                       type="button"
@@ -603,12 +683,13 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
                         color: '#fff',
                         border: 'none',
                         borderRadius: '8px',
-                        padding: '0.5rem 1rem',
+                        padding: '0.7rem 1.5rem',
                         cursor: 'pointer',
-                        fontWeight: '600'
+                        fontWeight: '600',
+                        fontSize: '14px'
                       }}
                     >
-                      إضافة كأيام إجازات
+                      ✅ حفظ الأيام المحددة
                     </button>
                   </div>
                 )}
@@ -628,21 +709,40 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
                       <h5 style={{ color: '#e65100', margin: 0, fontSize: '1rem' }}>{t('vacation_number')}{index + 1}</h5>
-                      <button
-                        type="button"
-                        onClick={() => removeVacationDay(index)}
-                        style={{
-                          background: '#e53935',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '4px',
-                          padding: '0.3rem 0.6rem',
-                          cursor: 'pointer',
-                          fontSize: '0.8rem'
-                        }}
-                      >
-                        حذف
-                      </button>
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button
+                          type="button"
+                          onClick={() => cancelVacation(vacation)}
+                          style={{
+                            background: '#ff9800',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '0.4rem 0.8rem',
+                            cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                          title="إلغاء الإجازة وإعادة اليوم كمتاح"
+                        >
+                          🔄 إلغاء
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeVacationDay(index)}
+                          style={{
+                            background: '#e53935',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '0.4rem 0.8rem',
+                            cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                          title="حذف الإجازة نهائياً"
+                        >
+                          🗑️ حذف
+                        </button>
+                      </div>
                     </div>
                     
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.8rem' }}>
