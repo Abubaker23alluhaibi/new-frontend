@@ -348,18 +348,18 @@
 
 /* زر اللغة الجديد للموبايل - مثل صفحة تسجيل الدخول */
 .landing-page .language-select-mobile-new {
-  background: rgba(0, 188, 212, 0.1);
-  color: #009688;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
   border: none;
   border-radius: 8px;
   padding: 0.3rem 0.8rem;
   font-weight: 700;
   font-size: 15px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.2);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   transition: all 0.2s;
-  border: 1px solid rgba(0, 150, 136, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   min-height: 36px;
   user-select: none;
   -webkit-user-select: none;
@@ -372,21 +372,21 @@
 }
 
 .landing-page .language-select-mobile-new:hover {
-  background: rgba(0, 188, 212, 0.15);
-  box-shadow: 0 3px 12px rgba(0, 188, 212, 0.3);
-  border-color: rgba(0, 150, 136, 0.3);
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 3px 12px rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .landing-page .language-select-mobile-new:focus {
   outline: none;
-  background: rgba(0, 188, 212, 0.2);
-  box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);
-  border-color: rgba(0, 150, 136, 0.4);
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .landing-page .language-select-mobile-new option {
   background: white;
-  color: #009688;
+  color: #0A8F82;
   font-weight: 600;
   padding: 0.5rem;
 }

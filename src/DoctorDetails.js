@@ -206,6 +206,14 @@ function DoctorDetails() {
       setBookedTimes([]);
       return;
     }
+    
+    // التحقق من أن اليوم ليس يوم إجازة
+    if (!isDayAvailable(selectedDate)) {
+      setAvailableTimes([]);
+      setBookedTimes([]);
+      return;
+    }
+    
     // ترتيب الأيام حسب جافاسكريبت: الأحد=0، الاثنين=1، ... السبت=6
     const weekDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
     const dayName = weekDays[selectedDate.getDay()];
@@ -239,7 +247,40 @@ function DoctorDetails() {
     // ترتيب الأيام حسب جافاسكريبت: الأحد=0، الاثنين=1، ... السبت=6
     const weekDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
     const dayName = weekDays[date.getDay()];
-    return getAvailableDays().includes(dayName);
+    
+    // التحقق من أن اليوم ضمن أيام العمل الأسبوعية
+    if (!getAvailableDays().includes(dayName)) {
+      return false;
+    }
+    
+    // التحقق من أيام الإجازات
+    if (doctor?.vacationDays && Array.isArray(doctor.vacationDays)) {
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1; // 1-12
+      const day = date.getDate();
+      
+      for (const vacation of doctor.vacationDays) {
+        // التحقق من الإجازة السنوية
+        if (vacation.type === 'yearly' && vacation.year === year) {
+          return false;
+        }
+        
+        // التحقق من الإجازة الشهرية
+        if (vacation.type === 'monthly' && vacation.year === year && vacation.month == month) {
+          return false;
+        }
+        
+        // التحقق من الإجازة اليومية
+        if (vacation.type === 'single' && vacation.year === year) {
+          const vacationDate = new Date(vacation.date);
+          if (vacationDate.getMonth() + 1 === month && vacationDate.getDate() === day) {
+            return false;
+          }
+        }
+      }
+    }
+    
+    return true;
   };
 
   const handleBook = async (e) => {

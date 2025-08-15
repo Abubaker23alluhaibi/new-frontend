@@ -395,7 +395,7 @@ function DoctorDashboard() {
                 // إعادة تحميل المواعيد عند فتح تعديل الدوام
                 fetchAllAppointments();
               }} style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
-                <span role="img" aria-label="تعديل الدوام">⏰</span> تعديل الدوام
+                <span role="img" aria-label="تعديل الدوام والإجازات">📅</span> تعديل الجدول والإجازات
               </button>
               <button onClick={()=>{
                 setShowAppointmentDurationModal(true); 
@@ -1084,20 +1084,21 @@ function DoctorDashboard() {
         <div style={{position:'fixed', top:0, left:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.5)', zIndex:5000, display:'flex', alignItems:'center', justifyContent:'center'}} onClick={()=>setShowWorkTimesModal(false)}>
           <div style={{background:'#fff', borderRadius:16, padding:'2rem', maxWidth:'90vw', maxHeight:'80vh', overflow:'auto', width:400}} onClick={e=>e.stopPropagation()}>
             <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem'}}>
-              <h3 style={{color:'#7c4dff', margin:0, fontWeight:700}}>⏰ تعديل أوقات الدوام</h3>
+              <h3 style={{color:'#0A8F82', margin:0, fontWeight:700}}>📅 تعديل الجدول والإجازات</h3>
               <button onClick={()=>setShowWorkTimesModal(false)} style={{background:'#e53935', color:'#fff', border:'none', borderRadius:8, fontSize:20, fontWeight:900, padding:'0.2rem 0.8rem', cursor:'pointer'}}>×</button>
             </div>
             <WorkTimesEditor 
               profile={profile} 
               onClose={()=>setShowWorkTimesModal(false)}
-              onUpdate={(updatedWorkTimes) => {
-                console.log('🔄 DoctorDashboard: استلام أوقات الدوام المحدثة:', updatedWorkTimes);
+              onUpdate={(updatedData) => {
+                console.log('🔄 DoctorDashboard: استلام البيانات المحدثة:', updatedData);
                 setShowWorkTimesModal(false);
                 // تحديث البيانات المحلية مباشرة مع الحفاظ على الصورة الشخصية
-                if (updatedWorkTimes) {
+                if (updatedData) {
                   const updatedProfile = { 
                     ...profile, 
-                    workTimes: updatedWorkTimes 
+                    workTimes: updatedData.workTimes || profile.workTimes,
+                    vacationDays: updatedData.vacationDays || profile.vacationDays
                   };
                   console.log('💾 DoctorDashboard: حفظ البيانات المحدثة في localStorage:', updatedProfile);
                   localStorage.setItem('profile', JSON.stringify(updatedProfile));
