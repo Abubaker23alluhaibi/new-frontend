@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 function WorkTimesEditor({ profile, onClose, onUpdate }) {
+  const { t } = useTranslation();
   const [workTimes, setWorkTimes] = useState([]);
   const [vacationDays, setVacationDays] = useState([]);
   const [loading, setLoading] = useState(false);
