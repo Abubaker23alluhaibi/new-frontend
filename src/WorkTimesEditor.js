@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { ar } from 'date-fns/locale';
 
 function WorkTimesEditor({ profile, onClose, onUpdate }) {
   const { t } = useTranslation();
@@ -9,6 +12,14 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [activeTab, setActiveTab] = useState('workTimes'); // 'workTimes' or 'vacationDays'
+  
+  // حالات التقويم المتقدم
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [selectedDates, setSelectedDates] = useState([]);
+  const [vacationType, setVacationType] = useState('full'); // 'full' or 'partial'
+  const [partialTimeFrom, setPartialTimeFrom] = useState('09:00');
+  const [partialTimeTo, setPartialTimeTo] = useState('13:00');
 
   const weekdays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 
@@ -56,6 +67,93 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
     const updated = [...vacationDays];
     updated[index] = { ...updated[index], [field]: value };
     setVacationDays(updated);
+  };
+
+  // دوال التقويم المتقدم
+  const navigateMonth = (direction) => {
+    if (direction === 'prev') {
+      if (currentMonth === 0) {
+        setCurrentMonth(11);
+        setCurrentYear(currentYear - 1);
+      } else {
+        setCurrentMonth(currentMonth - 1);
+      }
+    } else {
+      if (currentMonth === 11) {
+        setCurrentMonth(0);
+        setCurrentYear(currentYear + 1);
+      } else {
+        setCurrentMonth(currentMonth + 1);
+      }
+    }
+  };
+
+  const handleDateClick = (date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    if (selectedDates.includes(dateStr)) {
+      setSelectedDates(selectedDates.filter(d => d !== dateStr));
+    } else {
+      setSelectedDates([...selectedDates, dateStr]);
+    }
+  };
+
+  const selectWeek = (weekStart) => {
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(weekStart);
+      date.setDate(date.getDate() + i);
+      weekDates.push(date.toISOString().split('T')[0]);
+    }
+    setSelectedDates([...new Set([...selectedDates, ...weekDates])]);
+  };
+
+  const selectWeekend = () => {
+    const today = new Date();
+    const currentMonthDates = [];
+    const year = currentYear;
+    const month = currentMonth;
+    
+    for (let day = 1; day <= new Date(year, month + 1, 0).getDate(); day++) {
+      const date = new Date(year, month, day);
+      if (date.getDay() === 5 || date.getDay() === 6) { // الجمعة والسبت
+        currentMonthDates.push(date.toISOString().split('T')[0]);
+      }
+    }
+    setSelectedDates([...new Set([...selectedDates, ...currentMonthDates])]);
+  };
+
+  const selectWorkDays = () => {
+    const today = new Date();
+    const currentMonthDates = [];
+    const year = currentYear;
+    const month = currentMonth;
+    
+    for (let day = 1; day <= new Date(year, month + 1, 0).getDate(); day++) {
+      const date = new Date(year, month, day);
+      if (date.getDay() !== 5 && date.getDay() !== 6) { // أيام العمل
+        currentMonthDates.push(date.toISOString().split('T')[0]);
+      }
+    }
+    setSelectedDates([...new Set([...selectedDates, ...currentMonthDates])]);
+  };
+
+  const clearAllDates = () => {
+    setSelectedDates([]);
+  };
+
+  const addSelectedDatesAsVacations = () => {
+    const newVacations = selectedDates.map(date => ({
+      type: 'single',
+      date: date,
+      year: new Date(date).getFullYear(),
+      description: vacationType === 'partial' ? `إجازة جزئية ${partialTimeFrom}-${partialTimeTo}` : 'إجازة يوم كامل',
+      isPartial: vacationType === 'partial',
+      partialTimeFrom: vacationType === 'partial' ? partialTimeFrom : null,
+      partialTimeTo: vacationType === 'partial' ? partialTimeTo : null
+    }));
+    
+    setVacationDays([...vacationDays, ...newVacations]);
+    setSelectedDates([]);
   };
 
   const handleSubmit = async (e) => {
@@ -233,6 +331,290 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
           <div>
             <div style={{ marginBottom: '1rem' }}>
               <h4 style={{ color: '#333', marginBottom: '0.5rem' }}>{t('vacation_days_title')}:</h4>
+              
+              {/* التقويم المتقدم */}
+              <div style={{ 
+                background: '#fff', 
+                border: '2px solid #e0e0e0', 
+                borderRadius: '12px', 
+                padding: '1.5rem', 
+                marginBottom: '1.5rem' 
+              }}>
+                {/* محدد السنة والشهر */}
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  marginBottom: '1rem' 
+                }}>
+                  <button
+                    type="button"
+                    onClick={() => navigateMonth('prev')}
+                    style={{
+                      background: '#0A8F82',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '40px',
+                      height: '40px',
+                      cursor: 'pointer',
+                      fontSize: '18px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    ⇦
+                  </button>
+                  
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#0A8F82' }}>
+                      {['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'][currentMonth]}
+                    </div>
+                    <div style={{ fontSize: '1rem', color: '#666' }}>
+                      {currentYear}
+                    </div>
+                  </div>
+                  
+                  <button
+                    type="button"
+                    onClick={() => navigateMonth('next')}
+                    style={{
+                      background: '#0A8F82',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '40px',
+                      height: '40px',
+                      cursor: 'pointer',
+                      fontSize: '18px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    ⇨
+                  </button>
+                </div>
+
+                {/* أزرار التحديد السريع */}
+                <div style={{ 
+                  display: 'flex', 
+                  gap: '0.5rem', 
+                  marginBottom: '1rem',
+                  flexWrap: 'wrap'
+                }}>
+                  <button
+                    type="button"
+                    onClick={selectWeekend}
+                    style={{
+                      background: '#ff9800',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '0.5rem 1rem',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                  >
+                    تحديد نهاية الأسبوع
+                  </button>
+                  <button
+                    type="button"
+                    onClick={selectWorkDays}
+                    style={{
+                      background: '#4caf50',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '0.5rem 1rem',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                  >
+                    تحديد أيام الدوام
+                  </button>
+                  <button
+                    type="button"
+                    onClick={clearAllDates}
+                    style={{
+                      background: '#e53935',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '0.5rem 1rem',
+                      cursor: 'pointer',
+                      fontSize: '12px'
+                    }}
+                  >
+                    مسح الكل
+                  </button>
+                </div>
+
+                {/* التقويم الشهري */}
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(7, 1fr)', 
+                  gap: '2px',
+                  marginBottom: '1rem'
+                }}>
+                  {/* أيام الأسبوع */}
+                  {['أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'].map(day => (
+                    <div key={day} style={{
+                      padding: '0.5rem',
+                      textAlign: 'center',
+                      fontWeight: '700',
+                      color: '#0A8F82',
+                      fontSize: '12px'
+                    }}>
+                      {day}
+                    </div>
+                  ))}
+                  
+                  {/* أيام الشهر */}
+                  {(() => {
+                    const firstDay = new Date(currentYear, currentMonth, 1);
+                    const lastDay = new Date(currentYear, currentMonth + 1, 0);
+                    const startDate = new Date(firstDay);
+                    startDate.setDate(startDate.getDate() - firstDay.getDay());
+                    
+                    const days = [];
+                    for (let i = 0; i < 42; i++) {
+                      const date = new Date(startDate);
+                      date.setDate(startDate.getDate() + i);
+                      
+                      const isCurrentMonth = date.getMonth() === currentMonth;
+                      const isToday = date.toDateString() === new Date().toDateString();
+                      const isSelected = selectedDates.includes(date.toISOString().split('T')[0]);
+                      const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
+                      
+                      days.push(
+                        <div
+                          key={i}
+                          onClick={() => !isPast && handleDateClick(date)}
+                          style={{
+                            padding: '0.5rem',
+                            textAlign: 'center',
+                            cursor: isPast ? 'not-allowed' : 'pointer',
+                            background: isSelected ? '#0A8F82' : (isToday ? '#e3f2fd' : 'transparent'),
+                            color: isSelected ? '#fff' : (isCurrentMonth ? '#333' : '#ccc'),
+                            borderRadius: '4px',
+                            border: isSelected ? '2px solid #0A8F82' : '1px solid transparent',
+                            opacity: isPast ? 0.5 : 1,
+                            position: 'relative'
+                          }}
+                        >
+                          {date.getDate()}
+                          {isSelected && (
+                            <div style={{
+                              position: 'absolute',
+                              top: '-8px',
+                              right: '-8px',
+                              background: '#ff5722',
+                              color: '#fff',
+                              borderRadius: '50%',
+                              width: '16px',
+                              height: '16px',
+                              fontSize: '10px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}>
+                              ✕
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+                    return days;
+                  })()}
+                </div>
+
+                {/* إعدادات الإجازة */}
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                  gap: '1rem',
+                  marginBottom: '1rem'
+                }}>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: '600', color: '#333' }}>
+                      نوع الإجازة
+                    </label>
+                    <select
+                      value={vacationType}
+                      onChange={(e) => setVacationType(e.target.value)}
+                      style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #b2dfdb' }}
+                    >
+                      <option value="full">يوم كامل</option>
+                      <option value="partial">جزئي</option>
+                    </select>
+                  </div>
+                  
+                  {vacationType === 'partial' && (
+                    <>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: '600', color: '#333' }}>
+                          من
+                        </label>
+                        <input
+                          type="time"
+                          value={partialTimeFrom}
+                          onChange={(e) => setPartialTimeFrom(e.target.value)}
+                          style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #b2dfdb' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: '600', color: '#333' }}>
+                          إلى
+                        </label>
+                        <input
+                          type="time"
+                          value={partialTimeTo}
+                          onChange={(e) => setPartialTimeTo(e.target.value)}
+                          style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #b2dfdb' }}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* ملخص الأيام المحددة */}
+                {selectedDates.length > 0 && (
+                  <div style={{ 
+                    background: '#f0f8ff', 
+                    border: '1px solid #0A8F82', 
+                    borderRadius: '8px', 
+                    padding: '1rem',
+                    marginBottom: '1rem'
+                  }}>
+                    <div style={{ fontWeight: '600', color: '#0A8F82', marginBottom: '0.5rem' }}>
+                      الأيام المحددة: {selectedDates.length} يوم
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#666', marginBottom: '0.5rem' }}>
+                      {selectedDates.slice(0, 5).join('، ')}
+                      {selectedDates.length > 5 && `... و${selectedDates.length - 5} يوم آخر`}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={addSelectedDatesAsVacations}
+                      style={{
+                        background: '#0A8F82',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '0.5rem 1rem',
+                        cursor: 'pointer',
+                        fontWeight: '600'
+                      }}
+                    >
+                      إضافة كأيام إجازات
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* قائمة أيام الإجازات الموجودة */}
               {vacationDays.length === 0 ? (
                 <div style={{ color: '#666', fontStyle: 'italic' }}>{t('no_vacation_days')}</div>
               ) : (
