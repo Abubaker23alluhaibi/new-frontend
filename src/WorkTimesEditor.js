@@ -232,7 +232,9 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
             vacationDays: data.vacationDays || vacationDays
           };
           console.log('🔄 WorkTimesEditor: إرسال البيانات المحدثة:', updatedData);
-          onUpdate(updatedData);
+          if (onUpdate && typeof onUpdate === 'function') {
+            onUpdate(updatedData);
+          }
         }, 1500);
       } else {
         console.error('❌ WorkTimesEditor: خطأ من السيرفر:', data);
