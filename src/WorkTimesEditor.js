@@ -4,7 +4,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ar } from 'date-fns/locale';
 
-function WorkTimesEditor({ profile, onClose, onUpdate }) {
+function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
   const { t } = useTranslation();
   const [workTimes, setWorkTimes] = useState([]);
   const [vacationDays, setVacationDays] = useState([]);
@@ -228,8 +228,33 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
             vacationDays: data.vacationDays || vacationDays
           };
           console.log('🔄 WorkTimesEditor: إرسال البيانات المحدثة:', updatedData);
+          
+          // تحديث البيانات المحلية أولاً
+          if (profile) {
+            const updatedProfile = { 
+              ...profile, 
+              workTimes: updatedData.workTimes,
+              vacationDays: updatedData.vacationDays
+            };
+            localStorage.setItem('profile', JSON.stringify(updatedProfile));
+          }
+          
+          // استدعاء onUpdate إذا كان موجوداً
           if (onUpdate && typeof onUpdate === 'function') {
-            onUpdate(updatedData);
+            try {
+              onUpdate(updatedData);
+            } catch (error) {
+              console.error('❌ خطأ في استدعاء onUpdate:', error);
+            }
+          }
+          
+          // استدعاء fetchAllAppointments إذا كان موجوداً
+          if (fetchAllAppointments && typeof fetchAllAppointments === 'function') {
+            try {
+              fetchAllAppointments();
+            } catch (error) {
+              console.error('❌ خطأ في استدعاء fetchAllAppointments:', error);
+            }
           }
         }, 1500);
       } else {

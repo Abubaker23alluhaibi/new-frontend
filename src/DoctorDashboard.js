@@ -1108,6 +1108,7 @@ function DoctorDashboard() {
                   fetchAllAppointments();
                 }
               }}
+              fetchAllAppointments={fetchAllAppointments}
             />
           </div>
         </div>
