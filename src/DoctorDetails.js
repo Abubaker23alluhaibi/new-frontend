@@ -483,36 +483,7 @@ const bookingData = {
         {copySuccess && <div style={{color:'#00c853', textAlign:'center', fontWeight:700, marginBottom:8}}>تم نسخ الرابط!</div>}
         
         <div style={{display:'flex', flexDirection:'column', alignItems:'center', gap: window.innerWidth < 500 ? 6 : 10}}>
-          {/* مستطيل ملون لاسم الطبيب والتخصص فقط */}
-          <div style={{
-            borderRadius: window.innerWidth < 500 ? 10 : 14, 
-            padding: window.innerWidth < 500 ? '0.8rem 1rem' : '1rem 1.2rem', 
-            marginBottom: window.innerWidth < 500 ? 10 : 15, 
-            width:'100%', 
-            maxWidth: window.innerWidth < 500 ? 280 : 320, 
-            display:'flex', 
-            flexDirection:'column', 
-            alignItems:'center'
-          }}>
-            <div style={{
-              fontWeight:900, 
-              fontSize: window.innerWidth < 500 ? 16 : 20, 
-              color:'#222', 
-              marginBottom:4
-            }}>
-              {doctor.name}
-            </div>
-            <div style={{
-              color:'#7c4dff', 
-              fontWeight:700, 
-              fontSize: window.innerWidth < 500 ? 12 : 15, 
-              letterSpacing:0.5
-            }}>
-              {specialties[doctor.specialty] || doctor.specialty}
-            </div>
-          </div>
-          
-          {/* باقي المعلومات كما هي */}
+          {/* صورة الطبيب */}
           <img 
             src={getImageUrl(doctor)} 
             alt={doctor.name} 
@@ -532,7 +503,7 @@ const bookingData = {
             onClick={()=>setShowImageModal(true)} 
           />
           
-
+          {/* اسم الطبيب والتخصص */}
           <div style={{
             fontWeight:900, 
             fontSize: window.innerWidth < 500 ? 18 : 22, 
