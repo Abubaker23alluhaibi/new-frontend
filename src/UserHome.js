@@ -30,8 +30,14 @@ function UserHome() {
   const provinces = t('provinces', { returnObjects: true });
   // جلب التخصصات من الترجمة حسب اللغة
   const specialtiesGrouped = t('specialty_categories', { returnObjects: true }) || [];
-  const allCategories = specialtiesGrouped.map(cat => cat.category);
-  const allSubSpecialties = specialtiesGrouped.flatMap(cat => cat.specialties);
+  
+  // التأكد من أن specialtiesGrouped مصفوفة
+  if (!Array.isArray(specialtiesGrouped)) {
+    console.warn('⚠️ specialtiesGrouped ليست مصفوفة:', specialtiesGrouped);
+  }
+  
+  const allCategories = Array.isArray(specialtiesGrouped) ? specialtiesGrouped.map(cat => cat?.category).filter(Boolean) : [];
+  const allSubSpecialties = Array.isArray(specialtiesGrouped) ? specialtiesGrouped.flatMap(cat => Array.isArray(cat?.specialties) ? cat.specialties : []).filter(Boolean) : [];
 
   // state جديد
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -42,14 +48,18 @@ function UserHome() {
 
   // دالة اختيار من البحث
   function handleSearchSelect(value) {
-    if (allCategories.includes(value)) {
+    if (!value) return;
+    
+    if (Array.isArray(allCategories) && allCategories.includes(value)) {
       setSelectedCategory(value);
       setSelectedSpecialty("");
-    } else if (allSubSpecialties.includes(value)) {
+    } else if (Array.isArray(allSubSpecialties) && allSubSpecialties.includes(value)) {
       setSelectedSpecialty(value);
       // حدد التخصص العام تلقائياً إذا كان التخصص الفرعي تابع له
-      const parentCat = specialtiesGrouped.find(cat => cat.specialties.includes(value));
-      if (parentCat) setSelectedCategory(parentCat.category);
+      if (Array.isArray(specialtiesGrouped)) {
+        const parentCat = specialtiesGrouped.find(cat => Array.isArray(cat?.specialties) && cat.specialties.includes(value));
+        if (parentCat?.category) setSelectedCategory(parentCat.category);
+      }
     }
     setSearchValue("");
   }
@@ -63,21 +73,38 @@ function UserHome() {
    fetch(process.env.REACT_APP_API_URL + '/doctors')
       .then(res => res.json())
       .then(data => {
+        console.log('📊 البيانات المستلمة من API:', data);
         // التأكد من أن البيانات مصفوفة
         const doctorsArray = Array.isArray(data) ? data : [];
+        console.log('📋 عدد الأطباء المستلم:', doctorsArray.length);
+        
+        if (doctorsArray.length === 0) {
+          console.log('⚠️ لا توجد بيانات أطباء');
+          setSuggestedDoctors([]);
+          setDoctors([]);
+          return;
+        }
+        
         // استبعاد الأطباء المعطلين
         const enabledDoctors = doctorsArray.filter(doc => !doc.disabled);
+        console.log('✅ عدد الأطباء النشطين:', enabledDoctors.length);
+        
         // فصل الأطباء المميزين عن العاديين
         const featuredDoctors = enabledDoctors.filter(doc => doc.is_featured && doc.status === 'approved');
         const regularDoctors = enabledDoctors.filter(doc => !doc.is_featured && doc.status === 'approved');
+        
         // خلط الأطباء العاديين بشكل عشوائي
         const shuffledRegularDoctors = regularDoctors.sort(() => Math.random() - 0.5);
+        
         // دمج الأطباء المميزين أولاً ثم العاديين
         const sortedDoctors = [...featuredDoctors, ...shuffledRegularDoctors];
+        console.log('🎯 إجمالي الأطباء بعد المعالجة:', sortedDoctors.length);
+        
         setSuggestedDoctors(sortedDoctors);
         setDoctors(sortedDoctors);
       })
       .catch(err => {
+        console.error('❌ خطأ في جلب بيانات الأطباء:', err);
         setSuggestedDoctors([]);
         setDoctors([]);
       });
@@ -85,22 +112,33 @@ function UserHome() {
 
   // عدل منطق الفلترة ليأخذ بالحسبان التخصص العام والفرعي
   useEffect(() => {
-    let filtered = suggestedDoctors;
-    if (province) {
-      filtered = filtered.filter(d => d.province === province);
+    // التأكد من أن suggestedDoctors مصفوفة
+    if (!Array.isArray(suggestedDoctors)) {
+      console.warn('⚠️ suggestedDoctors ليست مصفوفة:', suggestedDoctors);
+      setSuggestions([]);
+      return;
     }
+    
+    let filtered = suggestedDoctors;
+    
+    if (province) {
+      filtered = filtered.filter(d => d && d.province === province);
+    }
+    
     if (selectedCategory) {
       // فلترة حسب التخصص العام (إذا كان الطبيب تخصصه الفرعي ضمن هذه الفئة)
       const cat = specialtiesGrouped.find(c => c.category === selectedCategory);
-      if (cat) {
-        filtered = filtered.filter(d => cat.specialties.includes(d.specialty));
+      if (cat && Array.isArray(cat.specialties)) {
+        filtered = filtered.filter(d => d && d.specialty && cat.specialties.includes(d.specialty));
       }
     }
+    
     if (selectedSpecialty) {
-      filtered = filtered.filter(d => d.specialty === selectedSpecialty);
+      filtered = filtered.filter(d => d && d.specialty === selectedSpecialty);
     }
+    
     if (search) {
-      filtered = filtered.filter(d =>
+      filtered = filtered.filter(d => d && (
         (d.name && d.name.toLowerCase().includes(search.toLowerCase())) ||
         (d.fullName && d.fullName.toLowerCase().includes(search.toLowerCase())) ||
         (d.name_ar && d.name_ar.toLowerCase().includes(search.toLowerCase())) ||
@@ -114,8 +152,12 @@ function UserHome() {
         (d.category_ar && d.category_ar.toLowerCase().includes(search.toLowerCase())) ||
         (d.category_en && d.category_en.toLowerCase().includes(search.toLowerCase())) ||
         (d.category_ku && d.category_ku.toLowerCase().includes(search.toLowerCase()))
-      );
+      ));
     }
+    
+    // إزالة العناصر الفارغة
+    filtered = filtered.filter(Boolean);
+    
     setSuggestions(filtered.slice(0, 7));
   }, [search, selectedSpecialty, selectedCategory, province, suggestedDoctors]);
 
@@ -704,9 +746,13 @@ function UserHome() {
           padding: '0 1rem'
         }}>
           <div style={{display:'flex', flexWrap:'wrap', gap: isMobile() ? 8 : 18}}>
-            {suggestions.map(doc => (
-              <DoctorCard key={doc._id} doctor={doc} />
-            ))}
+            {suggestions.map(doc => {
+              if (!doc || !doc._id) {
+                console.warn('⚠️ بيانات طبيب غير صحيحة في suggestions:', doc);
+                return null;
+              }
+              return <DoctorCard key={doc._id} doctor={doc} />;
+            }).filter(Boolean)}
           </div>
         </div>
       )}
@@ -733,9 +779,13 @@ function UserHome() {
         </div>
         <div style={{display:'flex', flexWrap:'wrap', gap: isMobile() ? 8 : 18}}>
           {Array.isArray(suggestedDoctors) && suggestedDoctors.length > 0 ? (
-            suggestedDoctors.map((doc, index) => (
-              <DoctorCard key={doc._id} doctor={doc} />
-            ))
+            suggestedDoctors.map((doc, index) => {
+              if (!doc || !doc._id) {
+                console.warn('⚠️ بيانات طبيب غير صحيحة في suggestedDoctors:', doc);
+                return null;
+              }
+              return <DoctorCard key={doc._id} doctor={doc} />;
+            }).filter(Boolean)
           ) : (
             <div style={{color:'#888', fontWeight:600, fontSize:16, marginTop:20, textAlign:'center', width:'100%'}}>{t('loading_doctors')}</div>
           )}

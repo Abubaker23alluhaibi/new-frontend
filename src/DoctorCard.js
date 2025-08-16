@@ -6,6 +6,18 @@ const DoctorCard = ({ doctor }) => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   
+  // التحقق من صحة البيانات
+  if (!doctor || typeof doctor !== 'object') {
+    console.error('❌ بيانات طبيب غير صحيحة:', doctor);
+    return null;
+  }
+  
+  // التحقق من وجود المعرف
+  if (!doctor._id) {
+    console.error('❌ طبيب بدون معرف:', doctor);
+    return null;
+  }
+  
   // دالة مساعدة للتصميم المتجاوب
   const isMobile = () => window.innerWidth <= 768;
   
@@ -51,6 +63,14 @@ const DoctorCard = ({ doctor }) => {
 
   const provinces = t('provinces', { returnObjects: true }) || [];
   const specialties = t('specialties', { returnObjects: true }) || [];
+  
+  // التأكد من أن المصفوفات صحيحة
+  if (!Array.isArray(provinces)) {
+    console.warn('⚠️ provinces ليست مصفوفة:', provinces);
+  }
+  if (!Array.isArray(specialties)) {
+    console.warn('⚠️ specialties ليست مصفوفة:', specialties);
+  }
 
   return (
     <div style={{
@@ -202,7 +222,9 @@ const DoctorCard = ({ doctor }) => {
             {/* التخصص العام (category) والتخصص الفرعي (specialty) */}
             <span style={{fontWeight:700}}>{doctor.category}</span>
             {doctor.category && doctor.specialty && <span style={{margin: '0 4px', color:'#888'}}>|</span>}
-            <span>{specialties[doctor.specialty] || doctor.specialty}</span>
+            <span>
+              {Array.isArray(specialties) && specialties[doctor.specialty] ? specialties[doctor.specialty] : doctor.specialty}
+            </span>
           </div>
         </div>
       </div>
@@ -219,7 +241,9 @@ const DoctorCard = ({ doctor }) => {
       }}>
         <div style={{display: 'flex', alignItems: 'center', gap: isMobile() ? 2 : 3}}>
           <span style={{fontSize: isMobile() ? 8 : 14}} role="img" aria-label="governorate">🏛️</span>
-          <span style={{fontSize: isMobile() ? 8 : 12, color: '#666', fontWeight: 500}}>{provinces[doctor.province] || doctor.province}</span>
+          <span style={{fontSize: isMobile() ? 8 : 12, color: '#666', fontWeight: 500}}>
+            {Array.isArray(provinces) && provinces[doctor.province] ? provinces[doctor.province] : doctor.province}
+          </span>
         </div>
         <div style={{display: 'flex', alignItems: 'center', gap: isMobile() ? 2 : 3}}>
           <span style={{fontSize: isMobile() ? 8 : 14}} role="img" aria-label="area">📍</span>
