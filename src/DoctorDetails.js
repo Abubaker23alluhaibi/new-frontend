@@ -26,10 +26,10 @@ function DoctorDetails() {
   const { t } = useTranslation();
   const specialties = t('specialties', { returnObjects: true }) || [];
   const provinces = t('provinces', { returnObjects: true }) || [];
-  const weekdays = t('weekdays_array', { returnObjects: true }) || ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'];
+  const weekdays = t('weekdays_array', { returnObjects: true }) || ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
   const months = t('months', { returnObjects: true }) || [
-    'کانونی دووەم', 'شوبات', 'ئازار', 'نیسان', 'ئایار', 'حوزەیران',
-    'تەمموز', 'ئاب', 'ئەیلوول', 'تشرینی یەکەم', 'تشرینی دووەم', 'کانونی یەکەم'
+    'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
+    'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
   ];
   const [showImageModal, setShowImageModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);

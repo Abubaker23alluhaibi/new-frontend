@@ -33,8 +33,7 @@
     "clean": "rm -rf build node_modules package-lock.json && npm install",
     "update-deps": "npm update && npm audit fix",
     "dev": "REACT_APP_API_URL=http://localhost:5000 npm start",
-    "vercel-build": "bash vercel-build.sh",
-    "build:clean": "rm -rf build && npm run build"
+    "vercel-build": "bash vercel-build.sh"
   },
   "eslintConfig": {
     "extends": [
