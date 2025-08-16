@@ -433,6 +433,8 @@
   "weekdays": "ڕۆژەکانی هەفتە",
   "work_days_comment": "ڕۆژەکانی کار",
   "vacation_cancelled_success": "پشوو هەڵوەشێنرایەوە و ڕۆژی {{date}} ئێستا بەردەستە بۆ حجزکردن",
+  "vacation_removed_success": "پشوو هەڵوەشێنرایەوە: {{date}}",
+  "vacations_saved_success": "✅ {{count}} ڕۆژ وەک ڕۆژەکانی پشوو بە سەرکەوتوویی پاشەکەوتکران!",
   "add_vacation_day": "ڕۆژی پشوو زیاد بکە",
   "vacation_type": "جۆری پشوو",
   "single_day": "ڕۆژێک",

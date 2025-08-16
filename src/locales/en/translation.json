@@ -529,5 +529,7 @@
   "quick_selection_buttons": "Quick Selection Buttons",
   "weekdays": "Weekdays",
   "work_days_comment": "Work Days",
-  "vacation_cancelled_success": "Vacation cancelled and day {{date}} is now available for booking"
+  "vacation_cancelled_success": "Vacation cancelled and day {{date}} is now available for booking",
+  "vacation_removed_success": "Vacation removed: {{date}}",
+  "vacations_saved_success": "✅ {{count}} days saved as vacation days successfully!"
 } 

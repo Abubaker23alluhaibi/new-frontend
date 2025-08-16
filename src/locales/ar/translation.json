@@ -416,6 +416,8 @@
   "weekdays": "أيام الأسبوع",
   "work_days_comment": "أيام العمل",
   "vacation_cancelled_success": "تم إلغاء الإجازة وإعادة اليوم {{date}} كيوم متاح للحجز",
+  "vacation_removed_success": "تم إلغاء الإجازة: {{date}}",
+  "vacations_saved_success": "✅ تم حفظ {{count}} يوم كأيام إجازات بنجاح!",
   "add_vacation_day": "إضافة يوم إجازة",
   "vacation_type": "نوع الإجازة",
   "single_day": "يوم واحد",

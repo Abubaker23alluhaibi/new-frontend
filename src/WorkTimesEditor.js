@@ -103,8 +103,10 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
   };
 
   // دوال أيام الإجازات - مبسطة لتخزين التواريخ فقط
-  const addVacationDay = () => {
-    setVacationDays([...vacationDays, '']);
+  const addVacationDay = (date) => {
+    if (date) {
+      setVacationDays([...vacationDays, date]);
+    }
   };
 
   const removeVacationDay = (index) => {
@@ -112,7 +114,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     setVacationDays(vacationDays.filter((_, i) => i !== index));
     
     // إضافة رسالة تأكيد
-    setSuccess(`تم إلغاء الإجازة: ${removedVacation}`);
+    setSuccess(t('vacation_removed_success', { date: removedVacation }));
     
     // إزالة من الأيام المحددة إذا كان موجوداً
     if (removedVacation) {
@@ -146,7 +148,12 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
   };
 
   const handleDateClick = (date) => {
-    const dateStr = date.toISOString().split('T')[0];
+    // استخدام التاريخ المحلي بدلاً من UTC لتجنب مشكلة تغيير التاريخ
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    
     if (selectedDates.includes(dateStr)) {
       setSelectedDates(selectedDates.filter(d => d !== dateStr));
     } else {
@@ -159,7 +166,12 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     for (let i = 0; i < 7; i++) {
       const date = new Date(weekStart);
       date.setDate(date.getDate() + i);
-      weekDates.push(date.toISOString().split('T')[0]);
+      // استخدام التاريخ المحلي بدلاً من UTC
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      weekDates.push(dateStr);
     }
     setSelectedDates([...new Set([...selectedDates, ...weekDates])]);
   };
@@ -173,7 +185,12 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     for (let day = 1; day <= new Date(year, month + 1, 0).getDate(); day++) {
       const date = new Date(year, month, day);
       if (date.getDay() === 5 || date.getDay() === 6) { // الجمعة والسبت
-        currentMonthDates.push(date.toISOString().split('T')[0]);
+        // استخدام التاريخ المحلي بدلاً من UTC
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+        currentMonthDates.push(dateStr);
       }
     }
     setSelectedDates([...new Set([...selectedDates, ...currentMonthDates])]);
@@ -188,7 +205,12 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     for (let day = 1; day <= new Date(year, month + 1, 0).getDate(); day++) {
       const date = new Date(year, month, day);
       if (date.getDay() !== 5 && date.getDay() !== 6) { // {t('work_days_comment')}
-        currentMonthDates.push(date.toISOString().split('T')[0]);
+        // استخدام التاريخ المحلي بدلاً من UTC
+        const year = date.getFullYear();
+        const month = String(date.getDate()).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+        currentMonthDates.push(dateStr);
       }
     }
     setSelectedDates([...new Set([...selectedDates, ...currentMonthDates])]);
@@ -208,7 +230,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     
     setVacationDays([...vacationDays, ...newVacations]);
     setSelectedDates([]);
-    setSuccess(`✅ تم حفظ ${newVacations.length} يوم كأيام إجازات بنجاح!`);
+    setSuccess(t('vacations_saved_success', { count: newVacations.length }));
   };
 
   // دالة لإلغاء إجازة محددة وإعادتها كيوم متاح
@@ -625,7 +647,11 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                     date.setDate(startDate.getDate() + i);
                     
                     if (date.getMonth() === currentMonth) {
-                      const dateStr = date.toISOString().split('T')[0];
+                      // استخدام التاريخ المحلي بدلاً من UTC
+                      const year = date.getFullYear();
+                      const month = String(date.getMonth() + 1).padStart(2, '0');
+                      const day = String(date.getDate()).padStart(2, '0');
+                      const dateStr = `${year}-${month}-${day}`;
                       const isSelected = selectedDates.includes(dateStr);
                       const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
                       const isToday = dateStr === new Date().toISOString().split('T')[0];
