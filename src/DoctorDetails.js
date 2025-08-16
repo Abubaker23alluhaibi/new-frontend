@@ -260,20 +260,12 @@ function DoctorDetails() {
       const day = date.getDate();
       
       for (const vacation of doctor.vacationDays) {
-        // التحقق من الإجازة السنوية
-        if (vacation.type === 'yearly' && vacation.year === year) {
-          return false;
-        }
-        
-        // التحقق من الإجازة الشهرية
-        if (vacation.type === 'monthly' && vacation.year === year && vacation.month == month) {
-          return false;
-        }
-        
-        // التحقق من الإجازة اليومية
-        if (vacation.type === 'single' && vacation.year === year) {
-          const vacationDate = new Date(vacation.date);
-          if (vacationDate.getMonth() + 1 === month && vacationDate.getDate() === day) {
+        // التحقق من الإجازة اليومية (التاريخ كاملاً)
+        if (vacation) {
+          const vacationDate = new Date(vacation);
+          if (vacationDate.getFullYear() === year && 
+              vacationDate.getMonth() + 1 === month && 
+              vacationDate.getDate() === day) {
             return false;
           }
         }

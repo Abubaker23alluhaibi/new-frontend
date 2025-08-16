@@ -17,9 +17,6 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [selectedDates, setSelectedDates] = useState([]);
-  const [vacationType, setVacationType] = useState('full'); // 'full' or 'partial'
-  const [partialTimeFrom, setPartialTimeFrom] = useState('09:00');
-  const [partialTimeTo, setPartialTimeTo] = useState('13:00');
 
   const weekdays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 
@@ -47,16 +44,9 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
     setWorkTimes(updated);
   };
 
-  // دوال أيام الإجازات
+  // دوال أيام الإجازات - مبسطة لتخزين التواريخ فقط
   const addVacationDay = () => {
-    setVacationDays([...vacationDays, { 
-      type: 'single', // 'single', 'monthly', 'yearly'
-      date: '', 
-      month: '', 
-      year: new Date().getFullYear(),
-      description: '',
-      isRecurring: false
-    }]);
+    setVacationDays([...vacationDays, '']);
   };
 
   const removeVacationDay = (index) => {
@@ -64,17 +54,17 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
     setVacationDays(vacationDays.filter((_, i) => i !== index));
     
     // إضافة رسالة تأكيد
-    setSuccess(`تم إلغاء الإجازة: ${removedVacation.date || removedVacation.month || removedVacation.year} - ${removedVacation.description}`);
+    setSuccess(`تم إلغاء الإجازة: ${removedVacation}`);
     
     // إزالة من الأيام المحددة إذا كان موجوداً
-    if (removedVacation.date) {
-      setSelectedDates(selectedDates.filter(date => date !== removedVacation.date));
+    if (removedVacation) {
+      setSelectedDates(selectedDates.filter(date => date !== removedVacation));
     }
   };
 
-  const updateVacationDay = (index, field, value) => {
+  const updateVacationDay = (index, value) => {
     const updated = [...vacationDays];
-    updated[index] = { ...updated[index], [field]: value };
+    updated[index] = value;
     setVacationDays(updated);
   };
 
@@ -152,30 +142,11 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
 
   // دالة لحساب إجمالي أيام الإجازات
   const getTotalVacationDays = () => {
-    let total = 0;
-    vacationDays.forEach(vacation => {
-      if (vacation.type === 'single') {
-        total += 1;
-      } else if (vacation.type === 'monthly') {
-        const daysInMonth = new Date(vacation.year, vacation.month, 0).getDate();
-        total += daysInMonth;
-      } else if (vacation.type === 'yearly') {
-        total += 365; // تقريبي
-      }
-    });
-    return total;
+    return vacationDays.length;
   };
 
   const addSelectedDatesAsVacations = () => {
-    const newVacations = selectedDates.map(date => ({
-      type: 'single',
-      date: date,
-      year: new Date(date).getFullYear(),
-      description: vacationType === 'partial' ? `إجازة جزئية ${partialTimeFrom}-${partialTimeTo}` : 'إجازة يوم كامل',
-      isPartial: vacationType === 'partial',
-      partialTimeFrom: vacationType === 'partial' ? partialTimeFrom : null,
-      partialTimeTo: vacationType === 'partial' ? partialTimeTo : null
-    }));
+    const newVacations = selectedDates.map(date => date);
     
     setVacationDays([...vacationDays, ...newVacations]);
     setSelectedDates([]);
@@ -184,24 +155,14 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
 
   // دالة لإلغاء إجازة محددة وإعادتها كيوم متاح
   const cancelVacation = (vacation) => {
-    if (vacation.type === 'single' && vacation.date) {
-      // إزالة من قائمة الإجازات
-      setVacationDays(vacationDays.filter(v => v !== vacation));
-      
-      // إضافة رسالة تأكيد
-      setSuccess(`تم إلغاء الإجازة وإعادة اليوم ${vacation.date} كيوم متاح للحجز`);
-      
-      // إزالة من الأيام المحددة إذا كان موجوداً
-      setSelectedDates(selectedDates.filter(date => date !== vacation.date));
-    } else if (vacation.type === 'monthly') {
-      // إزالة الإجازة الشهرية
-      setVacationDays(vacationDays.filter(v => v !== vacation));
-      setSuccess(`تم إلغاء الإجازة الشهرية لشهر ${vacation.month}/${vacation.year}`);
-    } else if (vacation.type === 'yearly') {
-      // إزالة الإجازة السنوية
-      setVacationDays(vacationDays.filter(v => v !== vacation));
-      setSuccess(`تم إلغاء الإجازة السنوية لسنة ${vacation.year}`);
-    }
+    // إزالة من قائمة الإجازات
+    setVacationDays(vacationDays.filter(v => v !== vacation));
+    
+    // إضافة رسالة تأكيد
+    setSuccess(`تم إلغاء الإجازة وإعادة اليوم ${vacation} كيوم متاح للحجز`);
+    
+    // إزالة من الأيام المحددة إذا كان موجوداً
+    setSelectedDates(selectedDates.filter(date => date !== vacation));
   };
 
   const handleSubmit = async (e) => {
@@ -298,80 +259,102 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
         {/* تبويب أوقات الدوام */}
         {activeTab === 'workTimes' && (
           <div>
-            <div style={{ marginBottom: '1rem' }}>
-              <h4 style={{ color: '#333', marginBottom: '0.5rem' }}>{t('work_times')}:</h4>
-              {workTimes.length === 0 ? (
-                <div style={{ color: '#666', fontStyle: 'italic' }}>لا توجد أوقات دوام محددة</div>
-              ) : (
-                workTimes.map((time, index) => (
-                  <div key={index} style={{ 
-                    display: 'flex', 
-                    gap: '0.5rem', 
-                    marginBottom: '0.5rem',
-                    padding: '0.5rem',
-                    background: '#f5f5f5',
-                    borderRadius: '8px'
-                  }}>
-                    <select
-                      value={time.day}
-                      onChange={(e) => updateWorkTime(index, 'day', e.target.value)}
-                      style={{ flex: 1, padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #b2dfdb' }}
-                      required
-                    >
-                      <option value="">اختر اليوم</option>
-                      {weekdays.map(day => (
-                        <option key={day} value={day}>{day}</option>
-                      ))}
-                    </select>
-                    <input
-                      type="time"
-                      value={time.from}
-                      onChange={(e) => updateWorkTime(index, 'from', e.target.value)}
-                      style={{ padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #b2dfdb' }}
-                      required
-                    />
-                    <span style={{ alignSelf: 'center' }}>إلى</span>
-                    <input
-                      type="time"
-                      value={time.to}
-                      onChange={(e) => updateWorkTime(index, 'to', e.target.value)}
-                      style={{ padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #b2dfdb' }}
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeWorkTime(index)}
-                      style={{
-                        background: '#e53935',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        padding: '0.5rem',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      حذف
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-
+            <h3 style={{ color: '#0A8F82', marginBottom: '1rem', fontSize: '1.2rem' }}>
+              ⏰ {t('work_times')}
+            </h3>
+            
+            {workTimes.map((workTime, index) => (
+              <div key={index} style={{ 
+                display: 'grid', 
+                gridTemplateColumns: '1fr 1fr 1fr auto', 
+                gap: '1rem', 
+                alignItems: 'end',
+                marginBottom: '1rem',
+                padding: '1rem',
+                background: '#f9f9f9',
+                borderRadius: '8px'
+              }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.3rem', color: '#333', fontWeight: '600' }}>
+                    {t('day')}
+                  </label>
+                  <select
+                    value={workTime.day}
+                    onChange={(e) => updateWorkTime(index, 'day', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #ffcc02' }}
+                    required
+                  >
+                    <option value="">{t('select_day')}</option>
+                    <option value="الأحد">{t('sunday')}</option>
+                    <option value="الاثنين">{t('monday')}</option>
+                    <option value="الثلاثاء">{t('tuesday')}</option>
+                    <option value="الأربعاء">{t('wednesday')}</option>
+                    <option value="الخميس">{t('thursday')}</option>
+                    <option value="الجمعة">{t('friday')}</option>
+                    <option value="السبت">{t('saturday')}</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.3rem', color: '#333', fontWeight: '600' }}>
+                    {t('from')}
+                  </label>
+                  <input
+                    type="time"
+                    value={workTime.from}
+                    onChange={(e) => updateWorkTime(index, 'from', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #ffcc02' }}
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.3rem', color: '#333', fontWeight: '600' }}>
+                    {t('to')}
+                  </label>
+                  <input
+                    type="time"
+                    value={workTime.to}
+                    onChange={(e) => updateWorkTime(index, 'to', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #ffcc02' }}
+                    required
+                  />
+                </div>
+                
+                <button
+                  type="button"
+                  onClick={() => removeWorkTime(index)}
+                  style={{
+                    background: '#ff4757',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '0.5rem 1rem',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                  title={t('remove_work_time')}
+                >
+                  🗑️
+                </button>
+              </div>
+            ))}
+            
             <button
               type="button"
               onClick={addWorkTime}
               style={{
-                background: '#4caf50',
+                background: '#0A8F82',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '8px',
-                padding: '0.7rem 1rem',
-                marginBottom: '1rem',
+                padding: '0.7rem 1.5rem',
                 cursor: 'pointer',
-                fontWeight: '600'
+                fontSize: '1rem',
+                marginBottom: '1.5rem'
               }}
             >
-              + إضافة يوم عمل
+              ➕ {t('add_work_time')}
             </button>
           </div>
         )}
@@ -379,344 +362,294 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
         {/* تبويب أيام الإجازات */}
         {activeTab === 'vacationDays' && (
           <div>
-            <div style={{ marginBottom: '1rem' }}>
-              <h4 style={{ color: '#333', marginBottom: '0.5rem' }}>{t('vacation_days_title')}:</h4>
+            <h3 style={{ color: '#0A8F82', marginBottom: '1rem', fontSize: '1.2rem' }}>
+              🏖️ {t('vacation_days')}
+            </h3>
+
+            {/* التقويم المتقدم */}
+            <div style={{ 
+              background: '#fff', 
+              padding: '1.5rem', 
+              borderRadius: '12px', 
+              boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+              marginBottom: '2rem'
+            }}>
+              <h4 style={{ color: '#333', marginBottom: '1rem', textAlign: 'center' }}>
+                تقويم تحديد أيام الإجازات
+              </h4>
               
-              {/* ملخص الإجازات الحالية */}
-              {vacationDays.length > 0 && (
-                <div style={{ 
-                  background: '#e8f5e8', 
-                  border: '1px solid #4caf50', 
-                  borderRadius: '8px', 
-                  padding: '1rem',
-                  marginBottom: '1rem'
-                }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center',
-                    marginBottom: '0.5rem'
-                  }}>
-                    <div style={{ fontWeight: '600', color: '#2e7d32' }}>
-                      📊 ملخص الإجازات الحالية
-                    </div>
-                    <div style={{ 
-                      background: '#4caf50', 
-                      color: '#fff', 
-                      padding: '0.3rem 0.8rem', 
-                      borderRadius: '20px',
-                      fontSize: '12px',
-                      fontWeight: '600'
-                    }}>
-                      {getTotalVacationDays()} يوم إجازة
-                    </div>
-                  </div>
-                  <div style={{ fontSize: '14px', color: '#666' }}>
-                    عدد الإجازات: {vacationDays.length} إجازة
-                  </div>
-                </div>
-              )}
-              
-              {/* التقويم المتقدم */}
+              {/* تنقل الشهر */}
               <div style={{ 
-                background: '#fff', 
-                border: '2px solid #e0e0e0', 
-                borderRadius: '12px', 
-                padding: '1.5rem', 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
                 marginBottom: '1.5rem' 
               }}>
-                {/* محدد السنة والشهر */}
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center', 
-                  marginBottom: '1rem' 
-                }}>
-                  <button
-                    type="button"
-                    onClick={() => navigateMonth('prev')}
-                    style={{
-                      background: '#0A8F82',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '40px',
-                      height: '40px',
-                      cursor: 'pointer',
-                      fontSize: '18px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    ⇦
-                  </button>
-                  
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '1.5rem', fontWeight: '700', color: '#0A8F82' }}>
-                      {['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'][currentMonth]}
-                    </div>
-                    <div style={{ fontSize: '1rem', color: '#666' }}>
-                      {currentYear}
-                    </div>
+                <button
+                  type="button"
+                  onClick={() => navigateMonth('prev')}
+                  style={{
+                    background: '#0A8F82',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '40px',
+                    height: '40px',
+                    cursor: 'pointer',
+                    fontSize: '18px'
+                  }}
+                >
+                  ⇦
+                </button>
+                
+                <div style={{ textAlign: 'center' }}>
+                  <h3 style={{ margin: '0', color: '#333', fontSize: '1.3rem' }}>
+                    {t(`month_${currentMonth + 1}`)} {currentYear}
+                  </h3>
+                </div>
+                
+                <button
+                  type="button"
+                  onClick={() => navigateMonth('next')}
+                  style={{
+                    background: '#0A8F82',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '40px',
+                    height: '40px',
+                    cursor: 'pointer',
+                    fontSize: '18px'
+                  }}
+                >
+                  ⇨
+                </button>
+              </div>
+
+              {/* أزرار الاختيار السريع */}
+              <div style={{ 
+                display: 'flex', 
+                gap: '0.5rem', 
+                marginBottom: '1rem',
+                flexWrap: 'wrap',
+                justifyContent: 'center'
+              }}>
+                <button
+                  type="button"
+                  onClick={selectWeekend}
+                  style={{
+                    background: '#ff6b35',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '20px',
+                    padding: '0.5rem 1rem',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  تحديد نهاية الأسبوع
+                </button>
+                <button
+                  type="button"
+                  onClick={selectWorkDays}
+                  style={{
+                    background: '#4ecdc4',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '20px',
+                    padding: '0.5rem 1rem',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  تحديد أيام الدوام
+                </button>
+                <button
+                  type="button"
+                  onClick={clearAllDates}
+                  style={{
+                    background: '#95a5a6',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '20px',
+                    padding: '0.5rem 1rem',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  مسح الكل
+                </button>
+              </div>
+
+              {/* التقويم */}
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(7, 1fr)', 
+                gap: '2px',
+                background: '#e0e0e0',
+                padding: '2px',
+                borderRadius: '8px'
+              }}>
+                {/* أيام الأسبوع */}
+                {weekdays.map(day => (
+                  <div key={day} style={{
+                    background: '#f8f9fa',
+                    padding: '0.8rem 0.5rem',
+                    textAlign: 'center',
+                    fontWeight: '600',
+                    color: '#666',
+                    fontSize: '0.9rem'
+                  }}>
+                    {day}
                   </div>
+                ))}
+                
+                {/* الأيام */}
+                {(() => {
+                  const firstDay = new Date(currentYear, currentMonth, 1);
+                  const lastDay = new Date(currentYear, currentMonth + 1, 0);
+                  const startDate = new Date(firstDay);
+                  startDate.setDate(startDate.getDate() - firstDay.getDay());
                   
-                  <button
-                    type="button"
-                    onClick={() => navigateMonth('next')}
-                    style={{
-                      background: '#0A8F82',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '40px',
-                      height: '40px',
-                      cursor: 'pointer',
-                      fontSize: '18px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  >
-                    ⇨
-                  </button>
-                </div>
-
-                {/* أزرار التحديد السريع */}
-                <div style={{ 
-                  display: 'flex', 
-                  gap: '0.5rem', 
-                  marginBottom: '1rem',
-                  flexWrap: 'wrap'
-                }}>
-                  <button
-                    type="button"
-                    onClick={selectWeekend}
-                    style={{
-                      background: '#ff9800',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '0.5rem 1rem',
-                      cursor: 'pointer',
-                      fontSize: '12px'
-                    }}
-                  >
-                    تحديد نهاية الأسبوع
-                  </button>
-                  <button
-                    type="button"
-                    onClick={selectWorkDays}
-                    style={{
-                      background: '#4caf50',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '0.5rem 1rem',
-                      cursor: 'pointer',
-                      fontSize: '12px'
-                    }}
-                  >
-                    تحديد أيام الدوام
-                  </button>
-                  <button
-                    type="button"
-                    onClick={clearAllDates}
-                    style={{
-                      background: '#e53935',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '0.5rem 1rem',
-                      cursor: 'pointer',
-                      fontSize: '12px'
-                    }}
-                  >
-                    مسح الكل
-                  </button>
-                </div>
-
-                {/* التقويم الشهري */}
-                <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(7, 1fr)', 
-                  gap: '2px',
-                  marginBottom: '1rem'
-                }}>
-                  {/* أيام الأسبوع */}
-                  {['أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'].map(day => (
-                    <div key={day} style={{
-                      padding: '0.5rem',
-                      textAlign: 'center',
-                      fontWeight: '700',
-                      color: '#0A8F82',
-                      fontSize: '12px'
-                    }}>
-                      {day}
-                    </div>
-                  ))}
-                  
-                  {/* أيام الشهر */}
-                  {(() => {
-                    const firstDay = new Date(currentYear, currentMonth, 1);
-                    const lastDay = new Date(currentYear, currentMonth + 1, 0);
-                    const startDate = new Date(firstDay);
-                    startDate.setDate(startDate.getDate() - firstDay.getDay());
+                  const days = [];
+                  for (let i = 0; i < 42; i++) {
+                    const date = new Date(startDate);
+                    date.setDate(startDate.getDate() + i);
                     
-                    const days = [];
-                    for (let i = 0; i < 42; i++) {
-                      const date = new Date(startDate);
-                      date.setDate(startDate.getDate() + i);
-                      
-                      const isCurrentMonth = date.getMonth() === currentMonth;
-                      const isToday = date.toDateString() === new Date().toDateString();
-                      const isSelected = selectedDates.includes(date.toISOString().split('T')[0]);
+                    if (date.getMonth() === currentMonth) {
+                      const dateStr = date.toISOString().split('T')[0];
+                      const isSelected = selectedDates.includes(dateStr);
                       const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
+                      const isToday = dateStr === new Date().toISOString().split('T')[0];
                       
                       days.push(
                         <div
                           key={i}
                           onClick={() => !isPast && handleDateClick(date)}
                           style={{
-                            padding: '0.5rem',
+                            background: isSelected ? '#0A8F82' : '#fff',
+                            color: isSelected ? '#fff' : isPast ? '#ccc' : '#333',
+                            padding: '0.8rem 0.5rem',
                             textAlign: 'center',
                             cursor: isPast ? 'not-allowed' : 'pointer',
-                            background: isSelected ? '#0A8F82' : (isToday ? '#e3f2fd' : 'transparent'),
-                            color: isSelected ? '#fff' : (isCurrentMonth ? '#333' : '#ccc'),
                             borderRadius: '4px',
-                            border: isSelected ? '2px solid #0A8F82' : '1px solid transparent',
-                            opacity: isPast ? 0.5 : 1,
-                            position: 'relative'
+                            position: 'relative',
+                            border: isToday ? '2px solid #ffcc02' : '1px solid #e0e0e0',
+                            opacity: isPast ? 0.5 : 1
                           }}
                         >
                           {date.getDate()}
                           {isSelected && (
                             <div style={{
                               position: 'absolute',
-                              top: '-8px',
-                              right: '-8px',
-                              background: '#ff5722',
-                              color: '#fff',
-                              borderRadius: '50%',
-                              width: '16px',
-                              height: '16px',
-                              fontSize: '10px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
+                              top: '2px',
+                              right: '2px',
+                              background: '#fff',
+                              color: '#0A8F82',
+                              fontSize: '8px',
+                              padding: '1px 3px',
+                              borderRadius: '8px',
+                              fontWeight: 'bold'
                             }}>
-                              ✕
+                              غير متاح
                             </div>
                           )}
                         </div>
                       );
+                    } else {
+                      days.push(<div key={i} style={{ padding: '0.8rem 0.5rem' }}></div>);
                     }
-                    return days;
-                  })()}
-                </div>
-
-                {/* إعدادات الإجازة */}
-                <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-                  gap: '1rem',
-                  marginBottom: '1rem'
-                }}>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: '600', color: '#333' }}>
-                      نوع الإجازة
-                    </label>
-                    <select
-                      value={vacationType}
-                      onChange={(e) => setVacationType(e.target.value)}
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #b2dfdb' }}
-                    >
-                      <option value="full">يوم كامل</option>
-                      <option value="partial">جزئي</option>
-                    </select>
-                  </div>
-                  
-                  {vacationType === 'partial' && (
-                    <>
-                      <div>
-                        <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: '600', color: '#333' }}>
-                          من
-                        </label>
-                        <input
-                          type="time"
-                          value={partialTimeFrom}
-                          onChange={(e) => setPartialTimeFrom(e.target.value)}
-                          style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #b2dfdb' }}
-                        />
-                      </div>
-                      <div>
-                        <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: '600', color: '#333' }}>
-                          إلى
-                        </label>
-                        <input
-                          type="time"
-                          value={partialTimeTo}
-                          onChange={(e) => setPartialTimeTo(e.target.value)}
-                          style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #b2dfdb' }}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* زر حفظ بسيط */}
-                {selectedDates.length > 0 && (
-                  <div style={{ 
-                    textAlign: 'center',
-                    marginBottom: '1rem'
-                  }}>
-                    <div style={{ 
-                      fontSize: '14px', 
-                      color: '#666', 
-                      marginBottom: '0.5rem' 
-                    }}>
-                      تم تحديد {selectedDates.length} يوم
-                    </div>
-                    <button
-                      type="button"
-                      onClick={addSelectedDatesAsVacations}
-                      style={{
-                        background: '#0A8F82',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '8px',
-                        padding: '0.7rem 1.5rem',
-                        cursor: 'pointer',
-                        fontWeight: '600',
-                        fontSize: '14px'
-                      }}
-                    >
-                      ✅ حفظ الأيام المحددة
-                    </button>
-                  </div>
-                )}
+                  }
+                  return days;
+                })()}
               </div>
 
-              {/* قائمة أيام الإجازات الموجودة */}
+              {/* ملخص الأيام المحددة */}
+              {selectedDates.length > 0 && (
+                <div style={{ 
+                  marginTop: '1rem', 
+                  textAlign: 'center',
+                  padding: '1rem',
+                  background: '#f8f9fa',
+                  borderRadius: '8px'
+                }}>
+                  <p style={{ margin: '0 0 1rem 0', color: '#333', fontWeight: '600' }}>
+                    تم تحديد {selectedDates.length} يوم
+                  </p>
+                  <button
+                    type="button"
+                    onClick={addSelectedDatesAsVacations}
+                    style={{
+                      background: '#0A8F82',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '0.7rem 1.5rem',
+                      cursor: 'pointer',
+                      fontSize: '1rem'
+                    }}
+                  >
+                    ✅ حفظ الأيام المحددة
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* قائمة أيام الإجازات الحالية */}
+            <div style={{ 
+              background: '#fff', 
+              padding: '1.5rem', 
+              borderRadius: '12px', 
+              boxShadow: '0 2px 10px rgba(0,0,0,0.1)' 
+            }}>
+              <h4 style={{ color: '#333', marginBottom: '1rem' }}>
+                أيام الإجازات الحالية ({vacationDays.length})
+              </h4>
+              
               {vacationDays.length === 0 ? (
-                <div style={{ color: '#666', fontStyle: 'italic' }}>{t('no_vacation_days')}</div>
+                <p style={{ color: '#666', textAlign: 'center', fontStyle: 'italic' }}>
+                  لا توجد أيام إجازات محددة
+                </p>
               ) : (
-                vacationDays.map((vacation, index) => (
-                  <div key={index} style={{ 
-                    background: '#fff3e0',
-                    border: '1px solid #ffcc02',
-                    borderRadius: '8px',
-                    padding: '1rem',
-                    marginBottom: '0.8rem'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
-                      <h5 style={{ color: '#e65100', margin: 0, fontSize: '1rem' }}>{t('vacation_number')}{index + 1}</h5>
+                <div style={{ display: 'grid', gap: '1rem' }}>
+                  {vacationDays.map((vacation, index) => (
+                    <div key={index} style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '1rem',
+                      background: '#f8f9fa',
+                      borderRadius: '8px',
+                      border: '1px solid #e0e0e0'
+                    }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '0.5rem',
+                          marginBottom: '0.5rem'
+                        }}>
+                          <span style={{ 
+                            background: '#0A8F82', 
+                            color: '#fff', 
+                            padding: '0.2rem 0.5rem', 
+                            borderRadius: '12px', 
+                            fontSize: '0.8rem' 
+                          }}>
+                            🏖️ إجازة
+                          </span>
+                          <span style={{ color: '#333', fontWeight: '600' }}>
+                            {vacation}
+                          </span>
+                        </div>
+                      </div>
+                      
                       <div style={{ display: 'flex', gap: '0.5rem' }}>
                         <button
                           type="button"
                           onClick={() => cancelVacation(vacation)}
                           style={{
-                            background: '#ff9800',
+                            background: '#ffa502',
                             color: '#fff',
                             border: 'none',
                             borderRadius: '8px',
@@ -724,7 +657,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
                             cursor: 'pointer',
                             fontSize: '12px'
                           }}
-                          title="إلغاء الإجازة وإعادة اليوم كمتاح"
+                          title="إلغاء الإجازة وإعادة اليوم كيوم متاح"
                         >
                           🔄 إلغاء
                         </button>
@@ -732,7 +665,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
                           type="button"
                           onClick={() => removeVacationDay(index)}
                           style={{
-                            background: '#e53935',
+                            background: '#ff4757',
                             color: '#fff',
                             border: 'none',
                             borderRadius: '8px',
@@ -746,162 +679,118 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
                         </button>
                       </div>
                     </div>
-                    
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.8rem' }}>
-                      <div>
-                        <label style={{ display: 'block', marginBottom: '0.3rem', color: '#333', fontWeight: '600', fontSize: '0.9rem' }}>
-                          {t('vacation_type')}
-                        </label>
-                        <select
-                          value={vacation.type}
-                          onChange={(e) => updateVacationDay(index, 'type', e.target.value)}
-                          style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #ffcc02' }}
-                        >
-                          <option value="single">{t('single_day')}</option>
-                          <option value="monthly">{t('monthly')}</option>
-                          <option value="yearly">{t('yearly')}</option>
-                        </select>
-                      </div>
-                      
-                      {vacation.type === 'single' && (
-                        <div>
-                                                  <label style={{ display: 'block', marginBottom: '0.3rem', color: '#333', fontWeight: '600', fontSize: '0.9rem' }}>
-                          {t('vacation_date')}
-                        </label>
-                          <input
-                            type="date"
-                            value={vacation.date}
-                            onChange={(e) => updateVacationDay(index, 'date', e.target.value)}
-                            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #ffcc02' }}
-                            required
-                          />
-                        </div>
-                      )}
-                      
-                      {vacation.type === 'monthly' && (
-                        <div>
-                                                  <label style={{ display: 'block', marginBottom: '0.3rem', color: '#333', fontWeight: '600', fontSize: '0.9rem' }}>
-                          {t('vacation_month')}
-                        </label>
-                          <select
-                            value={vacation.month}
-                            onChange={(e) => updateVacationDay(index, 'month', e.target.value)}
-                            style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #ffcc02' }}
-                            required
-                          >
-                            <option value="">{t('select_month')}</option>
-                            <option value="1">{t('january')}</option>
-                            <option value="2">{t('february')}</option>
-                            <option value="3">{t('march')}</option>
-                            <option value="4">{t('april')}</option>
-                            <option value="5">{t('may')}</option>
-                            <option value="6">{t('june')}</option>
-                            <option value="7">{t('july')}</option>
-                            <option value="8">{t('august')}</option>
-                            <option value="9">{t('september')}</option>
-                            <option value="10">{t('october')}</option>
-                            <option value="11">{t('november')}</option>
-                            <option value="12">{t('december')}</option>
-                          </select>
-                        </div>
-                      )}
-                      
-                      <div>
-                        <label style={{ display: 'block', marginBottom: '0.3rem', color: '#333', fontWeight: '600', fontSize: '0.9rem' }}>
-                          {t('vacation_year')}
-                        </label>
-                        <input
-                          type="number"
-                          value={vacation.year}
-                          onChange={(e) => updateVacationDay(index, 'year', e.target.value)}
-                          min={new Date().getFullYear()}
-                          style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #ffcc02' }}
-                          required
-                        />
-                      </div>
-                      
-                      <div style={{ gridColumn: '1 / -1' }}>
-                        <label style={{ display: 'block', marginBottom: '0.3rem', color: '#333', fontWeight: '600', fontSize: '0.9rem' }}>
-                          {t('vacation_description')}
-                        </label>
-                        <input
-                          type="text"
-                          placeholder={t('vacation_description_placeholder')}
-                          value={vacation.description}
-                          onChange={(e) => updateVacationDay(index, 'description', e.target.value)}
-                          style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #ffcc02' }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))
+                  ))}
+                </div>
               )}
-            </div>
 
-            <button
-              type="button"
-              onClick={addVacationDay}
-              style={{
-                background: '#ff9800',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '0.7rem 1rem',
-                marginBottom: '1rem',
-                cursor: 'pointer',
-                fontWeight: '600'
-              }}
-            >
-              + {t('add_vacation_day')}
-            </button>
+              {/* إضافة إجازة يدوياً */}
+              <div style={{ marginTop: '1.5rem' }}>
+                <h5 style={{ color: '#333', marginBottom: '1rem' }}>
+                  إضافة إجازة يدوياً
+                </h5>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'end' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', marginBottom: '0.3rem', color: '#333', fontWeight: '600', fontSize: '0.9rem' }}>
+                      تاريخ الإجازة
+                    </label>
+                    <input
+                      type="date"
+                      value=""
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          setVacationDays([...vacationDays, e.target.value]);
+                          e.target.value = '';
+                        }
+                      }}
+                      style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1.5px solid #ffcc02' }}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={addVacationDay}
+                    style={{
+                      background: '#0A8F82',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '0.5rem 1rem',
+                      cursor: 'pointer',
+                      fontSize: '1rem'
+                    }}
+                  >
+                    ➕ إضافة
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* رسائل النجاح والخطأ */}
+        {success && (
+          <div style={{
+            background: '#d4edda',
+            color: '#155724',
+            padding: '1rem',
+            borderRadius: '8px',
+            marginBottom: '1rem',
+            border: '1px solid #c3e6cb'
+          }}>
+            {success}
+          </div>
+        )}
+
+        {error && (
+          <div style={{
+            background: '#f8d7da',
+            color: '#721c24',
+            padding: '1rem',
+            borderRadius: '8px',
+            marginBottom: '1rem',
+            border: '1px solid #f5c6cb'
+          }}>
+            {error}
           </div>
         )}
 
         {/* أزرار الحفظ والإلغاء */}
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              background: '#0A8F82',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '0.7rem 1.5rem',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              fontWeight: '600',
-              flex: 1
-            }}
-          >
-            {loading ? t('saving') : t('save_changes')}
-          </button>
+        <div style={{ 
+          display: 'flex', 
+          gap: '1rem', 
+          justifyContent: 'flex-end',
+          marginTop: '2rem'
+        }}>
           <button
             type="button"
             onClick={onClose}
             style={{
-              background: '#666',
+              background: '#6c757d',
               color: '#fff',
               border: 'none',
               borderRadius: '8px',
               padding: '0.7rem 1.5rem',
               cursor: 'pointer',
-              fontWeight: '600'
+              fontSize: '1rem'
             }}
           >
-            إلغاء
+            {t('cancel')}
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              background: loading ? '#ccc' : '#0A8F82',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '0.7rem 1.5rem',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              fontSize: '1rem'
+            }}
+          >
+            {loading ? '⏳ جاري الحفظ...' : t('save_changes')}
           </button>
         </div>
-
-        {error && (
-          <div style={{ color: '#e53935', marginTop: '0.5rem', fontSize: '14px' }}>
-            {error}
-          </div>
-        )}
-        {success && (
-          <div style={{ color: '#4caf50', marginTop: '0.5rem', fontSize: '14px' }}>
-            {success}
-          </div>
-        )}
       </form>
     </div>
   );
