@@ -414,6 +414,7 @@
   "month_navigation": "تنقل الشهر",
   "quick_selection_buttons": "أزرار الاختيار السريع",
   "weekdays": "أيام الأسبوع",
+  "weekdays_array": ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"],
   "work_days_comment": "أيام العمل",
   "vacation_cancelled_success": "تم إلغاء الإجازة وإعادة اليوم {{date}} كيوم متاح للحجز",
   "vacation_removed_success": "تم إلغاء الإجازة: {{date}}",

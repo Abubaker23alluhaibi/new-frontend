@@ -528,6 +528,7 @@
   "month_navigation": "Month Navigation",
   "quick_selection_buttons": "Quick Selection Buttons",
   "weekdays": "Weekdays",
+  "weekdays_array": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
   "work_days_comment": "Work Days",
   "vacation_cancelled_success": "Vacation cancelled and day {{date}} is now available for booking",
   "vacation_removed_success": "Vacation removed: {{date}}",

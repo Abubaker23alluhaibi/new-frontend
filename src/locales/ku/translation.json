@@ -431,6 +431,7 @@
   "month_navigation": "گەشتنی مانگ",
   "quick_selection_buttons": "دوگمەکانی هەڵبژاردنی خێرا",
   "weekdays": "ڕۆژەکانی هەفتە",
+  "weekdays_array": ["شەممە", "یەکشەممە", "دووشەممە", "سێشەممە", "چوارشەممە", "پێنجشەممە", "هەینی"],
   "work_days_comment": "ڕۆژەکانی کار",
   "vacation_cancelled_success": "پشوو هەڵوەشێنرایەوە و ڕۆژی {{date}} ئێستا بەردەستە بۆ حجزکردن",
   "vacation_removed_success": "پشوو هەڵوەشێنرایەوە: {{date}}",

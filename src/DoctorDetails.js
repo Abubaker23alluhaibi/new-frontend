@@ -26,7 +26,7 @@ function DoctorDetails() {
   const { t } = useTranslation();
   const specialties = t('specialties', { returnObjects: true }) || [];
   const provinces = t('provinces', { returnObjects: true }) || [];
-  const weekdays = t('weekdays', { returnObjects: true }) || ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'];
+  const weekdays = t('weekdays_array', { returnObjects: true }) || ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'];
   const months = t('months', { returnObjects: true }) || [
     'کانونی دووەم', 'شوبات', 'ئازار', 'نیسان', 'ئایار', 'حوزەیران',
     'تەمموز', 'ئاب', 'ئەیلوول', 'تشرینی یەکەم', 'تشرینی دووەم', 'کانونی یەکەم'
@@ -158,7 +158,7 @@ function DoctorDetails() {
 
   // استخراج الأيام المتاحة من workTimes
   const getAvailableDays = () => {
-    if (!doctor?.workTimes) return [];
+    if (!doctor?.workTimes || !Array.isArray(doctor.workTimes)) return [];
     return doctor.workTimes.map(wt => wt.day).filter(Boolean);
   };
 
@@ -190,9 +190,12 @@ function DoctorDetails() {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/appointments/${doctorId}/${date}`);
       if (res.ok) {
         const appointments = await res.json();
-        const bookedTimeSlots = appointments.map(apt => apt.time);
-        setBookedTimes(bookedTimeSlots);
-  
+        if (appointments && Array.isArray(appointments)) {
+          const bookedTimeSlots = appointments.map(apt => apt.time);
+          setBookedTimes(bookedTimeSlots);
+        } else {
+          setBookedTimes([]);
+        }
       }
     } catch (error) {
       // Error fetching booked appointments
