@@ -262,11 +262,23 @@ function DoctorDetails() {
       for (const vacation of doctor.vacationDays) {
         // التحقق من الإجازة اليومية (التاريخ كاملاً)
         if (vacation) {
-          const vacationDate = new Date(vacation);
-          if (vacationDate.getFullYear() === year && 
-              vacationDate.getMonth() + 1 === month && 
-              vacationDate.getDate() === day) {
-            return false;
+          let vacationDate;
+          
+          // التعامل مع البيانات القديمة والجديدة
+          if (typeof vacation === 'string') {
+            // البيانات الجديدة - تاريخ كسلسلة نصية
+            vacationDate = new Date(vacation);
+          } else if (vacation && typeof vacation === 'object' && vacation.date) {
+            // البيانات القديمة - كائن مع حقل date
+            vacationDate = new Date(vacation.date);
+          }
+          
+          if (vacationDate && !isNaN(vacationDate.getTime())) {
+            if (vacationDate.getFullYear() === year && 
+                vacationDate.getMonth() + 1 === month && 
+                vacationDate.getDate() === day) {
+              return false;
+            }
           }
         }
       }

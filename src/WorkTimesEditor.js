@@ -20,12 +20,47 @@ function WorkTimesEditor({ profile, onClose, onUpdate }) {
 
   const weekdays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 
+  // دالة لتحويل البيانات القديمة إلى الجديدة
+  const convertOldVacationData = (oldVacationDays) => {
+    if (!oldVacationDays || !Array.isArray(oldVacationDays)) {
+      return [];
+    }
+    
+    return oldVacationDays.map(vacation => {
+      // إذا كانت البيانات بالهيكل الجديد (تاريخ فقط)
+      if (typeof vacation === 'string') {
+        return vacation;
+      }
+      
+      // إذا كانت البيانات بالهيكل القديم (كائن مع type, date, etc.)
+      if (vacation && typeof vacation === 'object') {
+        if (vacation.type === 'single' && vacation.date) {
+          return vacation.date;
+        }
+        // تجاهل الإجازات الشهرية والسنوية في الوقت الحالي
+        return null;
+      }
+      
+      return null;
+    }).filter(Boolean); // إزالة القيم الفارغة
+  };
+
   useEffect(() => {
     if (profile?.workTimes) {
       setWorkTimes(profile.workTimes);
     }
     if (profile?.vacationDays) {
-      setVacationDays(profile.vacationDays);
+      // تحويل البيانات القديمة إلى الجديدة
+      const convertedVacations = convertOldVacationData(profile.vacationDays);
+      setVacationDays(convertedVacations);
+      
+      // إذا كانت البيانات مختلفة، قم بتحديثها في قاعدة البيانات
+      if (JSON.stringify(convertedVacations) !== JSON.stringify(profile.vacationDays)) {
+        console.log('🔄 تحويل بيانات الإجازات القديمة إلى الجديدة:', {
+          old: profile.vacationDays,
+          new: convertedVacations
+        });
+      }
     }
   }, [profile]);
 
