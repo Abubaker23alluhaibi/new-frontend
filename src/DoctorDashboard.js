@@ -1093,19 +1093,29 @@ function DoctorDashboard() {
               onUpdate={(updatedData) => {
                 console.log('🔄 DoctorDashboard: استلام البيانات المحدثة:', updatedData);
                 setShowWorkTimesModal(false);
+                
                 // تحديث البيانات المحلية مباشرة مع الحفاظ على الصورة الشخصية
                 if (updatedData) {
                   const updatedProfile = { 
                     ...profile, 
                     workTimes: updatedData.workTimes || profile.workTimes,
-                    vacationDays: updatedData.vacationDays || profile.vacationDays
+                    vacationDays: updatedData.vacationDays || profile.vacationDays,
+                    lastUpdated: updatedData.lastUpdated || new Date().toISOString()
                   };
+                  
                   console.log('💾 DoctorDashboard: حفظ البيانات المحدثة في localStorage:', updatedProfile);
                   localStorage.setItem('profile', JSON.stringify(updatedProfile));
-                  // تحديث state بدلاً من إعادة تحميل الصفحة
+                  
+                  // تحديث state فوراً
                   setProfile(updatedProfile);
-                  // إعادة جلب المواعيد لتحديث البيانات
-                  fetchAllAppointments();
+                  
+                  // إعادة جلب المواعيد بعد تأخير قصير للتأكد من تحديث البيانات
+                  setTimeout(() => {
+                    fetchAllAppointments();
+                  }, 300);
+                  
+                  // إضافة timestamp منفصل للتأكد من تحديث البيانات
+                  localStorage.setItem('profile_lastUpdated', updatedProfile.lastUpdated);
                 }
               }}
               fetchAllAppointments={fetchAllAppointments}

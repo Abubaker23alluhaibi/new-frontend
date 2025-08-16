@@ -45,6 +45,23 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     }).filter(Boolean); // إزالة القيم الفارغة
   };
 
+  // دالة لتنظيف التخزين المؤقت وإعادة تحميل البيانات
+  const refreshData = () => {
+    // تنظيف التخزين المؤقت
+    localStorage.removeItem('vacationDays_lastUpdated');
+    
+    // إعادة تحميل البيانات من profile
+    if (profile?.workTimes) {
+      setWorkTimes(profile.workTimes);
+    }
+    if (profile?.vacationDays) {
+      const convertedVacations = convertOldVacationData(profile.vacationDays);
+      setVacationDays(convertedVacations);
+    }
+    
+    console.log('🔄 تم تحديث البيانات المحلية');
+  };
+
   useEffect(() => {
     if (profile?.workTimes) {
       setWorkTimes(profile.workTimes);
@@ -53,6 +70,12 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
       // تحويل البيانات القديمة إلى الجديدة
       const convertedVacations = convertOldVacationData(profile.vacationDays);
       setVacationDays(convertedVacations);
+      
+      // التحقق من timestamp للتأكد من أن البيانات محدثة
+      const lastUpdated = profile.lastUpdated || localStorage.getItem('vacationDays_lastUpdated');
+      if (lastUpdated) {
+        console.log('🕒 آخر تحديث لأيام الإجازات:', new Date(lastUpdated).toLocaleString('ar-SA'));
+      }
       
       // إذا كانت البيانات مختلفة، قم بتحديثها في قاعدة البيانات
       if (JSON.stringify(convertedVacations) !== JSON.stringify(profile.vacationDays)) {
@@ -221,42 +244,51 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
       if (response.ok) {
         console.log('✅ WorkTimesEditor: تم تحديث الجدول بنجاح:', data);
         setSuccess(t('changes_saved'));
-        // إرسال البيانات المحدثة فوراً مع البيانات المستلمة من السيرفر
-        setTimeout(() => {
-          const updatedData = {
-            workTimes: data.workTimes || workTimes,
-            vacationDays: data.vacationDays || vacationDays
+        // تحديث البيانات المحلية فوراً مع timestamp
+        const updatedData = {
+          workTimes: data.workTimes || workTimes,
+          vacationDays: data.vacationDays || vacationDays,
+          lastUpdated: new Date().toISOString()
+        };
+        console.log('🔄 WorkTimesEditor: إرسال البيانات المحدثة:', updatedData);
+        
+        // تحديث البيانات المحلية أولاً مع timestamp
+        if (profile) {
+          const updatedProfile = { 
+            ...profile, 
+            workTimes: updatedData.workTimes,
+            vacationDays: updatedData.vacationDays,
+            lastUpdated: updatedData.lastUpdated
           };
-          console.log('🔄 WorkTimesEditor: إرسال البيانات المحدثة:', updatedData);
+          localStorage.setItem('profile', JSON.stringify(updatedProfile));
           
-          // تحديث البيانات المحلية أولاً
-          if (profile) {
-            const updatedProfile = { 
-              ...profile, 
-              workTimes: updatedData.workTimes,
-              vacationDays: updatedData.vacationDays
-            };
-            localStorage.setItem('profile', JSON.stringify(updatedProfile));
+          // إضافة timestamp منفصل لأيام الإجازات
+          localStorage.setItem('vacationDays_lastUpdated', updatedData.lastUpdated);
+        }
+        
+        // تحديث state المحلي فوراً
+        setWorkTimes(updatedData.workTimes);
+        setVacationDays(updatedData.vacationDays);
+        
+        // إرسال البيانات المحدثة فوراً
+        if (onUpdate && typeof onUpdate === 'function') {
+          try {
+            onUpdate(updatedData);
+          } catch (error) {
+            console.error('❌ خطأ في استدعاء onUpdate:', error);
           }
-          
-          // استدعاء onUpdate إذا كان موجوداً
-          if (onUpdate && typeof onUpdate === 'function') {
-            try {
-              onUpdate(updatedData);
-            } catch (error) {
-              console.error('❌ خطأ في استدعاء onUpdate:', error);
-            }
-          }
-          
-          // استدعاء fetchAllAppointments إذا كان موجوداً
-          if (fetchAllAppointments && typeof fetchAllAppointments === 'function') {
+        }
+        
+        // إعادة جلب المواعيد بعد تأخير قصير
+        if (fetchAllAppointments && typeof fetchAllAppointments === 'function') {
+          setTimeout(() => {
             try {
               fetchAllAppointments();
             } catch (error) {
               console.error('❌ خطأ في استدعاء fetchAllAppointments:', error);
             }
-          }
-        }, 1500);
+          }, 500);
+        }
       } else {
         console.error('❌ WorkTimesEditor: خطأ من السيرفر:', data);
         setError(data.error || 'حدث خطأ أثناء تحديث الجدول');
@@ -538,6 +570,22 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                   }}
                 >
                   مسح الكل
+                </button>
+                <button
+                  type="button"
+                  onClick={refreshData}
+                  style={{
+                    background: '#0A8F82',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '20px',
+                    padding: '0.5rem 1rem',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem'
+                  }}
+                  title="تحديث البيانات المحلية"
+                >
+                  🔄 تحديث
                 </button>
               </div>
 
