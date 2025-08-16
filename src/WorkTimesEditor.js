@@ -187,7 +187,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     
     for (let day = 1; day <= new Date(year, month + 1, 0).getDate(); day++) {
       const date = new Date(year, month, day);
-      if (date.getDay() !== 5 && date.getDay() !== 6) { // أيام العمل
+      if (date.getDay() !== 5 && date.getDay() !== 6) { // {t('work_days_comment')}
         currentMonthDates.push(date.toISOString().split('T')[0]);
       }
     }
@@ -217,7 +217,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     setVacationDays(vacationDays.filter(v => v !== vacation));
     
     // إضافة رسالة تأكيد
-    setSuccess(`تم إلغاء الإجازة وإعادة اليوم ${vacation} كيوم متاح للحجز`);
+            setSuccess(t('vacation_cancelled_success', { date: vacation }));
     
     // إزالة من الأيام المحددة إذا كان موجوداً
     setSelectedDates(selectedDates.filter(date => date !== vacation));
@@ -348,7 +348,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* تبويب أوقات الدوام */}
+                        {/* {t('work_times_tab')} */}
         {activeTab === 'workTimes' && (
           <div>
             <h3 style={{ color: '#0A8F82', marginBottom: '1rem', fontSize: '1.2rem' }}>
@@ -451,14 +451,14 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
           </div>
         )}
 
-        {/* تبويب أيام الإجازات */}
+                        {/* {t('vacation_days_tab')} */}
         {activeTab === 'vacationDays' && (
           <div>
             <h3 style={{ color: '#0A8F82', marginBottom: '1rem', fontSize: '1.2rem' }}>
               🏖️ {t('vacation_days')}
             </h3>
 
-            {/* التقويم المتقدم */}
+            {/* {t('advanced_calendar')} */}
             <div style={{ 
               background: '#fff', 
               padding: '1.5rem', 
@@ -467,10 +467,10 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
               marginBottom: '2rem'
             }}>
               <h4 style={{ color: '#333', marginBottom: '1rem', textAlign: 'center' }}>
-                تقويم تحديد أيام الإجازات
+                {t('vacation_calendar_title')}
               </h4>
               
-              {/* تنقل الشهر */}
+              {/* {t('month_navigation')} */}
               <div style={{ 
                 display: 'flex', 
                 justifyContent: 'space-between', 
@@ -496,7 +496,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                 
                 <div style={{ textAlign: 'center' }}>
                   <h3 style={{ margin: '0', color: '#333', fontSize: '1.3rem' }}>
-                    {t(`month_${currentMonth + 1}`)} {currentYear}
+                    {t(['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'][currentMonth])} {currentYear}
                   </h3>
                 </div>
                 
@@ -518,7 +518,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                 </button>
               </div>
 
-              {/* أزرار الاختيار السريع */}
+              {/* {t('quick_selection_buttons')} */}
               <div style={{ 
                 display: 'flex', 
                 gap: '0.5rem', 
@@ -539,7 +539,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                     fontSize: '0.9rem'
                   }}
                 >
-                  تحديد نهاية الأسبوع
+                  {t('select_weekend')}
                 </button>
                 <button
                   type="button"
@@ -554,7 +554,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                     fontSize: '0.9rem'
                   }}
                 >
-                  تحديد أيام الدوام
+                  {t('select_work_days')}
                 </button>
                 <button
                   type="button"
@@ -569,7 +569,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                     fontSize: '0.9rem'
                   }}
                 >
-                  مسح الكل
+                  {t('clear_all')}
                 </button>
                 <button
                   type="button"
@@ -583,9 +583,9 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                     cursor: 'pointer',
                     fontSize: '0.9rem'
                   }}
-                  title="تحديث البيانات المحلية"
+                  title={t('refresh_local_data')}
                 >
-                  🔄 تحديث
+                  🔄 {t('refresh')}
                 </button>
               </div>
 
@@ -598,7 +598,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                 padding: '2px',
                 borderRadius: '8px'
               }}>
-                {/* أيام الأسبوع */}
+                {/* {t('weekdays')} */}
                 {weekdays.map(day => (
                   <div key={day} style={{
                     background: '#f8f9fa',
@@ -682,7 +682,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                   borderRadius: '8px'
                 }}>
                   <p style={{ margin: '0 0 1rem 0', color: '#333', fontWeight: '600' }}>
-                    تم تحديد {selectedDates.length} يوم
+                    {t('selected_days_count', { count: selectedDates.length })}
                   </p>
                   <button
                     type="button"
@@ -697,27 +697,27 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                       fontSize: '1rem'
                     }}
                   >
-                    ✅ حفظ الأيام المحددة
+                    ✅ {t('save_selected_days')}
                   </button>
                 </div>
               )}
             </div>
 
-            {/* قائمة أيام الإجازات الحالية */}
+            {/* {t('current_vacation_days_list')} */}
             <div style={{ 
               background: '#fff', 
               padding: '1.5rem', 
               borderRadius: '12px', 
               boxShadow: '0 2px 10px rgba(0,0,0,0.1)' 
             }}>
-              <h4 style={{ color: '#333', marginBottom: '1rem' }}>
-                أيام الإجازات الحالية ({vacationDays.length})
-              </h4>
+                              <h4 style={{ color: '#333', marginBottom: '1rem' }}>
+                  {t('current_vacation_days')} ({vacationDays.length})
+                </h4>
               
               {vacationDays.length === 0 ? (
-                <p style={{ color: '#666', textAlign: 'center', fontStyle: 'italic' }}>
-                  لا توجد أيام إجازات محددة
-                </p>
+                                  <p style={{ color: '#666', textAlign: 'center', fontStyle: 'italic' }}>
+                    {t('no_vacation_days')}
+                  </p>
               ) : (
                 <div style={{ display: 'grid', gap: '1rem' }}>
                   {vacationDays.map((vacation, index) => (
@@ -744,7 +744,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                             borderRadius: '12px', 
                             fontSize: '0.8rem' 
                           }}>
-                            🏖️ إجازة
+                            🏖️ {t('vacation')}
                           </span>
                           <span style={{ color: '#333', fontWeight: '600' }}>
                             {vacation}
@@ -765,9 +765,9 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                             cursor: 'pointer',
                             fontSize: '12px'
                           }}
-                          title="إلغاء الإجازة وإعادة اليوم كيوم متاح"
+                          title={t('cancel_vacation_tooltip')}
                         >
-                          🔄 إلغاء
+                          🔄 {t('cancel_vacation')}
                         </button>
                         <button
                           type="button"
@@ -781,9 +781,9 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                             cursor: 'pointer',
                             fontSize: '12px'
                           }}
-                          title="حذف الإجازة نهائياً"
+                          title={t('delete_vacation_tooltip')}
                         >
-                          🗑️ حذف
+                          🗑️ {t('delete')}
                         </button>
                       </div>
                     </div>
@@ -791,15 +791,15 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                 </div>
               )}
 
-              {/* إضافة إجازة يدوياً */}
+                              {/* {t('add_vacation_manually_comment')} */}
               <div style={{ marginTop: '1.5rem' }}>
-                <h5 style={{ color: '#333', marginBottom: '1rem' }}>
-                  إضافة إجازة يدوياً
-                </h5>
+                                  <h5 style={{ color: '#333', marginBottom: '1rem' }}>
+                    {t('add_vacation_manually')}
+                  </h5>
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'end' }}>
                   <div style={{ flex: 1 }}>
                     <label style={{ display: 'block', marginBottom: '0.3rem', color: '#333', fontWeight: '600', fontSize: '0.9rem' }}>
-                      تاريخ الإجازة
+                                              {t('vacation_date')}
                     </label>
                     <input
                       type="date"
@@ -826,7 +826,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                       fontSize: '1rem'
                     }}
                   >
-                    ➕ إضافة
+                    ➕ {t('add')}
                   </button>
                 </div>
               </div>
