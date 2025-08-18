@@ -150,6 +150,14 @@ function DoctorDashboard() {
     return () => i18n.off('languageChanged', handleLanguageChange);
   }, [i18n, refreshData]);
 
+  // دالة لفتح نافذة الملاحظة
+  const openNoteModal = (phone) => {
+    setNotePhone(phone);
+    const saved = localStorage.getItem('phoneNote_' + phone) || '';
+    setNoteValue(saved);
+    setShowNoteModal(true);
+  };
+
   if (profile && profile.status === 'pending') {
     return (
       <div style={{
