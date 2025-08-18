@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './AuthContext';
 import ProtectedRoute from './ProtectedRoute';
@@ -23,6 +23,7 @@ import DoctorAnalyticsPage from './DoctorAnalyticsPage';
 import LandingPage from './LandingPage';
 import DashboardPreview from './DashboardPreview';
 import i18n from './i18n';
+import { clearAllCaches, clearTranslationCache, startPeriodicCleanup, stopPeriodicCleanup } from './utils/cacheUtils';
 
 function App() {
   // حالة مركزية للمواعيد للطبيب
@@ -34,40 +35,121 @@ function App() {
     return savedLang || 'ar';
   });
 
+  // دالة لتحديث البيانات
+  const refreshAppData = useCallback(async () => {
+    console.log('🔄 App: تحديث بيانات التطبيق...');
+    
+    try {
+      // تنظيف التخزين المؤقت
+      await clearAllCaches();
+      
+      // إعادة تحميل الترجمة
+      i18n.reloadResources();
+      
+      // تحديث timestamp
+      localStorage.setItem('appLastUpdate', Date.now().toString());
+      
+      console.log('✅ App: تم تحديث البيانات بنجاح');
+    } catch (error) {
+      console.error('❌ App: خطأ في تحديث البيانات:', error);
+    }
+  }, []);
+
   // حفظ اللغة في localStorage وتطبيقها
-  const handleLangChange = (e) => {
+  const handleLangChange = async (e) => {
     const newLang = e.target.value;
-    setLang(newLang);
-    localStorage.setItem('selectedLanguage', newLang);
-    i18n.changeLanguage(newLang);
+    console.log('🔄 App: تغيير اللغة إلى:', newLang);
+    
+    try {
+      // تنظيف cache الترجمة أولاً
+      await clearTranslationCache();
+      
+      setLang(newLang);
+      localStorage.setItem('selectedLanguage', newLang);
+      localStorage.setItem('lastLanguageChange', Date.now().toString());
+      
+      // تطبيق اللغة الجديدة
+      await i18n.changeLanguage(newLang);
+      
+      // تحديث البيانات
+      refreshAppData();
+      
+    } catch (error) {
+      console.error('❌ App: خطأ في تغيير اللغة:', error);
+    }
   };
 
   // تطبيق اللغة المحفوظة عند تحميل التطبيق
   useEffect(() => {
     console.log('🌐 App: تطبيق اللغة:', lang);
-    i18n.changeLanguage(lang);
+    
+    const applyLanguage = async () => {
+      try {
+        await i18n.changeLanguage(lang);
+        console.log('✅ App: تم تطبيق اللغة بنجاح');
+      } catch (error) {
+        console.error('❌ App: خطأ في تطبيق اللغة:', error);
+      }
+    };
+    
+    applyLanguage();
   }, [lang]);
 
   // جلب المواعيد عند الدخول
   useEffect(() => {
     console.log('📅 App: جلب المواعيد للطبيب...');
-    // يمكن تحسين هذا لاحقاً ليعتمد على تسجيل الدخول
-    fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/1`)
-      .then(res => res.json())
-      .then(data => {
+    
+    const fetchAppointments = async () => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/1?t=${Date.now()}`);
+        const data = await res.json();
         console.log('✅ App: تم جلب المواعيد:', data);
         setDoctorAppointments(Array.isArray(data) ? data : []);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('❌ App: خطأ في جلب المواعيد:', error);
-      });
+      }
+    };
+    
+    fetchAppointments();
   }, []);
 
   // إضافة console.log عند تحميل التطبيق
   useEffect(() => {
     console.log('🚀 App: تم تحميل التطبيق بنجاح');
     console.log('🔗 App: API URL:', process.env.REACT_APP_API_URL);
-  }, []);
+    
+    // بدء التنظيف الدوري
+    const cleanupInterval = startPeriodicCleanup(300000); // 5 دقائق
+    
+    // تنظيف أولي
+    refreshAppData();
+    
+    return () => {
+      stopPeriodicCleanup(cleanupInterval);
+    };
+  }, [refreshAppData]);
+
+  // تحديث تلقائي كل 10 دقائق
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refreshAppData();
+    }, 600000); // 10 دقائق
+    
+    return () => clearInterval(interval);
+  }, [refreshAppData]);
+
+  // تحديث عند تغيير اللغة في localStorage
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === 'selectedLanguage') {
+        console.log('🔄 App: تم اكتشاف تغيير في اللغة');
+        refreshAppData();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [refreshAppData]);
 
   return (
     <AuthProvider>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { normalizePhone } from './utils/phoneUtils';
 
 const AuthContext = createContext({});
@@ -11,6 +11,52 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
+  const [dataVersion, setDataVersion] = useState(0);
+
+  // دالة لتحديث البيانات
+  const refreshAuthData = useCallback(() => {
+    console.log('🔄 تحديث بيانات المصادقة...');
+    setLastUpdate(Date.now());
+    setDataVersion(prev => prev + 1);
+    
+    // تنظيف التخزين المؤقت
+    if (window.caches) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          if (name.includes('auth') || name.includes('user') || name.includes('profile')) {
+            caches.delete(name);
+          }
+        });
+      });
+    }
+    
+    // إعادة تحميل البيانات من localStorage
+    const savedUser = localStorage.getItem('user');
+    const savedProfile = localStorage.getItem('profile');
+    
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        setUser(userData);
+      } catch (error) {
+        console.error('❌ خطأ في تحليل بيانات المستخدم:', error);
+        localStorage.removeItem('user');
+        setUser(null);
+      }
+    }
+    
+    if (savedProfile) {
+      try {
+        const profileData = JSON.parse(savedProfile);
+        setProfile(profileData);
+      } catch (error) {
+        console.error('❌ خطأ في تحليل بيانات الملف الشخصي:', error);
+        localStorage.removeItem('profile');
+        setProfile(null);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     console.log('🔄 AuthContext: بدء التحقق من حالة المستخدم...');
@@ -18,11 +64,20 @@ export const AuthProvider = ({ children }) => {
     // استرجاع بيانات المستخدم من localStorage عند تحميل الصفحة
     const savedUser = localStorage.getItem('user');
     const savedProfile = localStorage.getItem('profile');
+    const lastUpdateTime = localStorage.getItem('lastAuthUpdate');
+    const currentTime = Date.now();
     
     console.log('📦 AuthContext: البيانات المحفوظة:', { 
       hasSavedUser: !!savedUser, 
-      hasSavedProfile: !!savedProfile 
+      hasSavedProfile: !!savedProfile,
+      lastUpdate: lastUpdateTime
     });
+
+    // التحقق من عمر البيانات
+    if (lastUpdateTime && (currentTime - parseInt(lastUpdateTime)) > 300000) { // 5 دقائق
+      console.log('⚠️ بيانات المصادقة قديمة، تحديث...');
+      refreshAuthData();
+    }
 
     if (savedUser) {
       try {
@@ -49,17 +104,24 @@ export const AuthProvider = ({ children }) => {
     console.log('🏁 AuthContext: انتهى التحقق من حالة المستخدم');
     setLoading(false);
 
+    // تحديث تلقائي كل 5 دقائق
+    const interval = setInterval(() => {
+      refreshAuthData();
+    }, 300000); // 5 دقائق
+
     // تحديث تلقائي عند أي تغيير في localStorage (مثلاً عند تسجيل دخول الأدمن)
     const handleStorage = () => {
       console.log('🔄 AuthContext: تم اكتشاف تغيير في localStorage');
-      const newUser = localStorage.getItem('user');
-      const newProfile = localStorage.getItem('profile');
-      setUser(newUser ? JSON.parse(newUser) : null);
-      setProfile(newProfile ? JSON.parse(newProfile) : null);
+      refreshAuthData();
     };
+    
     window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, []);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [refreshAuthData]);
 
   const signUp = async (email, password, userData) => {
     try {

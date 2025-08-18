@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
@@ -11,7 +11,28 @@ const LandingPage = () => {
   const [backgroundImageLoaded, setBackgroundImageLoaded] = useState(false);
   const [isLanguageChanging, setIsLanguageChanging] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
   const moreMenuRef = useRef(null);
+
+  // دالة لتحديث البيانات
+  const refreshData = useCallback(() => {
+    console.log('🔄 تحديث البيانات...');
+    setLastUpdate(Date.now());
+    
+    // تنظيف التخزين المؤقت
+    if (window.caches) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          if (name.includes('translation') || name.includes('i18n')) {
+            caches.delete(name);
+          }
+        });
+      });
+    }
+    
+    // إعادة تحميل الترجمة
+    i18n.reloadResources();
+  }, [i18n]);
 
   // تحسين دالة تغيير اللغة
   const changeLanguage = async (lang) => {
@@ -21,20 +42,35 @@ const LandingPage = () => {
     setIsLanguageChanging(true);
     
     try {
+      // تنظيف التخزين المؤقت أولاً
+      if (window.caches) {
+        caches.keys().then(names => {
+          names.forEach(name => {
+            if (name.includes('translation') || name.includes('i18n')) {
+              caches.delete(name);
+            }
+          });
+        });
+      }
+      
       // تحديث الحالة المحلية أولاً
       setCurrentLanguage(lang);
       
-      // حفظ اللغة في localStorage
+      // حفظ اللغة في localStorage مع timestamp
       localStorage.setItem('selectedLanguage', lang);
       localStorage.setItem('translationTimestamp', Date.now().toString());
+      localStorage.setItem('lastLanguageChange', Date.now().toString());
       
       // تطبيق اللغة في i18n
       await i18n.changeLanguage(lang);
       
+      // تحديث البيانات
+      refreshData();
+      
       // إعادة تحميل الصفحة بعد تأخير قصير لضمان تطبيق التغييرات
       setTimeout(() => {
         window.location.reload();
-      }, 500);
+      }, 300);
       
     } catch (error) {
       console.error('❌ خطأ في تغيير اللغة:', error);
@@ -45,7 +81,16 @@ const LandingPage = () => {
   // تحسين تطبيق اللغة عند التحميل
   useEffect(() => {
     const savedLanguage = localStorage.getItem('selectedLanguage') || 'ar';
+    const lastChange = localStorage.getItem('lastLanguageChange');
+    const currentTime = Date.now();
+    
     console.log('🌐 تطبيق اللغة المحفوظة:', savedLanguage);
+    
+    // التحقق من عمر البيانات
+    if (lastChange && (currentTime - parseInt(lastChange)) > 300000) { // 5 دقائق
+      console.log('⚠️ البيانات قديمة، تحديث...');
+      refreshData();
+    }
     
     setCurrentLanguage(savedLanguage);
     
@@ -60,7 +105,29 @@ const LandingPage = () => {
     };
     
     applyLanguage();
-  }, [i18n]);
+  }, [i18n, refreshData]);
+
+  // تحديث تلقائي كل 5 دقائق
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refreshData();
+    }, 300000); // 5 دقائق
+    
+    return () => clearInterval(interval);
+  }, [refreshData]);
+
+  // تحديث عند تغيير اللغة في localStorage
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === 'selectedLanguage') {
+        console.log('🔄 تم اكتشاف تغيير في اللغة');
+        refreshData();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [refreshData]);
 
   // تحسين تحميل الصورة الخلفية
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './DoctorDashboard.css';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -19,8 +19,6 @@ function getToday() {
   return `${year}-${month}-${day}`;
 }
 
-
-
 function DoctorDashboard() {
   const { profile, setProfile, signOut } = useAuth();
   const navigate = useNavigate();
@@ -30,6 +28,8 @@ function DoctorDashboard() {
   const [showNotif, setShowNotif] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [lastDataUpdate, setLastDataUpdate] = useState(Date.now());
+  const [dataVersion, setDataVersion] = useState(0);
 
   const [showSpecialAppointments, setShowSpecialAppointments] = useState(false);
   const [showEditSpecial, setShowEditSpecial] = useState(false);
@@ -54,21 +54,53 @@ function DoctorDashboard() {
   const [showWorkTimesModal, setShowWorkTimesModal] = useState(false);
   const [showAppointmentDurationModal, setShowAppointmentDurationModal] = useState(false);
 
+  // دالة لتحديث البيانات
+  const refreshData = useCallback(() => {
+    console.log('🔄 تحديث بيانات الدكتور...');
+    setLastDataUpdate(Date.now());
+    setDataVersion(prev => prev + 1);
+    
+    // تنظيف التخزين المؤقت
+    if (window.caches) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          if (name.includes('doctor') || name.includes('appointment') || name.includes('notification')) {
+            caches.delete(name);
+          }
+        });
+      });
+    }
+    
+    // إعادة جلب البيانات
+    fetchAllAppointments();
+    fetchNotifications();
+  }, []);
+
+  // دالة لجلب الإشعارات
+  const fetchNotifications = useCallback(async () => {
+    if (!profile?._id) return;
+    
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?doctorId=${profile._id}&t=${Date.now()}`);
+      const data = await res.json();
+      
+      if (!Array.isArray(data)) {
+        setNotifications([]);
+        setNotifCount(0);
+        return;
+      }
+      
+      setNotifications(data);
+      setNotifCount(data.filter(n => !n.read).length);
+    } catch (error) {
+      console.error('❌ خطأ في جلب الإشعارات:', error);
+    }
+  }, [profile?._id]);
+
   // جلب إشعارات الدكتور
   useEffect(() => {
-    if (!profile?._id) return;
-    fetch(`${process.env.REACT_APP_API_URL}/notifications?doctorId=${profile._id}`)
-      .then(res => res.json())
-      .then(data => {
-        if (!Array.isArray(data)) {
-          setNotifications([]);
-          setNotifCount(0);
-          return;
-        }
-        setNotifications(data);
-        setNotifCount(data.filter(n => !n.read).length);
-      });
-  }, [profile?._id, showNotif]);
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   // تعليم كل الإشعارات كمقروءة عند فتح نافذة الإشعارات
   useEffect(() => {
@@ -76,19 +108,19 @@ function DoctorDashboard() {
       setNotifCount(0); // تصفير العداد فوراً
       fetch(`${process.env.REACT_APP_API_URL}/notifications/mark-read?doctorId=${profile._id}`, { method: 'PUT' });
     }
-  }, [showNotif, profile?._id]);
+  }, [showNotif, profile?._id, notifCount]);
 
   // دالة موحدة لجلب جميع مواعيد الطبيب
   const fetchAllAppointments = async () => {
     if (!profile?._id) return;
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/${profile._id}`);
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/${profile._id}?t=${Date.now()}`);
       const data = await res.json();
       setAppointments(Array.isArray(data) ? data : []);
       setLoading(false);
     } catch (err) {
-              setError(t('error_fetching_appointments'));
+      setError(t('error_fetching_appointments'));
       setLoading(false);
     }
   };
@@ -98,66 +130,25 @@ function DoctorDashboard() {
     fetchAllAppointments();
   }, [profile?._id]);
 
-  // إعادة تحميل المواعيد عند التركيز على الصفحة
-  useEffect(() => {
-    const handleFocus = () => {
-      if (profile?._id) {
-        fetchAllAppointments();
-      }
-    };
-
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [profile?._id]);
-
-  // مراقبة التغييرات في localStorage للمواعيد الخاصة
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const saved = localStorage.getItem('specialAppointments');
-      if (saved) {
-        // إعادة تحميل المواعيد عند تغيير localStorage
-        fetchAllAppointments();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [profile?._id]);
-
-  // دالة لفتح نافذة الملاحظة:
-  const openNoteModal = (phone) => {
-    setNotePhone(phone);
-    const saved = localStorage.getItem('phoneNote_' + phone) || '';
-    setNoteValue(saved);
-    setShowNoteModal(true);
-  };
-
-  // تحديث المواعيد كل دقيقة للتأكد من البيانات الحالية
+  // تحديث تلقائي كل 3 دقائق
   useEffect(() => {
     const interval = setInterval(() => {
-      if (profile?._id) {
-        fetchAllAppointments();
-      }
-    }, 60000); // كل دقيقة
-
-    return () => clearInterval(interval);
-  }, [profile?._id]);
-
-  // مراقبة تغيير التاريخ وتحديث المواعيد تلقائياً
-  useEffect(() => {
-    const checkDateChange = () => {
-      const currentDate = getToday();
-      if (currentDate !== selectedDate) {
-        setSelectedDate(currentDate);
-        fetchAllAppointments();
-      }
-    };
-
-    // فحص كل 30 ثانية للتأكد من تغيير التاريخ
-    const dateInterval = setInterval(checkDateChange, 30000);
+      refreshData();
+    }, 180000); // 3 دقائق
     
-    return () => clearInterval(dateInterval);
-  }, [selectedDate, profile?._id]);
+    return () => clearInterval(interval);
+  }, [refreshData]);
+
+  // تحديث عند تغيير اللغة
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      console.log('🔄 تم تغيير اللغة، تحديث البيانات...');
+      refreshData();
+    };
+    
+    i18n.on('languageChanged', handleLanguageChange);
+    return () => i18n.off('languageChanged', handleLanguageChange);
+  }, [i18n, refreshData]);
 
   if (profile && profile.status === 'pending') {
     return (
