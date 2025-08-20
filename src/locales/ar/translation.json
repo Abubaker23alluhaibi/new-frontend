@@ -749,5 +749,9 @@
   "weekly_analysis": "تحليل أسبوعي",
   "monthly_analysis": "تحليل شهري",
   "yearly_analysis": "تحليل سنوي",
-  "all_time_analysis": "تحليل كل الوقت"
+  "all_time_analysis": "تحليل كل الوقت",
+  "app_redirect_title": "افتح التطبيق للحصول على تجربة أفضل!",
+  "app_redirect_description": "يمكنك الوصول لجميع الميزات وحجز المواعيد بسهولة",
+  "open_app": "افتح التطبيق",
+  "download_app": "حمل التطبيق"
 }

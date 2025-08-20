@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import DatePicker from 'react-datepicker';
@@ -34,7 +34,57 @@ function DoctorDetails() {
   const [copySuccess, setCopySuccess] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [migratingImage, setMigratingImage] = useState(false);
+  const [showAppRedirect, setShowAppRedirect] = useState(false);
 
+  // دالة للكشف عن وجود التطبيق
+  const checkAppInstalled = useCallback(() => {
+    // محاولة فتح التطبيق عبر Deep Link
+    const deepLink = `tabibiq://doctor/${id}`;
+    
+    // إنشاء iframe مخفي لاختبار فتح التطبيق
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    
+    // محاولة فتح التطبيق
+    iframe.src = deepLink;
+    
+    // انتظار قليل ثم التحقق من النتيجة
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+      
+      // إذا لم يتم فتح التطبيق، عرض رسالة التوجيه
+      setShowAppRedirect(true);
+      
+      // محاولة فتح متجر التطبيقات بعد 3 ثواني
+      setTimeout(() => {
+        const userAgent = navigator.userAgent.toLowerCase();
+        if (/iphone|ipad|ipod/.test(userAgent)) {
+          // iOS - فتح App Store
+          window.location.href = 'https://apps.apple.com/app/tabibiq/id123456789';
+        } else if (/android/.test(userAgent)) {
+          // Android - فتح Google Play
+          window.location.href = 'https://play.google.com/store/apps/details?id=com.tabibiq.app';
+        }
+      }, 3000);
+    }, 1000);
+  }, [id]);
+
+  // دالة فتح التطبيق مباشرة
+  const openApp = () => {
+    const deepLink = `tabibiq://doctor/${id}`;
+    window.location.href = deepLink;
+  };
+
+  // دالة فتح متجر التطبيقات
+  const openAppStore = () => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    if (/iphone|ipad|ipod/.test(userAgent)) {
+      window.location.href = 'https://apps.apple.com/app/tabibiq/id123456789';
+    } else if (/android/.test(userAgent)) {
+      window.location.href = 'https://play.google.com/store/apps/details?id=com.tabibiq.app';
+    }
+  };
 
   // مسح الكاش عند تحميل الصفحة
   useEffect(() => {
@@ -46,7 +96,10 @@ function DoctorDetails() {
         });
       });
     }
-  }, []);
+    
+    // محاولة فتح التطبيق عند تحميل الصفحة
+    checkAppInstalled();
+  }, [id]);
 
   // دالة مساعدة لمسار صورة الدكتور
   const getImageUrl = (doctor) => {
@@ -368,6 +421,77 @@ const bookingData = {
   if (authLoading) return <div style={{textAlign:'center', marginTop:40}}>جاري التحقق من حالة تسجيل الدخول...</div>;
   if (loading) return <div style={{textAlign:'center', marginTop:40}}>جاري التحميل...</div>;
   if (error || !doctor) return <div style={{textAlign:'center', marginTop:40, color:'#e53935'}}>{error || 'لم يتم العثور على الطبيب'}</div>;
+  
+  // التحقق من حالة تعطيل الطبيب
+  if (doctor && doctor.disabled) {
+    return (
+      <div style={{
+        background: `linear-gradient(135deg, rgba(229, 57, 53, 0.7) 0%, rgba(183, 28, 28, 0.7) 100%), url('/images/det.jpg?v=${Date.now()}') center center/cover no-repeat`,
+        minHeight: '100vh',
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          maxWidth: 480, 
+          margin: '1.5rem auto', 
+          background:'#fff', 
+          borderRadius: 16, 
+          boxShadow:'0 4px 20px rgba(229, 57, 53, 0.3)', 
+          padding: '3rem 2rem', 
+          textAlign: 'center',
+          border: '2px solid #e53935'
+        }}>
+          <div style={{
+            fontSize: 60,
+            marginBottom: '1rem'
+          }}>🚫</div>
+          <div style={{
+            fontSize: 24,
+            fontWeight: 700,
+            color: '#e53935',
+            marginBottom: '1rem'
+          }}>
+            الطبيب غير متاح
+          </div>
+          <div style={{
+            fontSize: 16,
+            color: '#666',
+            lineHeight: 1.6,
+            marginBottom: '2rem'
+          }}>
+            عذراً، هذا الطبيب غير متاح حالياً لحجز المواعيد. يرجى اختيار طبيب آخر من قائمة الأطباء المتاحين.
+          </div>
+          <button
+            onClick={() => navigate('/user-home')}
+            style={{
+              background: 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 12,
+              padding: '1rem 2rem',
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(0, 188, 212, 0.3)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 6px 16px rgba(0, 188, 212, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 12px rgba(0, 188, 212, 0.3)';
+            }}
+          >
+            العودة إلى قائمة الأطباء
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -442,6 +566,60 @@ const bookingData = {
         position:'relative', 
         zIndex:1
       }}>
+        {/* رسالة التوجيه للتطبيق */}
+        {showAppRedirect && (
+          <div style={{
+            background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+            border: '2px solid #2196f3',
+            borderRadius: 12,
+            padding: '1rem',
+            marginBottom: '1rem',
+            textAlign: 'center',
+            boxShadow: '0 2px 8px #2196f322'
+          }}>
+            <div style={{fontSize: 16, fontWeight: 600, color: '#1976d2', marginBottom: '0.8rem'}}>
+              📱 {t('app_redirect_title') || 'افتح التطبيق للحصول على تجربة أفضل!'}
+            </div>
+            <div style={{fontSize: 14, color: '#1976d2', marginBottom: '1rem'}}>
+              {t('app_redirect_description') || 'يمكنك الوصول لجميع الميزات وحجز المواعيد بسهولة'}
+            </div>
+            <div style={{display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap'}}>
+              <button 
+                onClick={openApp}
+                style={{
+                  background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '0.6rem 1.2rem',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px #2196f322'
+                }}
+              >
+                📱 {t('open_app') || 'افتح التطبيق'}
+              </button>
+              <button 
+                onClick={openAppStore}
+                style={{
+                  background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '0.6rem 1.2rem',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px #4caf5022'
+                }}
+              >
+                🛒 {t('download_app') || 'حمل التطبيق'}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* زر نسخ رابط صفحة الدكتور */}
         <div style={{display:'flex', justifyContent:'flex-end', marginBottom:8}}>
           <button

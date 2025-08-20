@@ -737,5 +737,9 @@
   "weekly_analysis": "شیکردنەوەی هەفتانە",
   "monthly_analysis": "شیکردنەوەی مانگانە",
   "yearly_analysis": "شیکردنەوەی ساڵانە",
-  "all_time_analysis": "شیکردنەوەی هەموو کات"
+  "all_time_analysis": "شیکردنەوەی هەموو کات",
+  "app_redirect_title": "ئەپەکە بکەرەوە بۆ ئەزموونێکی باشتر!",
+  "app_redirect_description": "دەستت بگەیت بە هەموو تایبەتمەندییەکان و چاوپێکەوتن تۆمار بکەیت بە ئاسانی",
+  "open_app": "کردنەوەی ئەپ",
+  "download_app": "داگرتنی ئەپ"
 } 

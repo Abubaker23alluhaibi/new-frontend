@@ -559,5 +559,9 @@
   "weekly_analysis": "Weekly Analysis",
   "monthly_analysis": "Monthly Analysis",
   "yearly_analysis": "Yearly Analysis",
-  "all_time_analysis": "All Time Analysis"
+  "all_time_analysis": "All Time Analysis",
+  "app_redirect_title": "Open the App for a Better Experience!",
+  "app_redirect_description": "Access all features and book appointments easily",
+  "open_app": "Open App",
+  "download_app": "Download App"
 } 
