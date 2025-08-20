@@ -675,7 +675,7 @@ function DoctorDashboard() {
                       )}
                       {/* عرض عمر المريض */}
                       <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
-                        🎂 {t('common.patient_age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
+                        🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
                       </div>
                     </div>
                     

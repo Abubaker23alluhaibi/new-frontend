@@ -602,7 +602,7 @@ function DoctorAppointments() {
                     )}
                     {/* عرض عمر المريض */}
                     <div style={{color:'#666', fontSize:'0.9rem'}}>
-                      👤 {t('common.patient_age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('not_available')}
+                      🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
                     </div>
                     {/* عرض رقم الهاتف */}
                     {(appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes)) || appointment.userId?.phone) && (
