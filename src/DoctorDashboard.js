@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './DoctorDashboard.css';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { ar } from 'date-fns/locale';
-import DoctorProfile from './DoctorProfile';
+
 import DoctorCalendar from './DoctorCalendar';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
@@ -23,27 +22,23 @@ function DoctorDashboard() {
   const { profile, setProfile, signOut } = useAuth();
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+
   const [showNotif, setShowNotif] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [lastDataUpdate, setLastDataUpdate] = useState(Date.now());
-  const [dataVersion, setDataVersion] = useState(0);
+
+  const [isMobile, setIsMobile] = useState(false);
 
   const [showSpecialAppointments, setShowSpecialAppointments] = useState(false);
   const [showEditSpecial, setShowEditSpecial] = useState(false);
   const [selectedAppointmentForEdit, setSelectedAppointmentForEdit] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(getToday());
+
   const [notifications, setNotifications] = useState([]);
   const [notifCount, setNotifCount] = useState(0);
   // أضف حالة لإظهار المودال
   const [showContactModal, setShowContactModal] = useState(false);
   // أضف حالة لإظهار نافذة التقويم
   const [showCalendarModal, setShowCalendarModal] = useState(false);
-  // أضف حالتين للتحكم في إظهار المزيد
-  const [showMoreTimes, setShowMoreTimes] = useState(false);
-  const [showMoreReasons, setShowMoreReasons] = useState(false);
+
   // 1. أضف حالة state جديدة:
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [notePhone, setNotePhone] = useState('');
@@ -54,26 +49,16 @@ function DoctorDashboard() {
   const [showWorkTimesModal, setShowWorkTimesModal] = useState(false);
   const [showAppointmentDurationModal, setShowAppointmentDurationModal] = useState(false);
 
-  // دالة لتحديث البيانات
-  const refreshData = useCallback(() => {
-    console.log('🔄 تحديث بيانات الدكتور...');
-    setLastDataUpdate(Date.now());
-    setDataVersion(prev => prev + 1);
+  // مراقبة حجم النافذة
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
     
-    // تنظيف التخزين المؤقت
-    if (window.caches) {
-      caches.keys().then(names => {
-        names.forEach(name => {
-          if (name.includes('doctor') || name.includes('appointment') || name.includes('notification')) {
-            caches.delete(name);
-          }
-        });
-      });
-    }
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
     
-    // إعادة جلب البيانات
-    fetchAllAppointments();
-    fetchNotifications();
+    return () => window.removeEventListener('resize', checkIsMobile);
   }, []);
 
   // دالة لجلب الإشعارات
@@ -97,6 +82,38 @@ function DoctorDashboard() {
     }
   }, [profile?._id]);
 
+  // دالة موحدة لجلب جميع مواعيد الطبيب
+  const fetchAllAppointments = useCallback(async () => {
+    if (!profile?._id) return;
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/${profile._id}?t=${Date.now()}`);
+      const data = await res.json();
+      setAppointments(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('خطأ في جلب المواعيد:', err);
+    }
+  }, [profile?._id]);
+
+  // دالة لتحديث البيانات
+  const refreshData = useCallback(() => {
+    console.log('🔄 تحديث بيانات الدكتور...');
+    
+    // تنظيف التخزين المؤقت
+    if (window.caches) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          if (name.includes('doctor') || name.includes('appointment') || name.includes('notification')) {
+            caches.delete(name);
+          }
+        });
+      });
+    }
+    
+    // إعادة جلب البيانات
+    fetchAllAppointments();
+    fetchNotifications();
+  }, [fetchAllAppointments, fetchNotifications]);
+
   // جلب إشعارات الدكتور
   useEffect(() => {
     fetchNotifications();
@@ -110,25 +127,10 @@ function DoctorDashboard() {
     }
   }, [showNotif, profile?._id, notifCount]);
 
-  // دالة موحدة لجلب جميع مواعيد الطبيب
-  const fetchAllAppointments = async () => {
-    if (!profile?._id) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/${profile._id}?t=${Date.now()}`);
-      const data = await res.json();
-      setAppointments(Array.isArray(data) ? data : []);
-      setLoading(false);
-    } catch (err) {
-      setError(t('error_fetching_appointments'));
-      setLoading(false);
-    }
-  };
-
   // جلب المواعيد عند تحميل الصفحة
   useEffect(() => {
     fetchAllAppointments();
-  }, [profile?._id]);
+  }, [fetchAllAppointments]);
 
   // تحديث تلقائي كل 3 دقائق
   useEffect(() => {
@@ -228,16 +230,6 @@ function DoctorDashboard() {
   // حساب إحصائيات سريعة
   const totalAppointments = appointmentsArray.length;
   const upcomingAppointments = appointmentsArray.filter(a => new Date(a.date) > new Date(today));
-  const pastAppointments = appointmentsArray.filter(a => new Date(a.date) < new Date(today));
-
-  // أيام الشهر الحالي
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const daysArr = Array.from({length: daysInMonth}, (_,i)=>i+1);
-
-  const dayAppointments = appointmentsArray.filter(a => a.date === selectedDate);
 
   // دالة تنسيق التاريخ بالكردية - إصلاح مشكلة المنطقة الزمنية
   const formatDate = (dateString) => {
@@ -268,25 +260,27 @@ function DoctorDashboard() {
   // عرّف specialAppointments كمصفوفة مشتقة من appointments:
   const specialAppointments = Array.isArray(appointments) ? appointments.filter(a => a.type === 'special_appointment') : [];
 
-  // بعد إضافة موعد خاص، أعد تحميل القائمة وأظهر إشعار نجاح
-  const handleAddSpecialAppointment = async (formData) => {
+
+
+  // تحديث حالة الحضور
+  const handleAttendanceUpdate = async (appointmentId, attendance) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/add-special-appointment`, {
-        method: 'POST',
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/appointments/${appointmentId}/attendance`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ attendance })
       });
       
       if (response.ok) {
-        toast.success(t('special_appointment_added_successfully'));
+        toast.success(t('attendance_updated'));
         // إعادة تحميل جميع المواعيد
         fetchAllAppointments();
       } else {
         const errorData = await response.json();
-        toast.error(errorData.error || t('error_adding_special_appointment'));
+        toast.error(errorData.error || 'خطأ في تحديث حالة الحضور');
       }
     } catch (error) {
-      toast.error(t('error_adding_special_appointment'));
+      toast.error('خطأ في تحديث حالة الحضور');
     }
   };
 
@@ -463,21 +457,21 @@ function DoctorDashboard() {
         <div style={{maxWidth:700, margin:'1.5rem auto', padding:'0 1rem'}}>
           <div style={{
             display:'grid', 
-            gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(4, 1fr)' : 'repeat(auto-fit, minmax(120px, 1fr))', 
-            gap: window.innerWidth <= 768 ? '0.5rem' : '0.8rem', 
+            gridTemplateColumns: isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fit, minmax(120px, 1fr))', 
+            gap: isMobile ? '0.5rem' : '0.8rem', 
             marginBottom:'2rem'
           }}>
             <div style={{
               background:'#fff', 
-              borderRadius: window.innerWidth <= 768 ? 6 : 8, 
+              borderRadius: isMobile ? 6 : 8, 
               boxShadow:'0 2px 8px rgba(0,0,0,0.08)', 
-              padding: window.innerWidth <= 768 ? '0.5rem' : '0.8rem', 
+              padding: isMobile ? '0.5rem' : '0.8rem', 
               textAlign:'center', 
               border: '1px solid #f0f0f0'
             }}>
-              <div style={{fontSize: window.innerWidth <= 768 ? '1rem' : '1.2rem', marginBottom:'0.3rem'}}>📅</div>
+              <div style={{fontSize: isMobile ? '1rem' : '1.2rem', marginBottom:'0.3rem'}}>📅</div>
               <div style={{
-                fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.5rem', 
+                fontSize: isMobile ? '1.2rem' : '1.5rem', 
                 fontWeight:900, 
                 color:'#0A8F82', 
                 marginBottom:'0.2rem', 
@@ -485,7 +479,7 @@ function DoctorDashboard() {
                 textAlign:'center', 
                 unicodeBidi:'bidi-override'
               }}>{totalAppointments}</div>
-              <div style={{fontSize: window.innerWidth <= 768 ? '8px' : '0.9rem', fontWeight:600, color:'#666'}}>{t('total_appointments')}</div>
+              <div style={{fontSize: isMobile ? '8px' : '0.9rem', fontWeight:600, color:'#666'}}>{t('total_appointments')}</div>
             </div>
             <div style={{background:'#fff', borderRadius:8, boxShadow:'0 2px 8px rgba(0,0,0,0.08)', padding:'0.8rem', textAlign:'center', border: '1px solid #f0f0f0'}}>
               <div style={{fontSize:'1.2rem', marginBottom:'0.3rem'}}>🎯</div>
@@ -509,8 +503,8 @@ function DoctorDashboard() {
         <div style={{maxWidth:700, margin:'1.5rem auto', padding:'0 1rem'}}>
                       <div style={{
               display:'grid', 
-              gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(4, 1fr)' : 'repeat(auto-fit, minmax(140px, 1fr))', 
-              gap: window.innerWidth <= 768 ? '0.5rem' : '1rem',
+              gridTemplateColumns: isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fit, minmax(140px, 1fr))', 
+              gap: isMobile ? '0.5rem' : '1rem',
               textAlign:'center'
             }}>
             {/* زر التقويم */}
@@ -519,8 +513,8 @@ function DoctorDashboard() {
               color:'#fff',
               border:'none',
               borderRadius:'50%',
-              width: window.innerWidth <= 768 ? 60 : 80,
-              height: window.innerWidth <= 768 ? 60 : 80,
+              width: isMobile ? 60 : 80,
+              height: isMobile ? 60 : 80,
               cursor:'pointer',
               transition:'all 0.3s ease',
               display:'flex',
@@ -529,15 +523,15 @@ function DoctorDashboard() {
               justifyContent:'center',
               gap:4,
               boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-              marginBottom: window.innerWidth <= 768 ? 8 : 12
+              marginBottom: isMobile ? 8 : 12
             }} onClick={()=>{
           setShowCalendarModal(true);
           // إعادة تحميل المواعيد عند فتح التقويم
           fetchAllAppointments();
         }}>
-              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem', color:'#fff'}}>📅</div>
+              <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📅</div>
             </button>
-            <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>التقويم</div>
+            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>التقويم</div>
             
             {/* زر كل المواعيد */}
             <button 
@@ -551,8 +545,8 @@ function DoctorDashboard() {
                 color:'#fff',
                 border:'none',
                 borderRadius:'50%',
-                width: window.innerWidth <= 768 ? 60 : 80,
-                height: window.innerWidth <= 768 ? 60 : 80,
+                width: isMobile ? 60 : 80,
+                height: isMobile ? 60 : 80,
                 cursor:'pointer',
                 transition:'all 0.3s ease',
                 display:'flex',
@@ -561,12 +555,12 @@ function DoctorDashboard() {
                 justifyContent:'center',
                 gap:4,
                 boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-                marginBottom: window.innerWidth <= 768 ? 8 : 12
+                marginBottom: isMobile ? 8 : 12
               }}
             >
-              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem', color:'#fff'}}>📋</div>
+              <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📋</div>
             </button>
-            <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>كل المواعيد</div>
+            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>كل المواعيد</div>
 
             {/* زر تحليل المواعيد */}
             <button 
@@ -578,8 +572,8 @@ function DoctorDashboard() {
                 color:'#fff',
                 border:'none',
                 borderRadius:'50%',
-                width: window.innerWidth <= 768 ? 60 : 80,
-                height: window.innerWidth <= 768 ? 60 : 80,
+                width: isMobile ? 60 : 80,
+                height: isMobile ? 60 : 80,
                 cursor:'pointer',
                 transition:'all 0.3s ease',
                 display:'flex',
@@ -588,12 +582,12 @@ function DoctorDashboard() {
                 justifyContent:'center',
                 gap:4,
                 boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-                marginBottom: window.innerWidth <= 768 ? 8 : 12
+                marginBottom: isMobile ? 8 : 12
               }}
             >
-              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
+              <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
             </button>
-            <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>تحليل المواعيد</div>
+            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>تحليل المواعيد</div>
 
 
 
@@ -607,8 +601,8 @@ function DoctorDashboard() {
                 color:'#fff',
                 border:'none',
                 borderRadius:'50%',
-                width: window.innerWidth <= 768 ? 60 : 80,
-                height: window.innerWidth <= 768 ? 60 : 80,
+                width: isMobile ? 60 : 80,
+                height: isMobile ? 60 : 80,
                 cursor:'pointer',
                 transition:'all 0.3s ease',
                 display:'flex',
@@ -617,12 +611,12 @@ function DoctorDashboard() {
                 justifyContent:'center',
                 gap:4,
                 boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-                marginBottom: window.innerWidth <= 768 ? 8 : 12
+                marginBottom: isMobile ? 8 : 12
               }}
             >
-              <div style={{fontSize: window.innerWidth <= 768 ? '1.2rem' : '1.6rem', color:'#fff'}}>👤</div>
+              <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>👤</div>
             </button>
-            <div style={{fontSize: window.innerWidth <= 768 ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>الملف الشخصي</div>
+            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>الملف الشخصي</div>
           </div>
         </div>
 
@@ -635,14 +629,14 @@ function DoctorDashboard() {
               </h3>
               <div style={{
                 display:'grid', 
-                gridTemplateColumns: window.innerWidth <= 768 ? 'repeat(auto-fit, minmax(280px, 1fr))' : 'repeat(auto-fit, minmax(300px, 1fr))', 
-                gap: window.innerWidth <= 768 ? '0.8rem' : '1rem'
+                gridTemplateColumns: isMobile ? 'repeat(auto-fit, minmax(280px, 1fr))' : 'repeat(auto-fit, minmax(300px, 1fr))', 
+                gap: isMobile ? '0.8rem' : '1rem'
               }}>
                 {todayAppointments.map(appointment => (
                   <div key={appointment._id} style={{
                     background:'#fff',
-                    borderRadius: window.innerWidth <= 768 ? 8 : 12,
-                    padding: window.innerWidth <= 768 ? '0.8rem' : '1rem',
+                    borderRadius: isMobile ? 8 : 12,
+                    padding: isMobile ? '0.8rem' : '1rem',
                     border:'1px solid #e0e0e0',
                     boxShadow:'0 2px 8px rgba(0,0,0,0.06)',
                     position:'relative',
@@ -655,14 +649,14 @@ function DoctorDashboard() {
                     {appointment.type === 'special_appointment' && (
                       <div style={{
                         position:'absolute',
-                        top: window.innerWidth <= 768 ? 6 : 8,
+                        top: isMobile ? 6 : 8,
                         left:8,
                         background:'#0A8F82',
                         color:'#fff',
-                        borderRadius: window.innerWidth <= 768 ? 8 : 12,
-                        padding: window.innerWidth <= 768 ? '0.15rem 0.5rem' : '0.2rem 0.6rem',
+                        borderRadius: isMobile ? 8 : 12,
+                        padding: isMobile ? '0.15rem 0.5rem' : '0.2rem 0.6rem',
                         fontWeight:600,
-                        fontSize: window.innerWidth <= 768 ? '0.7rem' : '0.75rem',
+                        fontSize: isMobile ? '0.7rem' : '0.75rem',
                         zIndex:2
                       }}>
                         {t('special_appointment')}
@@ -703,8 +697,57 @@ function DoctorDashboard() {
                       </div>
                     )}
                     
+                    {/* حالة الحضور */}
+                    <div style={{marginBottom:'0.8rem'}}>
+                      {appointment.attendance === 'present' ? (
+                        <div style={{
+                          background:'#4caf50',
+                          color:'#fff',
+                          padding:'0.3rem 0.6rem',
+                          borderRadius:6,
+                          fontSize:'0.75rem',
+                          fontWeight:600,
+                          textAlign:'center',
+                          display:'inline-block'
+                        }}>
+                          ✅ {t('present')}
+                        </div>
+                      ) : (
+                        <div style={{
+                          background:'#f44336',
+                          color:'#fff',
+                          padding:'0.3rem 0.6rem',
+                          borderRadius:6,
+                          fontSize:'0.75rem',
+                          fontWeight:600,
+                          textAlign:'center',
+                          display:'inline-block'
+                        }}>
+                          ❌ {t('absent')}
+                        </div>
+                      )}
+                    </div>
+
                     {/* أزرار التحكم */}
-                    <div style={{display:'flex', gap:'0.5rem', justifyContent:'flex-end'}}>
+                    <div style={{display:'flex', gap:'0.5rem', justifyContent:'flex-end', flexWrap:'wrap'}}>
+                      {(!appointment.attendance || appointment.attendance === 'absent') && (
+                        <button 
+                          onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
+                          style={{
+                            background:'#4caf50',
+                            color:'#fff',
+                            border:'none',
+                            borderRadius:8,
+                            padding:'0.4rem 0.8rem',
+                            fontWeight:600,
+                            cursor:'pointer',
+                            fontSize:'0.8rem',
+                            transition:'all 0.3s ease'
+                          }}
+                        >
+                          ✅ {t('mark_present')}
+                        </button>
+                      )}
                       <button 
                         onClick={() => navigate('/doctor-appointments')}
                         style={{
@@ -721,22 +764,22 @@ function DoctorDashboard() {
                       >
                         {t('manage')}
                       </button>
-                                              <button 
-                          onClick={() => openNoteModal(appointment.patientPhone || appointment.userId?.phone || appointment.notes)}
-                          style={{
-                            background:'#0A8F82',
-                            color:'#fff',
-                            border:'none',
-                            borderRadius:8,
-                            padding:'0.4rem 0.8rem',
-                            fontWeight:600,
-                            cursor:'pointer',
-                            fontSize:'0.8rem',
-                            transition:'all 0.3s ease'
-                          }}
-                        >
-                          ملاحظة
-                        </button>
+                      <button 
+                        onClick={() => openNoteModal(appointment.patientPhone || appointment.userId?.phone || appointment.notes)}
+                        style={{
+                          background:'#0A8F82',
+                          color:'#fff',
+                          border:'none',
+                          borderRadius:8,
+                          padding:'0.4rem 0.8rem',
+                          fontWeight:600,
+                          cursor:'pointer',
+                          fontSize:'0.8rem',
+                          transition:'all 0.3s ease'
+                        }}
+                      >
+                        ملاحظة
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -1769,11 +1812,7 @@ function EditSpecialAppointmentForm({ appointment, onSubmit, onClose }) {
     try {
 
       
-      const message = type === 'update' 
-        ? `تم تعديل موعدك الخاص إلى ${appointmentData.date} الساعة ${appointmentData.time}`
-        : `تم تأكيد موعدك الخاص في ${appointmentData.date} الساعة ${appointmentData.time}`;
-      
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/send-special-appointment-notification`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/send-special-appointment-notification`, {
         headers: {
           'Content-Type': 'application/json'
         },
@@ -1788,13 +1827,6 @@ function EditSpecialAppointmentForm({ appointment, onSubmit, onClose }) {
           type: type
         })
       });
-      
-      if (res.ok) {
-        const result = await res.json();
-
-      } else {
-
-      }
     } catch (err) {
       
       // لا نوقف العملية إذا فشل الإشعار
@@ -1953,12 +1985,7 @@ function formatKurdishDateTime(dateString) {
     date = new Date(dateString);
   }
   
-  const months = [
-    'کانونی دووەم', 'شوبات', 'ئازار', 'نیسان', 'ئایار', 'حوزەیران',
-    'تەمموز', 'ئاب', 'ئەیلوول', 'تشرینی یەکەم', 'تشرینی دووەم', 'کانونی یەکەم'
-  ];
   const day = date.getDate();
-  const month = months[date.getMonth()];
   const year = date.getFullYear();
   const hour = String(date.getHours()).padStart(2, '0');
   const min = String(date.getMinutes()).padStart(2, '0');
@@ -1968,7 +1995,7 @@ function formatKurdishDateTime(dateString) {
 
 function renderNewAppointmentNotification(message, t) {
   // مثال: "تم حجز موعد جديد من قبل عثمان f;v في 2025-07-26 الساعة 08:00"
-  const match = message.match(/من قبل (.+) في ([0-9\-]+) الساعة ([0-9:]+)/);
+  const match = message.match(/من قبل (.+) في ([0-9-]+) الساعة ([0-9:]+)/);
   if (match) {
     const [, name, date, time] = match;
     return t('notification_new_appointment', { name, date, time });

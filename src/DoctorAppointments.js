@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { normalizePhone } from './utils/phoneUtils';
 
-// Context for sharing special appointments between components
-const SpecialAppointmentsContext = React.createContext();
+
 
 function DoctorAppointments() {
-  const { user, profile } = useAuth();
+  const { profile } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showPastAppointments, setShowPastAppointments] = useState(false);
+  const [showPastAppointments] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all'); // all, today, upcoming, past
   const [sortBy, setSortBy] = useState('date'); // date, time, name
@@ -28,22 +26,7 @@ function DoctorAppointments() {
 
   const { t } = useTranslation();
 
-  useEffect(() => {
-    if (!profile?._id) {
-      setError(t('login_required'));
-      setLoading(false);
-      return;
-    }
-
-    fetchDoctorAppointments();
-    
-    // تحديث البيانات كل 30 ثانية
-    const interval = setInterval(fetchDoctorAppointments, 30000);
-    
-    return () => clearInterval(interval);
-  }, [profile]);
-
-  const fetchDoctorAppointments = async () => {
+  const fetchDoctorAppointments = useCallback(async () => {
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/${profile._id}`);
       if (res.ok) {
@@ -70,53 +53,26 @@ function DoctorAppointments() {
       setError(t('fetch_appointments_error'));
     }
     setLoading(false);
-  };
+  }, [profile._id, t]);
 
-  const cleanDuplicateAppointments = async () => {
-    try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/clean-duplicate-appointments`, {
-        method: 'POST'
-      });
-      
-      if (res.ok) {
-        const result = await res.json();
-        alert(`${t('appointments_cleared_success')}\n${t('duplicates_deleted')}: ${result.duplicatesDeleted}`);
-        // إعادة جلب المواعيد بعد التنظيف
-        fetchDoctorAppointments();
-      } else {
-        alert(t('appointments_cleared_fail'));
-      }
-    } catch (err) {
-      alert(t('appointments_cleared_error'));
+  useEffect(() => {
+    if (!profile?._id) {
+      setError(t('login_required'));
+      setLoading(false);
+      return;
     }
-  };
 
-  const exportToCSV = () => {
-    const headers = [t('appointment_number'), t('patient_name'), t('patient_phone'), t('date'), t('time'), t('reason'), t('status')];
-    const csvData = displayedAppointments.map((apt, index) => [
-      index + 1,
-      apt.userName || apt.userId?.first_name || t('not_specified'),
-      apt.userId?.phone || t('not_specified'),
-      apt.date,
-      apt.time,
-      apt.reason || t('not_specified'),
-      getStatusText(getAppointmentStatus(apt.date))
-    ]);
+    fetchDoctorAppointments();
     
-    const csvContent = [headers, ...csvData]
-      .map(row => row.map(cell => `"${cell}"`).join(','))
-      .join('\n');
+    // تحديث البيانات كل 30 ثانية
+    const interval = setInterval(fetchDoctorAppointments, 30000);
     
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${t('appointments_clinic_file')}_${new Date().toLocaleDateString('ar-EG')}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+    return () => clearInterval(interval);
+  }, [profile, fetchDoctorAppointments, t]);
+
+
+
+
 
   const cancelAppointment = async (appointmentId) => {
     try {
@@ -134,6 +90,27 @@ function DoctorAppointments() {
     }
     setShowConfirm(false);
     setSelectedAppointmentId(null);
+  };
+
+  // تحديث حالة الحضور
+  const handleAttendanceUpdate = async (appointmentId, attendance) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/appointments/${appointmentId}/attendance`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ attendance })
+      });
+      
+      if (response.ok) {
+        alert(t('attendance_updated'));
+        fetchDoctorAppointments();
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'خطأ في تحديث حالة الحضور');
+      }
+    } catch (error) {
+      alert('خطأ في تحديث حالة الحضور');
+    }
   };
 
   const addToSpecialAppointments = (appointment) => {
@@ -184,42 +161,7 @@ function DoctorAppointments() {
     setSelectedAppointmentForSpecial(null);
   };
 
-  const sendNotificationToPatient = async (phone, notificationData) => {
-    try {
 
-      
-      // إرسال إشعار موعد خاص
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/send-special-appointment-notification`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          patientPhone: phone,
-          patientName: selectedAppointmentForSpecial.userName || selectedAppointmentForSpecial.userId?.first_name || t('patient'),
-          originalAppointmentId: selectedAppointmentForSpecial._id,
-          newDate: notificationData.appointmentData.date,
-          newTime: notificationData.appointmentData.time,
-          doctorName: profile?.name || t('doctor'),
-          reason: selectedAppointmentForSpecial.reason || notificationData.appointmentData.reason,
-          notes: notificationData.appointmentData.notes
-        })
-      });
-      
-      if (res.ok) {
-        const result = await res.json();
-
-        
-        // إظهار رسالة تأكيد للمستخدم
-        alert(`${t('notification_sent_to_patient')}: ${phone}`);
-      } else {
-
-      }
-    } catch (err) {
-      
-      // لا نوقف العملية إذا فشل الإشعار
-    }
-  };
 
   // دالة تنسيق التاريخ بالكردية
   const formatDate = (dateString) => {
@@ -427,6 +369,16 @@ function DoctorAppointments() {
           <div style={{fontSize:'2rem', marginBottom:'0.5rem'}}>📋</div>
           <div style={{fontSize:'1.5rem', fontWeight:700, color:'#7c4dff', marginBottom:'0.5rem'}}>{displayedAppointments.length}</div>
           <div style={{color:'#666'}}>{t('displayed_appointments')}</div>
+        </div>
+        <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', textAlign:'center'}}>
+          <div style={{fontSize:'2rem', marginBottom:'0.5rem'}}>✅</div>
+          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#4caf50', marginBottom:'0.5rem'}}>{displayedAppointments.filter(apt => apt.attendance === 'present').length}</div>
+          <div style={{color:'#666'}}>{t('present_count')}</div>
+        </div>
+        <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', textAlign:'center'}}>
+          <div style={{fontSize:'2rem', marginBottom:'0.5rem'}}>❌</div>
+          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#f44336', marginBottom:'0.5rem'}}>{displayedAppointments.filter(apt => apt.attendance === 'absent').length}</div>
+          <div style={{color:'#666'}}>{t('absent_count')}</div>
         </div>
       </div>
 
@@ -654,8 +606,61 @@ function DoctorAppointments() {
                         📞 {appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes) ? appointment.notes : appointment.userId?.phone)}
                       </div>
                     )}
+                    
+                    {/* حالة الحضور */}
+                    <div style={{marginTop:'0.8rem'}}>
+                      {appointment.attendance === 'present' ? (
+                        <div style={{
+                          background:'#4caf50',
+                          color:'#fff',
+                          padding:'0.3rem 0.6rem',
+                          borderRadius:6,
+                          fontSize:'0.75rem',
+                          fontWeight:600,
+                          textAlign:'center',
+                          display:'inline-block'
+                        }}>
+                          ✅ {t('present')}
+                        </div>
+                      ) : (
+                        <div style={{
+                          background:'#f44336',
+                          color:'#fff',
+                          padding:'0.3rem 0.6rem',
+                          borderRadius:6,
+                          fontSize:'0.75rem',
+                          fontWeight:600,
+                          textAlign:'center',
+                          display:'inline-block'
+                        }}>
+                          ❌ {t('absent')}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="no-print" style={{display:'flex', gap:'0.5rem', flexWrap:'wrap'}}>
+                    {/* أزرار الحضور والغياب - تظهر فقط إذا لم يتم تحديد الحضور بعد */}
+                    {(!appointment.attendance || appointment.attendance === 'absent') && (
+                      <button 
+                        onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
+                        style={{
+                          background:'#4caf50',
+                          color:'#fff',
+                          border:'none',
+                          borderRadius:8,
+                          padding:'0.5rem 1rem',
+                          fontWeight:700,
+                          cursor:'pointer',
+                          fontSize:'0.9rem',
+                          display:'flex',
+                          alignItems:'center',
+                          gap:'0.3rem'
+                        }}
+                      >
+                        ✅ {t('mark_present')}
+                      </button>
+                    )}
+                    
                     {/* زر إضافة للمواعيد الخاصة */}
                     <button 
                       onClick={() => addToSpecialAppointments(appointment)}
