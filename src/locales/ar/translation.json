@@ -8,6 +8,13 @@
     "welcome": "مرحبًا بك!",
     "success_message": "تم تسجيل الدخول بنجاح. نتمنى لك تجربة طيبة."
   },
+  "common": {
+    "age": "العمر",
+    "age_required": "العمر مطلوب",
+    "age_invalid": "العمر يجب أن يكون بين 1 و 120 سنة",
+    "years": "سنة",
+    "patient_age": "عمر المريض"
+  },
   "landing_page": {
     "header": {
       "logo_text": "منصة طبيب العراق",

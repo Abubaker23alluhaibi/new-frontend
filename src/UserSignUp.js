@@ -198,6 +198,16 @@ function UserSignUp() {
               style={{borderRadius:'0 12px 12px 0', borderLeft:'none', flex:1, minWidth:0}}
             />
           </div>
+          <input
+            type="number"
+            name="age"
+            placeholder={t('common.age')}
+            value={form.age}
+            onChange={handleChange}
+            min="1"
+            max="120"
+            style={{marginBottom: '1rem'}}
+          />
           {/* ملاحظة مهمة حول رقم الواتساب */}
           <div style={{
             background: '#fff3cd',

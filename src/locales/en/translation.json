@@ -1,4 +1,11 @@
 {
+  "common": {
+    "age": "Age",
+    "age_required": "Age is required",
+    "age_invalid": "Age must be between 1 and 120 years",
+    "years": "years",
+    "patient_age": "Patient Age"
+  },
   "landing_page": {
     "header": {
       "logo_text": "Iraq Medical Platform",

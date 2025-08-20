@@ -4,9 +4,7 @@ import { useAuth } from './AuthContext';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ar } from 'date-fns/locale';
-// استيراد swiper/react بالطريقة الحديثة
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
+
 import { useTranslation } from 'react-i18next';
 
 function DoctorDetails() {
@@ -19,6 +17,7 @@ function DoctorDetails() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
   const [reason, setReason] = useState('');
+  const [patientAge, setPatientAge] = useState('');
   const [success, setSuccess] = useState('');
   const [booking, setBooking] = useState(false);
   const [availableTimes, setAvailableTimes] = useState([]);
@@ -35,6 +34,7 @@ function DoctorDetails() {
   const [copySuccess, setCopySuccess] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [migratingImage, setMigratingImage] = useState(false);
+
 
   // مسح الكاش عند تحميل الصفحة
   useEffect(() => {
@@ -202,49 +202,6 @@ function DoctorDetails() {
     }
   };
 
-  // عند اختيار يوم بالتقويم، أظهر الأوقات المتاحة لذلك اليوم
-  useEffect(() => {
-    if (!selectedDate || !doctor?.workTimes) {
-      setAvailableTimes([]);
-      setBookedTimes([]);
-      return;
-    }
-    
-    // التحقق من أن اليوم ليس يوم إجازة
-    if (!isDayAvailable(selectedDate)) {
-      setAvailableTimes([]);
-      setBookedTimes([]);
-      return;
-    }
-    
-    // ترتيب الأيام حسب جافاسكريبت: الأحد=0، الاثنين=1، ... السبت=6
-    const weekDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-    const dayName = weekDays[selectedDate.getDay()];
-    const times = doctor.workTimes.filter(wt => wt.day === dayName);
-    
-    
-    
-    // تقسيم كل فترة زمنية إلى مواعيد منفصلة
-    const allSlots = [];
-    times.forEach(wt => {
-      if (wt.from && wt.to) {
-        const slots = generateTimeSlots(wt.from, wt.to);
-        allSlots.push(...slots);
-      }
-    });
-    
-    
-    setAvailableTimes(allSlots);
-    setSelectedTime('');
-    
-    // جلب المواعيد المحجوزة لهذا اليوم - إصلاح مشكلة المنطقة الزمنية
-    const year = selectedDate.getFullYear();
-    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-    const day = String(selectedDate.getDate()).padStart(2, '0');
-    const dateString = `${year}-${month}-${day}`;
-    fetchBookedAppointments(doctor._id, dateString);
-  }, [selectedDate, doctor]);
-
   // تحديد الأيام المتاحة للتقويم
   const isDayAvailable = date => {
     // ترتيب الأيام حسب جافاسكريبت: الأحد=0، الاثنين=1، ... السبت=6
@@ -290,6 +247,49 @@ function DoctorDetails() {
     return true;
   };
 
+  // عند اختيار يوم بالتقويم، أظهر الأوقات المتاحة لذلك اليوم
+  useEffect(() => {
+    if (!selectedDate || !doctor?.workTimes) {
+      setAvailableTimes([]);
+      setBookedTimes([]);
+      return;
+    }
+    
+    // التحقق من أن اليوم ليس يوم إجازة
+    if (!isDayAvailable(selectedDate)) {
+      setAvailableTimes([]);
+      setBookedTimes([]);
+      return;
+    }
+    
+    // ترتيب الأيام حسب جافاسكريبت: الأحد=0، الاثنين=1، ... السبت=6
+    const weekDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    const dayName = weekDays[selectedDate.getDay()];
+    const times = doctor.workTimes.filter(wt => wt.day === dayName);
+    
+    
+    
+    // تقسيم كل فترة زمنية إلى مواعيد منفصلة
+    const allSlots = [];
+    times.forEach(wt => {
+      if (wt.from && wt.to) {
+        const slots = generateTimeSlots(wt.from, wt.to);
+        allSlots.push(...slots);
+      }
+    });
+    
+    
+    setAvailableTimes(allSlots);
+    setSelectedTime('');
+    
+    // جلب المواعيد المحجوزة لهذا اليوم - إصلاح مشكلة المنطقة الزمنية
+    const year = selectedDate.getFullYear();
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const dateString = `${year}-${month}-${day}`;
+    fetchBookedAppointments(doctor._id, dateString);
+  }, [selectedDate, doctor]);
+
   const handleBook = async (e) => {
     e.preventDefault();
     
@@ -304,6 +304,17 @@ function DoctorDetails() {
     
     if (!selectedDate || !selectedTime) {
       setSuccess('يرجى اختيار التاريخ والوقت');
+      return;
+    }
+    
+    if (!patientAge) {
+      setSuccess(t('common.age_required'));
+      return;
+    }
+    
+    const ageNum = parseInt(patientAge);
+    if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
+      setSuccess(t('common.age_invalid'));
       return;
     }
     
@@ -324,6 +335,7 @@ const bookingData = {
       date: dateString,
       time: selectedTime,
       reason: reason || '',
+      patientAge: parseInt(patientAge), // إضافة عمر المريض
       duration: doctor?.appointmentDuration || 30 // إرسال مدة الموعد الافتراضية للطبيب
     };
     
@@ -343,6 +355,7 @@ const bookingData = {
         setSelectedDate(null);
         setSelectedTime('');
         setReason('');
+        setPatientAge('');
       } else {
         setSuccess(data.error || t('error_booking_appointment'));
       }
@@ -502,6 +515,41 @@ const bookingData = {
             title="اضغط لتكبير الصورة" 
             onClick={()=>setShowImageModal(true)} 
           />
+          
+          {/* زر تحويل الصورة إلى Cloudinary (للمطورين فقط) */}
+          {(doctor.image?.startsWith('/uploads/') || doctor.profileImage?.startsWith('/uploads/')) && (
+            <button
+              onClick={migrateImageToCloudinary}
+              disabled={migratingImage}
+              style={{
+                background: migratingImage ? '#ccc' : 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '12px',
+                padding: '0.5rem 1rem',
+                fontSize: '0.8rem',
+                fontWeight: '600',
+                cursor: migratingImage ? 'not-allowed' : 'pointer',
+                marginTop: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              {migratingImage ? (
+                <>
+                  <span style={{fontSize: '1.2em'}}>⏳</span>
+                  جاري التحويل...
+                </>
+              ) : (
+                <>
+                  <span style={{fontSize: '1.2em'}}>☁️</span>
+                  تحويل للـ Cloudinary
+                </>
+              )}
+            </button>
+          )}
           
           {/* اسم الطبيب والتخصص */}
           <div style={{
@@ -791,20 +839,49 @@ const bookingData = {
               background:'#f7fafd'
             }} 
           />
+          
+          {/* حقل العمر */}
+          <label style={{
+            fontSize: window.innerWidth < 500 ? 12 : 14,
+            fontWeight: 600,
+            color: '#333',
+            textAlign: 'center'
+          }}>
+            {t('common.patient_age')} *
+          </label>
+          <input 
+            type="number" 
+            value={patientAge} 
+            onChange={e=>setPatientAge(e.target.value)} 
+            placeholder={t('common.age')}
+            min="1" 
+            max="120"
+            required
+            style={{
+              padding: window.innerWidth < 500 ? 5 : 7, 
+              borderRadius:6, 
+              border:'2px solid #00bcd4', 
+              outline:'none', 
+              fontSize: window.innerWidth < 500 ? 12 : 14, 
+              height: window.innerWidth < 500 ? 35 : 40, 
+              background:'#f7fafd',
+              textAlign: 'center'
+            }} 
+          />
           <button 
             type="submit" 
-            disabled={booking || !selectedDate || !selectedTime} 
+            disabled={booking || !selectedDate || !selectedTime || !patientAge} 
             style={{
-              background: booking || !selectedDate || !selectedTime ? '#ccc' : 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
+              background: booking || !selectedDate || !selectedTime || !patientAge ? '#ccc' : 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
               color:'#fff', 
               border:'none', 
               borderRadius:16, 
               padding: window.innerWidth < 500 ? '0.8rem 1.5rem' : '1rem 2rem', 
               fontWeight:700, 
               fontSize: window.innerWidth < 500 ? 14 : 16, 
-              cursor: booking || !selectedDate || !selectedTime ? 'not-allowed' : 'pointer', 
+              cursor: booking || !selectedDate || !selectedTime || !patientAge ? 'not-allowed' : 'pointer', 
               marginTop:12,
-              boxShadow: booking || !selectedDate || !selectedTime ? 'none' : '0 4px 12px rgba(0, 188, 212, 0.3)',
+              boxShadow: booking || !selectedDate || !selectedTime || !patientAge ? 'none' : '0 4px 12px rgba(0, 188, 212, 0.3)',
               transition: 'all 0.3s ease',
               transform: 'translateY(0)',
               display: 'flex',
@@ -813,14 +890,14 @@ const bookingData = {
               gap: '8px'
             }}
             onMouseEnter={(e) => {
-              if (!booking && selectedDate && selectedTime) {
+              if (!booking && selectedDate && selectedTime && patientAge) {
                 e.target.style.transform = 'translateY(-2px)';
                 e.target.style.boxShadow = '0 6px 16px rgba(0, 188, 212, 0.4)';
               }
             }}
             onMouseLeave={(e) => {
               e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = booking || !selectedDate || !selectedTime ? 'none' : '0 4px 12px rgba(0, 188, 212, 0.3)';
+              e.target.style.boxShadow = booking || !selectedDate || !selectedTime || !patientAge ? 'none' : '0 4px 12px rgba(0, 188, 212, 0.3)';
             }}
           >
             <span style={{fontSize: '1.2em'}}>📅</span>

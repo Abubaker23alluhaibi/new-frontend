@@ -600,6 +600,12 @@ function DoctorAppointments() {
                         💬 {appointment.reason}
                       </div>
                     )}
+                    {/* عرض عمر المريض */}
+                    {appointment.patientAge && (
+                      <div style={{color:'#666', fontSize:'0.9rem'}}>
+                        👤 {t('common.patient_age')}: {appointment.patientAge} {t('common.years')}
+                      </div>
+                    )}
                     {/* عرض رقم الهاتف */}
                     {(appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes)) || appointment.userId?.phone) && (
                       <div style={{color:'#666', fontSize:'0.9rem'}}>
@@ -888,6 +894,28 @@ function AddToSpecialForm({ appointment, onSubmit, onClose }) {
                 backgroundColor:'#f5f5f5',
                 color:'#666',
                 resize:'none'
+              }}
+            />
+          </div>
+        )}
+        {/* عرض عمر المريض */}
+        {appointment.patientAge && (
+          <div style={{marginTop:'1rem'}}>
+            <label style={{display:'block', marginBottom:'0.5rem', color:'#333', fontWeight:600, fontSize:14}}>
+              {t('common.patient_age')}
+            </label>
+            <input
+              type="text"
+              value={`${appointment.patientAge} ${t('common.years')}`}
+              disabled
+              style={{
+                width:'100%',
+                padding:'0.8rem',
+                borderRadius:8,
+                border:'2px solid #e0e0e0',
+                fontSize:14,
+                backgroundColor:'#f5f5f5',
+                color:'#666'
               }}
             />
           </div>
