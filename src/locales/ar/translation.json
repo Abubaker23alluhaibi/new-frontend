@@ -13,7 +13,8 @@
     "age_required": "العمر مطلوب",
     "age_invalid": "العمر يجب أن يكون بين 1 و 120 سنة",
     "years": "سنة",
-    "patient_age": "عمر المريض"
+    "patient_age": "عمر المريض",
+    "not_available": "غير متوفر"
   },
   "landing_page": {
     "header": {

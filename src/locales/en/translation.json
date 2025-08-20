@@ -4,7 +4,8 @@
     "age_required": "Age is required",
     "age_invalid": "Age must be between 1 and 120 years",
     "years": "years",
-    "patient_age": "Patient Age"
+    "patient_age": "Patient Age",
+    "not_available": "Not available"
   },
   "landing_page": {
     "header": {

@@ -601,11 +601,9 @@ function DoctorAppointments() {
                       </div>
                     )}
                     {/* عرض عمر المريض */}
-                    {appointment.patientAge && (
-                      <div style={{color:'#666', fontSize:'0.9rem'}}>
-                        👤 {t('common.patient_age')}: {appointment.patientAge} {t('common.years')}
-                      </div>
-                    )}
+                    <div style={{color:'#666', fontSize:'0.9rem'}}>
+                      👤 {t('common.patient_age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('not_available')}
+                    </div>
                     {/* عرض رقم الهاتف */}
                     {(appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes)) || appointment.userId?.phone) && (
                       <div style={{color:'#666', fontSize:'0.9rem'}}>
