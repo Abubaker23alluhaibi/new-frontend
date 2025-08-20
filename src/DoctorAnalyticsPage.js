@@ -461,7 +461,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
         </div>
       </div>
 
-      {/* تحليل الأيام */}
+      {/* تحليل الحضور والغياب */}
       <div style={{
         background:'#fff', 
         borderRadius: isMobile ? 12 : 16, 
@@ -473,109 +473,129 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
           marginBottom: isMobile ? '0.8rem' : '1rem', 
           textAlign:'center',
           fontSize: isMobile ? '1.1rem' : '1.3rem'
-        }}>{t('appointments_by_day')}</h3>
+        }}>{t('attendance_analysis')}</h3>
         
-        {/* جدول منظم للأيام */}
+        {/* إحصائيات الحضور */}
         <div style={{
-          display: 'table',
-          width: '100%',
-          borderCollapse: 'collapse',
-          marginTop: '1rem'
+          display:'grid', 
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(2, 1fr)', 
+          gap: isMobile ? '0.8rem' : '1rem',
+          marginBottom: isMobile ? '1rem' : '1.5rem'
         }}>
           <div style={{
-            display: 'table-header-group',
-            background: '#f8f9fa',
-            fontWeight: 700,
-            fontSize: isMobile ? '0.9rem' : '1rem'
+            background:'#e8f5e8',
+            padding: isMobile ? '0.8rem 0.6rem' : '1rem',
+            borderRadius: isMobile ? 8 : 12,
+            textAlign:'center',
+            border: '2px solid #4caf50'
           }}>
             <div style={{
-              display: 'table-row'
-            }}>
-              <div style={{
-                display: 'table-cell',
-                padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                borderBottom: '2px solid #dee2e6',
-                textAlign: 'center',
-                color: '#7c4dff'
-              }}>
-                {t('day')}
-              </div>
-              <div style={{
-                display: 'table-cell',
-                padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                borderBottom: '2px solid #dee2e6',
-                textAlign: 'center',
-                color: '#7c4dff'
-              }}>
-                {t('appointments_count')}
-              </div>
-              <div style={{
-                display: 'table-cell',
-                padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                borderBottom: '2px solid #dee2e6',
-                textAlign: 'center',
-                color: '#7c4dff'
-              }}>
-                {t('status')}
-              </div>
-            </div>
+              fontSize: isMobile ? '1.5rem' : '2rem', 
+              marginBottom:'0.5rem'
+            }}>✅</div>
+            <div style={{
+              fontSize: isMobile ? '1.2rem' : '1.5rem', 
+              fontWeight:700, 
+              color:'#4caf50',
+              marginBottom:'0.3rem'
+            }}>{analytics.attendanceStats.present}</div>
+            <div style={{
+              fontSize: isMobile ? '0.8rem' : '0.9rem', 
+              color:'#4caf50',
+              fontWeight:600
+            }}>{t('present')}</div>
           </div>
           
-          <div style={{display: 'table-row-group'}}>
-            {Object.entries(analytics.appointmentsByDay)
-              .sort(([,a], [,b]) => b - a) // ترتيب تنازلي
-              .map(([day, count], index) => (
-                <div key={day} style={{
-                  display: 'table-row',
-                  background: index % 2 === 0 ? '#fff' : '#f8f9fa',
-                  borderBottom: '1px solid #dee2e6'
-                }}>
-                  <div style={{
-                    display: 'table-cell',
-                    padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                    textAlign: 'center',
-                    fontWeight: 600,
-                    fontSize: isMobile ? '0.9rem' : '1rem'
-                  }}>
-                    {day}
-                  </div>
-                  <div style={{
-                    display: 'table-cell',
-                    padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                    textAlign: 'center',
-                    fontWeight: 700,
-                    fontSize: isMobile ? '1.1rem' : '1.2rem',
-                    color: '#7c4dff'
-                  }}>
-                    {count}
-                  </div>
-                  <div style={{
-                    display: 'table-cell',
-                    padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                    textAlign: 'center'
-                  }}>
-                    {day === analytics.mostBusyDay?.[0] ? (
-                      <span style={{
-                        background: '#7c4dff',
-                        color: '#fff',
-                        padding: isMobile ? '0.2rem 0.5rem' : '0.3rem 0.8rem',
-                        borderRadius: isMobile ? 8 : 12,
-                        fontSize: isMobile ? '0.7rem' : '0.8rem',
-                        fontWeight: 600
-                      }}>
-                        🔥 {t('most_busy')}
-                      </span>
-                    ) : (
-                      <span style={{
-                        color: '#6c757d',
-                        fontSize: isMobile ? '0.7rem' : '0.8rem'
-                      }}>
-                        -
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
+          <div style={{
+            background:'#ffebee',
+            padding: isMobile ? '0.8rem 0.6rem' : '1rem',
+            borderRadius: isMobile ? 8 : 12,
+            textAlign:'center',
+            border: '2px solid #f44336'
+          }}>
+            <div style={{
+              fontSize: isMobile ? '1.5rem' : '2rem', 
+              marginBottom:'0.5rem'
+            }}>❌</div>
+            <div style={{
+              fontSize: isMobile ? '1.2rem' : '1.5rem', 
+              fontWeight:700, 
+              color:'#f44336',
+              marginBottom:'0.3rem'
+            }}>{analytics.attendanceStats.absent}</div>
+            <div style={{
+              fontSize: isMobile ? '0.8rem' : '0.9rem', 
+              color:'#f44336',
+              fontWeight:600
+            }}>{t('absent')}</div>
+          </div>
+        </div>
+
+        {/* نسب الحضور */}
+        <div style={{
+          background:'#f8f9fa',
+          padding: isMobile ? '1rem 0.8rem' : '1.5rem',
+          borderRadius: isMobile ? 8 : 12,
+          border: '1px solid #e9ecef'
+        }}>
+          <h4 style={{
+            color:'#495057',
+            marginBottom: isMobile ? '0.8rem' : '1rem',
+            textAlign:'center',
+            fontSize: isMobile ? '1rem' : '1.1rem',
+            fontWeight:600
+          }}>{t('attendance_percentage')}</h4>
+          
+          <div style={{
+            display:'flex',
+            flexDirection:'column',
+            gap: isMobile ? '0.6rem' : '0.8rem'
+          }}>
+            {/* نسبة الحضور */}
+            <div style={{
+              display:'flex',
+              justifyContent:'space-between',
+              alignItems:'center',
+              padding: isMobile ? '0.5rem 0.8rem' : '0.8rem 1rem',
+              background:'#e8f5e8',
+              borderRadius: isMobile ? 6 : 8
+            }}>
+              <span style={{fontWeight:600, color:'#4caf50'}}>{t('present')}</span>
+              <div style={{
+                background:'#4caf50',
+                color:'#fff',
+                padding: isMobile ? '0.3rem 0.6rem' : '0.4rem 0.8rem',
+                borderRadius: isMobile ? 4 : 6,
+                fontWeight:700,
+                fontSize: isMobile ? '0.8rem' : '0.9rem'
+              }}>
+                {analytics.totalAppointments > 0 ? 
+                  ((analytics.attendanceStats.present / analytics.totalAppointments) * 100).toFixed(1) : 0}%
+              </div>
+            </div>
+            
+            {/* نسبة الغياب */}
+            <div style={{
+              display:'flex',
+              justifyContent:'space-between',
+              alignItems:'center',
+              padding: isMobile ? '0.5rem 0.8rem' : '0.8rem 1rem',
+              background:'#ffebee',
+              borderRadius: isMobile ? 6 : 8
+            }}>
+              <span style={{fontWeight:600, color:'#f44336'}}>{t('absent')}</span>
+              <div style={{
+                background:'#f44336',
+                color:'#fff',
+                padding: isMobile ? '0.3rem 0.6rem' : '0.4rem 0.8rem',
+                borderRadius: isMobile ? 4 : 6,
+                fontWeight:700,
+                fontSize: isMobile ? '0.8rem' : '0.9rem'
+              }}>
+                {analytics.totalAppointments > 0 ? 
+                  ((analytics.attendanceStats.absent / analytics.totalAppointments) * 100).toFixed(1) : 0}%
+              </div>
+            </div>
           </div>
         </div>
       </div>
