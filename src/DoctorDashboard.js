@@ -243,8 +243,10 @@ function DoctorDashboard() {
       date = new Date(dateString);
     }
     
-    const weekdays = t('weekdays', { returnObjects: true }) || t('weekdays_array', { returnObjects: true }) || ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-    const months = t('months', { returnObjects: true }) || [
+    const weekdays = (t('weekdays', { returnObjects: true }) && Array.isArray(t('weekdays', { returnObjects: true }))) ? t('weekdays', { returnObjects: true }) : 
+                     (t('weekdays_array', { returnObjects: true }) && Array.isArray(t('weekdays_array', { returnObjects: true }))) ? t('weekdays_array', { returnObjects: true }) : 
+                     ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    const months = (t('months', { returnObjects: true }) && Array.isArray(t('months', { returnObjects: true }))) ? t('months', { returnObjects: true }) : [
       'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
       'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
     ];

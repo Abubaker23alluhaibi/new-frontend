@@ -23,10 +23,12 @@ function DoctorDetails() {
   const [availableTimes, setAvailableTimes] = useState([]);
   const [bookedTimes, setBookedTimes] = useState([]);
   const { t } = useTranslation();
-  const specialties = t('specialties', { returnObjects: true }) || [];
-  const provinces = t('provinces', { returnObjects: true }) || [];
-  const weekdays = t('weekdays_array', { returnObjects: true }) || t('weekdays', { returnObjects: true }) || ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-  const months = t('months', { returnObjects: true }) || [
+  const specialties = (t('specialties', { returnObjects: true }) && Array.isArray(t('specialties', { returnObjects: true }))) ? t('specialties', { returnObjects: true }) : [];
+  const provinces = (t('provinces', { returnObjects: true }) && Array.isArray(t('provinces', { returnObjects: true }))) ? t('provinces', { returnObjects: true }) : [];
+  const weekdays = (t('weekdays', { returnObjects: true }) && Array.isArray(t('weekdays', { returnObjects: true }))) ? t('weekdays', { returnObjects: true }) : 
+                   (t('weekdays_array', { returnObjects: true }) && Array.isArray(t('weekdays_array', { returnObjects: true }))) ? t('weekdays_array', { returnObjects: true }) : 
+                   ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+  const months = (t('months', { returnObjects: true }) && Array.isArray(t('months', { returnObjects: true }))) ? t('months', { returnObjects: true }) : [
     'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
     'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
   ];
