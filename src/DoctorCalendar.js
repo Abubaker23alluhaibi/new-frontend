@@ -24,7 +24,7 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
   const _month = month !== undefined ? month : internalMonth;
   const _daysArr = daysArr || Array.from({length: new Date(_year, _month + 1, 0).getDate()}, (_,i)=>i+1);
   const _appointments = appointments || [];
-  const weekdays = t('weekdays', { returnObjects: true }) || ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'];
+  const weekdays = t('weekdays', { returnObjects: true }) || t('weekdays_array', { returnObjects: true }) || ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'];
   const months = t('months', { returnObjects: true }) || [
     'کانونی دووەم', 'شوبات', 'ئازار', 'نیسان', 'ئایار', 'حوزەیران',
     'تەمموز', 'ئاب', 'ئەیلوول', 'تشرینی یەکەم', 'تشرینی دووەم', 'کانونی یەکەم'
@@ -54,7 +54,7 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
         </div>
         {/* أيام الأسبوع */}
         <div style={{display:'grid', gridTemplateColumns:'repeat(7, 1fr)', gap:4, marginBottom:12}}>
-          {(t('weekdays', { returnObjects: true }) || ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی']).map(day => (
+          {(t('weekdays', { returnObjects: true }) || t('weekdays_array', { returnObjects: true }) || ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی']).map(day => (
             <div key={day} style={{textAlign:'center', fontWeight:700, color:'#7c4dff', fontSize:12, padding:'0.5rem'}}>
               {day}
             </div>

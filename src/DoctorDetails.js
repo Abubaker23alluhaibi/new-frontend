@@ -25,7 +25,7 @@ function DoctorDetails() {
   const { t } = useTranslation();
   const specialties = t('specialties', { returnObjects: true }) || [];
   const provinces = t('provinces', { returnObjects: true }) || [];
-  const weekdays = t('weekdays_array', { returnObjects: true }) || ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+  const weekdays = t('weekdays_array', { returnObjects: true }) || t('weekdays', { returnObjects: true }) || ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
   const months = t('months', { returnObjects: true }) || [
     'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
     'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
