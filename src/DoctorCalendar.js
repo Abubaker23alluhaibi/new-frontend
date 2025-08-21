@@ -50,9 +50,120 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
         <h3 style={{color:'#7c4dff', marginBottom:24, fontWeight:800, fontSize:22}}>
           📅 {t('my_calendar')}
         </h3>
-        {/* معلومات الشهر */}
-        <div style={{background:'linear-gradient(135deg, #7c4dff 0%, #00bcd4 100%)', color:'#fff', borderRadius:12, padding:'1rem', marginBottom:20, fontWeight:700, fontSize:16}}>
-          {new Date(_year, _month).toLocaleDateString('ku', { month: 'long', year: 'numeric' })}
+        {/* معلومات الشهر مع أزرار التنقل */}
+        <div style={{background:'linear-gradient(135deg, #7c4dff 0%, #00bcd4 100%)', color:'#fff', borderRadius:12, padding:'1rem', marginBottom:20, fontWeight:700, fontSize:16, display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+          <button 
+            onClick={() => {
+              if (_month === 0) {
+                setInternalYear(_year - 1);
+                setInternalMonth(11);
+              } else {
+                setInternalMonth(_month - 1);
+              }
+            }}
+            style={{
+              background: 'rgba(255,255,255,0.2)',
+              border: 'none',
+              color: '#fff',
+              borderRadius: '50%',
+              width: 32,
+              height: 32,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 18,
+              fontWeight: 'bold',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(255,255,255,0.3)';
+              e.target.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(255,255,255,0.2)';
+              e.target.style.transform = 'scale(1)';
+            }}
+          >
+            ‹
+          </button>
+          
+          <div style={{textAlign: 'center', flex: 1, position: 'relative'}}>
+            {new Date(_year, _month).toLocaleDateString('ku', { month: 'long', year: 'numeric' })}
+            <button 
+              onClick={() => {
+                const today = new Date();
+                setInternalYear(today.getFullYear());
+                setInternalMonth(today.getMonth());
+                setInternalSelectedDate(today.toISOString().slice(0, 10));
+              }}
+              style={{
+                position: 'absolute',
+                top: -8,
+                right: -8,
+                background: 'rgba(255,255,255,0.3)',
+                border: 'none',
+                color: '#fff',
+                borderRadius: '50%',
+                width: 20,
+                height: 20,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 10,
+                fontWeight: 'bold',
+                transition: 'all 0.3s ease'
+              }}
+              title="العودة لليوم الحالي"
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(255,255,255,0.5)';
+                e.target.style.transform = 'scale(1.2)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(255,255,255,0.3)';
+                e.target.style.transform = 'scale(1)';
+              }}
+            >
+              🏠
+            </button>
+          </div>
+          
+          <button 
+            onClick={() => {
+              if (_month === 11) {
+                setInternalYear(_year + 1);
+                setInternalMonth(0);
+              } else {
+                setInternalMonth(_month + 1);
+              }
+            }}
+            style={{
+              background: 'rgba(255,255,255,0.2)',
+              border: 'none',
+              color: '#fff',
+              borderRadius: '50%',
+              width: 32,
+              height: 32,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 18,
+              fontWeight: 'bold',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(255,255,255,0.3)';
+              e.target.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(255,255,255,0.2)';
+              e.target.style.transform = 'scale(1)';
+            }}
+          >
+            ›
+          </button>
         </div>
         {/* أيام الأسبوع */}
         <div style={{display:'grid', gridTemplateColumns:'repeat(7, 1fr)', gap:4, marginBottom:12}}>
