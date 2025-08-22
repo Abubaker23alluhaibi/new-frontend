@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next'; // غير مستخدم حالياً
 
 const AdvertisementSlider = ({ target = 'both' }) => {
   const [advertisements, setAdvertisements] = useState([]);
@@ -7,7 +7,7 @@ const AdvertisementSlider = ({ target = 'both' }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const intervalRef = useRef(null);
-  const { t } = useTranslation();
+  // const { t } = useTranslation(); // غير مستخدم حالياً
 
   useEffect(() => {
     fetchAdvertisements();
@@ -24,7 +24,7 @@ const AdvertisementSlider = ({ target = 'both' }) => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [target]);
+  }, [target, advertisements.length]);
 
   const fetchAdvertisements = async () => {
     try {
