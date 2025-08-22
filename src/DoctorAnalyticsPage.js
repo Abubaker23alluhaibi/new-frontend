@@ -194,13 +194,13 @@ function DoctorAnalyticsPage() {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
+      background: '#ffffff',
       minHeight: '100vh',
       position: 'relative'
     }}>
       {/* Header */}
       <div style={{
-        background: 'rgba(255,255,255,0.95)',
+        background: '#ffffff',
         padding: isMobile ? '0.8rem 1rem' : '1rem 2rem',
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
         display: 'flex',
@@ -208,7 +208,8 @@ function DoctorAnalyticsPage() {
         alignItems: 'center',
         position: 'sticky',
         top: 0,
-        zIndex: 1000
+        zIndex: 1000,
+        borderBottom: '2px solid #0A8F82'
       }}>
         <div style={{display: 'flex', alignItems: 'center', gap: isMobile ? '0.5rem' : '1rem'}}>
           <button
@@ -229,7 +230,7 @@ function DoctorAnalyticsPage() {
             ← {t('back')}
           </button>
           <h1 style={{
-            color: '#7c4dff',
+            color: '#0A8F82',
             fontWeight: 800,
             fontSize: isMobile ? 16 : 28,
             margin: 0
@@ -302,7 +303,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
         padding: isMobile ? '1rem 0.8rem' : '1.5rem'
       }}>
         <h3 style={{
-          color:'#7c4dff', 
+          color:'#0A8F82', 
           marginBottom: isMobile ? '0.8rem' : '1rem', 
           textAlign:'center',
           fontSize: isMobile ? '1.1rem' : '1.3rem'
@@ -317,9 +318,9 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
           <button
             onClick={() => setTimeFilter('all')}
             style={{
-              background: timeFilter === 'all' ? '#7c4dff' : '#f0f0f0',
-              color: timeFilter === 'all' ? '#fff' : '#666',
-              border: 'none',
+              background: timeFilter === 'all' ? '#0A8F82' : '#f8f9fa',
+              color: timeFilter === 'all' ? '#fff' : '#0A8F82',
+              border: timeFilter === 'all' ? 'none' : '2px solid #0A8F82',
               borderRadius: isMobile ? 8 : 12,
               padding: isMobile ? '0.6rem 1rem' : '0.8rem 1.5rem',
               fontWeight: 700,
@@ -334,9 +335,9 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
           <button
             onClick={() => setTimeFilter('weekly')}
             style={{
-              background: timeFilter === 'weekly' ? '#4caf50' : '#f0f0f0',
-              color: timeFilter === 'weekly' ? '#fff' : '#666',
-              border: 'none',
+              background: timeFilter === 'weekly' ? '#0A8F82' : '#f8f9fa',
+              color: timeFilter === 'weekly' ? '#fff' : '#0A8F82',
+              border: timeFilter === 'weekly' ? 'none' : '2px solid #0A8F82',
               borderRadius: isMobile ? 8 : 12,
               padding: isMobile ? '0.6rem 1rem' : '0.8rem 1.5rem',
               fontWeight: 700,
@@ -351,9 +352,9 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
           <button
             onClick={() => setTimeFilter('monthly')}
             style={{
-              background: timeFilter === 'monthly' ? '#ff9800' : '#f0f0f0',
-              color: timeFilter === 'monthly' ? '#fff' : '#666',
-              border: 'none',
+              background: timeFilter === 'monthly' ? '#0A8F82' : '#f8f9fa',
+              color: timeFilter === 'monthly' ? '#fff' : '#0A8F82',
+              border: timeFilter === 'monthly' ? 'none' : '2px solid #0A8F82',
               borderRadius: isMobile ? 8 : 12,
               padding: isMobile ? '0.6rem 1rem' : '0.8rem 1.5rem',
               fontWeight: 700,
@@ -368,9 +369,9 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
           <button
             onClick={() => setTimeFilter('yearly')}
             style={{
-              background: timeFilter === 'yearly' ? '#e53935' : '#f0f0f0',
-              color: timeFilter === 'yearly' ? '#fff' : '#666',
-              border: 'none',
+              background: timeFilter === 'yearly' ? '#0A8F82' : '#f8f9fa',
+              color: timeFilter === 'yearly' ? '#fff' : '#0A8F82',
+              border: timeFilter === 'yearly' ? 'none' : '2px solid #0A8F82',
               borderRadius: isMobile ? 8 : 12,
               padding: isMobile ? '0.6rem 1rem' : '0.8rem 1.5rem',
               fontWeight: 700,
@@ -389,10 +390,10 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
           padding: isMobile ? '0.8rem' : '1rem',
           background:'#f8f9fa',
           borderRadius: isMobile ? 8 : 12,
-          border: '1px solid #e9ecef'
+          border: '2px solid #0A8F82'
         }}>
           <span style={{
-            color:'#7c4dff',
+            color:'#0A8F82',
             fontWeight:700,
             fontSize: isMobile ? '0.9rem' : '1rem'
           }}>
@@ -410,67 +411,73 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
         <div style={{
           background:'#fff', 
           borderRadius: isMobile ? 12 : 16, 
-          boxShadow:'0 2px 12px #7c4dff11', 
+          boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
           padding: isMobile ? '1rem 0.8rem' : '1.5rem', 
-          textAlign:'center'
+          textAlign:'center',
+          border: '2px solid #0A8F82'
         }}>
           <div style={{fontSize: isMobile ? '1.5rem' : '2rem', marginBottom:'0.5rem'}}>📊</div>
-          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#7c4dff', marginBottom:'0.5rem'}}>{analytics.totalAppointments}</div>
+          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#0A8F82', marginBottom:'0.5rem'}}>{analytics.totalAppointments}</div>
           <div style={{color:'#666', fontSize: isMobile ? '0.9rem' : '1rem'}}>{t('total_appointments')}</div>
         </div>
         <div style={{
           background:'#fff', 
           borderRadius: isMobile ? 12 : 16, 
-          boxShadow:'0 2px 12px #7c4dff11', 
+          boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
           padding: isMobile ? '1rem 0.8rem' : '1.5rem', 
-          textAlign:'center'
+          textAlign:'center',
+          border: '2px solid #0A8F82'
         }}>
           <div style={{fontSize: isMobile ? '1.5rem' : '2rem', marginBottom:'0.5rem'}}>👥</div>
-          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#4caf50', marginBottom:'0.5rem'}}>{analytics.totalPatients}</div>
+          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#0A8F82', marginBottom:'0.5rem'}}>{analytics.totalPatients}</div>
           <div style={{color:'#666', fontSize: isMobile ? '0.9rem' : '1rem'}}>{t('total_patients')}</div>
         </div>
         <div style={{
           background:'#fff', 
           borderRadius: isMobile ? 12 : 16, 
-          boxShadow:'0 2px 12px #7c4dff11', 
+          boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
           padding: isMobile ? '1rem 0.8rem' : '1.5rem', 
-          textAlign:'center'
+          textAlign:'center',
+          border: '2px solid #0A8F82'
         }}>
           <div style={{fontSize: isMobile ? '1.5rem' : '2rem', marginBottom:'0.5rem'}}>📈</div>
-          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#ff9800', marginBottom:'0.5rem'}}>{analytics.averageAppointmentsPerDay}</div>
+          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#0A8F82', marginBottom:'0.5rem'}}>{analytics.averageAppointmentsPerDay}</div>
           <div style={{color:'#666', fontSize: isMobile ? '0.9rem' : '1rem'}}>{t('average_appointments_per_day')}</div>
         </div>
         <div style={{
           background:'#fff', 
           borderRadius: isMobile ? 12 : 16, 
-          boxShadow:'0 2px 12px #7c4dff11', 
+          boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
           padding: isMobile ? '1rem 0.8rem' : '1.5rem', 
-          textAlign:'center'
+          textAlign:'center',
+          border: '2px solid #0A8F82'
         }}>
           <div style={{fontSize: isMobile ? '1.5rem' : '2rem', marginBottom:'0.5rem'}}>🔥</div>
-          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#e53935', marginBottom:'0.5rem'}}>{analytics.mostBusyDay?.[1] || 0}</div>
+          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#0A8F82', marginBottom:'0.5rem'}}>{analytics.mostBusyDay?.[1] || 0}</div>
           <div style={{color:'#666', fontSize: isMobile ? '0.9rem' : '1rem'}}>{t('most_busy_day')}</div>
         </div>
         <div style={{
           background:'#fff', 
           borderRadius: isMobile ? 12 : 16, 
-          boxShadow:'0 2px 12px #7c4dff11', 
+          boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
           padding: isMobile ? '1rem 0.8rem' : '1.5rem', 
-          textAlign:'center'
+          textAlign:'center',
+          border: '2px solid #0A8F82'
         }}>
           <div style={{fontSize: isMobile ? '1.5rem' : '2rem', marginBottom:'0.5rem'}}>✅</div>
-          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#4caf50', marginBottom:'0.5rem'}}>{analytics.attendanceStats.present}</div>
+          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#0A8F82', marginBottom:'0.5rem'}}>{analytics.attendanceStats.present}</div>
           <div style={{color:'#666', fontSize: isMobile ? '0.9rem' : '1rem'}}>{t('present_count')}</div>
         </div>
         <div style={{
           background:'#fff', 
           borderRadius: isMobile ? 12 : 16, 
-          boxShadow:'0 2px 12px #7c4dff11', 
+          boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
           padding: isMobile ? '1rem 0.8rem' : '1.5rem', 
-          textAlign:'center'
+          textAlign:'center',
+          border: '2px solid #0A8F82'
         }}>
           <div style={{fontSize: isMobile ? '1.5rem' : '2rem', marginBottom:'0.5rem'}}>❌</div>
-          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#f44336', marginBottom:'0.5rem'}}>{analytics.attendanceStats.absent}</div>
+          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#0A8F82', marginBottom:'0.5rem'}}>{analytics.attendanceStats.absent}</div>
           <div style={{color:'#666', fontSize: isMobile ? '0.9rem' : '1rem'}}>{t('absent_count')}</div>
         </div>
       </div>
@@ -479,11 +486,12 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
       <div style={{
         background:'#fff', 
         borderRadius: isMobile ? 12 : 16, 
-        boxShadow:'0 2px 12px #7c4dff11', 
-        padding: isMobile ? '1rem 0.8rem' : '1.5rem'
+        boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
+        padding: isMobile ? '1rem 0.8rem' : '1.5rem',
+        border: '2px solid #0A8F82'
       }}>
         <h3 style={{
-          color:'#7c4dff', 
+          color:'#0A8F82', 
           marginBottom: isMobile ? '0.8rem' : '1rem', 
           textAlign:'center',
           fontSize: isMobile ? '1.1rem' : '1.3rem'
@@ -501,7 +509,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
             padding: isMobile ? '0.8rem 0.6rem' : '1rem',
             borderRadius: isMobile ? 8 : 12,
             textAlign:'center',
-            border: '2px solid #4caf50'
+            border: '2px solid #0A8F82'
           }}>
             <div style={{
               fontSize: isMobile ? '1.5rem' : '2rem', 
@@ -510,12 +518,12 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
             <div style={{
               fontSize: isMobile ? '1.2rem' : '1.5rem', 
               fontWeight:700, 
-              color:'#4caf50',
+              color:'#0A8F82',
               marginBottom:'0.3rem'
             }}>{analytics.attendanceStats.present}</div>
             <div style={{
               fontSize: isMobile ? '0.8rem' : '0.9rem', 
-              color:'#4caf50',
+              color:'#0A8F82',
               fontWeight:600
             }}>{t('present')}</div>
           </div>
@@ -525,7 +533,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
             padding: isMobile ? '0.8rem 0.6rem' : '1rem',
             borderRadius: isMobile ? 8 : 12,
             textAlign:'center',
-            border: '2px solid #f44336'
+            border: '2px solid #0A8F82'
           }}>
             <div style={{
               fontSize: isMobile ? '1.5rem' : '2rem', 
@@ -534,12 +542,12 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
             <div style={{
               fontSize: isMobile ? '1.2rem' : '1.5rem', 
               fontWeight:700, 
-              color:'#f44336',
+              color:'#0A8F82',
               marginBottom:'0.3rem'
             }}>{analytics.attendanceStats.absent}</div>
             <div style={{
               fontSize: isMobile ? '0.8rem' : '0.9rem', 
-              color:'#f44336',
+              color:'#0A8F82',
               fontWeight:600
             }}>{t('absent')}</div>
           </div>
@@ -550,10 +558,10 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
           background:'#f8f9fa',
           padding: isMobile ? '1rem 0.8rem' : '1.5rem',
           borderRadius: isMobile ? 8 : 12,
-          border: '1px solid #e9ecef'
+          border: '2px solid #0A8F82'
         }}>
           <h4 style={{
-            color:'#495057',
+            color:'#0A8F82',
             marginBottom: isMobile ? '0.8rem' : '1rem',
             textAlign:'center',
             fontSize: isMobile ? '1rem' : '1.1rem',
@@ -574,9 +582,9 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
               background:'#e8f5e8',
               borderRadius: isMobile ? 6 : 8
             }}>
-              <span style={{fontWeight:600, color:'#4caf50'}}>{t('present')}</span>
+              <span style={{fontWeight:600, color:'#0A8F82'}}>{t('present')}</span>
               <div style={{
-                background:'#4caf50',
+                background:'#0A8F82',
                 color:'#fff',
                 padding: isMobile ? '0.3rem 0.6rem' : '0.4rem 0.8rem',
                 borderRadius: isMobile ? 4 : 6,
@@ -597,9 +605,9 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
               background:'#ffebee',
               borderRadius: isMobile ? 6 : 8
             }}>
-              <span style={{fontWeight:600, color:'#f44336'}}>{t('absent')}</span>
+              <span style={{fontWeight:600, color:'#0A8F82'}}>{t('absent')}</span>
               <div style={{
-                background:'#f44336',
+                background:'#0A8F82',
                 color:'#fff',
                 padding: isMobile ? '0.3rem 0.6rem' : '0.4rem 0.8rem',
                 borderRadius: isMobile ? 4 : 6,
@@ -618,11 +626,12 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
       <div style={{
         background:'#fff', 
         borderRadius: isMobile ? 12 : 16, 
-        boxShadow:'0 2px 12px #7c4dff11', 
-        padding: isMobile ? '1rem 0.8rem' : '1.5rem'
+        boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
+        padding: isMobile ? '1rem 0.8rem' : '1.5rem',
+        border: '2px solid #0A8F82'
       }}>
         <h3 style={{
-          color:'#7c4dff', 
+          color:'#0A8F82', 
           marginBottom: isMobile ? '0.8rem' : '1rem', 
           textAlign:'center',
           fontSize: isMobile ? '1.1rem' : '1.3rem'
@@ -647,27 +656,27 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
               <div style={{
                 display: 'table-cell',
                 padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                borderBottom: '2px solid #dee2e6',
+                borderBottom: '2px solid #0A8F82',
                 textAlign: 'center',
-                color: '#4caf50'
+                color: '#0A8F82'
               }}>
                 {t('hour') || 'الساعة'}
               </div>
               <div style={{
                 display: 'table-cell',
                 padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                borderBottom: '2px solid #dee2e6',
+                borderBottom: '2px solid #0A8F82',
                 textAlign: 'center',
-                color: '#4caf50'
+                color: '#0A8F82'
               }}>
                 {t('appointments_count') || 'عدد المواعيد'}
               </div>
               <div style={{
                 display: 'table-cell',
                 padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                borderBottom: '2px solid #dee2e6',
+                borderBottom: '2px solid #0A8F82',
                 textAlign: 'center',
-                color: '#4caf50'
+                color: '#0A8F82'
               }}>
                 {t('status') || 'الحالة'}
               </div>
@@ -699,7 +708,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
                     textAlign: 'center',
                     fontWeight: 700,
                     fontSize: isMobile ? '1.1rem' : '1.2rem',
-                    color: '#4caf50'
+                    color: '#0A8F82'
                   }}>
                     {count}
                   </div>
@@ -710,7 +719,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
                   }}>
                     {hour === analytics.mostBusyHour?.[0] ? (
                       <span style={{
-                        background: '#4caf50',
+                        background: '#0A8F82',
                         color: '#fff',
                         padding: isMobile ? '0.2rem 0.5rem' : '0.3rem 0.8rem',
                         borderRadius: isMobile ? 8 : 12,
@@ -742,7 +751,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
             <button
               onClick={() => setShowMoreTimes(!showMoreTimes)}
               style={{
-                background: 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
+                background: '#0A8F82',
                 color: '#fff',
                 border: 'none',
                 borderRadius: isMobile ? 8 : 12,
@@ -751,7 +760,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
                 fontSize: isMobile ? '0.9rem' : '1rem',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
-                boxShadow: '0 2px 8px rgba(76, 175, 80, 0.3)'
+                boxShadow: '0 2px 8px rgba(10, 143, 130, 0.3)'
               }}
             >
               {showMoreTimes ? t('show_less') || 'عرض أقل' : t('show_more') || 'عرض المزيد'} ({Object.entries(analytics.appointmentsByHour).length - 5} {t('more') || 'أكثر'})
@@ -764,11 +773,12 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
       <div style={{
         background:'#fff', 
         borderRadius: isMobile ? 12 : 16, 
-        boxShadow:'0 2px 12px #7c4dff11', 
-        padding: isMobile ? '1rem 0.8rem' : '1.5rem'
+        boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
+        padding: isMobile ? '1rem 0.8rem' : '1.5rem',
+        border: '2px solid #0A8F82'
       }}>
         <h3 style={{
-          color:'#7c4dff', 
+          color:'#0A8F82', 
           marginBottom: isMobile ? '0.8rem' : '1rem', 
           textAlign:'center',
           fontSize: isMobile ? '1.1rem' : '1.3rem'
@@ -792,18 +802,18 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
                 padding: isMobile ? '0.8rem 0.6rem' : '1rem',
                 borderRadius: isMobile ? 6 : 8,
                 textAlign:'center',
-                border: day === analytics.mostBusyDay?.[0] ? '2px solid #ffc107' : '1px solid #dee2e6'
+                border: day === analytics.mostBusyDay?.[0] ? '2px solid #ffc107' : '2px solid #0A8F82'
               }}>
                 <div style={{
                   fontSize: isMobile ? '1rem' : '1.1rem', 
                   fontWeight:700, 
                   marginBottom:'0.5rem',
-                  color: day === analytics.mostBusyDay?.[0] ? '#856404' : '#495057'
+                  color: day === analytics.mostBusyDay?.[0] ? '#856404' : '#0A8F82'
                 }}>{day}</div>
                 <div style={{
                   fontSize: isMobile ? '1.2rem' : '1.3rem', 
                   fontWeight:700, 
-                  color: day === analytics.mostBusyDay?.[0] ? '#ffc107' : '#7c4dff'
+                  color: day === analytics.mostBusyDay?.[0] ? '#ffc107' : '#0A8F82'
                 }}>{count}</div>
                 {day === analytics.mostBusyDay?.[0] && (
                   <div style={{
@@ -824,11 +834,12 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
       <div style={{
         background:'#fff', 
         borderRadius: isMobile ? 12 : 16, 
-        boxShadow:'0 2px 12px #7c4dff11', 
-        padding: isMobile ? '1rem 0.8rem' : '1.5rem'
+        boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
+        padding: isMobile ? '1rem 0.8rem' : '1.5rem',
+        border: '2px solid #0A8F82'
       }}>
         <h3 style={{
-          color:'#7c4dff', 
+          color:'#0A8F82', 
           marginBottom: isMobile ? '0.8rem' : '1rem', 
           textAlign:'center',
           fontSize: isMobile ? '1.1rem' : '1.3rem'
@@ -843,7 +854,8 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
               background:'#f5f5f5',
               padding: isMobile ? '0.8rem 0.6rem' : '1rem',
               borderRadius: isMobile ? 6 : 8,
-              textAlign:'center'
+              textAlign:'center',
+              border: '2px solid #0A8F82'
             }}>
               <div style={{
                 fontSize: isMobile ? '1rem' : '1.1rem', 
@@ -853,7 +865,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
               <div style={{
                 fontSize: isMobile ? '1.2rem' : '1.3rem', 
                 fontWeight:700, 
-                color:'#7c4dff'
+                color:'#0A8F82'
               }}>{count}</div>
             </div>
           ))}
