@@ -84,6 +84,17 @@ function AdminDashboard() {
 
   const [migratingImages, setMigratingImages] = useState(false);
   const [migrationResult, setMigrationResult] = useState(null);
+  
+  // state لإدارة تغيير كلمة المرور
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [selectedUserForPassword, setSelectedUserForPassword] = useState(null);
+  const [passwordForm, setPasswordForm] = useState({
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     console.log('🔍 تحميل AdminDashboard...');
@@ -260,6 +271,73 @@ function AdminDashboard() {
     }
   };
 
+  // دالة تغيير كلمة المرور
+  const handlePasswordChange = async () => {
+    setPasswordError('');
+    setPasswordSuccess('');
+    
+    // التحقق من صحة البيانات
+    if (!passwordForm.newPassword) {
+      setPasswordError(t('admin.password_required'));
+      return;
+    }
+    
+    if (!passwordForm.confirmPassword) {
+      setPasswordError(t('admin.confirm_password_required'));
+      return;
+    }
+    
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError(t('admin.password_mismatch'));
+      return;
+    }
+    
+    if (passwordForm.newPassword.length < 6) {
+      setPasswordError(t('admin.password_too_short'));
+      return;
+    }
+    
+    setChangingPassword(true);
+    
+    try {
+      const url = selectedUserForPassword.type === 'doctor' 
+        ? `${process.env.REACT_APP_API_URL}/doctor-password/${selectedUserForPassword.id}`
+        : `${process.env.REACT_APP_API_URL}/user-password/${selectedUserForPassword.id}`;
+      
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: passwordForm.newPassword })
+      });
+      
+      if (response.ok) {
+        setPasswordSuccess(t('admin.password_changed_success'));
+        setPasswordForm({ newPassword: '', confirmPassword: '' });
+        setTimeout(() => {
+          setShowPasswordModal(false);
+          setPasswordSuccess('');
+        }, 2000);
+      } else {
+        const data = await response.json();
+        setPasswordError(data.error || t('admin.password_change_error'));
+      }
+    } catch (error) {
+      console.error('خطأ في تغيير كلمة المرور:', error);
+      setPasswordError(t('admin.password_change_error'));
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+  
+  // دالة فتح نافذة تغيير كلمة المرور
+  const openPasswordModal = (user, type) => {
+    setSelectedUserForPassword({ ...user, type });
+    setPasswordForm({ newPassword: '', confirmPassword: '' });
+    setPasswordError('');
+    setPasswordSuccess('');
+    setShowPasswordModal(true);
+  };
+  
   // دالة البحث
   const filteredData = () => {
     if (!searchTerm) return { users, doctors, appointments };
@@ -1137,6 +1215,12 @@ function AdminDashboard() {
                           {user.disabled ? 'تفعيل' : 'تعطيل'}
                         </button>
                         <button
+                          onClick={() => openPasswordModal(user, 'user')}
+                          style={{background:'#2196f3', color:'white', border:'none', padding:'0.5rem 1rem', borderRadius:6, cursor:'pointer', marginLeft: 8}}
+                        >
+                          🔒 {t('admin.change_password')}
+                        </button>
+                        <button
                           onClick={() => deleteUser(user._id || user.id)}
                           style={{background:'#e53935', color:'white', border:'none', padding:'0.5rem 1rem', borderRadius:6, cursor:'pointer'}}
                         >
@@ -1271,6 +1355,12 @@ function AdminDashboard() {
                             </button>
                           )
                         )}
+                        <button
+                          onClick={() => openPasswordModal(doctor, 'doctor')}
+                          style={{background:'#2196f3', color:'white', border:'none', padding:'0.5rem 1rem', borderRadius:6, cursor:'pointer', marginLeft: 8}}
+                        >
+                          🔒 {t('admin.change_password')}
+                        </button>
                         <button
                           onClick={() => deleteDoctor(doctor._id || doctor.id)}
                           style={{background:'#e53935', color:'white', border:'none', padding:'0.5rem 1rem', borderRadius:6, cursor:'pointer'}}
@@ -2951,6 +3041,146 @@ function AdminDashboard() {
             </div>
           )}
         </div>
+
+        {/* نافذة تغيير كلمة المرور */}
+        {showPasswordModal && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 1000
+          }}>
+            <div style={{
+              background: 'white',
+              padding: '2rem',
+              borderRadius: '12px',
+              width: '90%',
+              maxWidth: '500px',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+            }}>
+              <h3 style={{ margin: '0 0 1.5rem 0', color: '#333', textAlign: 'center' }}>
+                🔒 {selectedUserForPassword?.type === 'doctor' 
+                  ? t('admin.change_doctor_password') 
+                  : t('admin.change_user_password')}
+              </h3>
+              
+              <div style={{ marginBottom: '1rem' }}>
+                <p style={{ margin: '0 0 0.5rem 0', color: '#666' }}>
+                  <strong>الاسم:</strong> {selectedUserForPassword?.name || selectedUserForPassword?.first_name}
+                </p>
+                <p style={{ margin: '0 0 0.5rem 0', color: '#666' }}>
+                  <strong>البريد الإلكتروني:</strong> {selectedUserForPassword?.email}
+                </p>
+                <p style={{ margin: '0 0 1rem 0', color: '#666' }}>
+                  <strong>النوع:</strong> {selectedUserForPassword?.type === 'doctor' ? 'طبيب' : 'مستخدم'}
+                </p>
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#333' }}>
+                  {t('admin.new_password')}:
+                </label>
+                <input
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #ddd',
+                    borderRadius: '6px',
+                    fontSize: '1rem'
+                  }}
+                  placeholder={t('admin.new_password')}
+                />
+              </div>
+
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#333' }}>
+                  {t('admin.confirm_new_password')}:
+                </label>
+                <input
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #ddd',
+                    borderRadius: '6px',
+                    fontSize: '1rem'
+                  }}
+                  placeholder={t('admin.confirm_new_password')}
+                />
+              </div>
+
+              {passwordError && (
+                <div style={{
+                  padding: '0.75rem',
+                  background: '#f8d7da',
+                  color: '#721c24',
+                  borderRadius: '6px',
+                  marginBottom: '1rem',
+                  border: '1px solid #f5c6cb'
+                }}>
+                  ❌ {passwordError}
+                </div>
+              )}
+
+              {passwordSuccess && (
+                <div style={{
+                  padding: '0.75rem',
+                  background: '#d4edda',
+                  color: '#155724',
+                  borderRadius: '6px',
+                  marginBottom: '1rem',
+                  border: '1px solid #c3e6cb'
+                }}>
+                  ✅ {passwordSuccess}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <button
+                  onClick={() => setShowPasswordModal(false)}
+                  disabled={changingPassword}
+                  style={{
+                    background: '#6c757d',
+                    color: 'white',
+                    border: 'none',
+                    padding: '0.75rem 1.5rem',
+                    borderRadius: '6px',
+                    cursor: changingPassword ? 'not-allowed' : 'pointer',
+                    fontSize: '1rem'
+                  }}
+                >
+                  {t('admin.cancel')}
+                </button>
+                <button
+                  onClick={handlePasswordChange}
+                  disabled={changingPassword}
+                  style={{
+                    background: '#2196f3',
+                    color: 'white',
+                    border: 'none',
+                    padding: '0.75rem 1.5rem',
+                    borderRadius: '6px',
+                    cursor: changingPassword ? 'not-allowed' : 'pointer',
+                    fontSize: '1rem'
+                  }}
+                >
+                  {changingPassword ? '⏳ جاري التغيير...' : t('admin.save')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -844,5 +844,21 @@
   "app_redirect_title": "افتح التطبيق للحصول على تجربة أفضل!",
   "app_redirect_description": "يمكنك الوصول لجميع الميزات وحجز المواعيد بسهولة",
   "open_app": "افتح التطبيق",
-  "download_app": "حمل التطبيق"
+  "download_app": "حمل التطبيق",
+  "admin": {
+    "password_management": "إدارة كلمات المرور",
+    "change_user_password": "تغيير كلمة مرور المستخدم",
+    "change_doctor_password": "تغيير كلمة مرور الطبيب",
+    "new_password": "كلمة المرور الجديدة",
+    "confirm_new_password": "تأكيد كلمة المرور الجديدة",
+    "password_changed_success": "تم تغيير كلمة المرور بنجاح",
+    "password_change_error": "حدث خطأ أثناء تغيير كلمة المرور",
+    "password_mismatch": "كلمة المرور الجديدة غير متطابقة",
+    "password_too_short": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+    "password_required": "كلمة المرور مطلوبة",
+    "confirm_password_required": "تأكيد كلمة المرور مطلوب",
+    "change_password": "تغيير كلمة المرور",
+    "cancel": "إلغاء",
+    "save": "حفظ"
+  }
 }

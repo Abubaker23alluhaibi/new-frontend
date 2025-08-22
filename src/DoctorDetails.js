@@ -811,7 +811,8 @@ const bookingData = {
               </button>
             </div>
           )}
-          {doctor.phone && (
+          {/* تم إخفاء رقم الهاتف بناءً على طلب المستخدم */}
+          {/* {doctor.phone && (
             <div style={{
               color:'#495057', 
               fontSize: window.innerWidth < 500 ? 13 : 15, 
@@ -826,7 +827,7 @@ const bookingData = {
               <span style={{fontWeight: 600}}>{t('phone_label')}:</span>
               <span style={{fontWeight: 700, color: '#495057'}}>{doctor.phone}</span>
             </div>
-          )}
+          )} */}
           {doctor.about && (
             <div style={{
               color:'#495057', 

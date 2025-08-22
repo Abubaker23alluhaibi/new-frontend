@@ -562,7 +562,7 @@
   "back": "گەڕانەوە",
   "logout": "چوونەدەرەوە",
   "error_fetching_appointments": "هەڵە لە هێنانی چاوپێکەوتنەکان",
-  "weekdays_object": {
+  "weekdays": {
     "sunday": "یەکشەممە",
     "monday": "دووشەممە",
     "tuesday": "سێشەممە",
@@ -832,5 +832,21 @@
   "app_redirect_title": "ئەپەکە بکەرەوە بۆ ئەزموونێکی باشتر!",
   "app_redirect_description": "دەستت بگەیت بە هەموو تایبەتمەندییەکان و چاوپێکەوتن تۆمار بکەیت بە ئاسانی",
   "open_app": "کردنەوەی ئەپ",
-  "download_app": "داگرتنی ئەپ"
+  "download_app": "داگرتنی ئەپ",
+  "admin": {
+    "password_management": "بەڕێوەبردنی وشەی نهێنی",
+    "change_user_password": "گۆڕینی وشەی نهێنی بەکارهێنەر",
+    "change_doctor_password": "گۆڕینی وشەی نهێنی دکتۆر",
+    "new_password": "وشەی نهێنی نوێ",
+    "confirm_new_password": "دووپاتکردنەوەی وشەی نهێنی نوێ",
+    "password_changed_success": "وشەی نهێنی بە سەرکەوتوویی گۆڕدرا",
+    "password_change_error": "هەڵەیەک ڕوویدا لە گۆڕینی وشەی نهێنی",
+    "password_mismatch": "وشەی نهێنی نوێ نەگونجێت",
+    "password_too_short": "وشەی نهێنی دەبێت لانیکەم 6 پیت بێت",
+    "password_required": "وشەی نهێنی پێویستە",
+    "confirm_password_required": "دووپاتکردنەوەی وشەی نهێنی پێویستە",
+    "change_password": "گۆڕینی وشەی نهێنی",
+    "cancel": "هەڵوەشاندنەوە",
+    "save": "پاشەکەوتکردن"
+  }
 } 

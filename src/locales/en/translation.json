@@ -496,7 +496,7 @@
   "back": "Back",
   "logout": "Logout",
   "error_fetching_appointments": "Error fetching appointments",
-  "weekdays_object": {
+  "weekdays": {
     "sunday": "Sunday",
     "monday": "Monday",
     "tuesday": "Tuesday", 
@@ -626,7 +626,7 @@
   "advanced_calendar": "Advanced Calendar",
   "month_navigation": "Month Navigation",
   "quick_selection_buttons": "Quick Selection Buttons",
-  "weekdays": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  "weekdays": "Weekdays",
   "weekdays_array": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
   "work_days_comment": "Work Days",
   "vacation_cancelled_success": "Vacation cancelled and day {{date}} is now available for booking",
@@ -654,5 +654,21 @@
   "app_redirect_title": "Open the App for a Better Experience!",
   "app_redirect_description": "Access all features and book appointments easily",
   "open_app": "Open App",
-  "download_app": "Download App"
+  "download_app": "Download App",
+  "admin": {
+    "password_management": "Password Management",
+    "change_user_password": "Change User Password",
+    "change_doctor_password": "Change Doctor Password",
+    "new_password": "New Password",
+    "confirm_new_password": "Confirm New Password",
+    "password_changed_success": "Password changed successfully",
+    "password_change_error": "Error occurred while changing password",
+    "password_mismatch": "New password does not match",
+    "password_too_short": "Password must be at least 6 characters",
+    "password_required": "Password is required",
+    "confirm_password_required": "Password confirmation is required",
+    "change_password": "Change Password",
+    "cancel": "Cancel",
+    "save": "Save"
+  }
 } 
