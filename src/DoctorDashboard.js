@@ -453,7 +453,7 @@ function DoctorDashboard() {
         )}
       </div>
       <div style={{position:'relative', zIndex:1}}>
-        <h2 style={{textAlign:'center', color:'#0A8F82', marginTop:30, fontSize: '2.2rem', fontWeight: 800}}>{t('doctor_dashboard')}</h2>
+                        <h2 style={{textAlign:'center', color:'#0A8F82', marginTop:30, fontSize: '2.2rem', fontWeight: 800}}>{t('doctor_dashboard.title')}</h2>
         
         {/* الإحصائيات السريعة */}
         <div style={{maxWidth:700, margin:'1.5rem auto', padding:'0 1rem'}}>

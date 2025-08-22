@@ -567,6 +567,7 @@
     "december": "كانون الأول"
   },
   "doctor_dashboard": {
+    "title": "لوحة تحكم الطبيب",
     "calendar": "التقويم",
     "all_appointments": "كل المواعيد",
     "appointment_analysis": "تحليل المواعيد",

@@ -520,6 +520,7 @@
     "december": "December"
   },
   "doctor_dashboard": {
+    "title": "Doctor Dashboard",
     "calendar": "Calendar",
     "all_appointments": "All Appointments",
     "appointment_analysis": "Appointment Analysis",
