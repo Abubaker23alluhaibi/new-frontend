@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
+import AdvertisementSlider from './components/AdvertisementSlider';
 
 const LandingPage = () => {
   const { t, i18n } = useTranslation();
@@ -370,6 +371,13 @@ const LandingPage = () => {
               </button>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* الإعلانات المتحركة */}
+      <section className="advertisements-section">
+        <div className="container">
+          <AdvertisementSlider target="both" />
         </div>
       </section>
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { useTranslation } from 'react-i18next';
+import AdvertisementManager from './components/AdvertisementManager';
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
@@ -891,7 +892,8 @@ function AdminDashboard() {
             {id: 'featured', label: 'المميزين'},
             {id: 'pending', label: 'المعلقين'},
             {id: 'health-centers', label: '🏥 المراكز الصحية'},
-            {id: 'appointments', label: 'المواعيد'}
+            {id: 'appointments', label: 'المواعيد'},
+            {id: 'advertisements', label: '📢 الإعلانات'}
           ].map(tab => (
             <button
               key={tab.id}
@@ -3180,6 +3182,11 @@ function AdminDashboard() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* تبويب الإعلانات */}
+        {activeTab === 'advertisements' && (
+          <AdvertisementManager />
         )}
       </div>
     </div>

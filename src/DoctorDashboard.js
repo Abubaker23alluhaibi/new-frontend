@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { normalizePhone } from './utils/phoneUtils';
 import WorkTimesEditor from './WorkTimesEditor';
 import AppointmentDurationEditor from './AppointmentDurationEditor';
+import AdvertisementSlider from './components/AdvertisementSlider';
 
 function getToday() {
   const d = new Date();
@@ -1634,6 +1635,11 @@ function SpecialAppointmentsList({ appointments, onDelete, onEdit, onOpenNote })
             </select>
           </div>
         </div>
+      </div>
+
+      {/* الإعلانات المتحركة */}
+      <div style={{marginBottom: '1rem'}}>
+        <AdvertisementSlider target="doctors" />
       </div>
 
       {/* إحصائيات سريعة */}

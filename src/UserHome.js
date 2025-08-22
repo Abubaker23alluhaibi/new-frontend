@@ -6,6 +6,7 @@ import DoctorCard from './DoctorCard';
 import './Login.css';
 import { useTranslation } from 'react-i18next';
 import i18n from './i18n';
+import AdvertisementSlider from './components/AdvertisementSlider';
 
 function UserHome() {
   const navigate = useNavigate();
@@ -430,6 +431,11 @@ function UserHome() {
           </div>
         </div>
       )}
+      {/* الإعلانات المتحركة */}
+      <div style={{maxWidth: 1200, margin: '0 auto', padding: '0 1rem'}}>
+        <AdvertisementSlider target="users" />
+      </div>
+
       {/* زر المراكز الصحية أسفل الشريط العلوي */}
       <div style={{width:'100%', display:'flex', justifyContent:isMobile() ? 'center' : 'flex-end', margin:'1.2rem 0 1.5rem 0'}}>
         <button 
