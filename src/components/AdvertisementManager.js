@@ -65,6 +65,7 @@ const AdvertisementManager = () => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log('✅ تم حفظ الإعلان:', data);
         setSuccess(editingAd ? 'تم تحديث الإعلان بنجاح' : 'تم إضافة الإعلان بنجاح');
         setShowForm(false);
         setEditingAd(null);
@@ -72,6 +73,7 @@ const AdvertisementManager = () => {
         fetchAdvertisements();
       } else {
         const errorData = await response.json();
+        console.error('❌ خطأ في حفظ الإعلان:', errorData);
         setError(errorData.error || 'حدث خطأ أثناء حفظ الإعلان');
       }
     } catch (err) {
@@ -110,6 +112,25 @@ const AdvertisementManager = () => {
         fetchAdvertisements();
       } else {
         setError('فشل في حذف الإعلان');
+      }
+    } catch (err) {
+      setError('خطأ في الاتصال بالخادم');
+    }
+  };
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/advertisements/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      if (response.ok) {
+        setSuccess(`تم تغيير حالة الإعلان إلى ${newStatus === 'active' ? 'نشط' : 'غير نشط'}`);
+        fetchAdvertisements();
+      } else {
+        setError('فشل في تغيير حالة الإعلان');
       }
     } catch (err) {
       setError('خطأ في الاتصال بالخادم');
@@ -538,17 +559,35 @@ const AdvertisementManager = () => {
                     <td style={{ padding: '1rem', borderBottom: '1px solid #e0e0e0' }}>
                       {getTargetLabel(ad.target)}
                     </td>
-                    <td style={{ padding: '1rem', borderBottom: '1px solid #e0e0e0' }}>
-                      <span style={{
-                        background: ad.status === 'active' ? '#4caf50' : ad.status === 'pending' ? '#ff9800' : '#e53935',
-                        color: 'white',
-                        padding: '0.25rem 0.75rem',
-                        borderRadius: '12px',
-                        fontSize: '0.875rem'
-                      }}>
-                        {getStatusLabel(ad.status)}
-                      </span>
-                    </td>
+                                         <td style={{ padding: '1rem', borderBottom: '1px solid #e0e0e0' }}>
+                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                         <span style={{
+                           background: ad.status === 'active' ? '#4caf50' : ad.status === 'pending' ? '#ff9800' : '#e53935',
+                           color: 'white',
+                           padding: '0.25rem 0.75rem',
+                           borderRadius: '12px',
+                           fontSize: '0.875rem'
+                         }}>
+                           {getStatusLabel(ad.status)}
+                         </span>
+                         {ad.status === 'pending' && (
+                           <button
+                             onClick={() => handleStatusChange(ad._id, 'active')}
+                             style={{
+                               background: '#4caf50',
+                               color: 'white',
+                               border: 'none',
+                               padding: '0.25rem 0.5rem',
+                               borderRadius: '6px',
+                               cursor: 'pointer',
+                               fontSize: '0.75rem'
+                             }}
+                           >
+                             تفعيل
+                           </button>
+                         )}
+                       </div>
+                     </td>
                     <td style={{ padding: '1rem', borderBottom: '1px solid #e0e0e0' }}>
                       {ad.priority}
                     </td>

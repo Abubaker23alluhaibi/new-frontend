@@ -29,10 +29,16 @@ const AdvertisementSlider = ({ target = 'both' }) => {
   const fetchAdvertisements = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/advertisements/${target}`);
+      setError('');
+      
+      const apiUrl = `${process.env.REACT_APP_API_URL}/advertisements/${target}`;
+      console.log('🔍 جلب الإعلانات من:', apiUrl);
+      
+      const response = await fetch(apiUrl);
       
       if (response.ok) {
         const data = await response.json();
+        console.log('✅ تم جلب الإعلانات:', data);
         setAdvertisements(data);
         
         // تحديث إحصائيات المشاهدة
@@ -40,9 +46,12 @@ const AdvertisementSlider = ({ target = 'both' }) => {
           updateStats(ad._id, 'view');
         });
       } else {
-        setError('فشل في جلب الإعلانات');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('❌ خطأ في جلب الإعلانات:', response.status, errorData);
+        setError(`فشل في جلب الإعلانات: ${response.status}`);
       }
     } catch (err) {
+      console.error('❌ خطأ في الاتصال:', err);
       setError('خطأ في الاتصال بالخادم');
     } finally {
       setLoading(false);
@@ -125,6 +134,7 @@ const AdvertisementSlider = ({ target = 'both' }) => {
   }
 
   if (advertisements.length === 0) {
+    console.log('ℹ️ لا توجد إعلانات للعرض');
     return null; // لا تعرض شيئاً إذا لم تكن هناك إعلانات
   }
 
