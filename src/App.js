@@ -20,6 +20,7 @@ import CenterLogin from './CenterLogin';
 import CenterHome from './CenterHome';
 import DoctorCalendar from './DoctorCalendar';
 import DoctorAnalyticsPage from './DoctorAnalyticsPage';
+
 import LandingPage from './LandingPage';
 import DashboardPreview from './DashboardPreview';
 import i18n from './i18n';
@@ -216,6 +217,7 @@ function App() {
               <DoctorAnalyticsPage />
             </ProtectedRoute>
           } />
+
         </Routes>
       </Router>
     </AuthProvider>
