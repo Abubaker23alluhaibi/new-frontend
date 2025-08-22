@@ -562,7 +562,7 @@
   "back": "گەڕانەوە",
   "logout": "چوونەدەرەوە",
   "error_fetching_appointments": "هەڵە لە هێنانی چاوپێکەوتنەکان",
-  "weekdays": {
+  "weekdays_object": {
     "sunday": "یەکشەممە",
     "monday": "دووشەممە",
     "tuesday": "سێشەممە",

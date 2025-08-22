@@ -496,7 +496,7 @@
   "back": "Back",
   "logout": "Logout",
   "error_fetching_appointments": "Error fetching appointments",
-  "weekdays": {
+  "weekdays_object": {
     "sunday": "Sunday",
     "monday": "Monday",
     "tuesday": "Tuesday", 
@@ -626,7 +626,7 @@
   "advanced_calendar": "Advanced Calendar",
   "month_navigation": "Month Navigation",
   "quick_selection_buttons": "Quick Selection Buttons",
-  "weekdays": "Weekdays",
+  "weekdays": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
   "weekdays_array": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
   "work_days_comment": "Work Days",
   "vacation_cancelled_success": "Vacation cancelled and day {{date}} is now available for booking",

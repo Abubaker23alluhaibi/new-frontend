@@ -99,13 +99,24 @@ function DoctorSignUp() {
     image: null // الصورة الشخصية فقط
   });
   const navigate = useNavigate();
-  const weekDays = t('weekdays', { returnObjects: true });
+  const [weekDays, setWeekDays] = useState(['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']);
 
   useEffect(() => {
     if (success) {
       // لا توجه تلقائياً، فقط أظهر رسالة انتظار الموافقة
     }
   }, [success]);
+
+  useEffect(() => {
+    // تحديث أيام الأسبوع عند تغيير اللغة
+    const days = t('weekdays', { returnObjects: true });
+    if (Array.isArray(days) && days.length > 0) {
+      setWeekDays(days);
+    } else {
+      // إذا فشل في جلب أيام الأسبوع من الترجمة، استخدم القيم الافتراضية
+      setWeekDays(['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']);
+    }
+  }, [t]);
 
   const handleChange = e => {
     const { name, value, files } = e.target;
@@ -581,7 +592,7 @@ function DoctorSignUp() {
                   <div style={{display:'flex', gap:6, marginBottom:8}}>
                     <select value={newTime.day} onChange={e=>setNewTime({...newTime, day: e.target.value})} style={{flex:2, borderRadius:8, padding:'.5rem'}}>
                       <option value="">{t('day')}</option>
-                      {Array.isArray(weekDays) && weekDays.map(d => <option key={d} value={d}>{d}</option>)}
+                      {weekDays.map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
                     <div style={{display:'flex', gap:8}}>
                       <div style={{flex:1, display:'flex', flexDirection:'column'}}>

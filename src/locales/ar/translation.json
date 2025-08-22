@@ -543,7 +543,7 @@
   "back": "رجوع",
   "logout": "تسجيل الخروج",
   "error_fetching_appointments": "خطأ في جلب المواعيد",
-  "weekdays": {
+  "weekdays_object": {
     "sunday": "الأحد",
     "monday": "الاثنين", 
     "tuesday": "الثلاثاء",
