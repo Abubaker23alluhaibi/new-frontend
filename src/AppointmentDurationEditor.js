@@ -32,15 +32,15 @@ function AppointmentDurationEditor({ profile, onClose, onUpdate }) {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess('تم تحديث مدة الموعد الافتراضية بنجاح!');
+        setSuccess(t('appointment_duration.success_message'));
         setTimeout(() => {
           onUpdate(Number(duration)); // إرسال البيانات المحدثة
         }, 1500);
       } else {
-        setError(data.error || 'حدث خطأ أثناء تحديث مدة الموعد');
+        setError(data.error || t('appointment_duration.error_updating'));
       }
     } catch (err) {
-      setError('حدث خطأ في الاتصال');
+      setError(t('appointment_duration.connection_error'));
     } finally {
       setLoading(false);
     }
@@ -50,9 +50,9 @@ function AppointmentDurationEditor({ profile, onClose, onUpdate }) {
     <div>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '1.5rem' }}>
-          <h4 style={{ color: '#333', marginBottom: '0.5rem' }}>مدة الموعد الافتراضية:</h4>
+          <h4 style={{ color: '#333', marginBottom: '0.5rem' }}>{t('appointment_duration.default_duration_title')}</h4>
           <p style={{ color: '#666', fontSize: '14px', marginBottom: '1rem' }}>
-            هذه المدة ستُستخدم لتقسيم الأوقات المتاحة في صفحة تفاصيل الطبيب
+            {t('appointment_duration.duration_description')}
           </p>
           
           <select
@@ -69,13 +69,13 @@ function AppointmentDurationEditor({ profile, onClose, onUpdate }) {
             }}
             required
           >
-            <option value="5">5 دقائق</option>
-            <option value="10">10 دقائق</option>
-            <option value="15">15 دقيقة</option>
-            <option value="20">20 دقيقة</option>
-            <option value="30">30 دقيقة</option>
-            <option value="45">45 دقيقة</option>
-            <option value="60">60 دقيقة</option>
+            <option value="5">{t('appointment_duration.5_minutes')}</option>
+            <option value="10">{t('appointment_duration.10_minutes')}</option>
+            <option value="15">{t('appointment_duration.15_minutes')}</option>
+            <option value="20">{t('appointment_duration.20_minutes')}</option>
+            <option value="30">{t('appointment_duration.30_minutes')}</option>
+            <option value="45">{t('appointment_duration.45_minutes')}</option>
+            <option value="60">{t('appointment_duration.60_minutes')}</option>
           </select>
 
           <div style={{ 
@@ -86,10 +86,10 @@ function AppointmentDurationEditor({ profile, onClose, onUpdate }) {
             marginTop: '0.5rem'
           }}>
             <div style={{ fontWeight: '600', color: '#2e7d32', marginBottom: '0.3rem' }}>
-              مثال على الأوقات المتاحة:
+              {t('appointment_duration.example_title')}
             </div>
             <div style={{ fontSize: '14px', color: '#388e3c' }}>
-              إذا كان الدوام من 09:00 إلى 17:00، ستظهر المواعيد كل {duration} دقيقة
+              {t('appointment_duration.example_description', { duration })}
             </div>
           </div>
         </div>
@@ -109,7 +109,7 @@ function AppointmentDurationEditor({ profile, onClose, onUpdate }) {
               flex: 1
             }}
           >
-            {loading ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+            {loading ? t('appointment_duration.saving') : t('appointment_duration.save_changes')}
           </button>
           <button
             type="button"
@@ -124,7 +124,7 @@ function AppointmentDurationEditor({ profile, onClose, onUpdate }) {
               fontWeight: '600'
             }}
           >
-            إلغاء
+            {t('appointment_duration.cancel')}
           </button>
         </div>
 

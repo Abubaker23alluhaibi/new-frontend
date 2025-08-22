@@ -390,7 +390,7 @@ function DoctorDashboard() {
                 // إعادة تحميل المواعيد عند فتح تعديل الدوام
                 fetchAllAppointments();
               }} style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
-                <span role="img" aria-label="تعديل الدوام والإجازات">📅</span> تعديل الجدول والإجازات
+                <span role="img" aria-label={t('doctor_dashboard.edit_schedule_vacations')}>📅</span> {t('doctor_dashboard.edit_schedule_vacations')}
               </button>
               <button onClick={()=>{
                 setShowAppointmentDurationModal(true); 
@@ -398,7 +398,7 @@ function DoctorDashboard() {
                 // إعادة تحميل المواعيد عند فتح تعديل مدة الموعد
                 fetchAllAppointments();
               }} style={{background: '#0A8F82', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
-                <span role="img" aria-label="تعديل مدة الموعد">⏱️</span> تعديل مدة الموعد
+                <span role="img" aria-label={t('doctor_dashboard.edit_appointment_duration')}>⏱️</span> {t('doctor_dashboard.edit_appointment_duration')}
               </button>
               <button onClick={()=>{
                 console.log('🔍 تم الضغط على الملف الشخصي');
@@ -533,7 +533,7 @@ function DoctorDashboard() {
         }}>
               <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📅</div>
             </button>
-            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>التقويم</div>
+                            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.calendar')}</div>
             
             {/* زر كل المواعيد */}
             <button 
@@ -562,7 +562,7 @@ function DoctorDashboard() {
             >
               <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📋</div>
             </button>
-            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>كل المواعيد</div>
+                            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.all_appointments')}</div>
 
             {/* زر تحليل المواعيد */}
             <button 
@@ -589,7 +589,7 @@ function DoctorDashboard() {
             >
               <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
             </button>
-            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>تحليل المواعيد</div>
+                            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.appointment_analysis')}</div>
 
 
 
@@ -620,7 +620,7 @@ function DoctorDashboard() {
             >
               <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>👤</div>
             </button>
-            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>الملف الشخصي</div>
+                            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.profile')}</div>
           </div>
         </div>
 
@@ -1134,7 +1134,7 @@ function DoctorDashboard() {
         <div style={{position:'fixed', top:0, left:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.5)', zIndex:5000, display:'flex', alignItems:'center', justifyContent:'center'}} onClick={()=>setShowWorkTimesModal(false)}>
           <div style={{background:'#fff', borderRadius:16, padding:'2rem', maxWidth:'90vw', maxHeight:'80vh', overflow:'auto', width:400}} onClick={e=>e.stopPropagation()}>
             <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem'}}>
-              <h3 style={{color:'#0A8F82', margin:0, fontWeight:700}}>📅 تعديل الجدول والإجازات</h3>
+                              <h3 style={{color:'#0A8F82', margin:0, fontWeight:700}}>📅 {t('doctor_dashboard.edit_schedule_vacations')}</h3>
               <button onClick={()=>setShowWorkTimesModal(false)} style={{background:'#e53935', color:'#fff', border:'none', borderRadius:8, fontSize:20, fontWeight:900, padding:'0.2rem 0.8rem', cursor:'pointer'}}>×</button>
             </div>
             <WorkTimesEditor 
@@ -1179,7 +1179,7 @@ function DoctorDashboard() {
         <div style={{position:'fixed', top:0, left:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.5)', zIndex:5000, display:'flex', alignItems:'center', justifyContent:'center'}} onClick={()=>setShowAppointmentDurationModal(false)}>
           <div style={{background:'#fff', borderRadius:16, padding:'2rem', maxWidth:'90vw', maxHeight:'80vh', overflow:'auto', width:400}} onClick={e=>e.stopPropagation()}>
             <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem'}}>
-              <h3 style={{color:'#7c4dff', margin:0, fontWeight:700}}>⏱️ تعديل مدة الموعد الافتراضية</h3>
+                              <h3 style={{color:'#7c4dff', margin:0, fontWeight:700}}>⏱️ {t('doctor_dashboard.edit_appointment_duration_title')}</h3>
               <button onClick={()=>setShowAppointmentDurationModal(false)} style={{background:'#e53935', color:'#fff', border:'none', borderRadius:8, fontSize:20, fontWeight:900, padding:'0.2rem 0.8rem', cursor:'pointer'}}>×</button>
             </div>
             <AppointmentDurationEditor 

@@ -92,6 +92,10 @@ function DoctorAnalyticsPage() {
     return timeString;
   };
 
+
+
+
+
   // دالة التحليل
   const getAnalytics = () => {
     const appointmentsArray = Array.isArray(appointments) ? appointments : [];
@@ -809,7 +813,19 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
                   fontWeight:700, 
                   marginBottom:'0.5rem',
                   color: day === analytics.mostBusyDay?.[0] ? '#856404' : '#0A8F82'
-                }}>{day}</div>
+                }}>{(() => {
+                  const dayMap = {
+                    'الأحد': 'sunday',
+                    'الاثنين': 'monday', 
+                    'الثلاثاء': 'tuesday',
+                    'الأربعاء': 'wednesday',
+                    'الخميس': 'thursday',
+                    'الجمعة': 'friday',
+                    'السبت': 'saturday'
+                  };
+                  const englishKey = dayMap[day];
+                  return englishKey ? t(`weekdays.${englishKey}`) : day;
+                })()}</div>
                 <div style={{
                   fontSize: isMobile ? '1.2rem' : '1.3rem', 
                   fontWeight:700, 
@@ -860,8 +876,26 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
               <div style={{
                 fontSize: isMobile ? '1rem' : '1.1rem', 
                 fontWeight:700, 
-                marginBottom:'0.5rem'
-              }}>{month}</div>
+                marginBottom:'0.5rem',
+                color: '#0A8F82'
+              }}>{(() => {
+                const monthMap = {
+                  'كانون الثاني': 'january',
+                  'شباط': 'february',
+                  'آذار': 'march',
+                  'نيسان': 'april',
+                  'أيار': 'may',
+                  'حزيران': 'june',
+                  'تموز': 'july',
+                  'آب': 'august',
+                  'أيلول': 'september',
+                  'تشرين الأول': 'october',
+                  'تشرين الثاني': 'november',
+                  'كانون الأول': 'december'
+                };
+                const englishKey = monthMap[month];
+                return englishKey ? t(`months.${englishKey}`) : month;
+              })()}</div>
               <div style={{
                 fontSize: isMobile ? '1.2rem' : '1.3rem', 
                 fontWeight:700, 
