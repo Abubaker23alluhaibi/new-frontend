@@ -112,14 +112,26 @@ function DoctorDashboard() {
     const today = getToday();
     const todayAppointments = appointments.filter(apt => apt.date === today);
     
+    const queryLower = query.toLowerCase().trim();
+    
     const results = todayAppointments.filter(apt => {
-      const patientName = apt.patientName?.toLowerCase() || '';
-      const patientPhone = apt.patientPhone?.replace(/\D/g, '') || '';
-      const searchLower = query.toLowerCase().replace(/\D/g, '');
+      // البحث في اسم المريض
+      const patientName = (apt.patientName || apt.userId?.first_name || apt.userName || '').toLowerCase();
       
-      return patientName.includes(searchLower) || patientPhone.includes(searchLower);
+      // البحث في رقم الهاتف (إزالة المسافات والرموز)
+      const patientPhone = (apt.patientPhone || apt.userId?.phone || '').replace(/[\s\-\(\)]/g, '');
+      const searchPhone = queryLower.replace(/[\s\-\(\)]/g, '');
+      
+      // فحص إذا كان البحث عن اسم أو رقم
+      const nameMatch = patientName.includes(queryLower);
+      const phoneMatch = patientPhone.includes(searchPhone);
+      
+      console.log(`🔍 البحث: "${query}" | المريض: "${patientName}" | الهاتف: "${patientPhone}" | نتيجة الاسم: ${nameMatch} | نتيجة الهاتف: ${phoneMatch}`);
+      
+      return nameMatch || phoneMatch;
     });
     
+    console.log(`📊 نتائج البحث: ${results.length} من أصل ${todayAppointments.length} مواعيد`);
     setSearchResults(results);
     setIsSearching(false);
   }, [appointments]);
