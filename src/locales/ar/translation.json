@@ -574,7 +574,12 @@
     "profile": "الملف الشخصي",
     "edit_schedule_vacations": "تعديل الجدول والإجازات",
     "edit_appointment_duration": "تعديل مدة الموعد",
-    "edit_appointment_duration_title": "تعديل مدة الموعد الافتراضية"
+    "edit_appointment_duration_title": "تعديل مدة الموعد الافتراضية",
+    "search_placeholder": "البحث بالاسم أو رقم الهاتف...",
+    "search_today_appointments": "البحث في مواعيد اليوم",
+    "no_search_results": "لا توجد نتائج بحث",
+    "search_results": "نتائج البحث",
+    "clear_search": "مسح البحث"
   },
   "appointment_duration": {
     "default_duration_title": "مدة الموعد الافتراضية:",

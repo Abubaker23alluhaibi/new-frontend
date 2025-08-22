@@ -527,7 +527,12 @@
     "profile": "Profile",
     "edit_schedule_vacations": "Edit Schedule & Vacations",
     "edit_appointment_duration": "Edit Appointment Duration",
-    "edit_appointment_duration_title": "Edit Default Appointment Duration"
+    "edit_appointment_duration_title": "Edit Default Appointment Duration",
+    "search_placeholder": "Search by name or phone number...",
+    "search_today_appointments": "Search Today's Appointments",
+    "no_search_results": "No search results found",
+    "search_results": "Search Results",
+    "clear_search": "Clear Search"
   },
   "appointment_duration": {
     "default_duration_title": "Default Appointment Duration:",

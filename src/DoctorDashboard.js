@@ -48,6 +48,11 @@ function DoctorDashboard() {
   const [lang, setLang] = useState('AR');
   const [showWorkTimesModal, setShowWorkTimesModal] = useState(false);
   const [showAppointmentDurationModal, setShowAppointmentDurationModal] = useState(false);
+  
+  // حالات البحث
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   // مراقبة حجم النافذة
   useEffect(() => {
@@ -94,6 +99,31 @@ function DoctorDashboard() {
     }
   }, [profile?._id]);
 
+  // دالة البحث في مواعيد اليوم
+  const searchTodayAppointments = useCallback((query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    
+    const today = getToday();
+    const todayAppointments = appointments.filter(apt => apt.date === today);
+    
+    const results = todayAppointments.filter(apt => {
+      const patientName = apt.patientName?.toLowerCase() || '';
+      const patientPhone = apt.patientPhone?.replace(/\D/g, '') || '';
+      const searchLower = query.toLowerCase().replace(/\D/g, '');
+      
+      return patientName.includes(searchLower) || patientPhone.includes(searchLower);
+    });
+    
+    setSearchResults(results);
+    setIsSearching(false);
+  }, [appointments]);
+
   // دالة لتحديث البيانات
   const refreshData = useCallback(() => {
     console.log('🔄 تحديث بيانات الدكتور...');
@@ -131,6 +161,12 @@ function DoctorDashboard() {
   useEffect(() => {
     fetchAllAppointments();
   }, [fetchAllAppointments]);
+
+  // تنظيف نتائج البحث عند تغيير المواعيد
+  useEffect(() => {
+    setSearchResults([]);
+    setSearchQuery('');
+  }, [appointments]);
 
   // تحديث تلقائي كل 3 دقائق
   useEffect(() => {
@@ -621,6 +657,232 @@ function DoctorDashboard() {
               <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>👤</div>
             </button>
                             <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.profile')}</div>
+          </div>
+        </div>
+
+        {/* صندوق البحث */}
+        <div style={{maxWidth:700, margin:'1.5rem auto', padding:'0 1rem'}}>
+          <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px rgba(0,0,0,0.08)', padding:'1.5rem', border: '1px solid #f0f0f0'}}>
+            <h3 style={{color:'#0A8F82', marginBottom:'1rem', textAlign:'center', fontWeight:700, fontSize: '1.2rem', direction:'rtl'}}>
+              🔍 {t('doctor_dashboard.search_today_appointments')}
+            </h3>
+            
+            {/* صندوق البحث */}
+            <div style={{marginBottom:'1rem', position: 'relative'}}>
+              <input
+                type="text"
+                placeholder={t('doctor_dashboard.search_placeholder')}
+                value={searchQuery}
+                onChange={(e) => {
+                  const query = e.target.value;
+                  setSearchQuery(query);
+                  searchTodayAppointments(query);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.8rem 1rem',
+                  paddingRight: searchQuery.trim() ? '3rem' : '1rem',
+                  borderRadius: '8px',
+                  border: searchQuery.trim() ? '2px solid #0A8F82' : '2px solid #e0e0e0',
+                  fontSize: '1rem',
+                  background: searchQuery.trim() ? '#f0f9f8' : '#f8f9fa',
+                  transition: 'all 0.3s ease',
+                  direction: 'rtl',
+                  outline: 'none'
+                }}
+                onFocus={(e) => {
+                  e.target.style.border = '2px solid #0A8F82';
+                  e.target.style.background = '#f0f9f8';
+                }}
+                onBlur={(e) => {
+                  if (!searchQuery.trim()) {
+                    e.target.style.border = '2px solid #e0e0e0';
+                    e.target.style.background = '#f8f9fa';
+                  }
+                }}
+              />
+              
+              {/* زر مسح البحث */}
+              {searchQuery.trim() && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSearchResults([]);
+                  }}
+                  style={{
+                    position: 'absolute',
+                    right: '0.5rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: '#666',
+                    fontSize: '1.2rem',
+                    cursor: 'pointer',
+                    padding: '0.2rem',
+                    borderRadius: '50%',
+                    width: '2rem',
+                    height: '2rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = '#f0f0f0';
+                    e.target.style.color = '#333';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'none';
+                    e.target.style.color = '#666';
+                  }}
+                  title={t('doctor_dashboard.clear_search')}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* نتائج البحث */}
+            {searchQuery.trim() && (
+              <div style={{marginBottom:'1rem'}}>
+                <h4 style={{color:'#666', marginBottom:'0.8rem', textAlign:'center', fontWeight:600, fontSize: '1rem', direction:'rtl'}}>
+                  {t('doctor_dashboard.search_results')} ({searchResults.length})
+                </h4>
+                
+                {searchResults.length > 0 ? (
+                  <div style={{
+                    display:'grid', 
+                    gridTemplateColumns: isMobile ? 'repeat(auto-fit, minmax(280px, 1fr))' : 'repeat(auto-fit, minmax(300px, 1fr))', 
+                    gap: isMobile ? '0.8rem' : '1rem'
+                  }}>
+                    {searchResults.map(appointment => (
+                      <div key={appointment._id} style={{
+                        background:'#fff3cd',
+                        borderRadius: isMobile ? 8 : 12,
+                        padding: isMobile ? '0.8rem' : '1rem',
+                        border:'2px solid #ffc107',
+                        boxShadow:'0 2px 8px rgba(255, 193, 7, 0.2)',
+                        position:'relative',
+                        transition: 'all 0.3s ease'
+                      }}>
+                        {/* شارة موعد خاص */}
+                        {appointment.type === 'special_appointment' && (
+                          <div style={{
+                            position:'absolute',
+                            top: isMobile ? 6 : 8,
+                            left:8,
+                            background:'#0A8F82',
+                            color:'#fff',
+                            borderRadius: isMobile ? 8 : 12,
+                            padding: isMobile ? '0.15rem 0.5rem' : '0.2rem 0.6rem',
+                            fontWeight:600,
+                            fontSize: isMobile ? '0.7rem' : '0.75rem',
+                            zIndex:2
+                          }}>
+                            {t('special_appointment')}
+                          </div>
+                        )}
+                        
+                        {/* معلومات المريض */}
+                        <div style={{marginBottom:'0.8rem'}}>
+                          <div style={{color:'#0A8F82', fontWeight:700, fontSize:'1.1rem', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
+                            👤 {appointment.userId?.first_name || appointment.userName || t('patient_name')}
+                          </div>
+                          {(appointment.patientPhone || appointment.userId?.phone || (/^\+?\d{10,}$/.test(appointment.notes))) && (
+                            <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'ltr', textAlign:'left', unicodeBidi:'bidi-override'}}>
+                              📞 {appointment.patientPhone || appointment.userId?.phone || appointment.notes}
+                            </div>
+                          )}
+                          {/* عرض عمر المريض */}
+                          <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
+                            🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
+                          </div>
+                        </div>
+                        
+                        {/* وقت وتاريخ الموعد */}
+                        <div style={{marginBottom:'0.8rem'}}>
+                          <div style={{fontWeight:600, fontSize:'1rem', color:'#333', marginBottom:'0.2rem', direction:'ltr', textAlign:'left', unicodeBidi:'bidi-override'}}>
+                            🕐 {appointment.time}
+                          </div>
+                          <div style={{fontSize:'0.85rem', color:'#888', direction:'rtl', textAlign:'right'}}>
+                            📅 {formatDate(appointment.date)}
+                          </div>
+                        </div>
+                        
+                        {/* ملاحظة أو سبب */}
+                        {(appointment.type === 'special_appointment' && appointment.notes && !(/^\+?\d{10,}$/.test(appointment.notes))) && (
+                          <div style={{fontSize:'0.85rem', color:'#0A8F82', marginBottom:'0.8rem', fontStyle:'italic', padding:'0.5rem', background:'#e8f5e8', borderRadius:6, direction:'rtl', textAlign:'right'}}>
+                            📝 {appointment.notes}
+                          </div>
+                        )}
+                        {appointment.reason && (
+                          <div style={{fontSize:'0.85rem', color:'#666', marginBottom:'0.8rem', padding:'0.5rem', background:'#f5f5f5', borderRadius:6, direction:'rtl', textAlign:'right'}}>
+                            💬 {appointment.reason}
+                          </div>
+                        )}
+                        
+                        {/* حالة الحضور */}
+                        <div style={{marginBottom:'0.8rem'}}>
+                          {appointment.attendance === 'present' ? (
+                            <div style={{
+                              background:'#4caf50',
+                              color:'#fff',
+                              padding:'0.3rem 0.6rem',
+                              borderRadius:6,
+                              fontSize:'0.75rem',
+                              fontWeight:600,
+                              textAlign:'center',
+                              display:'inline-block'
+                            }}>
+                              ✅ {t('present')}
+                            </div>
+                          ) : appointment.attendance === 'absent' ? (
+                            <div style={{
+                              background:'#f44336',
+                              color:'#fff',
+                              padding:'0.3rem 0.6rem',
+                              borderRadius:6,
+                              fontSize:'0.75rem',
+                              fontWeight:600,
+                              textAlign:'center',
+                              display:'inline-block'
+                            }}>
+                              ❌ {t('absent')}
+                            </div>
+                          ) : (
+                            <div style={{
+                              background:'#ff9800',
+                              color:'#fff',
+                              padding:'0.3rem 0.6rem',
+                              borderRadius:6,
+                              fontSize:'0.75rem',
+                              fontWeight:600,
+                              textAlign:'center',
+                              display:'inline-block'
+                            }}>
+                              ⏳ {t('waiting')}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '1rem',
+                    color: '#666',
+                    fontSize: '0.9rem',
+                    background: '#f8f9fa',
+                    borderRadius: '8px',
+                    border: '1px solid #e9ecef'
+                  }}>
+                    {t('doctor_dashboard.no_search_results')}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

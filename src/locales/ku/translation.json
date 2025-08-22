@@ -593,7 +593,12 @@
     "profile": "پروفایل",
     "edit_schedule_vacations": "دەستکاریکردنی خشتە و پشووەکان",
     "edit_appointment_duration": "دەستکاریکردنی ماوەی چاوپێکەوتن",
-    "edit_appointment_duration_title": "دەستکاریکردنی ماوەی چاوپێکەوتنی بنەڕەتی"
+    "edit_appointment_duration_title": "دەستکاریکردنی ماوەی چاوپێکەوتنی بنەڕەتی",
+    "search_placeholder": "گەڕان بە ناو یان ژمارەی مۆبایل...",
+    "search_today_appointments": "گەڕان لە چاوپێکەوتنەکانی ئەمڕۆ",
+    "no_search_results": "هیچ ئەنجامێکی گەڕان نەدۆزرایەوە",
+    "search_results": "ئەنجامەكانی گەڕان",
+    "clear_search": "سڕینەوەی گەڕان"
   },
   "appointment_duration": {
     "default_duration_title": "ماوەی چاوپێکەوتنی بنەڕەتی:",
