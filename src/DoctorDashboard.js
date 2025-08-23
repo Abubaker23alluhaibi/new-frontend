@@ -20,6 +20,7 @@ function getToday() {
 }
 
 function DoctorDashboard() {
+  console.log('🎬 DoctorDashboard: تم تحميل المكون');
   const { profile, setProfile, signOut } = useAuth();
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
@@ -57,6 +58,7 @@ function DoctorDashboard() {
 
   // مراقبة حجم النافذة
   useEffect(() => {
+    console.log('🔄 DoctorDashboard: useEffect - مراقبة حجم النافذة');
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
@@ -69,7 +71,11 @@ function DoctorDashboard() {
 
   // دالة لجلب الإشعارات
   const fetchNotifications = useCallback(async () => {
-    if (!profile?._id) return;
+    console.log('🔔 DoctorDashboard: محاولة جلب الإشعارات');
+    if (!profile?._id) {
+      console.log('❌ DoctorDashboard: لا يوجد profile._id');
+      return;
+    }
     
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?doctorId=${profile._id}&t=${Date.now()}`);
@@ -90,7 +96,11 @@ function DoctorDashboard() {
 
   // دالة موحدة لجلب جميع مواعيد الطبيب
   const fetchAllAppointments = useCallback(async () => {
-    if (!profile?._id) return;
+    console.log('📅 DoctorDashboard: محاولة جلب المواعيد');
+    if (!profile?._id) {
+      console.log('❌ DoctorDashboard: لا يوجد profile._id');
+      return;
+    }
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/${profile._id}?t=${Date.now()}`);
       const data = await res.json();
@@ -159,6 +169,7 @@ function DoctorDashboard() {
 
   // جلب إشعارات الدكتور
   useEffect(() => {
+    console.log('🔄 DoctorDashboard: useEffect - جلب الإشعارات');
     fetchNotifications();
   }, [fetchNotifications]);
 
@@ -172,6 +183,7 @@ function DoctorDashboard() {
 
   // جلب المواعيد عند تحميل الصفحة
   useEffect(() => {
+    console.log('🔄 DoctorDashboard: useEffect - جلب المواعيد');
     fetchAllAppointments();
   }, [fetchAllAppointments]);
 
