@@ -34,8 +34,17 @@ const AdvertisementSlider = ({ target = 'both' }) => {
       setLoading(true);
       setError('');
       
-      const apiUrl = `${process.env.REACT_APP_API_URL}/advertisements/${target}`;
-      console.log('🔍 AdvertisementSlider: جلب الإعلانات من:', apiUrl);
+      // تحديد API endpoint بناءً على الهدف
+      let apiUrl;
+      if (target === 'both') {
+        // للدكتور: جرب إعلانات الأطباء أولاً، ثم إعلانات عامة
+        apiUrl = `${process.env.REACT_APP_API_URL}/advertisements/doctors`;
+        console.log('🎯 AdvertisementSlider: جلب إعلانات الأطباء للدكتور من:', apiUrl);
+      } else {
+        apiUrl = `${process.env.REACT_APP_API_URL}/advertisements/${target}`;
+        console.log('🎯 AdvertisementSlider: جلب الإعلانات للهدف:', target, 'من:', apiUrl);
+      }
+      
       console.log('🔗 AdvertisementSlider: API URL المستخدم:', process.env.REACT_APP_API_URL);
       console.log('🎯 AdvertisementSlider: الهدف المحدد:', target);
       
@@ -52,22 +61,89 @@ const AdvertisementSlider = ({ target = 'both' }) => {
         if (Array.isArray(data)) {
           console.log('📊 AdvertisementSlider: محتوى الإعلانات:', data.map(ad => ({ id: ad._id, title: ad.title, image: ad.image })));
         }
-        setAdvertisements(data);
         
-        // تحديث إحصائيات المشاهدة
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
+          setAdvertisements(data);
+          
+          // تحديث إحصائيات المشاهدة
           data.forEach(ad => {
             updateStats(ad._id, 'view');
           });
+        } else if (target === 'both') {
+          // إذا لم توجد إعلانات للأطباء، جرب إعلانات عامة
+          console.log('🔄 AdvertisementSlider: محاولة جلب إعلانات عامة كبديل');
+          const fallbackResponse = await fetch(`${process.env.REACT_APP_API_URL}/advertisements/users`);
+          if (fallbackResponse.ok) {
+            const fallbackData = await fallbackResponse.json();
+            console.log('✅ AdvertisementSlider: تم جلب إعلانات عامة كبديل:', fallbackData);
+            if (Array.isArray(fallbackData) && fallbackData.length > 0) {
+              setAdvertisements(fallbackData);
+              fallbackData.forEach(ad => {
+                updateStats(ad._id, 'view');
+              });
+            } else {
+              console.log('ℹ️ AdvertisementSlider: لا توجد إعلانات عامة أيضاً');
+              setAdvertisements([]);
+            }
+          } else {
+            console.log('❌ AdvertisementSlider: فشل في جلب إعلانات عامة كبديل');
+            setAdvertisements([]);
+          }
+        } else {
+          setAdvertisements([]);
         }
       } else {
         const errorData = await response.json().catch(() => ({}));
         console.error('❌ AdvertisementSlider: خطأ في جلب الإعلانات:', response.status, errorData);
         console.error('❌ AdvertisementSlider: تفاصيل الخطأ:', errorData);
+        
+        if (target === 'both') {
+          // إذا فشل جلب إعلانات الأطباء، جرب إعلانات عامة
+          console.log('🔄 AdvertisementSlider: محاولة جلب إعلانات عامة بعد فشل إعلانات الأطباء');
+          try {
+            const fallbackResponse = await fetch(`${process.env.REACT_APP_API_URL}/advertisements/users`);
+            if (fallbackResponse.ok) {
+              const fallbackData = await fallbackResponse.json();
+              console.log('✅ AdvertisementSlider: تم جلب إعلانات عامة كبديل:', fallbackData);
+              if (Array.isArray(fallbackData) && fallbackData.length > 0) {
+                setAdvertisements(fallbackData);
+                fallbackData.forEach(ad => {
+                  updateStats(ad._id, 'view');
+                });
+                return; // نجح البديل، لا نحتاج لعرض خطأ
+              }
+            }
+          } catch (fallbackErr) {
+            console.error('❌ AdvertisementSlider: فشل في جلب إعلانات عامة كبديل:', fallbackErr);
+          }
+        }
+        
         setError(`فشل في جلب الإعلانات: ${response.status}`);
       }
     } catch (err) {
       console.error('❌ AdvertisementSlider: خطأ في الاتصال:', err);
+      
+      if (target === 'both') {
+        // إذا فشل الاتصال، جرب إعلانات عامة
+        console.log('🔄 AdvertisementSlider: محاولة جلب إعلانات عامة بعد فشل الاتصال');
+        try {
+          const fallbackResponse = await fetch(`${process.env.REACT_APP_API_URL}/advertisements/users`);
+          if (fallbackResponse.ok) {
+            const fallbackData = await fallbackResponse.json();
+            console.log('✅ AdvertisementSlider: تم جلب إعلانات عامة كبديل:', fallbackData);
+            if (Array.isArray(fallbackData) && fallbackData.length > 0) {
+              setAdvertisements(fallbackData);
+              fallbackData.forEach(ad => {
+                updateStats(ad._id, 'view');
+              });
+              return; // نجح البديل، لا نحتاج لعرض خطأ
+            }
+          }
+        } catch (fallbackErr) {
+          console.error('❌ AdvertisementSlider: فشل في جلب إعلانات عامة كبديل:', fallbackErr);
+        }
+      }
+      
       setError('خطأ في الاتصال بالخادم');
     } finally {
       setLoading(false);

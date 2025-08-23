@@ -1492,6 +1492,47 @@ function DoctorDashboard() {
           </div>
         </div>
       )}
+      {/* الإعلانات المتحركة */}
+      {(() => {
+        console.log('🎬 DoctorDashboard: قبل عرض AdvertisementSlider');
+        return (
+          <div style={{
+            marginBottom: '1rem', 
+            border: '2px solid #4CAF50', 
+            padding: '1rem', 
+            background: '#f8fff8',
+            borderRadius: '12px'
+          }}>
+            {console.log('🎬 DoctorDashboard: محاولة عرض AdvertisementSlider مع target="both"')}
+            <div style={{
+              color: '#2E7D32', 
+              marginBottom: '1rem', 
+              fontSize: '1.1rem',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              📢 منطقة الإعلانات - يجب أن تظهر الإعلانات هنا
+            </div>
+            <div style={{
+              fontSize: '0.9rem',
+              color: '#666',
+              marginBottom: '1rem',
+              padding: '0.5rem',
+              background: '#fff',
+              borderRadius: '8px',
+              border: '1px solid #e0e0e0'
+            }}>
+              <strong>معلومات التشخيص:</strong><br/>
+              • الهدف: both (إعلانات للدكتور)<br/>
+              • API URL: {process.env.REACT_APP_API_URL}<br/>
+              • الوقت: {new Date().toLocaleString('ar-IQ')}
+            </div>
+            <AdvertisementSlider target="both" />
+          </div>
+        );
+      })()}
     </div>
   );
 }
@@ -1654,9 +1695,39 @@ function SpecialAppointmentsList({ appointments, onDelete, onEdit, onOpenNote })
       {(() => {
         console.log('🎬 DoctorDashboard: قبل عرض AdvertisementSlider');
         return (
-          <div style={{marginBottom: '1rem', border: '2px solid red', padding: '1rem', background: '#f0f0f0'}}>
+          <div style={{
+            marginBottom: '1rem', 
+            border: '2px solid #4CAF50', 
+            padding: '1rem', 
+            background: '#f8fff8',
+            borderRadius: '12px'
+          }}>
             {console.log('🎬 DoctorDashboard: محاولة عرض AdvertisementSlider مع target="both"')}
-            <div style={{color: 'red', marginBottom: '1rem'}}>🔍 منطقة الإعلانات - يجب أن تظهر الإعلانات هنا</div>
+            <div style={{
+              color: '#2E7D32', 
+              marginBottom: '1rem', 
+              fontSize: '1.1rem',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              📢 منطقة الإعلانات - يجب أن تظهر الإعلانات هنا
+            </div>
+            <div style={{
+              fontSize: '0.9rem',
+              color: '#666',
+              marginBottom: '1rem',
+              padding: '0.5rem',
+              background: '#fff',
+              borderRadius: '8px',
+              border: '1px solid #e0e0e0'
+            }}>
+              <strong>معلومات التشخيص:</strong><br/>
+              • الهدف: both (إعلانات للدكتور)<br/>
+              • API URL: {process.env.REACT_APP_API_URL}<br/>
+              • الوقت: {new Date().toLocaleString('ar-IQ')}
+            </div>
             <AdvertisementSlider target="both" />
           </div>
         );
