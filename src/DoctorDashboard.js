@@ -517,6 +517,57 @@ function DoctorDashboard() {
       <div style={{position:'relative', zIndex:1}}>
                         <h2 style={{textAlign:'center', color:'#0A8F82', marginTop:30, fontSize: '2.2rem', fontWeight: 800}}>{t('doctor_dashboard.title')}</h2>
         
+        {/* الإعلانات المتحركة - في أعلى الصفحة بعد العنوان */}
+        {(() => {
+          console.log('🎬 DoctorDashboard: قبل عرض AdvertisementSlider في أعلى الصفحة');
+          return (
+            <div style={{
+              maxWidth: 800,
+              margin: '2rem auto',
+              padding: '0 1rem'
+            }}>
+              <div style={{
+                border: '2px solid #4CAF50', 
+                padding: '1.5rem', 
+                background: 'linear-gradient(135deg, #f8fff8 0%, #e8f5e8 100%)',
+                borderRadius: '16px',
+                boxShadow: '0 4px 20px rgba(76, 175, 80, 0.1)'
+              }}>
+                {console.log('🎬 DoctorDashboard: محاولة عرض AdvertisementSlider مع target="both"')}
+                <div style={{
+                  color: '#2E7D32', 
+                  marginBottom: '1rem', 
+                  fontSize: '1.2rem',
+                  fontWeight: '700',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  textAlign: 'center',
+                  justifyContent: 'center'
+                }}>
+                  📢 الإعلانات المميزة للدكتور
+                </div>
+                <div style={{
+                  fontSize: '0.9rem',
+                  color: '#666',
+                  marginBottom: '1rem',
+                  padding: '0.8rem',
+                  background: '#fff',
+                  borderRadius: '12px',
+                  border: '1px solid #e0e0e0',
+                  textAlign: 'center'
+                }}>
+                  <strong>معلومات التشخيص:</strong><br/>
+                  • الهدف: both (إعلانات للدكتور)<br/>
+                  • API URL: {process.env.REACT_APP_API_URL}<br/>
+                  • الوقت: {new Date().toLocaleString('ar-IQ')}
+                </div>
+                <AdvertisementSlider target="both" />
+              </div>
+            </div>
+          );
+        })()}
+        
         {/* الإحصائيات السريعة */}
         <div style={{maxWidth:700, margin:'1.5rem auto', padding:'0 1rem'}}>
           <div style={{
@@ -1690,48 +1741,6 @@ function SpecialAppointmentsList({ appointments, onDelete, onEdit, onOpenNote })
           </div>
         </div>
       </div>
-
-      {/* الإعلانات المتحركة */}
-      {(() => {
-        console.log('🎬 DoctorDashboard: قبل عرض AdvertisementSlider');
-        return (
-          <div style={{
-            marginBottom: '1rem', 
-            border: '2px solid #4CAF50', 
-            padding: '1rem', 
-            background: '#f8fff8',
-            borderRadius: '12px'
-          }}>
-            {console.log('🎬 DoctorDashboard: محاولة عرض AdvertisementSlider مع target="both"')}
-            <div style={{
-              color: '#2E7D32', 
-              marginBottom: '1rem', 
-              fontSize: '1.1rem',
-              fontWeight: '600',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
-            }}>
-              📢 منطقة الإعلانات - يجب أن تظهر الإعلانات هنا
-            </div>
-            <div style={{
-              fontSize: '0.9rem',
-              color: '#666',
-              marginBottom: '1rem',
-              padding: '0.5rem',
-              background: '#fff',
-              borderRadius: '8px',
-              border: '1px solid #e0e0e0'
-            }}>
-              <strong>معلومات التشخيص:</strong><br/>
-              • الهدف: both (إعلانات للدكتور)<br/>
-              • API URL: {process.env.REACT_APP_API_URL}<br/>
-              • الوقت: {new Date().toLocaleString('ar-IQ')}
-            </div>
-            <AdvertisementSlider target="both" />
-          </div>
-        );
-      })()}
 
       {/* إحصائيات سريعة */}
       <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px, 1fr))', gap:'1rem'}}>
