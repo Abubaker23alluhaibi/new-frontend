@@ -1650,8 +1650,9 @@ function SpecialAppointmentsList({ appointments, onDelete, onEdit, onOpenNote })
       </div>
 
       {/* الإعلانات المتحركة */}
-      <div style={{marginBottom: '1rem'}}>
+      <div style={{marginBottom: '1rem', border: '2px solid red', padding: '1rem', background: '#f0f0f0'}}>
         {console.log('🎬 DoctorDashboard: محاولة عرض AdvertisementSlider مع target="both"')}
+        <div style={{color: 'red', marginBottom: '1rem'}}>🔍 منطقة الإعلانات - يجب أن تظهر الإعلانات هنا</div>
         <AdvertisementSlider target="both" />
       </div>
 
