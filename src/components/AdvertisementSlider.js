@@ -235,28 +235,9 @@ const AdvertisementSlider = ({ target = 'both' }) => {
     console.log('ℹ️ AdvertisementSlider: لا توجد إعلانات للعرض');
     console.log('ℹ️ الهدف المحدد:', target);
     console.log('ℹ️ API URL المستخدم:', process.env.REACT_APP_API_URL);
-    return (
-      <div style={{
-        height: '200px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#f5f5f5',
-        color: '#666',
-        borderRadius: '12px',
-        margin: '1rem 0',
-        border: '2px dashed #ddd'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📢</div>
-          <div style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>لا توجد إعلانات للعرض حالياً</div>
-          <div style={{ fontSize: '0.9rem', marginBottom: '0.5rem', opacity: 0.7 }}>سيتم عرض الإعلانات هنا عند توفرها</div>
-          <div style={{ fontSize: '0.8rem', opacity: 0.5, marginTop: '1rem', padding: '0.5rem', background: '#fff', borderRadius: '8px' }}>
-            الهدف: {target} | API: {process.env.REACT_APP_API_URL}
-          </div>
-        </div>
-      </div>
-    );
+    
+    // إذا لم توجد إعلانات، لا تظهر أي شيء (مثل المستخدم)
+    return null;
   }
 
   console.log('🎯 AdvertisementSlider: عرض الإعلانات، العدد:', advertisements.length, 'المؤشر الحالي:', currentIndex);
