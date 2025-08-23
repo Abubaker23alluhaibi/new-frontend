@@ -21,6 +21,7 @@ function getToday() {
 
 function DoctorDashboard() {
   console.log('🎬 DoctorDashboard: تم تحميل المكون');
+  console.log('🎬 DoctorDashboard: سيتم عرض AdvertisementSlider في هذا المكون');
   const { profile, setProfile, signOut } = useAuth();
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
@@ -1650,11 +1651,16 @@ function SpecialAppointmentsList({ appointments, onDelete, onEdit, onOpenNote })
       </div>
 
       {/* الإعلانات المتحركة */}
-      <div style={{marginBottom: '1rem', border: '2px solid red', padding: '1rem', background: '#f0f0f0'}}>
-        {console.log('🎬 DoctorDashboard: محاولة عرض AdvertisementSlider مع target="both"')}
-        <div style={{color: 'red', marginBottom: '1rem'}}>🔍 منطقة الإعلانات - يجب أن تظهر الإعلانات هنا</div>
-        <AdvertisementSlider target="both" />
-      </div>
+      {(() => {
+        console.log('🎬 DoctorDashboard: قبل عرض AdvertisementSlider');
+        return (
+          <div style={{marginBottom: '1rem', border: '2px solid red', padding: '1rem', background: '#f0f0f0'}}>
+            {console.log('🎬 DoctorDashboard: محاولة عرض AdvertisementSlider مع target="both"')}
+            <div style={{color: 'red', marginBottom: '1rem'}}>🔍 منطقة الإعلانات - يجب أن تظهر الإعلانات هنا</div>
+            <AdvertisementSlider target="both" />
+          </div>
+        );
+      })()}
 
       {/* إحصائيات سريعة */}
       <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(150px, 1fr))', gap:'1rem'}}>
