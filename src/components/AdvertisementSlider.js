@@ -40,11 +40,17 @@ const AdvertisementSlider = ({ target = 'both' }) => {
       
       const response = await fetch(apiUrl);
       console.log('📡 استجابة الخادم:', response.status, response.statusText);
+      console.log('📡 headers الاستجابة:', Object.fromEntries(response.headers.entries()));
       
       if (response.ok) {
         const data = await response.json();
         console.log('✅ تم جلب الإعلانات:', data);
         console.log('📊 عدد الإعلانات المستلمة:', Array.isArray(data) ? data.length : 'غير مصفوفة');
+        console.log('📊 نوع البيانات المستلمة:', typeof data);
+        console.log('📊 هل البيانات مصفوفة؟', Array.isArray(data));
+        if (Array.isArray(data)) {
+          console.log('📊 محتوى الإعلانات:', data.map(ad => ({ id: ad._id, title: ad.title, image: ad.image })));
+        }
         setAdvertisements(data);
         
         // تحديث إحصائيات المشاهدة
@@ -56,6 +62,7 @@ const AdvertisementSlider = ({ target = 'both' }) => {
       } else {
         const errorData = await response.json().catch(() => ({}));
         console.error('❌ خطأ في جلب الإعلانات:', response.status, errorData);
+        console.error('❌ تفاصيل الخطأ:', errorData);
         setError(`فشل في جلب الإعلانات: ${response.status}`);
       }
     } catch (err) {
@@ -145,6 +152,8 @@ const AdvertisementSlider = ({ target = 'both' }) => {
 
   if (advertisements.length === 0) {
     console.log('ℹ️ AdvertisementSlider: لا توجد إعلانات للعرض');
+    console.log('ℹ️ الهدف المحدد:', target);
+    console.log('ℹ️ API URL المستخدم:', process.env.REACT_APP_API_URL);
     return (
       <div style={{
         height: '200px',
@@ -160,7 +169,10 @@ const AdvertisementSlider = ({ target = 'both' }) => {
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📢</div>
           <div style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>لا توجد إعلانات للعرض حالياً</div>
-          <div style={{ fontSize: '0.9rem', opacity: 0.7 }}>سيتم عرض الإعلانات هنا عند توفرها</div>
+          <div style={{ fontSize: '0.9rem', marginBottom: '0.5rem', opacity: 0.7 }}>سيتم عرض الإعلانات هنا عند توفرها</div>
+          <div style={{ fontSize: '0.8rem', opacity: 0.5, marginTop: '1rem', padding: '0.5rem', background: '#fff', borderRadius: '8px' }}>
+            الهدف: {target} | API: {process.env.REACT_APP_API_URL}
+          </div>
         </div>
       </div>
     );
