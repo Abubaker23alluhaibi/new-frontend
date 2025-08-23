@@ -274,8 +274,9 @@ const AdvertisementSlider = ({ target = 'both' }) => {
           style={{
             width: '100%',
             height: '100%',
-            objectFit: 'cover', // تغطية كاملة مع الحفاظ على النسبة
-            objectPosition: 'center' // توسيط الصورة
+            objectFit: 'contain', // تغيير من 'cover' إلى 'contain' لضمان ظهور الصورة كاملة
+            objectPosition: 'center', // توسيط الصورة
+            backgroundColor: '#f8f9fa' // خلفية فاتحة للصورة
           }}
           onError={(e) => {
             console.error('❌ فشل تحميل صورة الإعلان:', advertisements[currentIndex]?.image);
