@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 // import { useTranslation } from 'react-i18next'; // غير مستخدم حالياً
 
 const AdvertisementSlider = ({ target = 'both' }) => {
+  console.log('🎬 AdvertisementSlider: تم تحميل المكون مع الهدف:', target);
   const [advertisements, setAdvertisements] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -10,6 +11,7 @@ const AdvertisementSlider = ({ target = 'both' }) => {
   // const { t } = useTranslation(); // غير مستخدم حالياً
 
   useEffect(() => {
+    console.log('🔄 useEffect: تم تشغيل useEffect مع:', { target, advertisementsLength: advertisements.length });
     fetchAdvertisements();
     
     // إعداد التمرير التلقائي
@@ -33,18 +35,24 @@ const AdvertisementSlider = ({ target = 'both' }) => {
       
       const apiUrl = `${process.env.REACT_APP_API_URL}/advertisements/${target}`;
       console.log('🔍 جلب الإعلانات من:', apiUrl);
+      console.log('🔗 API URL المستخدم:', process.env.REACT_APP_API_URL);
+      console.log('🎯 الهدف المحدد:', target);
       
       const response = await fetch(apiUrl);
+      console.log('📡 استجابة الخادم:', response.status, response.statusText);
       
       if (response.ok) {
         const data = await response.json();
         console.log('✅ تم جلب الإعلانات:', data);
+        console.log('📊 عدد الإعلانات المستلمة:', Array.isArray(data) ? data.length : 'غير مصفوفة');
         setAdvertisements(data);
         
         // تحديث إحصائيات المشاهدة
-        data.forEach(ad => {
-          updateStats(ad._id, 'view');
-        });
+        if (Array.isArray(data)) {
+          data.forEach(ad => {
+            updateStats(ad._id, 'view');
+          });
+        }
       } else {
         const errorData = await response.json().catch(() => ({}));
         console.error('❌ خطأ في جلب الإعلانات:', response.status, errorData);
@@ -101,6 +109,7 @@ const AdvertisementSlider = ({ target = 'both' }) => {
   };
 
   if (loading) {
+    console.log('⏳ AdvertisementSlider: في حالة التحميل');
     return (
       <div style={{
         height: '200px',
@@ -117,6 +126,7 @@ const AdvertisementSlider = ({ target = 'both' }) => {
   }
 
   if (error) {
+    console.log('❌ AdvertisementSlider: في حالة الخطأ:', error);
     return (
       <div style={{
         height: '200px',
@@ -134,10 +144,29 @@ const AdvertisementSlider = ({ target = 'both' }) => {
   }
 
   if (advertisements.length === 0) {
-    console.log('ℹ️ لا توجد إعلانات للعرض');
-    return null; // لا تعرض شيئاً إذا لم تكن هناك إعلانات
+    console.log('ℹ️ AdvertisementSlider: لا توجد إعلانات للعرض');
+    return (
+      <div style={{
+        height: '200px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#f5f5f5',
+        color: '#666',
+        borderRadius: '12px',
+        margin: '1rem 0',
+        border: '2px dashed #ddd'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📢</div>
+          <div style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>لا توجد إعلانات للعرض حالياً</div>
+          <div style={{ fontSize: '0.9rem', opacity: 0.7 }}>سيتم عرض الإعلانات هنا عند توفرها</div>
+        </div>
+      </div>
+    );
   }
 
+  console.log('🎯 AdvertisementSlider: عرض الإعلانات، العدد:', advertisements.length, 'المؤشر الحالي:', currentIndex);
   return (
     <div style={{
       position: 'relative',
@@ -169,6 +198,13 @@ const AdvertisementSlider = ({ target = 'both' }) => {
             height: '100%',
             objectFit: 'cover'
           }}
+          onError={(e) => {
+            console.error('❌ فشل تحميل صورة الإعلان:', advertisements[currentIndex]?.image);
+            e.target.style.display = 'none';
+          }}
+          onLoad={() => {
+            console.log('✅ تم تحميل صورة الإعلان بنجاح:', advertisements[currentIndex]?.image);
+          }}
         />
         
         {/* معلومات الإعلان */}
@@ -183,10 +219,10 @@ const AdvertisementSlider = ({ target = 'both' }) => {
           textAlign: 'right'
         }}>
           <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>
-            {advertisements[currentIndex]?.title}
+            {advertisements[currentIndex]?.title || 'عنوان الإعلان'}
           </h3>
           <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.9 }}>
-            {advertisements[currentIndex]?.description}
+            {advertisements[currentIndex]?.description || 'وصف الإعلان'}
           </p>
         </div>
       </div>
