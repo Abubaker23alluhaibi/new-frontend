@@ -81,3 +81,4 @@ async function testAllAdEndpoints() {
 // تشغيل الاختبار
 console.log('📋 لاختبار API الإعلانات، اكتب: testAllAdEndpoints()');
 console.log('🔍 أو اكتب: testDoctorsAds() أو testUsersAds() أو testBothAds()');
+

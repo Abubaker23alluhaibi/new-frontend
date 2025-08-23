@@ -245,11 +245,15 @@ const AdvertisementSlider = ({ target = 'both' }) => {
     <div style={{
       position: 'relative',
       width: '100%',
-      height: '200px',
+      height: '300px', // زيادة الارتفاع من 200px إلى 300px
       margin: '1rem 0',
-      borderRadius: '12px',
+      borderRadius: '16px', // زيادة border radius
       overflow: 'hidden',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+      boxShadow: '0 8px 32px rgba(0,0,0,0.15)', // ظل أفضل
+      border: '3px solid #e0e0e0', // حدود واضحة
+      maxWidth: '800px', // عرض أقصى للصور
+      marginLeft: 'auto',
+      marginRight: 'auto'
     }}>
       {/* الإعلان الحالي */}
       <div 
@@ -270,7 +274,8 @@ const AdvertisementSlider = ({ target = 'both' }) => {
           style={{
             width: '100%',
             height: '100%',
-            objectFit: 'cover'
+            objectFit: 'cover', // تغطية كاملة مع الحفاظ على النسبة
+            objectPosition: 'center' // توسيط الصورة
           }}
           onError={(e) => {
             console.error('❌ فشل تحميل صورة الإعلان:', advertisements[currentIndex]?.image);
@@ -287,15 +292,26 @@ const AdvertisementSlider = ({ target = 'both' }) => {
           bottom: 0,
           left: 0,
           right: 0,
-          background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+          background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', // خلفية أغمق
           color: 'white',
-          padding: '1rem',
+          padding: '1.5rem', // زيادة padding
           textAlign: 'right'
         }}>
-          <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>
+          <h3 style={{ 
+            margin: '0 0 0.8rem 0', 
+            fontSize: '1.3rem', // زيادة حجم العنوان
+            fontWeight: '700',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.8)' // ظل للنص
+          }}>
             {advertisements[currentIndex]?.title || 'عنوان الإعلان'}
           </h3>
-          <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.9 }}>
+          <p style={{ 
+            margin: 0, 
+            fontSize: '1rem', // زيادة حجم الوصف
+            opacity: 0.95,
+            textShadow: '1px 1px 2px rgba(0,0,0,0.8)', // ظل للنص
+            lineHeight: '1.4'
+          }}>
             {advertisements[currentIndex]?.description || 'وصف الإعلان'}
           </p>
         </div>
@@ -308,20 +324,30 @@ const AdvertisementSlider = ({ target = 'both' }) => {
             onClick={goToPrevious}
             style={{
               position: 'absolute',
-              left: '10px',
+              left: '15px', // زيادة المسافة من الحواف
               top: '50%',
               transform: 'translateY(-50%)',
-              background: 'rgba(0,0,0,0.5)',
+              background: 'rgba(0,0,0,0.6)', // خلفية أغمق
               color: 'white',
               border: 'none',
               borderRadius: '50%',
-              width: '40px',
-              height: '40px',
+              width: '50px', // زيادة حجم الأزرار
+              height: '50px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.2rem'
+              fontSize: '1.5rem', // زيادة حجم السهم
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(0,0,0,0.8)';
+              e.target.style.transform = 'translateY(-50%) scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(0,0,0,0.6)';
+              e.target.style.transform = 'translateY(-50%) scale(1)';
             }}
           >
             ‹
@@ -331,20 +357,30 @@ const AdvertisementSlider = ({ target = 'both' }) => {
             onClick={goToNext}
             style={{
               position: 'absolute',
-              right: '10px',
+              right: '15px', // زيادة المسافة من الحواف
               top: '50%',
               transform: 'translateY(-50%)',
-              background: 'rgba(0,0,0,0.5)',
+              background: 'rgba(0,0,0,0.6)', // خلفية أغمق
               color: 'white',
               border: 'none',
               borderRadius: '50%',
-              width: '40px',
-              height: '40px',
+              width: '50px', // زيادة حجم الأزرار
+              height: '50px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.2rem'
+              fontSize: '1.5rem', // زيادة حجم السهم
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(0,0,0,0.8)';
+              e.target.style.transform = 'translateY(-50%) scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(0,0,0,0.6)';
+              e.target.style.transform = 'translateY(-50%) scale(1)';
             }}
           >
             ›
@@ -356,24 +392,37 @@ const AdvertisementSlider = ({ target = 'both' }) => {
       {advertisements.length > 1 && (
         <div style={{
           position: 'absolute',
-          bottom: '10px',
+          bottom: '20px', // زيادة المسافة من الأسفل
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
-          gap: '8px'
+          gap: '12px' // زيادة المسافة بين المؤشرات
         }}>
           {advertisements.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
               style={{
-                width: '12px',
-                height: '12px',
+                width: '16px', // زيادة حجم المؤشرات
+                height: '16px',
                 borderRadius: '50%',
                 border: 'none',
-                background: index === currentIndex ? 'white' : 'rgba(255,255,255,0.5)',
+                background: index === currentIndex ? 'white' : 'rgba(255,255,255,0.6)',
                 cursor: 'pointer',
-                transition: 'background 0.3s ease'
+                transition: 'all 0.3s ease',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+              }}
+              onMouseEnter={(e) => {
+                if (index !== currentIndex) {
+                  e.target.style.background = 'rgba(255,255,255,0.8)';
+                  e.target.style.transform = 'scale(1.2)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (index !== currentIndex) {
+                  e.target.style.background = 'rgba(255,255,255,0.6)';
+                  e.target.style.transform = 'scale(1)';
+                }
               }}
             />
           ))}
