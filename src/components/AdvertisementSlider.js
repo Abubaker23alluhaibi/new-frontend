@@ -11,7 +11,8 @@ const AdvertisementSlider = ({ target = 'both' }) => {
   // const { t } = useTranslation(); // غير مستخدم حالياً
 
   useEffect(() => {
-    console.log('🔄 useEffect: تم تشغيل useEffect مع:', { target, advertisementsLength: advertisements.length });
+    console.log('🔄 AdvertisementSlider useEffect: تم تشغيل useEffect مع:', { target, advertisementsLength: advertisements.length });
+    console.log('🔄 AdvertisementSlider: سيتم جلب الإعلانات للهدف:', target);
     fetchAdvertisements();
     
     // إعداد التمرير التلقائي
@@ -34,22 +35,22 @@ const AdvertisementSlider = ({ target = 'both' }) => {
       setError('');
       
       const apiUrl = `${process.env.REACT_APP_API_URL}/advertisements/${target}`;
-      console.log('🔍 جلب الإعلانات من:', apiUrl);
-      console.log('🔗 API URL المستخدم:', process.env.REACT_APP_API_URL);
-      console.log('🎯 الهدف المحدد:', target);
+      console.log('🔍 AdvertisementSlider: جلب الإعلانات من:', apiUrl);
+      console.log('🔗 AdvertisementSlider: API URL المستخدم:', process.env.REACT_APP_API_URL);
+      console.log('🎯 AdvertisementSlider: الهدف المحدد:', target);
       
       const response = await fetch(apiUrl);
-      console.log('📡 استجابة الخادم:', response.status, response.statusText);
-      console.log('📡 headers الاستجابة:', Object.fromEntries(response.headers.entries()));
+      console.log('📡 AdvertisementSlider: استجابة الخادم:', response.status, response.statusText);
+      console.log('📡 AdvertisementSlider: headers الاستجابة:', Object.fromEntries(response.headers.entries()));
       
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ تم جلب الإعلانات:', data);
-        console.log('📊 عدد الإعلانات المستلمة:', Array.isArray(data) ? data.length : 'غير مصفوفة');
-        console.log('📊 نوع البيانات المستلمة:', typeof data);
-        console.log('📊 هل البيانات مصفوفة؟', Array.isArray(data));
+        console.log('✅ AdvertisementSlider: تم جلب الإعلانات:', data);
+        console.log('📊 AdvertisementSlider: عدد الإعلانات المستلمة:', Array.isArray(data) ? data.length : 'غير مصفوفة');
+        console.log('📊 AdvertisementSlider: نوع البيانات المستلمة:', typeof data);
+        console.log('📊 AdvertisementSlider: هل البيانات مصفوفة؟', Array.isArray(data));
         if (Array.isArray(data)) {
-          console.log('📊 محتوى الإعلانات:', data.map(ad => ({ id: ad._id, title: ad.title, image: ad.image })));
+          console.log('📊 AdvertisementSlider: محتوى الإعلانات:', data.map(ad => ({ id: ad._id, title: ad.title, image: ad.image })));
         }
         setAdvertisements(data);
         
@@ -61,12 +62,12 @@ const AdvertisementSlider = ({ target = 'both' }) => {
         }
       } else {
         const errorData = await response.json().catch(() => ({}));
-        console.error('❌ خطأ في جلب الإعلانات:', response.status, errorData);
-        console.error('❌ تفاصيل الخطأ:', errorData);
+        console.error('❌ AdvertisementSlider: خطأ في جلب الإعلانات:', response.status, errorData);
+        console.error('❌ AdvertisementSlider: تفاصيل الخطأ:', errorData);
         setError(`فشل في جلب الإعلانات: ${response.status}`);
       }
     } catch (err) {
-      console.error('❌ خطأ في الاتصال:', err);
+      console.error('❌ AdvertisementSlider: خطأ في الاتصال:', err);
       setError('خطأ في الاتصال بالخادم');
     } finally {
       setLoading(false);
@@ -75,22 +76,26 @@ const AdvertisementSlider = ({ target = 'both' }) => {
 
   const updateStats = async (adId, action) => {
     try {
+      console.log('📊 AdvertisementSlider: تحديث الإحصائيات:', { adId, action });
       await fetch(`${process.env.REACT_APP_API_URL}/advertisements/${adId}/stats`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action })
       });
+      console.log('✅ AdvertisementSlider: تم تحديث الإحصائيات بنجاح');
     } catch (err) {
-      console.error('خطأ في تحديث الإحصائيات:', err);
+      console.error('❌ AdvertisementSlider: خطأ في تحديث الإحصائيات:', err);
     }
   };
 
   const handleAdClick = (advertisement) => {
+    console.log('🖱️ AdvertisementSlider: تم النقر على الإعلان:', advertisement);
     updateStats(advertisement._id, 'click');
     // يمكن إضافة منطق إضافي هنا مثل فتح رابط أو نافذة منبثقة
   };
 
   const goToSlide = (index) => {
+    console.log('🎯 AdvertisementSlider: الانتقال إلى الشريحة:', index);
     setCurrentIndex(index);
     // إعادة تعيين المؤقت
     if (intervalRef.current) {
