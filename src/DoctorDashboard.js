@@ -1639,6 +1639,7 @@ function SpecialAppointmentsList({ appointments, onDelete, onEdit, onOpenNote })
 
       {/* الإعلانات المتحركة */}
       <div style={{marginBottom: '1rem'}}>
+        {console.log('🎬 DoctorDashboard: محاولة عرض AdvertisementSlider مع target="doctors"')}
         <AdvertisementSlider target="doctors" />
       </div>
 
