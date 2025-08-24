@@ -99,7 +99,10 @@ function DoctorSignUp() {
     image: null // الصورة الشخصية فقط
   });
   const navigate = useNavigate();
-  const weekDays = t('weekdays', { returnObjects: true });
+  // التعامل مع أيام الأسبوع من ملف الترجمة
+  const weekDays = (t('weekdays', { returnObjects: true }) && Array.isArray(t('weekdays', { returnObjects: true }))) ? t('weekdays', { returnObjects: true }) :
+                   (t('weekdays_array', { returnObjects: true }) && Array.isArray(t('weekdays_array', { returnObjects: true }))) ? t('weekdays_array', { returnObjects: true }) :
+                   ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']; // قيم افتراضية
 
   useEffect(() => {
     if (success) {
