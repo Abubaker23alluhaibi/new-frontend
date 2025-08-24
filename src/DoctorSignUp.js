@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import { useTranslation } from 'react-i18next';
@@ -51,12 +51,22 @@ function DoctorSignUp() {
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const { t } = useTranslation();
-  const specialtiesGrouped = t('specialty_categories', { returnObjects: true });
+  // التعامل مع التخصصات مع قيم احتياطية
+  const specialtiesGrouped = t('specialty_categories', { returnObjects: true }) || [];
   const specialties = t('specialties', { returnObjects: true }) || {};
-  // بناء قائمة التخصصات كمصفوفة مفاتيح
-  const specialtiesList = Object.keys(specialties).map(key => ({ key, label: specialties[key] }));
-  const allCategories = specialtiesGrouped.map(cat => cat.category);
-  const allSubSpecialties = specialtiesGrouped.flatMap(cat => cat.specialties);
+  
+  // بناء قائمة التخصصات كمصفوفة مفاتيح مع فحص الأمان
+  const specialtiesList = Array.isArray(specialties) ? 
+    Object.keys(specialties).map(key => ({ key, label: specialties[key] })) : 
+    [];
+  
+  const allCategories = Array.isArray(specialtiesGrouped) ? 
+    specialtiesGrouped.map(cat => cat.category) : 
+    [];
+  
+  const allSubSpecialties = Array.isArray(specialtiesGrouped) ? 
+    specialtiesGrouped.flatMap(cat => cat.specialties) : 
+    [];
 
   // دالة اختيار من البحث
   function handleSearchSelect(value) {
@@ -98,17 +108,42 @@ function DoctorSignUp() {
   const [previewUrls, setPreviewUrls] = useState({
     image: null // الصورة الشخصية فقط
   });
+  
+  // أيام الأسبوع الاحتياطية في حالة فشل الترجمة
+  const fallbackWeekDays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
   const navigate = useNavigate();
-  // التعامل مع أيام الأسبوع من ملف الترجمة
-  const weekDays = (t('weekdays', { returnObjects: true }) && Array.isArray(t('weekdays', { returnObjects: true }))) ? t('weekdays', { returnObjects: true }) :
-                   (t('weekdays_array', { returnObjects: true }) && Array.isArray(t('weekdays_array', { returnObjects: true }))) ? t('weekdays_array', { returnObjects: true }) :
-                   ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']; // قيم افتراضية
+  
+  // التعامل مع أيام الأسبوع من ملف الترجمة - استخدام useMemo لضمان التحديث
+  const weekDays = useMemo(() => {
+    const weekdaysData = t('weekdays', { returnObjects: true });
+    const weekdaysArrayData = t('weekdays_array', { returnObjects: true });
+    
+    // إذا كان weekdays مصفوفة، استخدمه
+    if (Array.isArray(weekdaysData)) {
+      return weekdaysData;
+    }
+    
+    // إذا كان weekdays_array مصفوفة، استخدمه
+    if (Array.isArray(weekdaysArrayData)) {
+      return weekdaysArrayData;
+    }
+    
+    // إذا كان weekdays كائن، حوله إلى مصفوفة
+    if (weekdaysData && typeof weekdaysData === 'object' && !Array.isArray(weekdaysData)) {
+      return Object.values(weekdaysData);
+    }
+    
+    // قيم افتراضية باللغة العربية
+    return fallbackWeekDays;
+  }, [t]); // إعادة حساب عند تغيير الترجمة
 
   useEffect(() => {
     if (success) {
       // لا توجه تلقائياً، فقط أظهر رسالة انتظار الموافقة
     }
   }, [success]);
+
+
 
   const handleChange = e => {
     const { name, value, files } = e.target;
@@ -584,8 +619,17 @@ function DoctorSignUp() {
                   <div style={{display:'flex', gap:6, marginBottom:8}}>
                     <select value={newTime.day} onChange={e=>setNewTime({...newTime, day: e.target.value})} style={{flex:2, borderRadius:8, padding:'.5rem'}}>
                       <option value="">{t('day')}</option>
-                      {Array.isArray(weekDays) && weekDays.map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
+                      {(() => {
+                        if (Array.isArray(weekDays) && weekDays.length > 0) {
+                          return weekDays.map(d => <option key={d} value={d}>{d}</option>);
+                        } else {
+                          // قيم احتياطية في حالة فشل الترجمة
+                          return fallbackWeekDays.map(d => 
+                            <option key={d} value={d}>{d}</option>
+                          );
+                        }
+                      })()}
+                    </select>
                     <div style={{display:'flex', gap:8}}>
                       <div style={{flex:1, display:'flex', flexDirection:'column'}}>
                         <label style={{fontSize:13, color:'#009688', marginBottom:2}}>{t('from_time')}</label>

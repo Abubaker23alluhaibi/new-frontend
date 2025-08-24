@@ -517,7 +517,7 @@ function DoctorDashboard() {
       <div style={{position:'relative', zIndex:1}}>
                         <h2 style={{textAlign:'center', color:'#0A8F82', marginTop:30, fontSize: '2.2rem', fontWeight: 800}}>{t('doctor_dashboard.title')}</h2>
         
-        {/* الإعلانات المتحركة - في أعلى الصفحة بعد العنوان */}
+        {/* الإعلانات المتحركة - في أعلى الصفحة بعد العنوان (العرض الوحيد المطلوب) */}
         <div style={{
           maxWidth: 800,
           margin: '2rem auto',
@@ -1524,21 +1524,7 @@ function DoctorDashboard() {
             }}>
               📢 منطقة الإعلانات - يجب أن تظهر الإعلانات هنا
             </div>
-            <div style={{
-              fontSize: '0.9rem',
-              color: '#666',
-              marginBottom: '1rem',
-              padding: '0.5rem',
-              background: '#fff',
-              borderRadius: '8px',
-              border: '1px solid #e0e0e0'
-            }}>
-              <strong>معلومات التشخيص:</strong><br/>
-              • الهدف: both (إعلانات للدكتور)<br/>
-              • API URL: {process.env.REACT_APP_API_URL}<br/>
-              • الوقت: {new Date().toLocaleString('ar-IQ')}
-            </div>
-            <AdvertisementSlider target="both" />
+
           </div>
         );
       })()}
