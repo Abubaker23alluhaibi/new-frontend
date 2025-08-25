@@ -8,13 +8,60 @@ const provinces = [
 ];
 
 const specialties = [
-  'جراحة عامة', 'جراحة عظام', 'طب الأطفال', 'طب العيون', 'طب الأسنان', 'أمراض القلب', 'جلدية', 'نسائية وتوليد', 'أنف وأذن وحنجرة', 'باطنية', 'أعصاب', 'أورام', 'أشعة', 'تخدير', 'طب الأسرة', 'طب الطوارئ', 'طب نفسي', 'طب الكلى', 'طب الروماتيزم', 'طب المسالك البولية', 'أخرى'
+  // التخصصات الأساسية الموجودة
+  'جراحة عامة', 'جراحة عظام', 'طب الأطفال', 'طب العيون', 'طب الأسنان', 'أمراض القلب', 'جلدية', 'نسائية وتوليد', 'أنف وأذن وحنجرة', 'باطنية', 'أعصاب', 'أورام', 'أشعة', 'تخدير', 'طب الأسرة', 'طب الطوارئ', 'طب نفسي', 'طب الكلى', 'طب الروماتيزم', 'طب المسالك البولية',
+  
+  // التخصصات الجديدة المضافة
+  'طب المناعة', 'طب الصدر', 'طب المسالك البولية', 'طب الجلد', 'طب المجتمع', 'طب الوقاية', 'طب المسنين', 'طب التأهيل', 'الرعاية التلطيفية', 'طب الطوارئ المتقدم', 'طب العناية المركزة',
+  
+  // التخصصات الجراحية الجديدة
+  'جراحة التجميل والترميم', 'جراحة المناظير', 'جراحة الأوعية الدموية', 'جراحة الأعصاب', 'جراحة القلب والصدر', 'جراحة الأطفال', 'جراحة الوجه والفكين',
+  
+  // تخصصات الأسنان الجديدة
+  'طب وجراحة الفم', 'تقويم الأسنان', 'طب الأسنان التجميلي',
+  
+  // تخصصات الأطفال الدقيقة
+  'حديثي الولادة', 'قلب الأطفال', 'الجهاز الهضمي للأطفال', 'أعصاب الأطفال', 'أمراض الدم للأطفال', 'أمراض الغدد للأطفال', 'أمراض الكلى للأطفال', 'أمراض الروماتيزم للأطفال',
+  
+  // العلوم الطبية المساندة الجديدة
+  'علم النفس الطبي', 'العلاج الوظيفي', 'علاج النطق', 'العلاج التنفسي', 'تقنية المختبرات الطبية', 'التغذية العلاجية', 'العلاج الطبيعي', 'الصيدلة',
+  
+  // التخصصات المتطورة والجديدة
+  'طب الجينوم', 'طب الخلايا الجذعية', 'الطب الشخصي', 'طب التجميل غير الجراحي', 'طب السمنة', 'طب النوم', 'طب السفر', 'طب الفضاء', 'طب الغوص', 'طب الرياضة المتقدم', 'طب الشيخوخة المتقدم', 'طب الألم العصبي', 'طب الأوعية الدموية', 'طب المناعة والتحسس',
+  
+  'أخرى'
 ];
 
 function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
   const { profile, updateProfile, user } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  
+  // إضافة حالة للفئات والتخصصات
+  const [selectedCategory, setSelectedCategory] = useState("");
+  
+  // الحصول على التخصصات من ملفات الترجمة
+  const specialtiesGrouped = t('specialty_categories', { returnObjects: true }) || [];
+  
+  // بناء قائمة التخصصات من specialty_categories
+  const specialtiesList = Array.isArray(specialtiesGrouped) ? 
+    specialtiesGrouped.flatMap(cat => 
+      cat.specialties.map(specialty => ({ 
+        key: specialty, 
+        label: specialty,
+        category: cat.category 
+      }))
+    ) : 
+    // قائمة احتياطية من التخصصات المحلية
+    specialties.map(specialty => ({ 
+      key: specialty, 
+      label: specialty,
+      category: 'تخصصات عامة'
+    }));
+  
+  const allCategories = Array.isArray(specialtiesGrouped) ? 
+    specialtiesGrouped.map(cat => cat.category) : 
+    ['تخصصات عامة'];
   
   
   const [form, setForm] = useState({
@@ -148,6 +195,14 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
         about: profile.about || '',
         profileImage: profile.profileImage || profile.image || ''
       });
+      
+      // تهيئة الفئة المختارة بناءً على التخصص
+      if (profile.specialty && Array.isArray(specialtiesList)) {
+        const specialtyData = specialtiesList.find(s => s.key === profile.specialty);
+        if (specialtyData) {
+          setSelectedCategory(specialtyData.category);
+        }
+      }
       setImageLoadError(false);
       console.log('✅ تم تحديث البيانات من profile');
       
@@ -342,6 +397,14 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
         }
       }
 
+      // التأكد من أن التخصص يتم إرساله كنص وليس كرقم
+      if (updatedForm.specialty && typeof updatedForm.specialty === 'number') {
+        // إذا كان التخصص رقم، نحوله إلى نص
+        const specialtyText = specialtiesList.find(s => s.key === updatedForm.specialty)?.label || updatedForm.specialty.toString();
+        updatedForm.specialty = specialtyText;
+        console.log('🔄 تم تحويل التخصص من رقم إلى نص:', specialtyText);
+      }
+      
       console.log('💾 تحديث بيانات الملف الشخصي...');
       const { error, data } = await updateProfile(updatedForm);
       
@@ -897,6 +960,42 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                 />
               </div>
 
+              {/* اختيار الفئة */}
+              <div style={{marginBottom: 20}}>
+                <label style={{
+                  display: 'block',
+                  color: '#7c4dff',
+                  fontWeight: 700,
+                  marginBottom: 8,
+                  fontSize: 14
+                }}>
+                  {t('choose_category') || 'اختر الفئة'}
+                </label>
+                <select 
+                  value={selectedCategory}
+                  onChange={e => { 
+                    setSelectedCategory(e.target.value); 
+                    setForm(prev => ({...prev, specialty: ''})); // إعادة تعيين التخصص عند تغيير الفئة
+                  }}
+                  disabled={!edit}
+                  style={{
+                    width: '100%',
+                    borderRadius: 12,
+                    padding: '0.8rem 1rem',
+                    border: edit ? '2px solid #7c4dff' : '2px solid #e0e0e0',
+                    fontSize: 16,
+                    transition: 'all 0.3s ease',
+                    background: edit ? '#fff' : '#f8f9fa',
+                    cursor: edit ? 'pointer' : 'not-allowed'
+                  }}
+                >
+                  <option value="">{t('choose_category') || 'اختر الفئة'}</option>
+                  {Array.isArray(allCategories) && allCategories.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+
               {/* التخصص */}
               <div style={{marginBottom: 20}}>
                 <label style={{
@@ -925,9 +1024,18 @@ function DoctorProfile({ onClose, edit: editProp = false, modal = false }) {
                   }}
                 >
                   <option value="">{t('choose_specialty')}</option>
-                  {specialties.map(spec => (
-                    <option key={spec} value={spec}>{spec}</option>
-                  ))}
+                  {Array.isArray(specialtiesList) && 
+                    (selectedCategory ? 
+                      // فلترة التخصصات حسب الفئة المختارة
+                      specialtiesList.filter(s => s.category === selectedCategory).map(s => (
+                        <option key={s.key} value={s.key}>{s.label}</option>
+                      )) :
+                      // عرض جميع التخصصات إذا لم يتم اختيار فئة
+                      specialtiesList.map(s => (
+                        <option key={s.key} value={s.key}>{s.label}</option>
+                      ))
+                    )
+                  }
                 </select>
               </div>
 

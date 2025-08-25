@@ -8,7 +8,28 @@ const provinces = [
   'بغداد', 'البصرة', 'نينوى', 'أربيل', 'النجف', 'كركوك', 'السليمانية', 'دهوك', 'ذي قار', 'صلاح الدين', 'الأنبار', 'واسط', 'ميسان', 'بابل', 'القادسية', 'ديالى', 'المثنى', 'كربلاء', 'حلبجة'
 ];
 const specialties = [
-  'جراحة عامة', 'جراحة عظام', 'طب الأطفال', 'طب العيون', 'طب الأسنان', 'أمراض القلب', 'جلدية', 'نسائية وتوليد', 'أنف وأذن وحنجرة', 'باطنية', 'أعصاب', 'أورام', 'أشعة', 'تخدير', 'طب الأسرة', 'طب الطوارئ', 'طب نفسي', 'طب الكلى', 'طب الروماتيزم', 'طب المسالك البولية', 'أخرى'
+  // التخصصات الأساسية الموجودة
+  'جراحة عامة', 'جراحة عظام', 'طب الأطفال', 'طب العيون', 'طب الأسنان', 'أمراض القلب', 'جلدية', 'نسائية وتوليد', 'أنف وأذن وحنجرة', 'باطنية', 'أعصاب', 'أورام', 'أشعة', 'تخدير', 'طب الأسرة', 'طب الطوارئ', 'طب نفسي', 'طب الكلى', 'طب الروماتيزم', 'طب المسالك البولية',
+  
+  // التخصصات الجديدة المضافة
+  'طب المناعة', 'طب الصدر', 'طب المسالك البولية', 'طب الجلد', 'طب المجتمع', 'طب الوقاية', 'طب المسنين', 'طب التأهيل', 'الرعاية التلطيفية', 'طب الطوارئ المتقدم', 'طب العناية المركزة',
+  
+  // التخصصات الجراحية الجديدة
+  'جراحة التجميل والترميم', 'جراحة المناظير', 'جراحة الأوعية الدموية', 'جراحة الأعصاب', 'جراحة القلب والصدر', 'جراحة الأطفال', 'جراحة الوجه والفكين',
+  
+  // تخصصات الأسنان الجديدة
+  'طب وجراحة الفم', 'تقويم الأسنان', 'طب الأسنان التجميلي',
+  
+  // تخصصات الأطفال الدقيقة
+  'حديثي الولادة', 'قلب الأطفال', 'الجهاز الهضمي للأطفال', 'أعصاب الأطفال', 'أمراض الدم للأطفال', 'أمراض الغدد للأطفال', 'أمراض الكلى للأطفال', 'أمراض الروماتيزم للأطفال',
+  
+  // العلوم الطبية المساندة الجديدة
+  'علم النفس الطبي', 'العلاج الوظيفي', 'علاج النطق', 'العلاج التنفسي', 'تقنية المختبرات الطبية', 'التغذية العلاجية', 'العلاج الطبيعي', 'الصيدلة',
+  
+  // التخصصات المتطورة والجديدة
+  'طب الجينوم', 'طب الخلايا الجذعية', 'الطب الشخصي', 'طب التجميل غير الجراحي', 'طب السمنة', 'طب النوم', 'طب السفر', 'طب الفضاء', 'طب الغوص', 'طب الرياضة المتقدم', 'طب الشيخوخة المتقدم', 'طب الألم العصبي', 'طب الأوعية الدموية', 'طب المناعة والتحسس',
+  
+  'أخرى'
 ];
 
 // استبدل جميع أسماء التخصصات والفئات بالنصوص الكردية
@@ -53,12 +74,22 @@ function DoctorSignUp() {
   const { t } = useTranslation();
   // التعامل مع التخصصات مع قيم احتياطية
   const specialtiesGrouped = t('specialty_categories', { returnObjects: true }) || [];
-  const specialties = t('specialties', { returnObjects: true }) || {};
   
-  // بناء قائمة التخصصات كمصفوفة مفاتيح مع فحص الأمان
-  const specialtiesList = Array.isArray(specialties) ? 
-    Object.keys(specialties).map(key => ({ key, label: specialties[key] })) : 
-    [];
+  // بناء قائمة التخصصات من specialty_categories
+  const specialtiesList = Array.isArray(specialtiesGrouped) ? 
+    specialtiesGrouped.flatMap(cat => 
+      cat.specialties.map(specialty => ({ 
+        key: specialty, 
+        label: specialty,
+        category: cat.category 
+      }))
+    ) : 
+    // قائمة احتياطية من التخصصات المحلية
+    specialties.map(specialty => ({ 
+      key: specialty, 
+      label: specialty,
+      category: 'تخصصات عامة'
+    }));
   
   const allCategories = Array.isArray(specialtiesGrouped) ? 
     specialtiesGrouped.map(cat => cat.category) : 
@@ -68,18 +99,22 @@ function DoctorSignUp() {
     specialtiesGrouped.flatMap(cat => cat.specialties) : 
     [];
 
-  // دالة اختيار من البحث
+  // دالة اختيار من البحث مع فحص الأمان
   function handleSearchSelect(value) {
-    if (allCategories.includes(value)) {
+    if (Array.isArray(allCategories) && allCategories.includes(value)) {
       setSelectedCategory(value);
       setSelectedSpecialty("");
       setForm(prev => ({...prev, specialty: ""}));
-    } else if (allSubSpecialties.includes(value)) {
+    } else if (Array.isArray(allSubSpecialties) && allSubSpecialties.includes(value)) {
       setSelectedSpecialty(value);
       setForm(prev => ({...prev, specialty: value}));
       // حدد التخصص العام تلقائياً إذا كان التخصص الفرعي تابع له
-      const parentCat = specialtiesGrouped.find(cat => cat.specialties.includes(value));
-      if (parentCat) setSelectedCategory(parentCat.category);
+      if (Array.isArray(specialtiesGrouped)) {
+        const parentCat = specialtiesGrouped.find(cat => 
+          Array.isArray(cat.specialties) && cat.specialties.includes(value)
+        );
+        if (parentCat) setSelectedCategory(parentCat.category);
+      }
     }
     setSearchValue("");
   }
@@ -459,7 +494,7 @@ function DoctorSignUp() {
                     />
                   </div>
                 </div>
-                {error && <div className="login-error">{error}</div>}
+                {error && typeof error === 'string' && error.trim() && <div className="login-error">{error}</div>}
                 <button type="submit" style={{width:'100%', padding:'1.1rem', borderRadius:14, background:'linear-gradient(135deg, #00bcd4 0%, #009688 100%)', color:'#fff', fontWeight:800, fontSize:18, border:'none', marginTop:10, boxShadow:'0 2px 8px #00bcd433', letterSpacing:1}}>
                   <svg width="22" height="22" fill="none" viewBox="0 0 24 24" style={{marginLeft: 6}} xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 4v16m8-8H4" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -479,7 +514,7 @@ function DoctorSignUp() {
                     onChange={handleChange}
                     style={{padding:'1rem 1.1rem', borderRadius:12, border:'1.5px solid #b2dfdb', width:'100%'}}>
                     <option value="">{t('choose_province')}</option>
-                    {provinces.map(p => (
+                    {Array.isArray(provinces) && provinces.map(p => (
                       <option key={p} value={p}>{p}</option>
                     ))}
                   </select>
@@ -549,10 +584,13 @@ function DoctorSignUp() {
                   <label style={{fontWeight:600, marginBottom:4, display:'block'}}>{t('choose_category')}</label>
                   <select
                     value={selectedCategory}
-                    onChange={e => { setSelectedCategory(e.target.value); }}
+                    onChange={e => { 
+                      setSelectedCategory(e.target.value); 
+                      setForm(prev => ({...prev, specialty: ''})); // إعادة تعيين التخصص عند تغيير الفئة
+                    }}
                     style={{padding:'1rem 1.1rem', borderRadius:12, border:'1.5px solid #b2dfdb', width:'100%'}}>
                     <option value="">{t('choose_category')}</option>
-                    {allCategories.map(cat => (
+                    {Array.isArray(allCategories) && allCategories.map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
@@ -565,9 +603,18 @@ function DoctorSignUp() {
                     onChange={handleChange}
                     style={{padding: '1rem 1.1rem', borderRadius: 12, border: '1.5px solid #b2dfdb', width:'100%'}}>
                     <option value="">{t('choose_specialty')}</option>
-                    {specialtiesList.map(s => (
-                      <option key={s.key} value={s.key}>{s.label}</option>
-                    ))}
+                    {Array.isArray(specialtiesList) && 
+                      (selectedCategory ? 
+                        // فلترة التخصصات حسب الفئة المختارة
+                        specialtiesList.filter(s => s.category === selectedCategory).map(s => (
+                          <option key={s.key} value={s.key}>{s.label}</option>
+                        )) :
+                        // عرض جميع التخصصات إذا لم يتم اختيار فئة
+                        specialtiesList.map(s => (
+                          <option key={s.key} value={s.key}>{s.label}</option>
+                        ))
+                      )
+                    }
                   </select>
                 </div>
                 <div>
@@ -579,7 +626,7 @@ function DoctorSignUp() {
                     {t('appointment_duration_label')}
                   </label>
                   <select
-                    value={form.appointmentDuration}
+                    value={form.appointmentDuration || '30'}
                     onChange={e => setForm(prev => ({ ...prev, appointmentDuration: e.target.value }))}
                     style={{
                       width: '100%',
@@ -602,7 +649,7 @@ function DoctorSignUp() {
                   </select>
                 </div>
               </div>
-              {error && <div className="login-error">{error}</div>}
+              {error && typeof error === 'string' && error.trim() && <div className="login-error">{error}</div>}
               <button type="submit" style={{width:'100%', padding:'1.1rem', borderRadius:14, background:'linear-gradient(135deg, #00bcd4 0%, #009688 100%)', color:'#fff', fontWeight:800, fontSize:18, border:'none', marginTop:10, boxShadow:'0 2px 8px #00bcd433', letterSpacing:1}}>
                 <svg width="22" height="22" fill="none" viewBox="0 0 24 24" style={{marginLeft: 6}} xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 4v16m8-8H4" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -619,16 +666,10 @@ function DoctorSignUp() {
                   <div style={{display:'flex', gap:6, marginBottom:8}}>
                     <select value={newTime.day} onChange={e=>setNewTime({...newTime, day: e.target.value})} style={{flex:2, borderRadius:8, padding:'.5rem'}}>
                       <option value="">{t('day')}</option>
-                      {(() => {
-                        if (Array.isArray(weekDays) && weekDays.length > 0) {
-                          return weekDays.map(d => <option key={d} value={d}>{d}</option>);
-                        } else {
-                          // قيم احتياطية في حالة فشل الترجمة
-                          return fallbackWeekDays.map(d => 
-                            <option key={d} value={d}>{d}</option>
-                          );
-                        }
-                      })()}
+                      {Array.isArray(weekDays) && weekDays.length > 0 ? 
+                        weekDays.map(d => <option key={d} value={d}>{d}</option>) :
+                        fallbackWeekDays.map(d => <option key={d} value={d}>{d}</option>)
+                      }
                     </select>
                     <div style={{display:'flex', gap:8}}>
                       <div style={{flex:1, display:'flex', flexDirection:'column'}}>
@@ -644,18 +685,18 @@ function DoctorSignUp() {
                   </div>
                   <div style={{marginBottom:8}}>
                     {workTimes.length === 0 && <span style={{color:'#888', fontSize:14}}>{t('no_times_added')}</span>}
-                    {workTimes.map((t, idx) => (
+                    {Array.isArray(workTimes) && workTimes.map((time, idx) => (
                       <div key={idx} style={{display:'flex', alignItems:'center', gap:8, background:'#e0f7fa', borderRadius:7, padding:'0.3rem 0.7rem', marginBottom:4}}>
-                        <span style={{flex:2}}>{t.day}</span>
-                        <span style={{flex:1, fontFamily:'monospace'}}>{t.from}</span>
-                        <span style={{flex:1, fontFamily:'monospace'}}>{t.to}</span>
+                        <span style={{flex:2}}>{time.day}</span>
+                        <span style={{flex:1, fontFamily:'monospace'}}>{time.from}</span>
+                        <span style={{flex:1, fontFamily:'monospace'}}>{time.to}</span>
                         <button type="button" style={{background:'none', border:'none', color:'#e53935', fontWeight:700, cursor:'pointer', fontSize:18}} onClick={()=>handleRemoveTime(idx)}>&times;</button>
                       </div>
                     ))}
                   </div>
                 </div>
                 <textarea name="about" placeholder={t('about_optional')} value={form.about} onChange={handleChange} style={{borderRadius:10, border:'1.5px solid #b2dfdb', padding:'0.8rem 1rem', minHeight:70, marginBottom:10, resize:'vertical'}} />
-                {error && <div className="login-error">{error}</div>}
+                {error && typeof error === 'string' && error.trim() && <div className="login-error">{error}</div>}
                 <button type="submit" style={{width:'100%', padding:'1.1rem', borderRadius:14, background:'linear-gradient(135deg, #00bcd4 0%, #009688 100%)', color:'#fff', fontWeight:800, fontSize:18, border:'none', marginTop:10, boxShadow:'0 2px 8px #00bcd433', letterSpacing:1}}>
                   <svg width="22" height="22" fill="none" viewBox="0 0 24 24" style={{marginLeft: 6}} xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 4v16m8-8H4" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -674,7 +715,7 @@ function DoctorSignUp() {
                 <div>
                   <label style={{textAlign: 'right', fontSize: 15, color: '#009688', marginBottom: 6, display:'block'}}>{t('personal_image')} (اختيارية)</label>
                   <input type="file" name="image" accept="image/*" onChange={handleChange} style={{marginBottom: 6, width:'100%'}} />
-                  {previewUrls.image && (
+                  {previewUrls.image && typeof previewUrls.image === 'string' && (
                     <div style={{marginBottom: 8, textAlign: 'center'}}>
                       <img src={previewUrls.image} alt={t('personal_image')} style={{width: 120, height: 120, borderRadius: '50%', objectFit: 'cover', border: '3px solid #7c4dff', cursor:'pointer'}} onClick={() => window.open(previewUrls.image, '_blank')} title="اضغط للتكبير" />
                       <button type="button" onClick={() => removePreview('image')} style={{background: '#e53935', color: '#fff', border: 'none', borderRadius: 5, padding: '0.3rem 0.8rem', marginTop: 5, fontSize: 12, cursor: 'pointer'}}>{t('remove')}</button>
@@ -735,7 +776,7 @@ function DoctorSignUp() {
                 </div>
               </div>
 
-              {error && <div className="login-error">{error}</div>}
+              {error && typeof error === 'string' && error.trim() && <div className="login-error">{error}</div>}
               <div style={{display:'flex', gap:12, marginTop:18, justifyContent:'center'}}>
                 <button type="submit" style={{width:'100%', padding:'1.1rem', borderRadius:14, background:'linear-gradient(135deg, #00bcd4 0%, #009688 100%)', color:'#fff', fontWeight:800, fontSize:18, border:'none', marginTop:10, boxShadow:'0 2px 8px #00bcd433', letterSpacing:1}}>
                     <svg width="22" height="22" fill="none" viewBox="0 0 24 24" style={{marginLeft: 6}} xmlns="http://www.w3.org/2000/svg">

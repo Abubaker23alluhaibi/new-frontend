@@ -38,13 +38,14 @@
     "success_message": "Login successful. We wish you a great experience."
   },
   "specialty_categories": [
-    { "category": "General & Basic Medicine", "specialties": ["General Medicine", "Family Medicine", "Pediatrics", "Gynecology & Obstetrics", "Emergency", "Geriatrics"] },
-    { "category": "Internal Specialties", "specialties": ["Internal Medicine", "Cardiology", "Gastroenterology", "Hematology", "Nephrology", "Endocrinology & Diabetes", "Blood Diseases", "Infectious Diseases", "Rheumatology", "Oncology", "Neurology", "Psychiatry"] },
-    { "category": "Surgical Specialties", "specialties": ["General Surgery", "Orthopedic Surgery", "Neurosurgery", "Cardiothoracic Surgery", "Plastic Surgery", "Vascular Surgery", "Urology Surgery", "Pediatric Surgery", "ENT Surgery", "Maxillofacial Surgery"] },
-    { "category": "Head, Hair & Dental Specialties", "specialties": ["Ophthalmology", "ENT", "Dentistry", "Maxillofacial Surgery"] },
-    { "category": "Pediatric Subspecialties", "specialties": ["Neonatology", "Pediatric Cardiology", "Pediatric Gastroenterology", "Pediatric Neurology"] },
-    { "category": "Medical Support Specialties", "specialties": ["Anesthesia", "Radiology", "Nuclear Medicine", "Dermatology", "Medical Laboratory", "Physical Medicine & Rehabilitation", "Sports Medicine", "Forensic Medicine", "Pain Medicine", "Occupational Medicine", "Public Health"] },
-    { "category": "Medical Allied Sciences", "specialties": ["Nursing", "Clinical Nutrition", "Physical Therapy", "Pharmacy", "Radiology", "Medical Laboratory"] }
+    { "category": "General & Basic Medicine", "specialties": ["General Medicine", "Family Medicine", "Pediatrics", "Gynecology & Obstetrics", "Emergency", "Geriatrics", "Community Medicine", "Preventive Medicine"] },
+    { "category": "Internal Specialties", "specialties": ["Internal Medicine", "Cardiology", "Gastroenterology", "Hematology", "Nephrology", "Endocrinology & Diabetes", "Blood Diseases", "Infectious Diseases", "Rheumatology", "Oncology", "Neurology", "Psychiatry", "Immunology", "Pulmonology", "Urology", "Dermatology"] },
+    { "category": "Surgical Specialties", "specialties": ["General Surgery", "Orthopedic Surgery", "Neurosurgery", "Cardiothoracic Surgery", "Plastic Surgery", "Vascular Surgery", "Urology Surgery", "Pediatric Surgery", "ENT Surgery", "Maxillofacial Surgery", "Plastic & Reconstructive Surgery", "Vascular Surgery", "Laparoscopic Surgery"] },
+    { "category": "Head, Hair & Dental Specialties", "specialties": ["Ophthalmology", "ENT", "Dentistry", "Maxillofacial Surgery", "Oral Medicine & Surgery", "Orthodontics", "Cosmetic Dentistry"] },
+    { "category": "Pediatric Subspecialties", "specialties": ["Neonatology", "Pediatric Cardiology", "Pediatric Gastroenterology", "Pediatric Neurology", "Pediatric Hematology", "Pediatric Endocrinology", "Pediatric Nephrology", "Pediatric Rheumatology"] },
+    { "category": "Medical Support Specialties", "specialties": ["Anesthesia", "Radiology", "Nuclear Medicine", "Dermatology", "Medical Laboratory", "Physical Medicine & Rehabilitation", "Sports Medicine", "Forensic Medicine", "Pain Medicine", "Occupational Medicine", "Public Health", "Rehabilitation Medicine", "Geriatrics", "Palliative Care", "Advanced Emergency Medicine", "Intensive Care Medicine"] },
+    { "category": "Medical Allied Sciences", "specialties": ["Nursing", "Clinical Nutrition", "Physical Therapy", "Pharmacy", "Radiology", "Medical Laboratory", "Medical Psychology", "Occupational Therapy", "Speech Therapy", "Respiratory Therapy", "Medical Laboratory Technology"] },
+    { "category": "New & Advanced Specialties", "specialties": ["Genomic Medicine", "Stem Cell Medicine", "Personalized Medicine", "Non-Surgical Cosmetic Medicine", "Obesity Medicine", "Sleep Medicine", "Travel Medicine", "Space Medicine", "Diving Medicine", "Advanced Sports Medicine", "Advanced Geriatrics", "Neuropathic Pain Medicine", "Vascular Medicine", "Immunology & Allergy Medicine"] }
   ],
   "image_upload_success": "Image uploaded successfully",
   "image_upload_error": "Error uploading image",
