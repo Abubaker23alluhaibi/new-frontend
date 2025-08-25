@@ -109,24 +109,60 @@ function MyAppointments() {
     
     // استخدم اللغة من i18n مباشرة
     const lang = i18n.language || 'ar';
-    // اطبع اللغة الحالية واليوم الرقمي في الكونسول
-    console.log('LANG:', lang, 'getDay:', date.getDay());
-
-    let weekday = '';
-    if (lang.startsWith('ku') && typeof t === 'function') {
-      // ترتيب أيام الأسبوع في ملف الترجمة: ["شەممە", "یەکشەممە", "دووشەممە", "سێشەممە", "چوارشەممە", "پێنجشەممە", "هەینی"]
-      // ترتيب getDay(): 0=Sunday, 1=Monday, ..., 6=Saturday
-      // نحتاج: 0=یەکشەممە، 1=دووشەممە، ...، 5=هەینی، 6=شەممە
-      const kuWeekdays = t('weekdays', { returnObjects: true });
-      const map = [1,2,3,4,5,6,0]; // Sunday=>1, Monday=>2, ..., Saturday=>0
-      weekday = kuWeekdays[map[date.getDay()]];
-    } else {
-      weekday = date.toLocaleDateString('ar-EG', { weekday: 'long' });
+    
+    try {
+      // محاولة الحصول على أيام الأسبوع والشهور من ملف الترجمة
+      let weekdays, months;
+      
+      if (lang.startsWith('ku') && typeof t === 'function') {
+        // للغة الكردية
+        weekdays = t('weekdays', { returnObjects: true });
+        months = t('months', { returnObjects: true });
+        
+        if (Array.isArray(weekdays) && Array.isArray(months)) {
+          const dayIndex = date.getDay();
+          const monthIndex = date.getMonth();
+          
+          if (dayIndex >= 0 && dayIndex < weekdays.length && monthIndex >= 0 && monthIndex < months.length) {
+            const weekday = weekdays[dayIndex];
+            const day = date.getDate();
+            const month = months[monthIndex];
+            const year = date.getFullYear();
+            return `${weekday}، ${day}ی ${month} ${year}`;
+          }
+        }
+      } else if (lang.startsWith('ar') && typeof t === 'function') {
+        // للغة العربية
+        weekdays = t('weekdays', { returnObjects: true });
+        months = t('months', { returnObjects: true });
+        
+        if (Array.isArray(weekdays) && Array.isArray(months)) {
+          const dayIndex = date.getDay();
+          const monthIndex = date.getMonth();
+          
+          if (dayIndex >= 0 && dayIndex < weekdays.length && monthIndex >= 0 && monthIndex < months.length) {
+            const weekday = weekdays[dayIndex];
+            const day = date.getDate();
+            const month = months[monthIndex];
+            const year = date.getFullYear();
+            return `${weekday}، ${day} ${month} ${year}`;
+          }
+        }
+      }
+    } catch (error) {
+      console.log('Error in formatDate:', error);
     }
+    
+    // استخدام التنسيق الافتراضي إذا فشل الحصول من الترجمة
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
-    return `${weekday}، ${day}-${month}-${year}`;
+    
+    if (lang.startsWith('ku')) {
+      return `${day}ی ${month} ${year}`;
+    } else {
+      return `${day}/${month}/${year}`;
+    }
   };
 
   const isPastAppointment = (dateString) => {

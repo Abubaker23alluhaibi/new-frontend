@@ -166,16 +166,45 @@ function DoctorAppointments() {
   // دالة تنسيق التاريخ بالكردية
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const weekdays = t('weekdays', { returnObjects: true }) || ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'];
-    const months = t('months', { returnObjects: true }) || [
-      'کانونی دووەم', 'شوبات', 'ئازار', 'نیسان', 'ئایار', 'حوزەیران',
-      'تەمموز', 'ئاب', 'ئەیلوول', 'تشرینی یەکەم', 'تشرینی دووەم', 'کانونی یەکەم'
-    ];
-    const weekday = weekdays[date.getDay()];
-    const day = date.getDate();
-    const month = months[date.getMonth()];
-    const year = date.getFullYear();
-    return `${weekday}، ${day}ی ${month} ${year}`;
+    
+    // الحصول على أيام الأسبوع والشهور من ملف الترجمة
+    let weekdays, months;
+    
+    try {
+      // محاولة الحصول من ملف الترجمة
+      weekdays = t('weekdays', { returnObjects: true });
+      months = t('months', { returnObjects: true });
+      
+      // التحقق من صحة البيانات
+      if (!Array.isArray(weekdays) || !Array.isArray(months)) {
+        throw new Error('Invalid translation data');
+      }
+    } catch (error) {
+      // استخدام القيم الافتراضية إذا فشل الحصول من الترجمة
+      weekdays = ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'];
+      months = [
+        'کانونی دووەم', 'شوبات', 'ئازار', 'نیسان', 'ئایار', 'حوزەیران',
+        'تەمموز', 'ئاب', 'ئەیلوول', 'تشرینی یەکەم', 'تشرینی دووەم', 'کانونی یەکەم'
+      ];
+    }
+    
+    // التأكد من أن المؤشرات صحيحة
+    const dayIndex = date.getDay();
+    const monthIndex = date.getMonth();
+    
+    if (dayIndex >= 0 && dayIndex < weekdays.length && monthIndex >= 0 && monthIndex < months.length) {
+      const weekday = weekdays[dayIndex];
+      const day = date.getDate();
+      const month = months[monthIndex];
+      const year = date.getFullYear();
+      return `${weekday}، ${day}ی ${month} ${year}`;
+    } else {
+      // استخدام التنسيق الافتراضي إذا كانت المؤشرات غير صحيحة
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
   };
 
   const isPastAppointment = (dateString) => {
@@ -392,7 +421,7 @@ function DoctorAppointments() {
             </label>
             <input
               type="text"
-              placeholder={t('search') + t('patient_name') + t('patient_phone') + t('reason')}
+              placeholder={t('doctor_dashboard.search_placeholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
