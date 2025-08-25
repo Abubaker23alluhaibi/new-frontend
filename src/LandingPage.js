@@ -700,6 +700,7 @@ const LandingPage = () => {
                 <li><button onClick={() => scrollToSection('about')}>{t('landing_page.header.nav.about')}</button></li>
                 <li><button onClick={() => scrollToSection('doctor-services')}>{t('landing_page.header.nav.doctor_services')}</button></li>
                 <li><button onClick={() => scrollToSection('how-to-use')}>{t('landing_page.header.nav.how_to_use')}</button></li>
+                <li><button onClick={() => navigate('/privacy')}>سياسة الخصوصية</button></li>
               </ul>
             </div>
             <div className="footer-section">

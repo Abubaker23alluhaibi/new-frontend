@@ -23,6 +23,7 @@ import DoctorAnalyticsPage from './DoctorAnalyticsPage';
 
 import LandingPage from './LandingPage';
 import DashboardPreview from './DashboardPreview';
+import PrivacyPolicy from './PrivacyPolicy';
 import i18n from './i18n';
 import { clearAllCaches, clearTranslationCache, startPeriodicCleanup, stopPeriodicCleanup } from './utils/cacheUtils';
 
@@ -159,6 +160,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/preview" element={<DashboardPreview />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<UserSignUp />} />
           <Route path="/signup-doctor" element={<DoctorSignUp />} />

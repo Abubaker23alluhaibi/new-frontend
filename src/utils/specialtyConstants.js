@@ -256,3 +256,5 @@ export const getSpecialtyNames = (language = 'ar') => {
 
 export default SPECIALTIES_WITH_IDS;
 
+
+
