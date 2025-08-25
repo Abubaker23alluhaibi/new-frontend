@@ -48,7 +48,6 @@ function DoctorDashboard() {
   const [noteValue, setNoteValue] = useState('');
   const { t, i18n } = useTranslation();
   const [showSidebar, setShowSidebar] = useState(false);
-  const [lang, setLang] = useState('AR');
   const [showWorkTimesModal, setShowWorkTimesModal] = useState(false);
   const [showAppointmentDurationModal, setShowAppointmentDurationModal] = useState(false);
   
@@ -293,7 +292,7 @@ function DoctorDashboard() {
   const totalAppointments = appointmentsArray.length;
   const upcomingAppointments = appointmentsArray.filter(a => new Date(a.date) > new Date(today));
 
-  // دالة تنسيق التاريخ بالكردية - إصلاح مشكلة المنطقة الزمنية
+  // دالة تنسيق التاريخ - إصلاح مشكلة اللغة
   const formatDate = (dateString) => {
     // إصلاح مشكلة المنطقة الزمنية - معالجة التاريخ بشكل صحيح
     let date;
@@ -305,18 +304,49 @@ function DoctorDashboard() {
       date = new Date(dateString);
     }
     
-    const weekdays = (t('weekdays', { returnObjects: true }) && Array.isArray(t('weekdays', { returnObjects: true }))) ? t('weekdays', { returnObjects: true }) : 
-                     (t('weekdays_array', { returnObjects: true }) && Array.isArray(t('weekdays_array', { returnObjects: true }))) ? t('weekdays_array', { returnObjects: true }) : 
-                     ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-    const months = (t('months', { returnObjects: true }) && Array.isArray(t('months', { returnObjects: true }))) ? t('months', { returnObjects: true }) : [
-      'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
-      'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
-    ];
+    // الحصول على اللغة الحالية
+    const currentLang = i18n.language || 'ar';
+    
+    // محاولة الحصول على أيام الأسبوع والشهور من ملف الترجمة
+    let weekdays, months;
+    
+    try {
+      weekdays = t('weekdays', { returnObjects: true });
+      months = t('months', { returnObjects: true });
+      
+      // التحقق من صحة البيانات
+      if (!Array.isArray(weekdays) || !Array.isArray(months)) {
+        throw new Error('Invalid translation data');
+      }
+    } catch (error) {
+      // استخدام القيم الافتراضية حسب اللغة
+      if (currentLang === 'ku') {
+        weekdays = ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'];
+        months = [
+          'کانونی دووەم', 'شوبات', 'ئازار', 'نیسان', 'ئایار', 'حوزەیران',
+          'تەمموز', 'ئاب', 'ئەیلوول', 'تشرینی یەکەم', 'تشرینی دووەم', 'کانونی یەکەم'
+        ];
+      } else {
+        // استخدام العربية كلغة افتراضية
+        weekdays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+        months = [
+          'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
+          'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
+        ];
+      }
+    }
+    
     const weekday = weekdays[date.getDay()];
     const day = date.getDate();
     const month = months[date.getMonth()];
     const year = date.getFullYear();
-    return `${weekday}، ${day} ${month} ${year}`;
+    
+    // تنسيق مختلف حسب اللغة
+    if (currentLang === 'ku') {
+      return `${weekday}، ${day}ی ${month} ${year}`;
+    } else {
+      return `${weekday}، ${day} ${month} ${year}`;
+    }
   };
 
 
@@ -484,13 +514,11 @@ function DoctorDashboard() {
               <div style={{marginTop: 18}}>
                 <label style={{fontWeight: 700, color: '#0A8F82', marginBottom: 8, display: 'block', fontSize: 14}}>🌐 {t('change_language')}</label>
                 <select 
-                  value={lang} 
+                  value={i18n.language || 'ar'} 
                   onChange={(e) => {
                     const newLang = e.target.value;
-                    setLang(newLang);
-                    if (newLang === 'AR') i18n.changeLanguage('ar');
-                    else if (newLang === 'EN') i18n.changeLanguage('en');
-                    else if (newLang === 'KU') i18n.changeLanguage('ku');
+                    i18n.changeLanguage(newLang);
+                    localStorage.setItem('selectedLanguage', newLang);
                   }} 
                   style={{
                     background: 'rgba(10, 143, 130, 0.1)', 
@@ -505,9 +533,9 @@ function DoctorDashboard() {
                     width: '100%'
                   }}
                 >
-                  <option value="AR">العربية</option>
-                  <option value="EN">English</option>
-                  <option value="KU">کوردی</option>
+                  <option value="ar">العربية</option>
+                  <option value="en">English</option>
+                  <option value="ku">کوردی</option>
                 </select>
               </div>
             </div>

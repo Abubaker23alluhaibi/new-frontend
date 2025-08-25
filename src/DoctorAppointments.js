@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { normalizePhone } from './utils/phoneUtils';
 
 
-
 function DoctorAppointments() {
   const { profile } = useAuth();
   const navigate = useNavigate();
@@ -24,7 +23,7 @@ function DoctorAppointments() {
   const [showAddToSpecial, setShowAddToSpecial] = useState(false);
   const [selectedAppointmentForSpecial, setSelectedAppointmentForSpecial] = useState(null);
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const fetchDoctorAppointments = useCallback(async () => {
     try {
@@ -163,9 +162,12 @@ function DoctorAppointments() {
 
 
 
-  // دالة تنسيق التاريخ بالكردية
+  // دالة تنسيق التاريخ - إصلاح مشكلة اللغة
   const formatDate = (dateString) => {
     const date = new Date(dateString);
+    
+    // الحصول على اللغة الحالية
+    const currentLang = i18n.language || 'ar';
     
     // الحصول على أيام الأسبوع والشهور من ملف الترجمة
     let weekdays, months;
@@ -180,12 +182,21 @@ function DoctorAppointments() {
         throw new Error('Invalid translation data');
       }
     } catch (error) {
-      // استخدام القيم الافتراضية إذا فشل الحصول من الترجمة
-      weekdays = ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'];
-      months = [
-        'کانونی دووەم', 'شوبات', 'ئازار', 'نیسان', 'ئایار', 'حوزەیران',
-        'تەمموز', 'ئاب', 'ئەیلوول', 'تشرینی یەکەم', 'تشرینی دووەم', 'کانونی یەکەم'
-      ];
+      // استخدام القيم الافتراضية العربية إذا فشل الحصول من الترجمة
+      if (currentLang === 'ku') {
+        weekdays = ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'];
+        months = [
+          'کانونی دووەم', 'شوبات', 'ئازار', 'نیسان', 'ئایار', 'حوزەیران',
+          'تەمموز', 'ئاب', 'ئەیلوول', 'تشرینی یەکەم', 'تشرینی دووەم', 'کانونی یەکەم'
+        ];
+      } else {
+        // استخدام العربية كلغة افتراضية
+        weekdays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+        months = [
+          'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
+          'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
+        ];
+      }
     }
     
     // التأكد من أن المؤشرات صحيحة
@@ -197,7 +208,13 @@ function DoctorAppointments() {
       const day = date.getDate();
       const month = months[monthIndex];
       const year = date.getFullYear();
-      return `${weekday}، ${day}ی ${month} ${year}`;
+      
+      // تنسيق مختلف حسب اللغة
+      if (currentLang === 'ku') {
+        return `${weekday}، ${day}ی ${month} ${year}`;
+      } else {
+        return `${weekday}، ${day} ${month} ${year}`;
+      }
     } else {
       // استخدام التنسيق الافتراضي إذا كانت المؤشرات غير صحيحة
       const day = date.getDate();

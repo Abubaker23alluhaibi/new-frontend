@@ -14,7 +14,7 @@ function MyAppointments() {
   // --- Modal confirmation state ---
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
 
   useEffect(() => {
@@ -96,7 +96,7 @@ function MyAppointments() {
 
 
 
-  const formatDate = (dateString, t) => {
+  const formatDate = (dateString) => {
     // إصلاح مشكلة المنطقة الزمنية - معالجة التاريخ بشكل صحيح
     let date;
     if (typeof dateString === 'string' && dateString.includes('-')) {
@@ -114,37 +114,23 @@ function MyAppointments() {
       // محاولة الحصول على أيام الأسبوع والشهور من ملف الترجمة
       let weekdays, months;
       
-      if (lang.startsWith('ku') && typeof t === 'function') {
-        // للغة الكردية
-        weekdays = t('weekdays', { returnObjects: true });
-        months = t('months', { returnObjects: true });
+      weekdays = t('weekdays', { returnObjects: true });
+      months = t('months', { returnObjects: true });
+      
+      if (Array.isArray(weekdays) && Array.isArray(months)) {
+        const dayIndex = date.getDay();
+        const monthIndex = date.getMonth();
         
-        if (Array.isArray(weekdays) && Array.isArray(months)) {
-          const dayIndex = date.getDay();
-          const monthIndex = date.getMonth();
+        if (dayIndex >= 0 && dayIndex < weekdays.length && monthIndex >= 0 && monthIndex < months.length) {
+          const weekday = weekdays[dayIndex];
+          const day = date.getDate();
+          const month = months[monthIndex];
+          const year = date.getFullYear();
           
-          if (dayIndex >= 0 && dayIndex < weekdays.length && monthIndex >= 0 && monthIndex < months.length) {
-            const weekday = weekdays[dayIndex];
-            const day = date.getDate();
-            const month = months[monthIndex];
-            const year = date.getFullYear();
+          // تنسيق مختلف حسب اللغة
+          if (lang.startsWith('ku')) {
             return `${weekday}، ${day}ی ${month} ${year}`;
-          }
-        }
-      } else if (lang.startsWith('ar') && typeof t === 'function') {
-        // للغة العربية
-        weekdays = t('weekdays', { returnObjects: true });
-        months = t('months', { returnObjects: true });
-        
-        if (Array.isArray(weekdays) && Array.isArray(months)) {
-          const dayIndex = date.getDay();
-          const monthIndex = date.getMonth();
-          
-          if (dayIndex >= 0 && dayIndex < weekdays.length && monthIndex >= 0 && monthIndex < months.length) {
-            const weekday = weekdays[dayIndex];
-            const day = date.getDate();
-            const month = months[monthIndex];
-            const year = date.getFullYear();
+          } else {
             return `${weekday}، ${day} ${month} ${year}`;
           }
         }
@@ -423,7 +409,7 @@ function MyAppointments() {
                       د. {appointment.doctorName}
                     </h3>
                     <div style={{color:'#666', marginBottom:'0.5rem'}}>
-                      📅 {formatDate(appointment.date, t)}
+                      📅 {formatDate(appointment.date)}
                     </div>
                     <div style={{color:'#666', marginBottom:'0.5rem'}}>
                       🕐 {appointment.time}

@@ -15,7 +15,7 @@ function UserHome() {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [showNotif, setShowNotif] = useState(false);
-  const [lang, setLang] = useState('AR');
+
   const [showFavorites, setShowFavorites] = useState(false);
   const [favoriteDoctors, setFavoriteDoctors] = useState([]);
   const [suggestedDoctors, setSuggestedDoctors] = useState([]);
@@ -276,8 +276,8 @@ function UserHome() {
   // دالة مساعدة للتباعد
   const getGap = (mobile, desktop) => isMobile() ? mobile : desktop;
 
-  // دالة تعريب التاريخ والوقت للإشعارات - إصلاح مشكلة المنطقة الزمنية
-  function formatKurdishDateTime(dateString) {
+  // دالة تعريب التاريخ والوقت للإشعارات - إصلاح مشكلة اللغة
+  function formatDateTime(dateString) {
     // إصلاح مشكلة المنطقة الزمنية - معالجة التاريخ بشكل صحيح
     let date;
     if (typeof dateString === 'string' && dateString.includes('-')) {
@@ -288,16 +288,41 @@ function UserHome() {
       date = new Date(dateString);
     }
     
-    const months = [
-      'کانونی دووەم', 'شوبات', 'ئازار', 'نیسان', 'ئایار', 'حوزەیران',
-      'تەمموز', 'ئاب', 'ئەیلوول', 'تشرینی یەکەم', 'تشرینی دووەم', 'کانونی یەکەم'
-    ];
+    // الحصول على اللغة الحالية
+    const currentLang = i18n.language || 'ar';
+    
+    try {
+      // محاولة الحصول على الشهور من ملف الترجمة
+      const months = t('months', { returnObjects: true });
+      
+      if (Array.isArray(months)) {
+        const monthIndex = date.getMonth();
+        if (monthIndex >= 0 && monthIndex < months.length) {
+          const day = date.getDate();
+          const month = months[monthIndex];
+          const year = date.getFullYear();
+          const hour = String(date.getHours()).padStart(2, '0');
+          const min = String(date.getMinutes()).padStart(2, '0');
+          
+          // تنسيق مختلف حسب اللغة
+          if (currentLang === 'ku') {
+            return `${day} ${month} ${year}، ${hour}:${min}`;
+          } else {
+            return `${day} ${month} ${year}، ${hour}:${min}`;
+          }
+        }
+      }
+    } catch (error) {
+      console.log('Error in formatDateTime:', error);
+    }
+    
+    // استخدام التنسيق الافتراضي إذا فشل الحصول من الترجمة
     const day = date.getDate();
-    const month = months[date.getMonth()];
+    const month = date.getMonth() + 1;
     const year = date.getFullYear();
     const hour = String(date.getHours()).padStart(2, '0');
     const min = String(date.getMinutes()).padStart(2, '0');
-    return `${day} ${month} ${year}، ${hour}:${min}`;
+    return `${day}/${month}/${year}، ${hour}:${min}`;
   }
 
   function renderNewAppointmentNotification(message, t) {
@@ -320,7 +345,7 @@ function UserHome() {
     return message;
   }
 
-  const isRTL = lang === 'AR' || lang === 'KU';
+  const isRTL = i18n.language === 'ar' || i18n.language === 'ku';
 
   return (
     <div style={{
@@ -416,16 +441,14 @@ function UserHome() {
             <button onClick={handleLogout} style={{background:'linear-gradient(135deg, #00bcd4 0%, #009688 100%)', color:'#fff', border:'none', borderRadius:8, padding:'0.7rem 1.1rem', fontWeight:600, fontSize:15, cursor:'pointer', boxShadow:'0 2px 8px rgba(0, 188, 212, 0.3)'}}>{t('logout')}</button>
             <div style={{marginTop:12}}>
               <label style={{fontWeight:700, color:'#009688', marginBottom:4, display:'block'}}>{t('change_language')}</label>
-              <select value={lang} onChange={(e) => {
+              <select value={i18n.language || 'ar'} onChange={(e) => {
                 const newLang = e.target.value;
-                setLang(newLang);
-                if (newLang === 'AR') i18n.changeLanguage('ar');
-                else if (newLang === 'EN') i18n.changeLanguage('en');
-                else if (newLang === 'KU') i18n.changeLanguage('ku');
+                i18n.changeLanguage(newLang);
+                localStorage.setItem('selectedLanguage', newLang);
               }} style={{background:'rgba(0, 188, 212, 0.1)', color:'#009688', border:'none', borderRadius:8, padding:'0.3rem 0.8rem', fontWeight:700, fontSize:15, cursor:'pointer', boxShadow:'0 2px 8px rgba(0, 188, 212, 0.2)'}}>
-                <option value="AR">العربية</option>
-                <option value="EN">English</option>
-                <option value="KU">کوردی</option>
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+                <option value="ku">کوردی</option>
               </select>
             </div>
           </div>
@@ -559,7 +582,7 @@ function UserHome() {
                     gap:'0.5rem'
                   }}>
                     <span>🕐</span>
-                    {formatKurdishDateTime(n.createdAt)}
+                    {formatDateTime(n.createdAt)}
                   </div>
                   {n.type === 'special_appointment' && (
                     <div style={{
