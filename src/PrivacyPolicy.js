@@ -183,6 +183,106 @@ const PrivacyPolicy = () => {
               </p>
             </div>
 
+            <div className="privacy-section account-deletion-section">
+              <h2>{currentLanguage === 'ar' ? 'حذف الحساب' : 'Account Deletion'}</h2>
+              <p>
+                {currentLanguage === 'ar' 
+                  ? 'لديك الحق في طلب حذف حسابك وبياناتك الشخصية نهائياً من منصتنا. عند تقديم طلب الحذف:'
+                  : 'You have the right to request the permanent deletion of your account and personal data from our platform. When submitting a deletion request:'
+                }
+              </p>
+              <ul>
+                <li>
+                  {currentLanguage === 'ar' 
+                    ? 'سيتم حذف جميع بياناتك الشخصية نهائياً'
+                    : 'All your personal data will be permanently deleted'
+                  }
+                </li>
+                <li>
+                  {currentLanguage === 'ar' 
+                    ? 'سيتم إلغاء جميع المواعيد المستقبلية'
+                    : 'All future appointments will be cancelled'
+                  }
+                </li>
+                <li>
+                  {currentLanguage === 'ar' 
+                    ? 'لن نتمكن من استرداد أي بيانات بعد الحذف'
+                    : 'We will not be able to recover any data after deletion'
+                  }
+                </li>
+                <li>
+                  {currentLanguage === 'ar' 
+                    ? 'قد نحتفظ ببعض البيانات لأغراض قانونية لفترة محدودة'
+                    : 'We may retain some data for legal purposes for a limited period'
+                  }
+                </li>
+              </ul>
+              
+              <div className="deletion-request">
+                <h3>{currentLanguage === 'ar' ? 'كيفية طلب حذف الحساب' : 'How to Request Account Deletion'}</h3>
+                <p>
+                  {currentLanguage === 'ar' 
+                    ? 'لطلب حذف حسابك، يمكنك:'
+                    : 'To request account deletion, you can:'
+                  }
+                </p>
+                
+                <div className="deletion-methods">
+                  <div className="deletion-method">
+                    <div className="method-icon">📧</div>
+                    <div className="method-content">
+                      <h4>{currentLanguage === 'ar' ? 'البريد الإلكتروني' : 'Email'}</h4>
+                      <p>
+                        {currentLanguage === 'ar' 
+                          ? 'أرسل طلبك إلى:'
+                          : 'Send your request to:'
+                        }
+                      </p>
+                      <a href="mailto:tabibiqapp@gmail.com" className="deletion-link">
+                        tabibiqapp@gmail.com
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div className="deletion-method">
+                    <div className="method-icon">📱</div>
+                    <div className="method-content">
+                      <h4>{currentLanguage === 'ar' ? 'واتساب' : 'WhatsApp'}</h4>
+                      <p>
+                        {currentLanguage === 'ar' 
+                          ? 'تواصل معنا عبر:'
+                          : 'Contact us via:'
+                        }
+                      </p>
+                      <a 
+                        href="https://wa.me/9647769012619?text=أريد%20حذف%20حسابي%20نهائياً" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="deletion-link whatsapp-deletion"
+                      >
+                        +964 776 901 2619
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="deletion-note">
+                  <p>
+                    <strong>
+                      {currentLanguage === 'ar' 
+                        ? 'ملاحظة مهمة:'
+                        : 'Important Note:'
+                      }
+                    </strong>
+                    {currentLanguage === 'ar' 
+                      ? ' سيتم الرد على طلبك خلال 30 يوم عمل. تأكد من تضمين اسم المستخدم والبريد الإلكتروني المرتبط بالحساب.'
+                      : ' Your request will be processed within 30 business days. Please include your username and email associated with the account.'
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div className="privacy-footer">
               <p className="last-updated">
                 {currentLanguage === 'ar' 
