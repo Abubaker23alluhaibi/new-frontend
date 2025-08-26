@@ -34,13 +34,19 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   console.log('Service Worker: Fetching', event.request.url);
   
+  // Skip caching for non-GET requests (POST, PUT, DELETE)
+  if (event.request.method !== 'GET') {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+  
   event.respondWith(
     fetch(event.request)
       .then((response) => {
         // Clone the response before using it
         const responseClone = response.clone();
         
-        // Cache the fresh response
+        // Cache the fresh response (only for GET requests)
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, responseClone);
         });

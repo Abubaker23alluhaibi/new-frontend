@@ -45,11 +45,16 @@ const AdvertisementManager = () => {
       throw new Error('لا يوجد توكن مصادقة صحيح');
     }
     
+    // لا نضيف Content-Type إذا كان body من نوع FormData
     const headers = {
-      'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
       ...options.headers
     };
+    
+    // إضافة Content-Type فقط إذا لم يكن FormData
+    if (!(options.body instanceof FormData)) {
+      headers['Content-Type'] = 'application/json';
+    }
     
     try {
       const response = await fetch(url, {
@@ -239,7 +244,7 @@ const AdvertisementManager = () => {
     formData.append('image', file);
 
     try {
-      const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/upload-profile-image`, {
+      const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/upload-advertisement-image`, {
         method: 'POST',
         body: formData
       });
