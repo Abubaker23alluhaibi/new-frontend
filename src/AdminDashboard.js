@@ -374,9 +374,21 @@ function AdminDashboard() {
     setChangingPassword(true);
     
     try {
+      // التأكد من وجود معرف صحيح
+      if (!selectedUserForPassword.id) {
+        setPasswordError('خطأ: لا يمكن العثور على معرف المستخدم');
+        return;
+      }
+      
       const url = selectedUserForPassword.type === 'doctor' 
         ? `${process.env.REACT_APP_API_URL}/doctor-password/${selectedUserForPassword.id}`
         : `${process.env.REACT_APP_API_URL}/user-password/${selectedUserForPassword.id}`;
+      
+      console.log('🔑 تغيير كلمة المرور:', {
+        type: selectedUserForPassword.type,
+        id: selectedUserForPassword.id,
+        url: url
+      });
       
       const response = await fetchWithAuth(url, {
         method: 'PUT',
@@ -404,7 +416,18 @@ function AdminDashboard() {
   
   // دالة فتح نافذة تغيير كلمة المرور
   const openPasswordModal = (user, type) => {
-    setSelectedUserForPassword({ ...user, type });
+    // التأكد من وجود معرف صحيح
+    const userId = user._id || user.id;
+    if (!userId) {
+      alert('خطأ: لا يمكن العثور على معرف المستخدم');
+      return;
+    }
+    
+    setSelectedUserForPassword({ 
+      ...user, 
+      type,
+      id: userId // إضافة معرف صريح
+    });
     setPasswordForm({ newPassword: '', confirmPassword: '' });
     setPasswordError('');
     setPasswordSuccess('');
@@ -3147,8 +3170,11 @@ function AdminDashboard() {
                 <p style={{ margin: '0 0 0.5rem 0', color: '#666' }}>
                   <strong>البريد الإلكتروني:</strong> {selectedUserForPassword?.email}
                 </p>
-                <p style={{ margin: '0 0 1rem 0', color: '#666' }}>
+                <p style={{ margin: '0 0 0.5rem 0', color: '#666' }}>
                   <strong>النوع:</strong> {selectedUserForPassword?.type === 'doctor' ? 'طبيب' : 'مستخدم'}
+                </p>
+                <p style={{ margin: '0 0 1rem 0', color: selectedUserForPassword?.id ? '#4caf50' : '#e53935' }}>
+                  <strong>المعرف:</strong> {selectedUserForPassword?.id || '❌ غير محدد'}
                 </p>
               </div>
 

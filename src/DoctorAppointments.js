@@ -25,6 +25,28 @@ function DoctorAppointments() {
 
   const { t, i18n } = useTranslation();
 
+  // إضافة معالجة اتجاه اللغة لحل مشكلة النص العربي
+  useEffect(() => {
+    const currentLang = i18n.language || 'ar';
+    const isRTL = currentLang !== 'en';
+    
+    // تعيين اتجاه المستند بناءً على اللغة
+    if (isRTL) {
+      document.documentElement.dir = 'rtl';
+      document.documentElement.lang = currentLang;
+    } else {
+      document.documentElement.dir = 'ltr';
+      document.documentElement.lang = currentLang;
+    }
+    
+    // تنظيف عند إلغاء التحميل
+    return () => {
+      // إعادة تعيين الاتجاه الافتراضي
+      document.documentElement.dir = 'rtl';
+      document.documentElement.lang = 'ar';
+    };
+  }, [i18n.language]);
+
   const fetchDoctorAppointments = useCallback(async () => {
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/${profile._id}`);
@@ -345,8 +367,17 @@ function DoctorAppointments() {
   if (loading) return <div style={{textAlign:'center', marginTop:40}}>{t('loading')}</div>;
   if (error) return <div style={{textAlign:'center', marginTop:40, color:'#e53935'}}>{error}</div>;
 
+  // تحديد اتجاه اللغة للعرض الصحيح
+  const currentLang = i18n.language || 'ar';
+  const isRTL = currentLang !== 'en';
+
   return (
-    <div className="print-section" style={{maxWidth:800, margin:'2rem auto', padding:'0 1rem'}}>
+    <div 
+      className="print-section" 
+      dir={isRTL ? 'rtl' : 'ltr'}
+      lang={currentLang}
+      style={{maxWidth:800, margin:'2rem auto', padding:'0 1rem'}}
+    >
       {/* Header */}
       <div style={{background:'#fff', borderRadius:18, boxShadow:'0 2px 16px #7c4dff22', padding:'2rem', marginBottom:'2rem'}}>
         <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1rem', flexWrap:'wrap', gap:'1rem'}}>
@@ -436,20 +467,22 @@ function DoctorAppointments() {
             <label style={{display:'block', marginBottom:'0.5rem', color:'#7c4dff', fontWeight:700}}>
               🔍 {t('search')}
             </label>
-            <input
-              type="text"
-              placeholder={t('doctor_dashboard.search_placeholder')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width:'100%',
-                padding:'0.8rem',
-                borderRadius:8,
-                border:'2px solid #e0e0e0',
-                fontSize:16,
-                transition:'border-color 0.3s'
-              }}
-            />
+                         <input
+               type="text"
+               placeholder={t('doctor_dashboard.search_placeholder')}
+               value={searchTerm}
+               onChange={(e) => setSearchTerm(e.target.value)}
+               style={{
+                 width:'100%',
+                 padding:'0.8rem',
+                 borderRadius:8,
+                 border:'2px solid #e0e0e0',
+                 fontSize:16,
+                 transition:'border-color 0.3s',
+                 direction: isRTL ? 'rtl' : 'ltr',
+                 textAlign: isRTL ? 'right' : 'left'
+               }}
+             />
           </div>
           
           {/* Status Filter */}
@@ -466,7 +499,9 @@ function DoctorAppointments() {
                 borderRadius:8,
                 border:'2px solid #e0e0e0',
                 fontSize:16,
-                backgroundColor:'#fff'
+                backgroundColor:'#fff',
+                direction: isRTL ? 'rtl' : 'ltr',
+                textAlign: isRTL ? 'right' : 'left'
               }}
             >
               <option value="all">{t('displayed_appointments')}</option>
@@ -490,7 +525,9 @@ function DoctorAppointments() {
                 borderRadius:8,
                 border:'2px solid #e0e0e0',
                 fontSize:16,
-                backgroundColor:'#fff'
+                backgroundColor:'#fff',
+                direction: isRTL ? 'rtl' : 'ltr',
+                textAlign: isRTL ? 'right' : 'left'
               }}
             >
               <option value="date">{t('date')}</option>
@@ -513,7 +550,9 @@ function DoctorAppointments() {
                 borderRadius:8,
                 border:'2px solid #e0e0e0',
                 fontSize:16,
-                backgroundColor:'#fff'
+                backgroundColor:'#fff',
+                direction: isRTL ? 'rtl' : 'ltr',
+                textAlign: isRTL ? 'right' : 'left'
               }}
             >
               <option value="asc">{t('ascending')}</option>
