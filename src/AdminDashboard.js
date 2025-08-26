@@ -61,6 +61,60 @@ function AdminDashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { t } = useTranslation();
+  
+  // دالة مساعدة للحصول على التوكن
+  const getAuthToken = () => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        return userData.token || userData.accessToken;
+      } catch (error) {
+        console.error('❌ خطأ في قراءة التوكن:', error);
+      }
+    }
+    return null;
+  };
+  
+  // دالة مساعدة لإرسال طلبات مع التوكن
+  const fetchWithAuth = async (url, options = {}) => {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('لا يوجد توكن مصادقة صحيح');
+    }
+    
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      ...options.headers
+    };
+    
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers
+      });
+      
+      // إذا كان التوكن منتهي الصلاحية
+      if (response.status === 401 || response.status === 403) {
+        console.error('❌ التوكن منتهي الصلاحية أو غير صحيح');
+        localStorage.removeItem('user');
+        localStorage.removeItem('profile');
+        navigate('/admin-login');
+        throw new Error('انتهت صلاحية الجلسة، يرجى تسجيل الدخول مرة أخرى');
+      }
+      
+      return response;
+    } catch (error) {
+      if (error.message.includes('توكن')) {
+        // إذا كان خطأ في التوكن، إعادة توجيه لصفحة تسجيل الدخول
+        localStorage.removeItem('user');
+        localStorage.removeItem('profile');
+        navigate('/admin-login');
+      }
+      throw error;
+    }
+  };
   // حالة اليوم المختار في التقويم
   const [selectedDate, setSelectedDate] = useState('');
   // حالة التقويم
@@ -133,12 +187,12 @@ function AdminDashboard() {
     setError('');
     
     try {
-      // جلب البيانات الحقيقية من قاعدة البيانات
+      // جلب البيانات الحقيقية من قاعدة البيانات باستخدام الدالة المساعدة
       const [usersRes, doctorsRes, appointmentsRes, healthCentersRes] = await Promise.all([
-        fetch(process.env.REACT_APP_API_URL + '/api/users'),
-        fetch(process.env.REACT_APP_API_URL + '/admin/doctors'),
-        fetch(process.env.REACT_APP_API_URL + '/api/appointments'),
-        fetch(process.env.REACT_APP_API_URL + '/admin/health-centers')
+        fetchWithAuth(process.env.REACT_APP_API_URL + '/api/users'),
+        fetchWithAuth(process.env.REACT_APP_API_URL + '/admin/doctors'),
+        fetchWithAuth(process.env.REACT_APP_API_URL + '/api/appointments'),
+        fetchWithAuth(process.env.REACT_APP_API_URL + '/admin/health-centers')
       ]);
 
       console.log('📊 استجابة المستخدمين:', usersRes?.status);
@@ -192,7 +246,14 @@ function AdminDashboard() {
       fetchAnalytics();
     } catch (error) {
       console.error('❌ خطأ في جلب البيانات:', error);
-      setError('فشل في الاتصال بالخادم');
+      if (error.message.includes('توكن') || error.message.includes('صلاحية')) {
+        setError('انتهت صلاحية الجلسة، سيتم إعادة توجيهك لصفحة تسجيل الدخول');
+        setTimeout(() => {
+          navigate('/admin-login');
+        }, 2000);
+      } else {
+        setError('فشل في الاتصال بالخادم: ' + error.message);
+      }
       setUsers([]);
       setDoctors([]);
       setAppointments([]);
@@ -223,9 +284,8 @@ function AdminDashboard() {
     }
     
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/doctors/${doctorId}/approve`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' }
+      const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/api/doctors/${doctorId}/approve`, {
+        method: 'PUT'
       });
       
       if (response.ok) {
@@ -236,7 +296,14 @@ function AdminDashboard() {
       }
     } catch (error) {
       console.error('خطأ في الموافقة على الطبيب:', error);
-              alert('❌ ' + t('error_approving_doctor') + ' - ' + t('error_server_connection'));
+      if (error.message.includes('توكن') || error.message.includes('صلاحية')) {
+        alert('❌ انتهت صلاحية الجلسة، سيتم إعادة توجيهك لصفحة تسجيل الدخول');
+        setTimeout(() => {
+          navigate('/admin-login');
+        }, 2000);
+      } else {
+        alert('❌ ' + t('error_approving_doctor') + ' - ' + t('error_server_connection'));
+      }
     }
   };
 
@@ -254,21 +321,27 @@ function AdminDashboard() {
       return;
     }
     
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/doctors/${doctorId}/reject`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        
-        if (response.ok) {
-          fetchData(); // إعادة تحميل البيانات
+    try {
+      const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/api/doctors/${doctorId}/reject`, {
+        method: 'PUT'
+      });
+      
+      if (response.ok) {
+        fetchData(); // إعادة تحميل البيانات
         alert('❌ تم رفض الطبيب بنجاح\nسيتم إرسال إشعار للطبيب بالبريد الإلكتروني');
-        } else {
+      } else {
         alert('❌ ' + t('error_rejecting_doctor'));
-        }
-      } catch (error) {
-        console.error('خطأ في رفض الطبيب:', error);
-              alert('❌ ' + t('error_rejecting_doctor') + ' - ' + t('error_server_connection'));
+      }
+    } catch (error) {
+      console.error('خطأ في رفض الطبيب:', error);
+      if (error.message.includes('توكن') || error.message.includes('صلاحية')) {
+        alert('❌ انتهت صلاحية الجلسة، سيتم إعادة توجيهك لصفحة تسجيل الدخول');
+        setTimeout(() => {
+          navigate('/admin-login');
+        }, 2000);
+      } else {
+        alert('❌ ' + t('error_rejecting_doctor') + ' - ' + t('error_server_connection'));
+      }
     }
   };
 
@@ -305,9 +378,8 @@ function AdminDashboard() {
         ? `${process.env.REACT_APP_API_URL}/doctor-password/${selectedUserForPassword.id}`
         : `${process.env.REACT_APP_API_URL}/user-password/${selectedUserForPassword.id}`;
       
-      const response = await fetch(url, {
+      const response = await fetchWithAuth(url, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: passwordForm.newPassword })
       });
       
@@ -370,10 +442,10 @@ function AdminDashboard() {
   // دالة جلب التحليل
   const fetchAnalytics = async () => {
     try {
-      // جلب جميع الأطباء والمواعيد لحساب الإحصائيات الحقيقية
+      // جلب جميع الأطباء والمواعيد لحساب الإحصائيات الحقيقية باستخدام الدالة المساعدة
       const [doctorsResponse, appointmentsResponse] = await Promise.all([
-                  fetch(process.env.REACT_APP_API_URL + '/api/doctors'),
-                  fetch(process.env.REACT_APP_API_URL + '/api/appointments')
+                  fetchWithAuth(process.env.REACT_APP_API_URL + '/api/doctors'),
+                  fetchWithAuth(process.env.REACT_APP_API_URL + '/api/appointments')
       ]);
 
       if (doctorsResponse.ok && appointmentsResponse.ok) {
@@ -503,9 +575,8 @@ function AdminDashboard() {
     
     if (window.confirm('هل تريد إضافة هذا الطبيب إلى المميزين؟')) {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/doctors/${doctorId}/feature`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' }
+        const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/api/doctors/${doctorId}/feature`, {
+          method: 'PUT'
         });
         
         console.log('📡 استجابة إضافة المميز:', response.status);
@@ -533,9 +604,8 @@ function AdminDashboard() {
     
     if (window.confirm('هل تريد إزالة هذا الطبيب من المميزين؟')) {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/doctors/${doctorId}/unfeature`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' }
+        const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/api/doctors/${doctorId}/unfeature`, {
+          method: 'PUT'
         });
         
         console.log('📡 استجابة إزالة المميز:', response.status);
@@ -560,7 +630,7 @@ function AdminDashboard() {
   const deleteUser = async (userId) => {
     if (window.confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${userId}`, {
+        const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/api/users/${userId}`, {
           method: 'DELETE'
         });
         
@@ -580,7 +650,7 @@ function AdminDashboard() {
   const deleteDoctor = async (doctorId) => {
     if (window.confirm('هل أنت متأكد من حذف هذا الطبيب؟')) {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/doctors/${doctorId}`, {
+        const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/api/doctors/${doctorId}`, {
           method: 'DELETE'
         });
         
@@ -606,11 +676,8 @@ function AdminDashboard() {
     }
 
     try {
-      const response = await fetch(process.env.REACT_APP_API_URL + '/admin/health-centers', {
+      const response = await fetchWithAuth(process.env.REACT_APP_API_URL + '/admin/health-centers', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           ...newCenter,
           services: newCenterServices,
@@ -658,13 +725,10 @@ function AdminDashboard() {
 
   const deleteHealthCenter = async (centerId) => {
     if (window.confirm('هل أنت متأكد من حذف هذا المركز الصحي؟')) {
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/health-centers/${centerId}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+                     try {
+       const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/admin/health-centers/${centerId}`, {
+         method: 'DELETE'
+       });
 
         if (response.ok) {
           setHealthCenters(healthCenters.filter(center => center._id !== centerId));
@@ -732,11 +796,8 @@ function AdminDashboard() {
     setMigrationResult(null);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/migrate-local-images`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        }
+      const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/migrate-local-images`, {
+        method: 'POST'
       });
 
       const data = await response.json();
@@ -1188,10 +1249,9 @@ function AdminDashboard() {
                             const confirmMsg = user.disabled ? 'تفعيل هذا المستخدم؟' : 'تعطيل هذا المستخدم؟';
                             if (!window.confirm(confirmMsg)) return;
                             try {
-                              const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/toggle-account/user/${user._id || user.id}`,
+                              const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/admin/toggle-account/user/${user._id || user.id}`,
                                 {
                                   method: 'POST',
-                                  headers: { 'Content-Type': 'application/json' },
                                   body: JSON.stringify({ disabled: !user.disabled })
                                 });
                               if (response.ok) {
@@ -1305,13 +1365,22 @@ function AdminDashboard() {
                             const confirmMsg = doctor.disabled ? 'تفعيل هذا الطبيب؟' : 'تعطيل هذا الطبيب؟';
                             if (!window.confirm(confirmMsg)) return;
                             try {
+                              // الحصول على التوكن
+                              const savedUser = localStorage.getItem('user');
+                              const userData = JSON.parse(savedUser);
+                              const token = userData.token || userData.accessToken;
+                              
+                              if (!token) {
+                                alert('❌ لا يوجد توكن مصادقة صحيح');
+                                return;
+                              }
+                              
                               const doctorId = doctor._id || doctor.id;
                               const url = `${process.env.REACT_APP_API_URL}/admin/toggle-account/doctor/${doctorId}`;
                               console.log('Trying to toggle doctor:', doctorId, url, { disabled: !doctor.disabled });
-                              const response = await fetch(url,
+                              const response = await fetchWithAuth(url,
                                 {
                                   method: 'POST',
-                                  headers: { 'Content-Type': 'application/json' },
                                   body: JSON.stringify({ disabled: !doctor.disabled })
                                 });
                               const respText = await response.text();
@@ -2082,9 +2151,8 @@ function AdminDashboard() {
                               value={appointment.status || 'pending'}
                               onChange={async (e) => {
                                 try {
-                                  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/appointments/${appointment.id}/status`, {
+                                  const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/api/appointments/${appointment.id}/status`, {
                                     method: 'PUT',
-                                    headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ status: e.target.value })
                                   });
                                   if (response.ok) {
@@ -2144,7 +2212,7 @@ function AdminDashboard() {
                               onClick={async () => {
                                 if (window.confirm('هل أنت متأكد من حذف هذا الموعد؟')) {
                                   try {
-                                    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/appointments/${appointment.id}`, {
+                                    const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/api/appointments/${appointment.id}`, {
                                       method: 'DELETE'
                                     });
                                     if (response.ok) {

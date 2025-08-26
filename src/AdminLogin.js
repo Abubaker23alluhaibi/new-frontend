@@ -47,10 +47,12 @@ function AdminLogin() {
           email, 
           user_type: 'admin', 
           name: 'مدير النظام',
+          token: data.token || data.accessToken, // حفظ التوكن
           ...data.user 
         };
         
         console.log('✅ تسجيل دخول ناجح:', adminUser);
+        console.log('🔑 التوكن المحفوظ:', adminUser.token ? 'نعم' : 'لا');
         
         localStorage.setItem('user', JSON.stringify(adminUser));
         setUser(adminUser);
