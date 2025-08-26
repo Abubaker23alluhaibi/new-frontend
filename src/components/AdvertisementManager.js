@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const AdvertisementManager = () => {
   const [advertisements, setAdvertisements] = useState([]);
@@ -9,6 +10,7 @@ const AdvertisementManager = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -22,6 +24,60 @@ const AdvertisementManager = () => {
     isFeatured: false
   });
 
+  // دالة مساعدة للحصول على التوكن
+  const getAuthToken = () => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        return userData.token || userData.accessToken;
+      } catch (error) {
+        console.error('❌ خطأ في قراءة التوكن:', error);
+      }
+    }
+    return null;
+  };
+  
+  // دالة مساعدة لإرسال طلبات مع التوكن
+  const fetchWithAuth = async (url, options = {}) => {
+    const token = getAuthToken();
+    if (!token) {
+      throw new Error('لا يوجد توكن مصادقة صحيح');
+    }
+    
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      ...options.headers
+    };
+    
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers
+      });
+      
+      // إذا كان التوكن منتهي الصلاحية
+      if (response.status === 401 || response.status === 403) {
+        console.error('❌ التوكن منتهي الصلاحية أو غير صحيح');
+        localStorage.removeItem('user');
+        localStorage.removeItem('profile');
+        navigate('/admin-login');
+        throw new Error('انتهت صلاحية الجلسة، يرجى تسجيل الدخول مرة أخرى');
+      }
+      
+      return response;
+    } catch (error) {
+      if (error.message.includes('توكن')) {
+        // إذا كان خطأ في التوكن، إعادة توجيه لصفحة تسجيل الدخول
+        localStorage.removeItem('user');
+        localStorage.removeItem('profile');
+        navigate('/admin-login');
+      }
+      throw error;
+    }
+  };
+
   useEffect(() => {
     fetchAdvertisements();
   }, []);
@@ -29,7 +85,7 @@ const AdvertisementManager = () => {
   const fetchAdvertisements = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/advertisements`);
+      const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/admin/advertisements`);
       
       if (response.ok) {
         const data = await response.json();
@@ -38,7 +94,14 @@ const AdvertisementManager = () => {
         setError('فشل في جلب الإعلانات');
       }
     } catch (err) {
-      setError('خطأ في الاتصال بالخادم');
+      if (err.message.includes('توكن') || err.message.includes('صلاحية')) {
+        setError('انتهت صلاحية الجلسة، سيتم إعادة توجيهك لصفحة تسجيل الدخول');
+        setTimeout(() => {
+          navigate('/admin-login');
+        }, 2000);
+      } else {
+        setError('خطأ في الاتصال بالخادم');
+      }
     } finally {
       setLoading(false);
     }
@@ -57,9 +120,8 @@ const AdvertisementManager = () => {
       
       const method = editingAd ? 'PUT' : 'POST';
       
-      const response = await fetch(url, {
+      const response = await fetchWithAuth(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
 
@@ -103,7 +165,7 @@ const AdvertisementManager = () => {
     if (!window.confirm(t('admin.advertisement_confirm_delete'))) return;
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/advertisements/${id}`, {
+      const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/admin/advertisements/${id}`, {
         method: 'DELETE'
       });
 
@@ -114,15 +176,21 @@ const AdvertisementManager = () => {
         setError('فشل في حذف الإعلان');
       }
     } catch (err) {
-      setError('خطأ في الاتصال بالخادم');
+      if (err.message.includes('توكن') || err.message.includes('صلاحية')) {
+        setError('انتهت صلاحية الجلسة، سيتم إعادة توجيهك لصفحة تسجيل الدخول');
+        setTimeout(() => {
+          navigate('/admin-login');
+        }, 2000);
+      } else {
+        setError('خطأ في الاتصال بالخادم');
+      }
     }
   };
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/advertisements/${id}`, {
+      const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/admin/advertisements/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
       });
 
@@ -133,7 +201,14 @@ const AdvertisementManager = () => {
         setError('فشل في تغيير حالة الإعلان');
       }
     } catch (err) {
-      setError('خطأ في الاتصال بالخادم');
+      if (err.message.includes('توكن') || err.message.includes('صلاحية')) {
+        setError('انتهت صلاحية الجلسة، سيتم إعادة توجيهك لصفحة تسجيل الدخول');
+        setTimeout(() => {
+          navigate('/admin-login');
+        }, 2000);
+      } else {
+        setError('خطأ في الاتصال بالخادم');
+      }
     }
   };
 
@@ -164,7 +239,7 @@ const AdvertisementManager = () => {
     formData.append('image', file);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/upload-profile-image`, {
+      const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/upload-profile-image`, {
         method: 'POST',
         body: formData
       });
@@ -177,7 +252,14 @@ const AdvertisementManager = () => {
         setError(errorData.error || 'خطأ في رفع الصورة');
       }
     } catch (err) {
-      setError('خطأ في الاتصال بالخادم');
+      if (err.message.includes('توكن') || err.message.includes('صلاحية')) {
+        setError('انتهت صلاحية الجلسة، سيتم إعادة توجيهك لصفحة تسجيل الدخول');
+        setTimeout(() => {
+          navigate('/admin-login');
+        }, 2000);
+      } else {
+        setError('خطأ في الاتصال بالخادم');
+      }
     }
   };
 
