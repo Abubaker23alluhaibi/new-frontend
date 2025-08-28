@@ -862,13 +862,10 @@ function DoctorDashboard() {
                             🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
                           </div>
                           
-                          {/* عرض معلومات الحجز لشخص آخر */}
+                          {/* عرض اسم الحاجز إذا كان الحجز لشخص آخر */}
                           {appointment.isBookingForOther && (
-                            <div style={{fontSize: '11px', color: '#2e7d32', backgroundColor: '#e8f5e8', padding: '4px 8px', borderRadius: '4px', marginBottom: '8px'}}>
-                              <strong>{t('booking.booking_for_other')}</strong>
-                              <div style={{marginTop: '4px'}}>
-                                <strong>{t('booking.booker_name')}:</strong> {appointment.bookerName || appointment.userName}
-                              </div>
+                            <div style={{color:'#666', fontSize:'0.9rem', marginTop:'0.5rem'}}>
+                              👥 {t('booking.booker_name')}: {appointment.bookerName || appointment.userName}
                             </div>
                           )}
                         </div>
@@ -1017,13 +1014,10 @@ function DoctorDashboard() {
                         🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
                       </div>
                       
-                      {/* عرض معلومات الحجز لشخص آخر */}
+                      {/* عرض اسم الحاجز إذا كان الحجز لشخص آخر */}
                       {appointment.isBookingForOther && (
-                        <div style={{fontSize: '11px', color: '#2e7d32', backgroundColor: '#e8f5e8', padding: '4px 8px', borderRadius: '4px', marginBottom: '8px'}}>
-                          <strong>{t('booking.booking_for_other')}</strong>
-                          <div style={{marginTop: '4px'}}>
-                            <strong>{t('booking.booker_name')}:</strong> {appointment.bookerName || appointment.userName}
-                          </div>
+                        <div style={{color:'#666', fontSize:'0.9rem', marginTop:'0.5rem'}}>
+                          👥 {t('booking.booker_name')}: {appointment.bookerName || appointment.userName}
                         </div>
                       )}
                     </div>

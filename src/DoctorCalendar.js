@@ -287,15 +287,12 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
                       {a.status || t('confirmed')}
                     </span>
                   </div>
-                  {/* عرض معلومات الحجز لشخص آخر */}
-                  {a.isBookingForOther && (
-                    <div style={{fontSize: '11px', color: '#2e7d32', backgroundColor: '#e8f5e8', padding: '4px 8px', borderRadius: '4px', marginBottom: '8px'}}>
-                      <strong>{t('booking.booking_for_other')}</strong>
-                      <div style={{marginTop: '4px'}}>
-                        <strong>{t('booking.booker_name')}:</strong> {a.bookerName || a.userName}
+                                      {/* عرض اسم الحاجز إذا كان الحجز لشخص آخر */}
+                    {a.isBookingForOther && (
+                      <div style={{color:'#666', fontSize:'0.9rem', marginTop:'0.5rem'}}>
+                        👥 {t('booking.booker_name')}: {a.bookerName || a.userName}
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               ))}
             </div>
