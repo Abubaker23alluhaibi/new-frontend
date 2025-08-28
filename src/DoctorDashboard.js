@@ -849,18 +849,44 @@ function DoctorDashboard() {
                         
                         {/* معلومات المريض */}
                         <div style={{marginBottom:'0.8rem'}}>
+                          {/* اسم الشخص الحاجز أولاً */}
                           <div style={{color:'#0A8F82', fontWeight:700, fontSize:'1.1rem', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
                             👤 {appointment.userId?.first_name || appointment.userName || t('patient_name')}
                           </div>
+                          
+                          {/* عرض معلومات الحجز لشخص آخر */}
+                          {appointment.isBookingForOther && (
+                            <div style={{
+                              background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+                              border: '2px solid #4caf50',
+                              borderRadius: '8px',
+                              padding: '8px 12px',
+                              marginBottom: '8px'
+                            }}>
+                              <div style={{fontSize: '12px', fontWeight: 600, color: '#2e7d32', marginBottom: '4px'}}>
+                                👥 {t('booking.booking_for_other_person')}
+                              </div>
+                              <div style={{fontSize: '11px', color: '#2e7d32'}}>
+                                <strong>{t('booking.patient_name')}:</strong> {appointment.patientName} | 
+                                <strong> {t('booking.patient_phone')}:</strong> {appointment.patientPhone}
+                              </div>
+                              <div style={{fontSize: '11px', color: '#2e7d32', fontStyle: 'italic'}}>
+                                {t('booked_by')}: {appointment.bookerName || appointment.userName}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* عرض عمر المريض */}
+                          <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
+                            🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
+                          </div>
+                          
+                          {/* عرض رقم الهاتف */}
                           {(appointment.patientPhone || appointment.userId?.phone || (/^\+?\d{10,}$/.test(appointment.notes))) && (
                             <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'ltr', textAlign:'left', unicodeBidi:'bidi-override'}}>
                               📞 {appointment.patientPhone || appointment.userId?.phone || appointment.notes}
                             </div>
                           )}
-                          {/* عرض عمر المريض */}
-                          <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
-                            🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
-                          </div>
                         </div>
                         
                         {/* وقت وتاريخ الموعد */}
@@ -994,18 +1020,44 @@ function DoctorDashboard() {
                     
                     {/* معلومات المريض */}
                     <div style={{marginBottom:'0.8rem'}}>
+                      {/* اسم الشخص الحاجز أولاً */}
                       <div style={{color:'#0A8F82', fontWeight:700, fontSize:'1.1rem', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
                         👤 {appointment.userId?.first_name || appointment.userName || t('patient_name')}
                       </div>
+                      
+                      {/* عرض معلومات الحجز لشخص آخر */}
+                      {appointment.isBookingForOther && (
+                        <div style={{
+                          background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+                          border: '2px solid #4caf50',
+                          borderRadius: '8px',
+                          padding: '8px 12px',
+                          marginBottom: '8px'
+                        }}>
+                          <div style={{fontSize: '12px', fontWeight: 600, color: '#2e7d32', marginBottom: '4px'}}>
+                            👥 {t('booking.booking_for_other_person')}
+                          </div>
+                          <div style={{fontSize: '11px', color: '#2e7d32'}}>
+                            <strong>{t('booking.patient_name')}:</strong> {appointment.patientName} | 
+                            <strong> {t('booking.patient_phone')}:</strong> {appointment.patientPhone}
+                          </div>
+                          <div style={{fontSize: '11px', color: '#2e7d32', fontStyle: 'italic'}}>
+                            {t('booked_by')}: {appointment.bookerName || appointment.userName}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* عرض عمر المريض */}
+                      <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
+                        🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
+                      </div>
+                      
+                      {/* عرض رقم الهاتف */}
                       {(appointment.patientPhone || appointment.userId?.phone || (/^\+?\d{10,}$/.test(appointment.notes))) && (
                         <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'ltr', textAlign:'left', unicodeBidi:'bidi-override'}}>
                           📞 {appointment.patientPhone || appointment.userId?.phone || appointment.notes}
                         </div>
                       )}
-                      {/* عرض عمر المريض */}
-                      <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
-                        🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
-                      </div>
                     </div>
                     
                     {/* وقت وتاريخ الموعد */}

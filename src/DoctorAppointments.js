@@ -691,6 +691,19 @@ function DoctorAppointments() {
                         </div>
                       </div>
                     )}
+                    
+                    {/* عرض عمر المريض */}
+                    <div style={{color:'#666', fontSize:'0.9rem', marginBottom:'0.5rem'}}>
+                      🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
+                    </div>
+                    
+                    {/* عرض رقم الهاتف */}
+                    {(appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes)) || appointment.userId?.phone) && (
+                      <div style={{color:'#666', fontSize:'0.9rem', marginBottom:'0.5rem'}}>
+                        📞 {appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes) ? appointment.notes : appointment.userId?.phone)}
+                      </div>
+                    )}
+                    
                     <div style={{color:'#666', marginBottom:'0.5rem', display:'flex', alignItems:'center', gap:'0.5rem'}}>
                       <span>📅</span>
                       <span>{formatDate(appointment.date)}</span>
@@ -705,16 +718,6 @@ function DoctorAppointments() {
                     {appointment.reason && (
                       <div style={{color:'#666', fontSize:'0.9rem'}}>
                         💬 {appointment.reason}
-                      </div>
-                    )}
-                    {/* عرض عمر المريض */}
-                    <div style={{color:'#666', fontSize:'0.9rem'}}>
-                      🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
-                    </div>
-                    {/* عرض رقم الهاتف */}
-                    {(appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes)) || appointment.userId?.phone) && (
-                      <div style={{color:'#666', fontSize:'0.9rem'}}>
-                        📞 {appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes) ? appointment.notes : appointment.userId?.phone)}
                       </div>
                     )}
                     
