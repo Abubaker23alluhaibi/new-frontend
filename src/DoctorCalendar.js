@@ -273,10 +273,7 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
                   <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                     <div>
                       <div style={{color:'#7c4dff', fontWeight:700}}>🕐 {a.time}</div>
-                      <div>👤 {a.isBookingForOther 
-                        ? (a.patientName || 'غير محدد')
-                        : (a.userId?.first_name || a.userName)
-                      }</div>
+                      <div>👤 {a.userId?.first_name || a.userName}</div>
                       {a.userId?.phone && <div style={{fontSize:12, color:'#666'}}>📞 {a.userId.phone}</div>}
                     </div>
                     <span style={{
@@ -292,21 +289,11 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
                   </div>
                   {/* عرض معلومات الحجز لشخص آخر */}
                   {a.isBookingForOther && (
-                    <div style={{
-                      background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
-                      border: '2px solid #4caf50',
-                      borderRadius: '6px',
-                      padding: '6px 8px',
-                      marginTop: '4px',
-                      fontSize: '10px'
-                    }}>
-                      <div style={{fontWeight: 600, color: '#2e7d32', marginBottom: '2px'}}>
-                        👥 {t('booking.booking_for_other_person')}
-                      </div>
-                      <div style={{color: '#2e7d32', fontSize: '9px'}}>
+                    <div style={{fontSize: '11px', color: '#2e7d32', backgroundColor: '#e8f5e8', padding: '4px 8px', borderRadius: '4px', marginBottom: '8px'}}>
+                      <strong>{t('booking.booking_for_other')}</strong>
+                      <div style={{marginTop: '4px'}}>
                         <strong>{t('booking.booker_name')}:</strong> {a.bookerName || a.userName}
                       </div>
-
                     </div>
                   )}
                 </div>
