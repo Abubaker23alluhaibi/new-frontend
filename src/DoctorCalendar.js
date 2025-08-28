@@ -273,8 +273,15 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
                   <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                     <div>
                       <div style={{color:'#7c4dff', fontWeight:700}}>🕐 {a.time}</div>
-                      {/* اسم الشخص الحاجز أولاً */}
-                      <div>👤 {a.userId?.first_name || a.userName}</div>
+                      {/* اسم المريض أولاً */}
+                      <div>👤 {a.isBookingForOther ? a.patientName : (a.userId?.first_name || a.userName)}</div>
+                      
+                      {/* عرض عمر المريض */}
+                      {a.patientAge && (
+                        <div style={{fontSize:11, color:'#666'}}>
+                          🎂 {a.patientAge} {t('common.years')}
+                        </div>
+                      )}
                       
                       {/* عرض معلومات الحجز لشخص آخر */}
                       {a.isBookingForOther && (
