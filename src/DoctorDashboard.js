@@ -850,7 +850,10 @@ function DoctorDashboard() {
                         {/* معلومات المريض */}
                         <div style={{marginBottom:'0.8rem'}}>
                           <div style={{color:'#0A8F82', fontWeight:700, fontSize:'1.1rem', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
-                            👤 {appointment.userId?.first_name || appointment.userName || t('patient_name')}
+                            👤 {appointment.isBookingForOther 
+                              ? (appointment.patientName || t('patient_name'))
+                              : (appointment.userId?.first_name || appointment.userName || t('patient_name'))
+                            }
                           </div>
                           {(appointment.patientPhone || appointment.userId?.phone || (/^\+?\d{10,}$/.test(appointment.notes))) && (
                             <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'ltr', textAlign:'left', unicodeBidi:'bidi-override'}}>
@@ -875,12 +878,13 @@ function DoctorDashboard() {
                                 👥 {t('booking.booking_for_other_person')}
                               </div>
                               <div style={{fontSize: '11px', color: '#2e7d32'}}>
-                                <strong>{t('booking.patient_name')}:</strong> {appointment.patientName} | 
-                                <strong> {t('booking.patient_phone')}:</strong> {appointment.patientPhone}
+                                <strong>{t('booking.booker_name')}:</strong> {appointment.bookerName || appointment.userName}
                               </div>
-                              <div style={{fontSize: '11px', color: '#2e7d32', fontStyle: 'italic'}}>
-                                {appointment.bookerName || appointment.userName}
-                              </div>
+                              {appointment.patientPhone && (
+                                <div style={{fontSize: '11px', color: '#2e7d32'}}>
+                                  <strong>{t('booking.patient_phone')}:</strong> {appointment.patientPhone}
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
@@ -1017,7 +1021,10 @@ function DoctorDashboard() {
                     {/* معلومات المريض */}
                     <div style={{marginBottom:'0.8rem'}}>
                       <div style={{color:'#0A8F82', fontWeight:700, fontSize:'1.1rem', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
-                        👤 {appointment.userId?.first_name || appointment.userName || t('patient_name')}
+                        👤 {appointment.isBookingForOther 
+                          ? (appointment.patientName || t('patient_name'))
+                          : (appointment.userId?.first_name || appointment.userName || t('patient_name'))
+                        }
                       </div>
                       {(appointment.patientPhone || appointment.userId?.phone || (/^\+?\d{10,}$/.test(appointment.notes))) && (
                         <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'ltr', textAlign:'left', unicodeBidi:'bidi-override'}}>
@@ -1042,12 +1049,13 @@ function DoctorDashboard() {
                             👥 {t('booking.booking_for_other_person')}
                           </div>
                           <div style={{fontSize: '11px', color: '#2e7d32'}}>
-                            <strong>{t('booking.patient_name')}:</strong> {appointment.patientName} | 
-                            <strong> {t('booking.patient_phone')}:</strong> {appointment.patientPhone}
+                            <strong>{t('booking.booker_name')}:</strong> {appointment.bookerName || appointment.userName}
                           </div>
-                          <div style={{fontSize: '11px', color: '#2e7d32', fontStyle: 'italic'}}>
-                            {appointment.bookerName || appointment.userName}
-                          </div>
+                          {appointment.patientPhone && (
+                            <div style={{fontSize: '11px', color: '#2e7d32'}}>
+                              <strong>{t('booking.patient_phone')}:</strong> {appointment.patientPhone}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -1827,7 +1835,10 @@ function SpecialAppointmentsList({ appointments, onDelete, onEdit, onOpenNote })
                   <div style={{flex:1}}>
                     <div style={{display:'flex', alignItems:'center', gap:'1rem', marginBottom:'0.5rem', flexWrap:'wrap'}}>
                       <h4 style={{color:'#333', margin:0, fontSize:'1.1rem', fontWeight:700}}>
-                        👤 {appointment.patientName || appointment.userId?.first_name || appointment.userName || 'غير محدد'}
+                        👤 {appointment.isBookingForOther 
+                          ? (appointment.patientName || 'غير محدد')
+                          : (appointment.userId?.first_name || appointment.userName || 'غير محدد')
+                        }
                         <button onClick={()=>onOpenNote(appointment.patientPhone || appointment.userId?.phone)} style={{marginRight:7, background:'none', border:'none', color:'#7c4dff', cursor:'pointer', fontSize:18}} title="ملاحظة الطبيب">📝</button>
                       </h4>
                       <span style={{

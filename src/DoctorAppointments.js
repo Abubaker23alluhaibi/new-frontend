@@ -666,9 +666,22 @@ function DoctorAppointments() {
                         {statusText}
                       </span>
                     </div>
+                    {/* اسم المريض أولاً */}
                     <h3 style={{color:'#7c4dff', margin:'0 0 0.5rem 0', fontSize:'1.3rem'}}>
-                      👤 {appointment.userName || appointment.userId?.first_name || t('patient')}
+                      👤 {appointment.isBookingForOther 
+                        ? (appointment.patientName || t('patient'))
+                        : (appointment.userName || appointment.userId?.first_name || t('patient'))
+                      }
                     </h3>
+                    
+                    {/* السبب ثانياً */}
+                    {appointment.reason && (
+                      <div style={{color:'#666', fontSize:'0.9rem', marginBottom:'0.5rem'}}>
+                        💬 {appointment.reason}
+                      </div>
+                    )}
+                    
+                    {/* التاريخ والوقت ثالثاً */}
                     <div style={{color:'#666', marginBottom:'0.5rem', display:'flex', alignItems:'center', gap:'0.5rem'}}>
                       <span>📅</span>
                       <span>{formatDate(appointment.date)}</span>
@@ -680,9 +693,27 @@ function DoctorAppointments() {
                       <span>🕐</span>
                       <span style={{fontWeight:700, color:'#7c4dff'}}>{appointment.time}</span>
                     </div>
-                    {appointment.reason && (
-                      <div style={{color:'#666', fontSize:'0.9rem'}}>
-                        💬 {appointment.reason}
+                    
+                    {/* اسم الشخص الحاجز رابعاً - إذا كان الحجز لشخص آخر */}
+                    {appointment.isBookingForOther && (
+                      <div style={{
+                        background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+                        border: '2px solid #4caf50',
+                        borderRadius: '8px',
+                        padding: '8px 12px',
+                        marginBottom: '8px'
+                      }}>
+                        <div style={{fontSize: '12px', fontWeight: 600, color: '#2e7d32', marginBottom: '4px'}}>
+                          👥 {t('booking.booking_for_other_person')}
+                        </div>
+                        <div style={{fontSize: '11px', color: '#2e7d32'}}>
+                          <strong>{t('booking.booker_name')}:</strong> {appointment.bookerName || appointment.userName}
+                        </div>
+                        {appointment.patientPhone && (
+                          <div style={{fontSize: '11px', color: '#2e7d32'}}>
+                            <strong>{t('booking.patient_phone')}:</strong> {appointment.patientPhone}
+                          </div>
+                        )}
                       </div>
                     )}
                     {/* عرض عمر المريض */}
@@ -809,27 +840,6 @@ function DoctorAppointments() {
                     )}
                   </div>
                 </div>
-                {/* عرض معلومات الحجز لشخص آخر */}
-                {appointment.isBookingForOther && (
-                  <div style={{
-                    background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
-                    border: '2px solid #4caf50',
-                    borderRadius: '8px',
-                    padding: '8px 12px',
-                    marginBottom: '8px'
-                  }}>
-                    <div style={{fontSize: '12px', fontWeight: 600, color: '#2e7d32', marginBottom: '4px'}}>
-                      👥 {t('booking.booking_for_other_person')}
-                    </div>
-                    <div style={{fontSize: '11px', color: '#2e7d32'}}>
-                      <strong>{t('booking.patient_name')}:</strong> {appointment.patientName} | 
-                      <strong> {t('booking.patient_phone')}:</strong> {appointment.patientPhone}
-                    </div>
-                    <div style={{fontSize: '11px', color: '#2e7d32', fontStyle: 'italic'}}>
-                      {appointment.bookerName || appointment.userName}
-                    </div>
-                  </div>
-                )}
               </div>
             );
           })}

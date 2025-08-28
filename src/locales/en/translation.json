@@ -12,6 +12,7 @@
     "book_for_other_description": "Enter the patient's information you want to book for",
     "patient_name": "Patient Name",
     "patient_phone": "Patient Phone Number",
+    "booker_name": "Booker",
     "enter_patient_name": "Enter patient name",
     "enter_patient_phone": "Enter phone number",
     "confirm_and_book": "Confirm & Book",

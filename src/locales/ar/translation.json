@@ -21,6 +21,7 @@
     "book_for_other_description": "أدخل بيانات المريض الذي تريد الحجز له",
     "patient_name": "اسم المريض",
     "patient_phone": "رقم هاتف المريض",
+    "booker_name": "الحاجز",
     "enter_patient_name": "أدخل اسم المريض",
     "enter_patient_phone": "أدخل رقم الهاتف",
     "confirm_and_book": "تأكيد والحجز",
