@@ -667,15 +667,8 @@ function DoctorAppointments() {
                       </span>
                     </div>
                     <h3 style={{color:'#7c4dff', margin:'0 0 0.5rem 0', fontSize:'1.3rem'}}>
-                      👤 {appointment.isBookingForOther ? appointment.patientName : (appointment.userName || appointment.userId?.first_name || t('patient'))}
+                      👤 {appointment.userName || appointment.userId?.first_name || t('patient')}
                     </h3>
-                    
-                    {/* عرض عمر المريض */}
-                    <div style={{color:'#666', fontSize:'0.9rem', marginBottom:'0.5rem'}}>
-                      🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
-                    </div>
-                    
-                    {/* التاريخ والوقت */}
                     <div style={{color:'#666', marginBottom:'0.5rem', display:'flex', alignItems:'center', gap:'0.5rem'}}>
                       <span>📅</span>
                       <span>{formatDate(appointment.date)}</span>
@@ -687,41 +680,52 @@ function DoctorAppointments() {
                       <span>🕐</span>
                       <span style={{fontWeight:700, color:'#7c4dff'}}>{appointment.time}</span>
                     </div>
-                    
-                    {/* عرض معلومات الحجز لشخص آخر */}
-                    {appointment.isBookingForOther && (
-                      <div style={{
-                        background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
-                        border: '2px solid #4caf50',
-                        borderRadius: '8px',
-                        padding: '8px 12px',
-                        marginBottom: '8px'
-                      }}>
-                        <div style={{fontSize: '12px', fontWeight: 600, color: '#2e7d32', marginBottom: '4px'}}>
-                          👥 {t('booking.booking_for_other_person')}
-                        </div>
-                        <div style={{fontSize: '11px', color: '#2e7d32'}}>
-                          <strong>{t('booking.patient_name')}:</strong> {appointment.patientName} | 
-                          <strong> {t('booking.patient_phone')}:</strong> {appointment.patientPhone}
-                        </div>
-                        <div style={{fontSize: '11px', color: '#2e7d32', fontStyle: 'italic'}}>
-                          {t('booked_by')}: {appointment.bookerName || appointment.userName}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* عرض رقم الهاتف */}
-                    {(appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes)) || appointment.userId?.phone) && (
-                      <div style={{color:'#666', fontSize:'0.9rem', marginBottom:'0.5rem'}}>
-                        📞 {appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes) ? appointment.notes : appointment.userId?.phone)}
-                      </div>
-                    )}
-                    
                     {appointment.reason && (
                       <div style={{color:'#666', fontSize:'0.9rem'}}>
                         💬 {appointment.reason}
                       </div>
                     )}
+                    {/* عرض عمر المريض */}
+                    <div style={{color:'#666', fontSize:'0.9rem'}}>
+                      🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
+                    </div>
+                    {/* عرض رقم الهاتف */}
+                    {(appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes)) || appointment.userId?.phone) && (
+                      <div style={{color:'#666', fontSize:'0.9rem'}}>
+                        📞 {appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes) ? appointment.notes : appointment.userId?.phone)}
+                      </div>
+                    )}
+                    
+                    {/* حالة الحضور */}
+                    <div style={{marginTop:'0.8rem'}}>
+                      {appointment.attendance === 'present' ? (
+                        <div style={{
+                          background:'#4caf50',
+                          color:'#fff',
+                          padding:'0.3rem 0.6rem',
+                          borderRadius:6,
+                          fontSize:'0.75rem',
+                          fontWeight:600,
+                          textAlign:'center',
+                          display:'inline-block'
+                        }}>
+                          ✅ {t('present')}
+                        </div>
+                      ) : (
+                        <div style={{
+                          background:'#f44336',
+                          color:'#fff',
+                          padding:'0.3rem 0.6rem',
+                          borderRadius:6,
+                          fontSize:'0.75rem',
+                          fontWeight:600,
+                          textAlign:'center',
+                          display:'inline-block'
+                        }}>
+                          ❌ {t('absent')}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="no-print" style={{display:'flex', gap:'0.5rem', flexWrap:'wrap'}}>
                     {/* أزرار الحضور والغياب - تظهر فقط إذا لم يتم تحديد الحضور بعد */}
@@ -805,6 +809,27 @@ function DoctorAppointments() {
                     )}
                   </div>
                 </div>
+                {/* عرض معلومات الحجز لشخص آخر */}
+                {appointment.isBookingForOther && (
+                  <div style={{
+                    background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+                    border: '2px solid #4caf50',
+                    borderRadius: '8px',
+                    padding: '8px 12px',
+                    marginBottom: '8px'
+                  }}>
+                    <div style={{fontSize: '12px', fontWeight: 600, color: '#2e7d32', marginBottom: '4px'}}>
+                      👥 {t('booking.booking_for_other_person')}
+                    </div>
+                    <div style={{fontSize: '11px', color: '#2e7d32'}}>
+                      <strong>{t('booking.patient_name')}:</strong> {appointment.patientName} | 
+                      <strong> {t('booking.patient_phone')}:</strong> {appointment.patientPhone}
+                    </div>
+                    <div style={{fontSize: '11px', color: '#2e7d32', fontStyle: 'italic'}}>
+                      {appointment.bookerName || appointment.userName}
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}

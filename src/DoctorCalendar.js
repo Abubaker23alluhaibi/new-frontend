@@ -273,44 +273,8 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
                   <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                     <div>
                       <div style={{color:'#7c4dff', fontWeight:700}}>🕐 {a.time}</div>
-                      {/* اسم المريض أولاً */}
-                      <div>👤 {a.isBookingForOther ? a.patientName : (a.userId?.first_name || a.userName)}</div>
-                      
-                      {/* عرض عمر المريض */}
-                      {a.patientAge && (
-                        <div style={{fontSize:11, color:'#666'}}>
-                          🎂 {a.patientAge} {t('common.years')}
-                        </div>
-                      )}
-                      
-                      {/* عرض معلومات الحجز لشخص آخر */}
-                      {a.isBookingForOther && (
-                        <div style={{
-                          background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
-                          border: '2px solid #4caf50',
-                          borderRadius: '6px',
-                          padding: '6px 8px',
-                          marginTop: '4px',
-                          fontSize: '10px'
-                        }}>
-                          <div style={{fontWeight: 600, color: '#2e7d32', marginBottom: '2px'}}>
-                            👥 {t('booking.booking_for_other_person')}
-                          </div>
-                          <div style={{color: '#2e7d32', fontSize: '9px'}}>
-                            <strong>{t('booking.patient_name')}:</strong> {a.patientName}
-                          </div>
-                          <div style={{color: '#2e7d32', fontSize: '9px', fontStyle: 'italic'}}>
-                            {t('booked_by')}: {a.bookerName || a.userName}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* عرض رقم الهاتف */}
-                      {(a.patientPhone || a.userId?.phone) && (
-                        <div style={{fontSize:12, color:'#666'}}>
-                          📞 {a.patientPhone || a.userId.phone}
-                        </div>
-                      )}
+                      <div>👤 {a.userId?.first_name || a.userName}</div>
+                      {a.userId?.phone && <div style={{fontSize:12, color:'#666'}}>📞 {a.userId.phone}</div>}
                     </div>
                     <span style={{
                       background:'#7c4dff',
@@ -323,6 +287,27 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
                       {a.status || t('confirmed')}
                     </span>
                   </div>
+                  {/* عرض معلومات الحجز لشخص آخر */}
+                  {a.isBookingForOther && (
+                    <div style={{
+                      background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+                      border: '2px solid #4caf50',
+                      borderRadius: '6px',
+                      padding: '6px 8px',
+                      marginTop: '4px',
+                      fontSize: '10px'
+                    }}>
+                      <div style={{fontWeight: 600, color: '#2e7d32', marginBottom: '2px'}}>
+                        👥 {t('booking.booking_for_other_person')}
+                      </div>
+                      <div style={{color: '#2e7d32', fontSize: '9px'}}>
+                        <strong>{t('booking.patient_name')}:</strong> {a.patientName}
+                      </div>
+                      <div style={{color: '#2e7d32', fontSize: '9px', fontStyle: 'italic'}}>
+                        {a.bookerName || a.userName}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
