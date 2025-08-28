@@ -667,7 +667,10 @@ function DoctorAppointments() {
                       </span>
                     </div>
                     <h3 style={{color:'#7c4dff', margin:'0 0 0.5rem 0', fontSize:'1.3rem'}}>
-                      👤 {appointment.userName || appointment.userId?.first_name || t('patient')}
+                      👤 {appointment.isBookingForOther
+                        ? (appointment.patientName || t('patient'))
+                        : (appointment.userName || appointment.userId?.first_name || t('patient'))
+                      }
                     </h3>
                     <div style={{color:'#666', marginBottom:'0.5rem', display:'flex', alignItems:'center', gap:'0.5rem'}}>
                       <span>📅</span>

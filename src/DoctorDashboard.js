@@ -850,7 +850,10 @@ function DoctorDashboard() {
                         {/* معلومات المريض */}
                         <div style={{marginBottom:'0.8rem'}}>
                           <div style={{color:'#0A8F82', fontWeight:700, fontSize:'1.1rem', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
-                            👤 {appointment.userId?.first_name || appointment.userName || t('patient_name')}
+                            👤 {appointment.isBookingForOther
+                              ? (appointment.patientName || t('patient_name'))
+                              : (appointment.userId?.first_name || appointment.userName || t('patient_name'))
+                            }
                           </div>
                           {(appointment.patientPhone || appointment.userId?.phone || (/^\+?\d{10,}$/.test(appointment.notes))) && (
                             <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'ltr', textAlign:'left', unicodeBidi:'bidi-override'}}>
@@ -1002,7 +1005,10 @@ function DoctorDashboard() {
                     {/* معلومات المريض */}
                     <div style={{marginBottom:'0.8rem'}}>
                       <div style={{color:'#0A8F82', fontWeight:700, fontSize:'1.1rem', marginBottom:'0.3rem', direction:'rtl', textAlign:'right'}}>
-                        👤 {appointment.userId?.first_name || appointment.userName || t('patient_name')}
+                        👤 {appointment.isBookingForOther
+                          ? (appointment.patientName || t('patient_name'))
+                          : (appointment.userId?.first_name || appointment.userName || t('patient_name'))
+                        }
                       </div>
                       {(appointment.patientPhone || appointment.userId?.phone || (/^\+?\d{10,}$/.test(appointment.notes))) && (
                         <div style={{fontSize:'0.9rem', color:'#666', marginBottom:'0.3rem', direction:'ltr', textAlign:'left', unicodeBidi:'bidi-override'}}>

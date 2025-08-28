@@ -273,7 +273,10 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
                   <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                     <div>
                       <div style={{color:'#7c4dff', fontWeight:700}}>🕐 {a.time}</div>
-                      <div>👤 {a.userId?.first_name || a.userName}</div>
+                      <div>👤 {a.isBookingForOther
+                        ? (a.patientName || 'غير محدد')
+                        : (a.userId?.first_name || a.userName)
+                      }</div>
                       {a.userId?.phone && <div style={{fontSize:12, color:'#666'}}>📞 {a.userId.phone}</div>}
                     </div>
                     <span style={{
