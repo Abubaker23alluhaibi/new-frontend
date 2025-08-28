@@ -709,11 +709,6 @@ function DoctorAppointments() {
                         <div style={{fontSize: '11px', color: '#2e7d32'}}>
                           <strong>{t('booking.booker_name')}:</strong> {appointment.bookerName || appointment.userName}
                         </div>
-                        {appointment.patientPhone && (
-                          <div style={{fontSize: '11px', color: '#2e7d32'}}>
-                            <strong>{t('booking.patient_phone')}:</strong> {appointment.patientPhone}
-                          </div>
-                        )}
                       </div>
                     )}
                     {/* عرض عمر المريض */}

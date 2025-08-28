@@ -306,11 +306,7 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
                       <div style={{color: '#2e7d32', fontSize: '9px'}}>
                         <strong>{t('booking.booker_name')}:</strong> {a.bookerName || a.userName}
                       </div>
-                      {a.patientPhone && (
-                        <div style={{color: '#2e7d32', fontSize: '9px'}}>
-                          <strong>{t('booking.patient_phone')}:</strong> {a.patientPhone}
-                        </div>
-                      )}
+
                     </div>
                   )}
                 </div>
