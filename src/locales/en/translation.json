@@ -7,6 +7,19 @@
     "patient_age": "Patient Age",
     "not_available": "Not available"
   },
+  "booking": {
+    "book_for_other_person": "Book for Another Person",
+    "book_for_other_description": "Enter the patient's information you want to book for",
+    "patient_name": "Patient Name",
+    "patient_phone": "Patient Phone Number",
+    "enter_patient_name": "Enter patient name",
+    "enter_patient_phone": "Enter phone number",
+    "confirm_and_book": "Confirm & Book",
+    "booking_for_other_person": "Booking for Another Person",
+    "book_for_other_button": "Book for Another Person",
+    "cancel_booking_for_other": "Cancel Booking for Another Person"
+  },
+  "booked_by": "Booked by",
   "landing_page": {
     "header": {
       "logo_text": "Iraq Medical Platform",

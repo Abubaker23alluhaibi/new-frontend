@@ -16,6 +16,19 @@
     "patient_age": "عمر المريض",
     "not_available": "غير متوفر"
   },
+  "booking": {
+    "book_for_other_person": "الحجز لشخص آخر",
+    "book_for_other_description": "أدخل بيانات المريض الذي تريد الحجز له",
+    "patient_name": "اسم المريض",
+    "patient_phone": "رقم هاتف المريض",
+    "enter_patient_name": "أدخل اسم المريض",
+    "enter_patient_phone": "أدخل رقم الهاتف",
+    "confirm_and_book": "تأكيد والحجز",
+    "booking_for_other_person": "الحجز لشخص آخر",
+    "book_for_other_button": "حجز لشخص آخر",
+    "cancel_booking_for_other": "إلغاء الحجز لشخص آخر"
+  },
+  "booked_by": "تم الحجز بواسطة",
   "landing_page": {
     "header": {
       "logo_text": "منصة طبيب العراق",

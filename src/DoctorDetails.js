@@ -35,6 +35,10 @@ function DoctorDetails() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
+  const [showBookingForOtherModal, setShowBookingForOtherModal] = useState(false);
+  const [isBookingForOther, setIsBookingForOther] = useState(false);
+  const [patientName, setPatientName] = useState('');
+  const [patientPhone, setPatientPhone] = useState('');
   const [migratingImage, setMigratingImage] = useState(false);
   const [showAppRedirect, setShowAppRedirect] = useState(false);
 
@@ -367,6 +371,12 @@ function DoctorDetails() {
       return;
     }
     
+    // التحقق من الحقول المطلوبة للحجز لشخص آخر
+    if (isBookingForOther && (!patientName || !patientPhone)) {
+      setSuccess('يرجى إدخال اسم المريض ورقم الهاتف');
+      return;
+    }
+    
     const ageNum = parseInt(patientAge);
     if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
       setSuccess(t('common.age_invalid'));
@@ -382,7 +392,7 @@ function DoctorDetails() {
     const day = String(selectedDate.getDate()).padStart(2, '0');
     const dateString = `${year}-${month}-${day}`;
     
-const bookingData = {
+    const bookingData = {
       userId: user._id,
       doctorId: doctor._id,
       userName: profile?.first_name || 'مستخدم',
@@ -390,8 +400,13 @@ const bookingData = {
       date: dateString,
       time: selectedTime,
       reason: reason || '',
-      patientAge: parseInt(patientAge), // إضافة عمر المريض
-      duration: doctor?.appointmentDuration || 30 // إرسال مدة الموعد الافتراضية للطبيب
+      patientAge: parseInt(patientAge),
+      duration: doctor?.appointmentDuration || 30,
+      // إضافة حقول الحجز لشخص آخر
+      isBookingForOther: isBookingForOther,
+      patientName: isBookingForOther ? patientName : '',
+      patientPhone: isBookingForOther ? patientPhone : '',
+      bookerName: profile?.first_name || 'مستخدم'
     };
     
     
@@ -411,6 +426,10 @@ const bookingData = {
         setSelectedTime('');
         setReason('');
         setPatientAge('');
+        // مسح حقول الحجز لشخص آخر
+        setIsBookingForOther(false);
+        setPatientName('');
+        setPatientPhone('');
       } else {
         setSuccess(data.error || t('error_booking_appointment'));
       }
@@ -552,6 +571,110 @@ const bookingData = {
               </div>
               <div style={{fontSize: 14, color: '#856404', fontStyle: 'italic'}}>
                 💡 {t('profile_update_note')}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* مودال الحجز لشخص آخر */}
+      {showBookingForOtherModal && (
+        <div onClick={()=>setShowBookingForOtherModal(false)} style={{position:'fixed', top:0, left:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.55)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:10000}}>
+          <div style={{position:'relative', background:'#fff', borderRadius:16, padding:'2rem', maxWidth:'90vw', maxHeight:'80vh', overflow:'auto'}} onClick={e=>e.stopPropagation()}>
+            <button onClick={()=>setShowBookingForOtherModal(false)} style={{position:'absolute', top:10, right:10, background:'#e53935', color:'#fff', border:'none', borderRadius:8, fontSize:22, fontWeight:900, padding:'0.2rem 0.8rem', cursor:'pointer'}}>×</button>
+            <div style={{
+              background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+              border: '2px solid #4caf50',
+              borderRadius: 12,
+              padding: '1.5rem',
+              textAlign: 'center',
+              boxShadow: '0 2px 8px #4caf5022'
+            }}>
+              <div style={{fontSize: 20, fontWeight: 700, color: '#2e7d32', marginBottom: 16}}>
+                👥 {t('booking.book_for_other_person')}
+              </div>
+              <div style={{fontSize: 16, color: '#2e7d32', lineHeight: 1.6, marginBottom: 20}}>
+                {t('booking.book_for_other_description')}
+              </div>
+              
+              <div style={{display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px'}}>
+                <div>
+                  <label style={{fontSize: 14, fontWeight: 600, color: '#2e7d32', display: 'block', marginBottom: '4px'}}>
+                    {t('booking.patient_name')} *
+                  </label>
+                  <input
+                    type="text"
+                    value={patientName}
+                    onChange={(e) => setPatientName(e.target.value)}
+                    placeholder={t('booking.enter_patient_name')}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      border: '2px solid #4caf50',
+                      outline: 'none',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+                
+                <div>
+                  <label style={{fontSize: 14, fontWeight: 600, color: '#2e7d32', display: 'block', marginBottom: '4px'}}>
+                    {t('booking.patient_phone')} *
+                  </label>
+                  <input
+                    type="tel"
+                    value={patientPhone}
+                    onChange={(e) => setPatientPhone(e.target.value)}
+                    placeholder={t('booking.enter_patient_phone')}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      border: '2px solid #4caf50',
+                      outline: 'none',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <div style={{display: 'flex', gap: '10px', justifyContent: 'center'}}>
+                <button
+                  onClick={() => {
+                    setIsBookingForOther(true);
+                    setShowBookingForOtherModal(false);
+                  }}
+                  disabled={!patientName || !patientPhone}
+                  style={{
+                    background: !patientName || !patientPhone ? '#ccc' : 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '10px 20px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: !patientName || !patientPhone ? 'not-allowed' : 'pointer',
+                    opacity: !patientName || !patientPhone ? 0.6 : 1
+                  }}
+                >
+                  {t('booking.confirm_and_book')}
+                </button>
+                <button
+                  onClick={() => setShowBookingForOtherModal(false)}
+                  style={{
+                    background: '#f44336',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '10px 20px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {t('cancel')}
+                </button>
               </div>
             </div>
           </div>
@@ -858,7 +981,7 @@ const bookingData = {
           
           {/* زر حجز لمستخدم آخر */}
           <button
-            onClick={() => setShowNoteModal(true)}
+            onClick={() => setShowBookingForOtherModal(true)}
             style={{
               background: 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
               color: '#fff',
@@ -998,6 +1121,27 @@ const bookingData = {
         }}>
           <input type="hidden" value={selectedDate ? selectedDate.toISOString().slice(0,10) : ''} />
           <input type="hidden" value={selectedTime} />
+          
+          {/* مؤشر الحجز لشخص آخر */}
+          {isBookingForOther && (
+            <div style={{
+              background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
+              border: '2px solid #4caf50',
+              borderRadius: '8px',
+              padding: '12px',
+              marginBottom: '8px',
+              textAlign: 'center'
+            }}>
+              <div style={{fontSize: 14, fontWeight: 600, color: '#2e7d32', marginBottom: '8px'}}>
+                👥 {t('booking.booking_for_other_person')}
+              </div>
+              <div style={{fontSize: 12, color: '#2e7d32'}}>
+                <strong>{t('booking.patient_name')}:</strong> {patientName} | 
+                <strong> {t('booking.patient_phone')}:</strong> {patientPhone}
+              </div>
+            </div>
+          )}
+          
           <label style={{
             fontSize: window.innerWidth < 500 ? 12 : 14,
             fontWeight: 600,
@@ -1082,7 +1226,7 @@ const bookingData = {
             }}
           >
             <span style={{fontSize: '1.2em'}}>📅</span>
-            {booking ? t('booking_in_progress') : t('book_appointment_button')}
+            {booking ? t('booking_in_progress') : (isBookingForOther ? t('booking.book_for_other_button') : t('book_appointment_button'))}
           </button>
           {success && (
             <div style={{
@@ -1093,6 +1237,32 @@ const bookingData = {
             }}>
               {success}
             </div>
+          )}
+          
+          {/* زر إلغاء الحجز لشخص آخر */}
+          {isBookingForOther && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsBookingForOther(false);
+                setPatientName('');
+                setPatientPhone('');
+              }}
+              style={{
+                background: '#f44336',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '8px 16px',
+                fontSize: '12px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                marginTop: '8px',
+                width: '100%'
+              }}
+            >
+              {t('booking.cancel_booking_for_other')}
+            </button>
           )}
         </form>
       </div>

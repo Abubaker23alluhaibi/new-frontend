@@ -7,6 +7,19 @@
     "patient_age": "تەمەنی نەخۆش",
     "not_available": "بەردەست نییە"
   },
+  "booking": {
+    "book_for_other_person": "حجزکردن بۆ کەسێکی تر",
+    "book_for_other_description": "زانیاری نەخۆشەکە بنووسە کە دەتەوێت بۆی حجز بکەیت",
+    "patient_name": "ناوی نەخۆش",
+    "patient_phone": "ژمارەی مۆبایلی نەخۆش",
+    "enter_patient_name": "ناوی نەخۆشەکە بنووسە",
+    "enter_patient_phone": "ژمارەی مۆبایل بنووسە",
+    "confirm_and_book": "دووپاتکردنەوە و حجزکردن",
+    "booking_for_other_person": "حجزکردن بۆ کەسێکی تر",
+    "book_for_other_button": "حجزکردن بۆ کەسێکی تر",
+    "cancel_booking_for_other": "هەڵوەشاندنەوەی حجزکردن بۆ کەسێکی تر"
+  },
+  "booked_by": "حجزکراوە لەلایەن",
   "welcome": "بەخێربێیت بۆ Tabib IQ",
   "change_language": "گۆڕینی زمان",
   "description": "پلاتفۆرمی پزیشکییەکی زیرەک بۆ حجز و بەڕێوەبردنی چاوپێکەوتنەکان.",
