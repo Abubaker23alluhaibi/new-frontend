@@ -78,6 +78,16 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
       setWorkTimes([]);
     }
     
+    // إذا لم تكن هناك أوقات دوام، أضف وقت افتراضي
+    if ((!profile?.workTimes || !Array.isArray(profile.workTimes) || profile.workTimes.length === 0)) {
+      // إضافة وقت دوام افتراضي
+      setTimeout(() => {
+        setWorkTimes([{ day: '', from: '09:00', to: '17:00' }]);
+        setSuccess('تم إضافة وقت دوام افتراضي - يرجى تحديد اليوم والوقت');
+        setTimeout(() => setSuccess(''), 3000);
+      }, 500);
+    }
+    
     // تهيئة أيام الإجازات - تأكد من أنها دائماً مصفوفة
     if (profile?.vacationDays && Array.isArray(profile.vacationDays)) {
       // تحويل البيانات القديمة إلى الجديدة
@@ -110,8 +120,15 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
 
   // دوال أوقات العمل
   const addWorkTime = () => {
-    setWorkTimes([...workTimes, { day: '', from: '09:00', to: '17:00' }]);
-    setSuccess('تم إضافة وقت دوام جديد - يرجى تحديد اليوم والوقت');
+    const newWorkTime = { day: '', from: '09:00', to: '17:00' };
+    setWorkTimes([...workTimes, newWorkTime]);
+    
+    if (workTimes.length === 0) {
+      setSuccess('تم إضافة أول وقت دوام - يرجى تحديد اليوم والوقت');
+    } else {
+      setSuccess('تم إضافة وقت دوام جديد - يرجى تحديد اليوم والوقت');
+    }
+    
     // إزالة رسالة النجاح بعد 3 ثوانٍ
     setTimeout(() => setSuccess(''), 3000);
   };
@@ -129,6 +146,15 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     
     // إزالة رسالة النجاح بعد 3 ثوانٍ
     setTimeout(() => setSuccess(''), 3000);
+    
+    // إذا لم تتبق أوقات دوام، أضف وقت افتراضي
+    if (workTimes.length === 1) {
+      setTimeout(() => {
+        setWorkTimes([{ day: '', from: '09:00', to: '17:00' }]);
+        setSuccess('تم إضافة وقت دوام افتراضي جديد - يرجى تحديد اليوم والوقت');
+        setTimeout(() => setSuccess(''), 3000);
+      }, 1000);
+    }
   };
 
   const updateWorkTime = (index, field, value) => {
@@ -136,10 +162,15 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     updated[index] = { ...updated[index], [field]: value };
     setWorkTimes(updated);
     
-    // إضافة رسالة تأكيد عند تحديث اليوم
+    // إضافة رسالة تأكيد عند تحديث البيانات
     if (field === 'day' && value) {
       setSuccess(`تم تحديث اليوم إلى ${value}`);
-      // إزالة رسالة النجاح بعد 2 ثانية
+      setTimeout(() => setSuccess(''), 2000);
+    } else if (field === 'from' && value) {
+      setSuccess(`تم تحديث وقت البداية إلى ${value}`);
+      setTimeout(() => setSuccess(''), 2000);
+    } else if (field === 'to' && value) {
+      setSuccess(`تم تحديث وقت النهاية إلى ${value}`);
       setTimeout(() => setSuccess(''), 2000);
     }
   };
@@ -147,6 +178,13 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
   // دوال أيام الإجازات - مبسطة لتخزين التواريخ فقط
   const addVacationDay = (date) => {
     if (date) {
+      // التحقق من عدم تكرار التاريخ
+      if (vacationDays.includes(date)) {
+        setError(`التاريخ ${date} موجود بالفعل في قائمة الإجازات`);
+        setTimeout(() => setError(''), 3000);
+        return;
+      }
+      
       setVacationDays([...vacationDays, date]);
       setSuccess(`تم إضافة يوم إجازة: ${date}`);
       // إزالة رسالة النجاح بعد 3 ثوانٍ
@@ -266,11 +304,27 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
 
 
   const addSelectedDatesAsVacations = () => {
-    const newVacations = selectedDates.map(date => date);
+    // التحقق من عدم تكرار التواريخ
+    const existingDates = new Set(vacationDays);
+    const newVacations = selectedDates.filter(date => !existingDates.has(date));
+    const duplicateDates = selectedDates.filter(date => existingDates.has(date));
+    
+    if (newVacations.length === 0) {
+      setError('جميع التواريخ المحددة موجودة بالفعل في قائمة الإجازات');
+      setTimeout(() => setError(''), 3000);
+      return;
+    }
     
     setVacationDays([...vacationDays, ...newVacations]);
     setSelectedDates([]);
-    setSuccess(t('vacations_saved_success', { count: newVacations.length }));
+    
+    if (duplicateDates.length > 0) {
+      setSuccess(`تم إضافة ${newVacations.length} يوم إجازة جديد. ${duplicateDates.length} تاريخ موجود بالفعل.`);
+    } else {
+      setSuccess(t('vacations_saved_success', { count: newVacations.length }));
+    }
+    
+    setTimeout(() => setSuccess(''), 4000);
   };
 
   // دالة لإلغاء إجازة محددة وإعادتها كيوم متاح
@@ -283,6 +337,9 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     
     // إزالة من الأيام المحددة إذا كان موجوداً
     setSelectedDates(selectedDates.filter(date => date !== vacation));
+    
+    // إزالة رسالة النجاح بعد 3 ثوانٍ
+    setTimeout(() => setSuccess(''), 3000);
   };
 
   const handleSubmit = async (e) => {
@@ -307,36 +364,71 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     // التحقق من أن أوقات الدوام تحتوي على بيانات صحيحة
     const hasValidWorkTimes = workTimes.every(wt => 
       wt && typeof wt === 'object' && 
-      wt.day && wt.from && wt.to
+      wt.day && wt.day.trim() !== '' && wt.from && wt.to
     );
 
     if (!hasValidWorkTimes) {
-      setError(t('work_times_incomplete_error'));
+      setError('يرجى ملء جميع بيانات أوقات الدوام (اليوم، من، إلى) قبل الحفظ');
       setLoading(false);
       return;
     }
 
     // التحقق من أن هناك على الأقل وقت دوام واحد
     if (workTimes.length === 0) {
-      setError(t('work_times_empty_error'));
+      setError('يجب إضافة وقت دوام واحد على الأقل. يرجى إضافة وقت دوام أولاً.');
+      setLoading(false);
+      return;
+    }
+    
+    // التحقق من أن جميع أوقات الدوام تحتوي على بيانات صحيحة
+    const emptyWorkTimes = workTimes.filter(wt => !wt.day || wt.day.trim() === '' || !wt.from || !wt.to);
+    if (emptyWorkTimes.length > 0) {
+      setError('يرجى ملء جميع بيانات أوقات الدوام (اليوم، من، إلى) قبل الحفظ');
       setLoading(false);
       return;
     }
 
+    // إضافة المزيد من التفاصيل في console.log
     console.log('✅ WorkTimesEditor: البيانات صحيحة قبل الإرسال:', {
       workTimes: workTimes.length,
       vacationDays: vacationDays.length,
-      sampleWorkTime: workTimes[0]
+      sampleWorkTime: workTimes.length > 0 ? workTimes[0] : 'لا توجد أوقات دوام',
+      allWorkTimes: workTimes,
+      allVacationDays: vacationDays
     });
 
     try {
-      console.log('📤 WorkTimesEditor: إرسال أوقات الدوام وأيام الإجازات المحدثة:', { workTimes, vacationDays });
+      // التحقق النهائي من البيانات قبل الإرسال - إزالة الأوقات الفارغة
+      const dataToSend = {
+        workTimes: workTimes.filter(wt => wt && wt.day && wt.day.trim() !== '' && wt.from && wt.to),
+        vacationDays: vacationDays
+      };
+      
+      // التحقق النهائي من أن البيانات صحيحة
+      if (dataToSend.workTimes.length === 0) {
+        setError('لا يمكن إرسال بيانات فارغة. يرجى إضافة وقت دوام واحد على الأقل مع ملء جميع البيانات المطلوبة.');
+        setLoading(false);
+        return;
+      }
+      
+      // إضافة المزيد من التفاصيل في console.log
+      console.log('📤 WorkTimesEditor: إرسال أوقات الدوام وأيام الإجازات المحدثة:', dataToSend);
+      console.log('🔍 تفاصيل البيانات المرسلة:', {
+        workTimesCount: dataToSend.workTimes.length,
+        vacationDaysCount: dataToSend.vacationDays.length,
+        workTimesDetails: dataToSend.workTimes.map(wt => ({
+          day: wt.day,
+          from: wt.from,
+          to: wt.to,
+          hasAllFields: !!(wt.day && wt.day.trim() !== '' && wt.from && wt.to)
+        }))
+      });
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctor/${profile._id}/work-schedule`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ workTimes, vacationDays })
+        body: JSON.stringify(dataToSend)
       });
 
       const data = await response.json();
@@ -391,11 +483,18 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
         }
       } else {
         console.error('❌ WorkTimesEditor: خطأ من السيرفر:', data);
+        console.error('❌ تفاصيل الخطأ:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: data.error,
+          body: data
+        });
+        
         // رسائل خطأ أكثر وضوحاً
         if (data.error) {
           setError(data.error);
         } else if (response.status === 400) {
-          setError(t('server_validation_error'));
+          setError('خطأ في التحقق من صحة البيانات - يرجى التأكد من إدخال جميع البيانات المطلوبة');
         } else {
           setError('حدث خطأ أثناء تحديث الجدول');
         }
@@ -555,6 +654,38 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
             >
               ➕ {t('add_work_time')}
             </button>
+            
+            {/* رسالة توجيهية إذا لم تكن هناك أوقات دوام */}
+            {workTimes.length === 0 && (
+              <div style={{
+                background: '#fff3cd',
+                color: '#856404',
+                padding: '1rem',
+                borderRadius: '8px',
+                border: '1px solid #ffeaa7',
+                marginBottom: '1rem',
+                textAlign: 'center'
+              }}>
+                💡 يرجى إضافة وقت دوام واحد على الأقل قبل الحفظ
+                <br />
+                <button
+                  type="button"
+                  onClick={() => addWorkTime()}
+                  style={{
+                    background: '#856404',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '0.5rem 1rem',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem',
+                    marginTop: '0.5rem'
+                  }}
+                >
+                  ➕ إضافة وقت دوام افتراضي
+                </button>
+              </div>
+            )}
           </div>
         )}
 
