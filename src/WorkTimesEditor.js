@@ -82,7 +82,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     if ((!profile?.workTimes || !Array.isArray(profile.workTimes) || profile.workTimes.length === 0)) {
       // إضافة وقت دوام افتراضي
       setTimeout(() => {
-        setWorkTimes([{ day: '', from: '09:00', to: '17:00' }]);
+        setWorkTimes([{ day: 'الأحد', from: '09:00', to: '17:00' }]);
         setSuccess('تم إضافة وقت دوام افتراضي - يرجى تحديد اليوم والوقت');
         setTimeout(() => setSuccess(''), 3000);
       }, 500);
@@ -120,7 +120,8 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
 
   // دوال أوقات العمل
   const addWorkTime = () => {
-    const newWorkTime = { day: '', from: '09:00', to: '17:00' };
+    // إضافة وقت دوام جديد مع يوم افتراضي (الأحد) بدلاً من سلسلة فارغة
+    const newWorkTime = { day: 'الأحد', from: '09:00', to: '17:00' };
     setWorkTimes([...workTimes, newWorkTime]);
     
     if (workTimes.length === 0) {
@@ -150,7 +151,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     // إذا لم تتبق أوقات دوام، أضف وقت افتراضي
     if (workTimes.length === 1) {
       setTimeout(() => {
-        setWorkTimes([{ day: '', from: '09:00', to: '17:00' }]);
+        setWorkTimes([{ day: 'الأحد', from: '09:00', to: '17:00' }]);
         setSuccess('تم إضافة وقت دوام افتراضي جديد - يرجى تحديد اليوم والوقت');
         setTimeout(() => setSuccess(''), 3000);
       }, 1000);
