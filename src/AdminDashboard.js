@@ -704,7 +704,14 @@ function AdminDashboard() {
         body: JSON.stringify({
           ...newCenter,
           services: newCenterServices,
-          workTimes: newCenterWorkTimes,
+          workTimes: newCenterWorkTimes.map(wt => ({
+            day: wt.day,
+            from: wt.from,
+            to: wt.to,
+            start_time: wt.from,
+            end_time: wt.to,
+            is_available: true
+          })),
           doctors: newCenter.doctors.map(doctor => ({
             name: doctor.name,
             specialty: doctor.specialty,
@@ -785,7 +792,14 @@ function AdminDashboard() {
       description: newDoctor.description,
       phone: newDoctor.phone,
       email: newDoctor.email,
-      workTimes: doctorWorkTimes,
+      workTimes: doctorWorkTimes.map(wt => ({
+        day: wt.day,
+        from: wt.from,
+        to: wt.to,
+        start_time: wt.from,
+        end_time: wt.to,
+        is_available: true
+      })),
     };
 
     setNewCenter({

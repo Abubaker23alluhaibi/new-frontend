@@ -418,8 +418,18 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
         });
       });
       
+      // تنسيق البيانات بالشكل المطلوب من السيرفر
+      const formattedWorkTimes = sanitizedWorkTimes.map(wt => ({
+        day: wt.day,
+        from: wt.from,
+        to: wt.to,
+        start_time: wt.from,        // إضافة الحقل المطلوب من السيرفر
+        end_time: wt.to,            // إضافة الحقل المطلوب من السيرفر
+        is_available: true          // إضافة الحقل المطلوب من السيرفر
+      }));
+      
       // إضافة سجل للبيانات المرسلة
-      const dataToSend = { workTimes: sanitizedWorkTimes, vacationDays: vacationDays };
+      const dataToSend = { workTimes: formattedWorkTimes, vacationDays: vacationDays };
       console.log('📤 WorkTimesEditor: البيانات المرسلة إلى السيرفر:', JSON.stringify(dataToSend, null, 2));
       
       // إضافة سجل مفصل للبيانات المرسلة

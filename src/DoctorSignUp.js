@@ -309,7 +309,17 @@ function DoctorSignUp() {
     formData.append('mapLocation', form.mapLocation);
     formData.append('about', form.about);
     if (form.experienceYears) formData.append('experienceYears', form.experienceYears);
-    formData.append('workTimes', JSON.stringify(workTimes));
+    // تنسيق workTimes بالشكل المطلوب من السيرفر
+    const formattedWorkTimes = workTimes.map(wt => ({
+      day: wt.day,
+      from: wt.from,
+      to: wt.to,
+      start_time: wt.from,        // إضافة الحقل المطلوب من السيرفر
+      end_time: wt.to,            // إضافة الحقل المطلوب من السيرفر
+      is_available: true          // إضافة الحقل المطلوب من السيرفر
+    }));
+    
+    formData.append('workTimes', JSON.stringify(formattedWorkTimes));
     formData.append('appointmentDuration', form.appointmentDuration);
     
     // إضافة الصورة الشخصية فقط (اختيارية)
