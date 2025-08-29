@@ -71,21 +71,13 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
 
   useEffect(() => {
     // تهيئة أوقات الدوام - تأكد من أنها دائماً مصفوفة
-    if (profile?.workTimes && Array.isArray(profile.workTimes)) {
+    if (profile?.workTimes && Array.isArray(profile.workTimes) && profile.workTimes.length > 0) {
       setWorkTimes(profile.workTimes);
     } else {
-      // إذا لم تكن موجودة، ابدأ بمصفوفة فارغة
-      setWorkTimes([]);
-    }
-    
-    // إذا لم تكن هناك أوقات دوام، أضف وقت افتراضي
-    if ((!profile?.workTimes || !Array.isArray(profile.workTimes) || profile.workTimes.length === 0)) {
-      // إضافة وقت دوام افتراضي
-      setTimeout(() => {
-        setWorkTimes([{ day: 'الأحد', from: '09:00', to: '17:00' }]);
-        setSuccess('تم إضافة وقت دوام افتراضي - يرجى تحديد اليوم والوقت');
-        setTimeout(() => setSuccess(''), 3000);
-      }, 500);
+      // إذا لم تكن موجودة أو فارغة، أضف وقت افتراضي فوراً
+      setWorkTimes([{ day: 'الأحد', from: '09:00', to: '17:00' }]);
+      setSuccess('تم إضافة وقت دوام افتراضي - يرجى تحديد اليوم والوقت');
+      setTimeout(() => setSuccess(''), 3000);
     }
     
     // تهيئة أيام الإجازات - تأكد من أنها دائماً مصفوفة
