@@ -393,9 +393,27 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     try {
       // التحقق النهائي من البيانات قبل الإرسال - إزالة الأوقات الفارغة
       const cleanWorkTimes = workTimes.filter(wt => wt && wt.day && wt.day.trim() !== '' && wt.from && wt.to);
-      // إضافة سجل مفصل لكل عنصر في cleanWorkTimes
-      cleanWorkTimes.forEach((wt, index) => {
-        console.log(`🔍 CleanWorkTime ${index + 1}:`, {
+      
+      // تنظيف البيانات - إزالة الحقول الإضافية غير المتوقعة
+      const sanitizedWorkTimes = cleanWorkTimes.map(wt => ({
+        day: wt.day,
+        from: wt.from,
+        to: wt.to
+      }));
+      
+      const cleanVacationDays = [...vacationDays];
+      
+      console.log('🧹 WorkTimesEditor: البيانات بعد التنظيف:', {
+        originalWorkTimes: workTimes,
+        cleanWorkTimes: cleanWorkTimes,
+        sanitizedWorkTimes: sanitizedWorkTimes,
+        originalVacationDays: vacationDays,
+        cleanVacationDays: cleanVacationDays
+      });
+      
+      // إضافة سجل مفصل لكل عنصر في sanitizedWorkTimes
+      sanitizedWorkTimes.forEach((wt, index) => {
+        console.log(`🔍 SanitizedWorkTime ${index + 1}:`, {
           day: wt.day,
           from: wt.from,
           to: wt.to,
@@ -412,7 +430,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
       });
       
       // إضافة سجل للبيانات المرسلة
-      const dataToSend = { workTimes: cleanWorkTimes, vacationDays: vacationDays };
+      const dataToSend = { workTimes: sanitizedWorkTimes, vacationDays: cleanVacationDays };
       console.log('📤 WorkTimesEditor: البيانات المرسلة إلى السيرفر:', JSON.stringify(dataToSend, null, 2));
       
       // إضافة سجل مفصل للبيانات المرسلة
@@ -428,10 +446,12 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
           hasAllFields: wt && wt.day && wt.from && wt.to
         }))
       });
+      
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctor/${profile._id}/work-schedule`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(dataToSend)
       });
