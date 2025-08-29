@@ -392,24 +392,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
 
     try {
       // التحقق النهائي من البيانات قبل الإرسال - إزالة الأوقات الفارغة
-      const cleanWorkTimes = workTimes.filter(wt => wt && wt.day && wt.day.trim() !== '' && wt.from && wt.to);
-      
-      // تنظيف البيانات - إزالة الحقول الإضافية غير المتوقعة
-      const sanitizedWorkTimes = cleanWorkTimes.map(wt => ({
-        day: wt.day,
-        from: wt.from,
-        to: wt.to
-      }));
-      
-      const cleanVacationDays = [...vacationDays];
-      
-      console.log('🧹 WorkTimesEditor: البيانات بعد التنظيف:', {
-        originalWorkTimes: workTimes,
-        cleanWorkTimes: cleanWorkTimes,
-        sanitizedWorkTimes: sanitizedWorkTimes,
-        originalVacationDays: vacationDays,
-        cleanVacationDays: cleanVacationDays
-      });
+      const sanitizedWorkTimes = workTimes.filter(wt => wt && wt.day && wt.day.trim() !== '' && wt.from && wt.to);
       
       // إضافة سجل مفصل لكل عنصر في sanitizedWorkTimes
       sanitizedWorkTimes.forEach((wt, index) => {
@@ -425,12 +408,18 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
           isNotUndefined: wt !== undefined,
           dayType: typeof wt.day,
           fromType: typeof wt.from,
-          toType: typeof wt.to
+          toType: typeof wt.to,
+          dayLength: wt.day ? wt.day.length : 0,
+          fromLength: wt.from ? wt.from.length : 0,
+          toLength: wt.to ? wt.to.length : 0,
+          dayTrimmed: wt.day ? wt.day.trim() : '',
+          fromTrimmed: wt.from ? wt.from.trim() : '',
+          toTrimmed: wt.to ? wt.to.trim() : ''
         });
       });
       
       // إضافة سجل للبيانات المرسلة
-      const dataToSend = { workTimes: sanitizedWorkTimes, vacationDays: cleanVacationDays };
+      const dataToSend = { workTimes: sanitizedWorkTimes, vacationDays: vacationDays };
       console.log('📤 WorkTimesEditor: البيانات المرسلة إلى السيرفر:', JSON.stringify(dataToSend, null, 2));
       
       // إضافة سجل مفصل للبيانات المرسلة
@@ -443,15 +432,16 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
           to: wt.to,
           type: typeof wt,
           isObject: typeof wt === 'object',
-          hasAllFields: wt && wt.day && wt.from && wt.to
+          hasAllFields: wt && wt.day && wt.from && wt.to,
+          dayValid: wt.day && wt.day.trim() !== '',
+          fromValid: wt.from && wt.from.trim() !== '',
+          toValid: wt.to && wt.to.trim() !== ''
         }))
       });
-      
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctor/${profile._id}/work-schedule`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(dataToSend)
       });
