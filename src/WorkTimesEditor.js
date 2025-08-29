@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { ar } from 'date-fns/locale';
 
 function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
   const { t } = useTranslation();
@@ -50,23 +48,38 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     // تنظيف التخزين المؤقت
     localStorage.removeItem('vacationDays_lastUpdated');
     
-    // إعادة تحميل البيانات من profile
-    if (profile?.workTimes) {
+    // إعادة تحميل البيانات من profile مع التأكد من أنها مصفوفات
+    if (profile?.workTimes && Array.isArray(profile.workTimes)) {
       setWorkTimes(profile.workTimes);
+    } else {
+      setWorkTimes([]);
     }
-    if (profile?.vacationDays) {
+    
+    if (profile?.vacationDays && Array.isArray(profile.vacationDays)) {
       const convertedVacations = convertOldVacationData(profile.vacationDays);
       setVacationDays(convertedVacations);
+    } else {
+      setVacationDays([]);
     }
+    
+    setSuccess('تم تحديث البيانات المحلية بنجاح');
+    // إزالة رسالة النجاح بعد 2 ثانية
+    setTimeout(() => setSuccess(''), 2000);
     
     console.log('🔄 تم تحديث البيانات المحلية');
   };
 
   useEffect(() => {
-    if (profile?.workTimes) {
+    // تهيئة أوقات الدوام - تأكد من أنها دائماً مصفوفة
+    if (profile?.workTimes && Array.isArray(profile.workTimes)) {
       setWorkTimes(profile.workTimes);
+    } else {
+      // إذا لم تكن موجودة، ابدأ بمصفوفة فارغة
+      setWorkTimes([]);
     }
-    if (profile?.vacationDays) {
+    
+    // تهيئة أيام الإجازات - تأكد من أنها دائماً مصفوفة
+    if (profile?.vacationDays && Array.isArray(profile.vacationDays)) {
       // تحويل البيانات القديمة إلى الجديدة
       const convertedVacations = convertOldVacationData(profile.vacationDays);
       setVacationDays(convertedVacations);
@@ -84,28 +97,60 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
           new: convertedVacations
         });
       }
+    } else {
+      // إذا لم تكن موجودة، ابدأ بمصفوفة فارغة
+      setVacationDays([]);
     }
+    
+    console.log('🔄 WorkTimesEditor: تم تهيئة البيانات:', {
+      workTimes: profile?.workTimes || [],
+      vacationDays: profile?.vacationDays || []
+    });
   }, [profile]);
 
   // دوال أوقات العمل
   const addWorkTime = () => {
     setWorkTimes([...workTimes, { day: '', from: '09:00', to: '17:00' }]);
+    setSuccess('تم إضافة وقت دوام جديد - يرجى تحديد اليوم والوقت');
+    // إزالة رسالة النجاح بعد 3 ثوانٍ
+    setTimeout(() => setSuccess(''), 3000);
   };
 
   const removeWorkTime = (index) => {
+    const removedTime = workTimes[index];
     setWorkTimes(workTimes.filter((_, i) => i !== index));
+    
+    // إضافة رسالة تأكيد
+    if (removedTime && removedTime.day) {
+      setSuccess(`تم إزالة وقت الدوام لـ ${removedTime.day}`);
+    } else {
+      setSuccess('تم إزالة وقت الدوام');
+    }
+    
+    // إزالة رسالة النجاح بعد 3 ثوانٍ
+    setTimeout(() => setSuccess(''), 3000);
   };
 
   const updateWorkTime = (index, field, value) => {
     const updated = [...workTimes];
     updated[index] = { ...updated[index], [field]: value };
     setWorkTimes(updated);
+    
+    // إضافة رسالة تأكيد عند تحديث اليوم
+    if (field === 'day' && value) {
+      setSuccess(`تم تحديث اليوم إلى ${value}`);
+      // إزالة رسالة النجاح بعد 2 ثانية
+      setTimeout(() => setSuccess(''), 2000);
+    }
   };
 
   // دوال أيام الإجازات - مبسطة لتخزين التواريخ فقط
   const addVacationDay = (date) => {
     if (date) {
       setVacationDays([...vacationDays, date]);
+      setSuccess(`تم إضافة يوم إجازة: ${date}`);
+      // إزالة رسالة النجاح بعد 3 ثوانٍ
+      setTimeout(() => setSuccess(''), 3000);
     }
   };
 
@@ -177,7 +222,6 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
   };
 
   const selectWeekend = () => {
-    const today = new Date();
     const currentMonthDates = [];
     const year = currentYear;
     const month = currentMonth;
@@ -197,7 +241,6 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
   };
 
   const selectWorkDays = () => {
-    const today = new Date();
     const currentMonthDates = [];
     const year = currentYear;
     const month = currentMonth;
@@ -207,7 +250,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
       if (date.getDay() !== 5 && date.getDay() !== 6) { // {t('work_days_comment')}
         // استخدام التاريخ المحلي بدلاً من UTC
         const year = date.getFullYear();
-        const month = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         const dateStr = `${year}-${month}-${day}`;
         currentMonthDates.push(dateStr);
@@ -220,10 +263,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     setSelectedDates([]);
   };
 
-  // دالة لحساب إجمالي أيام الإجازات
-  const getTotalVacationDays = () => {
-    return vacationDays.length;
-  };
+
 
   const addSelectedDatesAsVacations = () => {
     const newVacations = selectedDates.map(date => date);
@@ -239,7 +279,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     setVacationDays(vacationDays.filter(v => v !== vacation));
     
     // إضافة رسالة تأكيد
-            setSuccess(t('vacation_cancelled_success', { date: vacation }));
+    setSuccess(t('vacation_cancelled_success', { date: vacation }));
     
     // إزالة من الأيام المحددة إذا كان موجوداً
     setSelectedDates(selectedDates.filter(date => date !== vacation));
@@ -250,6 +290,44 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     setLoading(true);
     setError('');
     setSuccess('');
+
+    // التحقق من صحة البيانات قبل الإرسال
+    if (!Array.isArray(workTimes)) {
+      setError(t('work_times_validation_error'));
+      setLoading(false);
+      return;
+    }
+
+    if (!Array.isArray(vacationDays)) {
+      setError(t('vacation_days_validation_error'));
+      setLoading(false);
+      return;
+    }
+
+    // التحقق من أن أوقات الدوام تحتوي على بيانات صحيحة
+    const hasValidWorkTimes = workTimes.every(wt => 
+      wt && typeof wt === 'object' && 
+      wt.day && wt.from && wt.to
+    );
+
+    if (!hasValidWorkTimes) {
+      setError(t('work_times_incomplete_error'));
+      setLoading(false);
+      return;
+    }
+
+    // التحقق من أن هناك على الأقل وقت دوام واحد
+    if (workTimes.length === 0) {
+      setError(t('work_times_empty_error'));
+      setLoading(false);
+      return;
+    }
+
+    console.log('✅ WorkTimesEditor: البيانات صحيحة قبل الإرسال:', {
+      workTimes: workTimes.length,
+      vacationDays: vacationDays.length,
+      sampleWorkTime: workTimes[0]
+    });
 
     try {
       console.log('📤 WorkTimesEditor: إرسال أوقات الدوام وأيام الإجازات المحدثة:', { workTimes, vacationDays });
@@ -313,7 +391,14 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
         }
       } else {
         console.error('❌ WorkTimesEditor: خطأ من السيرفر:', data);
-        setError(data.error || 'حدث خطأ أثناء تحديث الجدول');
+        // رسائل خطأ أكثر وضوحاً
+        if (data.error) {
+          setError(data.error);
+        } else if (response.status === 400) {
+          setError(t('server_validation_error'));
+        } else {
+          setError('حدث خطأ أثناء تحديث الجدول');
+        }
       }
     } catch (err) {
       console.error('❌ WorkTimesEditor: خطأ في تحديث الجدول:', err);
@@ -637,7 +722,6 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
                 {/* الأيام */}
                 {(() => {
                   const firstDay = new Date(currentYear, currentMonth, 1);
-                  const lastDay = new Date(currentYear, currentMonth + 1, 0);
                   const startDate = new Date(firstDay);
                   startDate.setDate(startDate.getDate() - firstDay.getDay());
                   
