@@ -391,32 +391,49 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     });
 
     try {
-      setLoading(true);
-      setError('');
-      
-      // تنظيف البيانات قبل الإرسال - إزالة الحقول الإضافية
-      const cleanWorkTimes = workTimes.map(wt => ({
-        day: wt.day,
-        from: wt.from,
-        to: wt.to
-      }));
-      
-      const cleanVacationDays = [...vacationDays];
-      
-      console.log('🧹 WorkTimesEditor: البيانات بعد التنظيف:', {
-        originalWorkTimes: workTimes,
-        cleanWorkTimes: cleanWorkTimes,
-        originalVacationDays: vacationDays,
-        cleanVacationDays: cleanVacationDays
+      // التحقق النهائي من البيانات قبل الإرسال - إزالة الأوقات الفارغة
+      const cleanWorkTimes = workTimes.filter(wt => wt && wt.day && wt.day.trim() !== '' && wt.from && wt.to);
+      // إضافة سجل مفصل لكل عنصر في cleanWorkTimes
+      cleanWorkTimes.forEach((wt, index) => {
+        console.log(`🔍 CleanWorkTime ${index + 1}:`, {
+          day: wt.day,
+          from: wt.from,
+          to: wt.to,
+          hasDay: !!wt.day,
+          hasFrom: !!wt.from,
+          hasTo: !!wt.to,
+          isObject: typeof wt === 'object',
+          isNotNull: wt !== null,
+          isNotUndefined: wt !== undefined,
+          dayType: typeof wt.day,
+          fromType: typeof wt.from,
+          toType: typeof wt.to
+        });
       });
       
+      // إضافة سجل للبيانات المرسلة
+      const dataToSend = { workTimes: cleanWorkTimes, vacationDays: vacationDays };
+      console.log('📤 WorkTimesEditor: البيانات المرسلة إلى السيرفر:', JSON.stringify(dataToSend, null, 2));
+      
+      // إضافة سجل مفصل للبيانات المرسلة
+      console.log('🔍 تفاصيل البيانات المرسلة:', {
+        workTimesCount: dataToSend.workTimes.length,
+        vacationDaysCount: dataToSend.vacationDays.length,
+        workTimesDetails: dataToSend.workTimes.map(wt => ({
+          day: wt.day,
+          from: wt.from,
+          to: wt.to,
+          type: typeof wt,
+          isObject: typeof wt === 'object',
+          hasAllFields: wt && wt.day && wt.from && wt.to
+        }))
+      });
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctor/${profile._id}/work-schedule`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify({ workTimes: cleanWorkTimes, vacationDays: cleanVacationDays })
+        body: JSON.stringify(dataToSend)
       });
 
       const data = await response.json();
