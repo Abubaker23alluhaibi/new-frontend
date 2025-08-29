@@ -50,7 +50,16 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     
     // إعادة تحميل البيانات من profile مع التأكد من أنها مصفوفات
     if (profile?.workTimes && Array.isArray(profile.workTimes)) {
-      setWorkTimes(profile.workTimes);
+      // التأكد من أن جميع أوقات الدوام تحتوي على الحقول المطلوبة
+      const validatedWorkTimes = profile.workTimes.map(wt => ({
+        day: wt.day,
+        from: wt.from,
+        to: wt.to,
+        start_time: wt.start_time || wt.from,
+        end_time: wt.end_time || wt.to,
+        is_available: wt.is_available !== undefined ? wt.is_available : true
+      }));
+      setWorkTimes(validatedWorkTimes);
     } else {
       setWorkTimes([]);
     }
@@ -72,10 +81,26 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
   useEffect(() => {
     // تهيئة أوقات الدوام - تأكد من أنها دائماً مصفوفة
     if (profile?.workTimes && Array.isArray(profile.workTimes) && profile.workTimes.length > 0) {
-      setWorkTimes(profile.workTimes);
+      // التأكد من أن جميع أوقات الدوام تحتوي على الحقول المطلوبة
+      const validatedWorkTimes = profile.workTimes.map(wt => ({
+        day: wt.day,
+        from: wt.from,
+        to: wt.to,
+        start_time: wt.start_time || wt.from,
+        end_time: wt.end_time || wt.to,
+        is_available: wt.is_available !== undefined ? wt.is_available : true
+      }));
+      setWorkTimes(validatedWorkTimes);
     } else {
       // إذا لم تكن موجودة أو فارغة، أضف وقت افتراضي فوراً
-      setWorkTimes([{ day: 'الأحد', from: '09:00', to: '17:00' }]);
+      setWorkTimes([{ 
+        day: 'الأحد', 
+        from: '09:00', 
+        to: '17:00',
+        start_time: '09:00',
+        end_time: '17:00',
+        is_available: true
+      }]);
       setSuccess('تم إضافة وقت دوام افتراضي - يرجى تحديد اليوم والوقت');
       setTimeout(() => setSuccess(''), 3000);
     }
@@ -113,7 +138,14 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
   // دوال أوقات العمل
   const addWorkTime = () => {
     // إضافة وقت دوام جديد مع يوم افتراضي (الأحد) بدلاً من سلسلة فارغة
-    const newWorkTime = { day: 'الأحد', from: '09:00', to: '17:00' };
+    const newWorkTime = { 
+      day: 'الأحد', 
+      from: '09:00', 
+      to: '17:00',
+      start_time: '09:00',    // إضافة الحقل المطلوب من السيرفر
+      end_time: '17:00',      // إضافة الحقل المطلوب من السيرفر
+      is_available: true      // إضافة الحقل المطلوب من السيرفر
+    };
     setWorkTimes([...workTimes, newWorkTime]);
     
     if (workTimes.length === 0) {
@@ -143,7 +175,14 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     // إذا لم تتبق أوقات دوام، أضف وقت افتراضي
     if (workTimes.length === 1) {
       setTimeout(() => {
-        setWorkTimes([{ day: 'الأحد', from: '09:00', to: '17:00' }]);
+        setWorkTimes([{ 
+          day: 'الأحد', 
+          from: '09:00', 
+          to: '17:00',
+          start_time: '09:00',
+          end_time: '17:00',
+          is_available: true
+        }]);
         setSuccess('تم إضافة وقت دوام افتراضي جديد - يرجى تحديد اليوم والوقت');
         setTimeout(() => setSuccess(''), 3000);
       }, 1000);
@@ -153,6 +192,19 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
   const updateWorkTime = (index, field, value) => {
     const updated = [...workTimes];
     updated[index] = { ...updated[index], [field]: value };
+    
+    // التأكد من وجود الحقول المطلوبة
+    if (field === 'from') {
+      updated[index].start_time = value;
+    } else if (field === 'to') {
+      updated[index].end_time = value;
+    }
+    
+    // التأكد من وجود is_available
+    if (updated[index].is_available === undefined) {
+      updated[index].is_available = true;
+    }
+    
     setWorkTimes(updated);
     
     // إضافة رسالة تأكيد عند تحديث البيانات
@@ -335,6 +387,21 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     setTimeout(() => setSuccess(''), 3000);
   };
 
+  // دالة للتحقق من صحة بيانات أوقات الدوام
+  const validateWorkTimes = (workTimes) => {
+    return workTimes.map(wt => {
+      if (!wt.start_time || !wt.end_time || wt.is_available === undefined) {
+        return {
+          ...wt,
+          start_time: wt.start_time || wt.from,
+          end_time: wt.end_time || wt.to,
+          is_available: wt.is_available !== undefined ? wt.is_available : true
+        };
+      }
+      return wt;
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -389,14 +456,36 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
       allWorkTimes: workTimes,
       allVacationDays: vacationDays
     });
+    
+    // إضافة سجل مفصل لكل عنصر في workTimes
+    console.log('🔍 تفاصيل workTimes قبل التنسيق:');
+    workTimes.forEach((wt, index) => {
+      console.log(`  WorkTime ${index + 1}:`, {
+        day: wt.day,
+        from: wt.from,
+        to: wt.to,
+        hasStartTime: !!wt.start_time,
+        hasEndTime: !!wt.end_time,
+        hasIsAvailable: wt.is_available !== undefined,
+        startTime: wt.start_time,
+        endTime: wt.end_time,
+        isAvailable: wt.is_available
+      });
+    });
 
     try {
       // التحقق النهائي من البيانات قبل الإرسال - إزالة الأوقات الفارغة
       const sanitizedWorkTimes = workTimes.filter(wt => wt && wt.day && wt.day.trim() !== '' && wt.from && wt.to);
       
-      // إضافة سجل مفصل لكل عنصر في sanitizedWorkTimes
-      sanitizedWorkTimes.forEach((wt, index) => {
-        console.log(`🔍 SanitizedWorkTime ${index + 1}:`, {
+      // التأكد من أن جميع أوقات الدوام تحتوي على الحقول المطلوبة
+      const validatedWorkTimes = validateWorkTimes(sanitizedWorkTimes);
+      
+      console.log('🔍 sanitizedWorkTimes بعد التصفية:', sanitizedWorkTimes);
+      console.log('🔍 validatedWorkTimes بعد التحقق:', validatedWorkTimes);
+      
+      // إضافة سجل مفصل لكل عنصر في validatedWorkTimes
+      validatedWorkTimes.forEach((wt, index) => {
+        console.log(`🔍 ValidatedWorkTime ${index + 1}:`, {
           day: wt.day,
           from: wt.from,
           to: wt.to,
@@ -419,18 +508,47 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
       });
       
       // تنسيق البيانات بالشكل المطلوب من السيرفر
-      const formattedWorkTimes = sanitizedWorkTimes.map(wt => ({
-        day: wt.day,
-        from: wt.from,
-        to: wt.to,
-        start_time: wt.from,        // إضافة الحقل المطلوب من السيرفر
-        end_time: wt.to,            // إضافة الحقل المطلوب من السيرفر
-        is_available: true          // إضافة الحقل المطلوب من السيرفر
-      }));
+      const formattedWorkTimes = validatedWorkTimes.map(wt => {
+        const formatted = {
+          day: wt.day,
+          from: wt.from,
+          to: wt.to,
+          start_time: wt.from,        // إضافة الحقل المطلوب من السيرفر
+          end_time: wt.to,            // إضافة الحقل المطلوب من السيرفر
+          is_available: true          // إضافة الحقل المطلوب من السيرفر
+        };
+        
+        // إضافة سجل لكل عنصر بعد التنسيق
+        console.log(`🔧 FormattedWorkTime:`, formatted);
+        
+        return formatted;
+      });
       
       // إضافة سجل للبيانات المرسلة
       const dataToSend = { workTimes: formattedWorkTimes, vacationDays: vacationDays };
       console.log('📤 WorkTimesEditor: البيانات المرسلة إلى السيرفر:', JSON.stringify(dataToSend, null, 2));
+      
+      // إضافة سجل مفصل للبيانات النهائية
+      console.log('🔍 البيانات النهائية قبل الإرسال:');
+      console.log('  workTimes:', dataToSend.workTimes);
+      console.log('  vacationDays:', dataToSend.vacationDays);
+      
+      // إضافة سجل مفصل لـ formattedWorkTimes
+      console.log('🔍 formattedWorkTimes النهائي:', formattedWorkTimes);
+      
+      // التحقق النهائي من أن جميع الكائنات تحتوي على الحقول المطلوبة
+      const finalValidation = formattedWorkTimes.every(wt => 
+        wt && wt.day && wt.from && wt.to && wt.start_time && wt.end_time && wt.is_available !== undefined
+      );
+      
+      if (!finalValidation) {
+        console.error('❌ التحقق النهائي فشل - بعض الكائنات لا تحتوي على الحقول المطلوبة');
+        setError('خطأ في تنسيق البيانات - يرجى المحاولة مرة أخرى');
+        setLoading(false);
+        return;
+      }
+      
+      console.log('✅ التحقق النهائي نجح - جميع الكائنات تحتوي على الحقول المطلوبة');
       
       // إضافة سجل مفصل للبيانات المرسلة
       console.log('🔍 تفاصيل البيانات المرسلة:', {
