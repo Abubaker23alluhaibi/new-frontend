@@ -20,6 +20,7 @@ import CenterLogin from './CenterLogin';
 import CenterHome from './CenterHome';
 import DoctorCalendar from './DoctorCalendar';
 import DoctorAnalyticsPage from './DoctorAnalyticsPage';
+import BookingsForOthersStats from './BookingsForOthersStats';
 
 import LandingPage from './LandingPage';
 import DashboardPreview from './DashboardPreview';
@@ -217,6 +218,11 @@ function App() {
           <Route path="/doctor-analytics" element={
             <ProtectedRoute requiredUserType="doctor">
               <DoctorAnalyticsPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/bookings-for-others-stats" element={
+            <ProtectedRoute requiredUserType="doctor">
+              <BookingsForOthersStats />
             </ProtectedRoute>
           } />
 

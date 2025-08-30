@@ -493,6 +493,14 @@ function DoctorDashboard() {
                 <span role="img" aria-label={t('doctor_dashboard.edit_appointment_duration')}>⏱️</span> {t('doctor_dashboard.edit_appointment_duration')}
               </button>
               <button onClick={()=>{
+                navigate('/bookings-for-others-stats'); 
+                setShowSidebar(false);
+                // إعادة تحميل المواعيد عند فتح صفحة إحصائيات الحجز للآخرين
+                fetchAllAppointments();
+              }} style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
+                <span role="img" aria-label={t('doctor_dashboard.appointments_for_others')}>👥</span> {t('doctor_dashboard.appointments_for_others')}
+              </button>
+              <button onClick={()=>{
                 console.log('🔍 تم الضغط على الملف الشخصي');
                 navigate('/doctor-profile'); 
                 setShowSidebar(false);
@@ -897,7 +905,7 @@ function DoctorDashboard() {
                         
                         {/* حالة الحضور */}
                         <div style={{marginBottom:'0.8rem'}}>
-                          {appointment.attendance === 'present' ? (
+                          {appointment.attendance === 'attended' ? (
                             <div style={{
                               background:'#4caf50',
                               color:'#fff',
@@ -908,7 +916,7 @@ function DoctorDashboard() {
                               textAlign:'center',
                               display:'inline-block'
                             }}>
-                              ✅ {t('present')}
+                              ✅ {t('attended')}
                             </div>
                           ) : appointment.attendance === 'absent' ? (
                             <div style={{
@@ -1052,7 +1060,7 @@ function DoctorDashboard() {
                     
                     {/* حالة الحضور */}
                     <div style={{marginBottom:'0.8rem'}}>
-                      {appointment.attendance === 'present' ? (
+                      {appointment.attendance === 'attended' ? (
                         <div style={{
                           background:'#4caf50',
                           color:'#fff',
@@ -1063,7 +1071,7 @@ function DoctorDashboard() {
                           textAlign:'center',
                           display:'inline-block'
                         }}>
-                          ✅ {t('present')}
+                          ✅ {t('attended')}
                         </div>
                       ) : (
                         <div style={{
@@ -1085,7 +1093,7 @@ function DoctorDashboard() {
                     <div style={{display:'flex', gap:'0.5rem', justifyContent:'flex-end', flexWrap:'wrap'}}>
                       {(!appointment.attendance || appointment.attendance === 'absent') && (
                         <button 
-                          onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
+                          onClick={() => handleAttendanceUpdate(appointment._id, 'attended')}
                           style={{
                             background:'#4caf50',
                             color:'#fff',
@@ -1098,7 +1106,7 @@ function DoctorDashboard() {
                             transition:'all 0.3s ease'
                           }}
                         >
-                          ✅ {t('mark_present')}
+                          ✅ {t('mark_attended')}
                         </button>
                       )}
                       <button 
