@@ -2,60 +2,71 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { normalizePhone } from './utils/phoneUtils';
 
 const BookingsForOthersStats = () => {
   const { profile } = useAuth();
   const { t } = useTranslation();
-  const [persons, setPersons] = useState([]);
+  const [trackedPersons, setTrackedPersons] = useState([]);
+  const [allBookers, setAllBookers] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newPerson, setNewPerson] = useState({ name: '', phone: '' });
   const [timePeriod, setTimePeriod] = useState('all_time');
   const [loading, setLoading] = useState(false);
+  const [loadingBookers, setLoadingBookers] = useState(false);
 
-  // جلب الأشخاص المضافين
+  // جلب الأشخاص الذين يتم تتبعهم
   useEffect(() => {
     if (profile?._id) {
-      fetchPersons();
+      fetchTrackedPersons();
+      fetchAllBookers();
     }
   }, [profile?._id]);
 
-  const fetchPersons = async () => {
+  const fetchTrackedPersons = async () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/doctors/${profile._id}/bookings-for-others`);
       if (response.ok) {
         const data = await response.json();
-        setPersons(data);
+        setTrackedPersons(data);
       }
     } catch (error) {
-      console.error('Error fetching persons:', error);
+      console.error('Error fetching tracked persons:', error);
     }
   };
 
-  // إضافة شخص جديد
-  const handleAddPerson = async () => {
-    if (!newPerson.name.trim() || !newPerson.phone.trim()) {
-      toast.error('يرجى ملء جميع الحقول');
-      return;
+  // جلب جميع الأشخاص الذين قاموا بالحجز للآخرين (للاختيار منهم)
+  const fetchAllBookers = async () => {
+    setLoadingBookers(true);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/doctors/${profile._id}/all-other-bookers`);
+      if (response.ok) {
+        const data = await response.json();
+        setAllBookers(data);
+      }
+    } catch (error) {
+      console.error('Error fetching all bookers:', error);
+    } finally {
+      setLoadingBookers(false);
     }
+  };
 
+  // إضافة شخص للتتبع
+  const handleAddPerson = async (booker) => {
     setLoading(true);
     try {
-      const normalizedPhone = normalizePhone(newPerson.phone);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/doctors/${profile._id}/bookings-for-others`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: newPerson.name.trim(),
-          phone: normalizedPhone
+          bookerPhone: booker.phone,
+          bookerName: booker.name
         })
       });
 
       if (response.ok) {
         toast.success(t('doctor_dashboard.person_added_success'));
-        setNewPerson({ name: '', phone: '' });
         setShowAddModal(false);
-        fetchPersons();
+        fetchTrackedPersons(); // إعادة تحميل الأشخاص الذين يتم تتبعهم
+        fetchAllBookers(); // إعادة تحميل قائمة جميع الأشخاص
       } else {
         const errorData = await response.json();
         toast.error(errorData.error || t('doctor_dashboard.error_adding_person'));
@@ -67,9 +78,9 @@ const BookingsForOthersStats = () => {
     }
   };
 
-  // إزالة شخص
+  // إزالة شخص من التتبع
   const handleRemovePerson = async (personId) => {
-    if (!window.confirm('هل أنت متأكد من إزالة هذا الشخص؟')) return;
+    if (!window.confirm(t('doctor_dashboard.confirm_remove_person'))) return;
 
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/doctors/${profile._id}/bookings-for-others/${personId}`, {
@@ -78,7 +89,8 @@ const BookingsForOthersStats = () => {
 
       if (response.ok) {
         toast.success(t('doctor_dashboard.person_removed_success'));
-        fetchPersons();
+        fetchTrackedPersons();
+        fetchAllBookers();
       } else {
         const errorData = await response.json();
         toast.error(errorData.error || t('doctor_dashboard.error_removing_person'));
@@ -107,6 +119,11 @@ const BookingsForOthersStats = () => {
 
     return { totalBookings, attendedBookings, attendanceRate };
   };
+
+  // فلترة الأشخاص الذين يمكن إضافتهم (غير موجودين في القائمة)
+  const availableBookers = allBookers.filter(booker => 
+    !trackedPersons.some(tracked => tracked.phone === booker.phone)
+  );
 
   return (
     <div style={{
@@ -166,7 +183,7 @@ const BookingsForOthersStats = () => {
           }}
         >
           <span role="img" aria-label="add">➕</span>
-          {t('doctor_dashboard.add_person')}
+          {t('doctor_dashboard.add_person_from_appointments')}
         </button>
       </div>
 
@@ -205,12 +222,12 @@ const BookingsForOthersStats = () => {
         </select>
       </div>
 
-      {/* عرض الأشخاص والإحصائيات */}
+      {/* عرض الأشخاص الذين يتم تتبعهم والإحصائيات */}
       <div style={{
         maxWidth: '800px',
         margin: '0 auto'
       }}>
-        {persons.length === 0 ? (
+        {trackedPersons.length === 0 ? (
           <div style={{
             textAlign: 'center',
             padding: '3rem',
@@ -220,14 +237,17 @@ const BookingsForOthersStats = () => {
             color: '#666'
           }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📊</div>
-            <p>{t('doctor_dashboard.no_persons_added')}</p>
+            <p>{t('doctor_dashboard.no_persons_tracked')}</p>
+            <p style={{ fontSize: '0.9rem', marginTop: '0.5rem', color: '#999' }}>
+              {t('doctor_dashboard.click_add_to_select_persons')}
+            </p>
           </div>
         ) : (
           <div style={{
             display: 'grid',
             gap: '1rem'
           }}>
-            {persons.map((person) => {
+            {trackedPersons.map((person) => {
               const stats = calculateStats(person);
               return (
                 <div
@@ -375,7 +395,7 @@ const BookingsForOthersStats = () => {
         )}
       </div>
 
-      {/* مودال إضافة شخص جديد */}
+      {/* مودال إضافة شخص من قائمة المواعيد */}
       {showAddModal && (
         <div style={{
           position: 'fixed',
@@ -394,8 +414,10 @@ const BookingsForOthersStats = () => {
             background: '#fff',
             borderRadius: '16px',
             padding: '2rem',
-            maxWidth: '400px',
+            maxWidth: '600px',
             width: '100%',
+            maxHeight: '80vh',
+            overflow: 'auto',
             boxShadow: '0 4px 24px rgba(0,0,0,0.15)'
           }} onClick={(e) => e.stopPropagation()}>
             <h2 style={{
@@ -405,74 +427,98 @@ const BookingsForOthersStats = () => {
               marginBottom: '1.5rem',
               textAlign: 'center'
             }}>
-              {t('doctor_dashboard.add_person')}
+              {t('doctor_dashboard.select_person_to_track')}
             </h2>
 
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                fontWeight: 600,
-                color: '#333'
+            {loadingBookers ? (
+              <div style={{ textAlign: 'center', padding: '2rem' }}>
+                <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
+                <p>{t('doctor_dashboard.loading_bookers')}</p>
+              </div>
+            ) : availableBookers.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '2rem' }}>
+                <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>✅</div>
+                <p>{t('doctor_dashboard.all_bookers_already_tracked')}</p>
+              </div>
+            ) : (
+              <div style={{
+                display: 'grid',
+                gap: '1rem',
+                marginBottom: '1.5rem'
               }}>
-                {t('doctor_dashboard.person_name')}:
-              </label>
-              <input
-                type="text"
-                value={newPerson.name}
-                onChange={(e) => setNewPerson({ ...newPerson, name: e.target.value })}
-                placeholder={t('doctor_dashboard.add_person_placeholder')}
-                style={{
-                  width: '100%',
-                  padding: '0.8rem',
-                  border: '2px solid #e0e0e0',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  transition: 'border-color 0.3s ease'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#0A8F82';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#e0e0e0';
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                fontWeight: 600,
-                color: '#333'
-              }}>
-                {t('doctor_dashboard.person_phone')}:
-              </label>
-              <input
-                type="tel"
-                value={newPerson.phone}
-                onChange={(e) => setNewPerson({ ...newPerson, phone: e.target.value })}
-                placeholder={t('doctor_dashboard.phone_placeholder')}
-                style={{
-                  width: '100%',
-                  padding: '0.8rem',
-                  border: '2px solid #e0e0e0',
-                  borderRadius: '8px',
-                  fontSize: '1rem',
-                  transition: 'border-color 0.3s ease'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#0A8F82';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#e0e0e0';
-                }}
-              />
-            </div>
+                {availableBookers.map((booker) => (
+                  <div
+                    key={booker._id}
+                    style={{
+                      background: '#f8f9fa',
+                      borderRadius: '12px',
+                      padding: '1rem',
+                      border: '1px solid #e9ecef',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <div>
+                      <h4 style={{
+                        color: '#0A8F82',
+                        fontSize: '1.1rem',
+                        fontWeight: 700,
+                        margin: '0 0 0.3rem 0'
+                      }}>
+                        {booker.name}
+                      </h4>
+                      <p style={{
+                        color: '#666',
+                        margin: '0 0 0.3rem 0',
+                        fontSize: '0.9rem'
+                      }}>
+                        {booker.phone}
+                      </p>
+                      <p style={{
+                        color: '#28a745',
+                        margin: 0,
+                        fontSize: '0.8rem',
+                        fontWeight: 600
+                      }}>
+                        {t('doctor_dashboard.total_bookings')}: {booker.totalBookings}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleAddPerson(booker)}
+                      disabled={loading}
+                      style={{
+                        background: '#0A8F82',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '0.6rem 1rem',
+                        fontSize: '0.9rem',
+                        fontWeight: 600,
+                        cursor: loading ? 'not-allowed' : 'pointer',
+                        opacity: loading ? 0.7 : 1,
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!loading) {
+                          e.currentTarget.style.transform = 'scale(1.05)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!loading) {
+                          e.currentTarget.style.transform = 'scale(1)';
+                        }
+                      }}
+                    >
+                      {loading ? '...' : t('doctor_dashboard.add_to_tracking')}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div style={{
               display: 'flex',
-              gap: '1rem',
               justifyContent: 'center'
             }}>
               <button
@@ -495,35 +541,7 @@ const BookingsForOthersStats = () => {
                   e.currentTarget.style.transform = 'scale(1)';
                 }}
               >
-                {t('doctor_dashboard.cancel')}
-              </button>
-              <button
-                onClick={handleAddPerson}
-                disabled={loading}
-                style={{
-                  background: '#0A8F82',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '8px',
-                  padding: '0.8rem 1.5rem',
-                  fontSize: '1rem',
-                  fontWeight: 600,
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  opacity: loading ? 0.7 : 1,
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  if (!loading) {
-                    e.currentTarget.style.transform = 'scale(1.05)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!loading) {
-                    e.currentTarget.style.transform = 'scale(1)';
-                  }
-                }}
-              >
-                {loading ? '...' : t('doctor_dashboard.confirm_add')}
+                {t('doctor_dashboard.close')}
               </button>
             </div>
           </div>
