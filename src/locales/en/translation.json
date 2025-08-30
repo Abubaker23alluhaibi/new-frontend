@@ -21,6 +21,30 @@
     "cancel_booking_for_other": "Cancel Booking for Another Person"
   },
   "booked_by": "Booked by",
+  "stats": {
+    "booking_for_others": "Booking for Others Statistics",
+    "top_users": "Top 10 Users",
+    "doctor_stats": "Doctor Statistics",
+    "total_bookings": "Total Bookings for Others",
+    "unique_users": "Users who booked for others",
+    "total_users": "Total Users",
+    "percentage_users": "Percentage of users who booked for others",
+    "overview": "Overview of Booking for Others",
+    "most_bookings": "Top 10 Users who booked appointments for others",
+    "doctor_booking_stats": "Doctor Statistics - Booking for Others",
+    "bookings_for_others": "Bookings for others",
+    "different_patients": "Different patients",
+    "different_users": "Different users",
+    "bookings_per_month": "Bookings/month",
+    "patients": "Patients",
+    "first_booking": "First booking",
+    "last_booking": "Last booking",
+    "phone_not_available": "Phone number not available",
+    "user_not_available": "User not available",
+    "doctor_not_available": "Doctor not available",
+    "specialty_not_available": "Specialty not available",
+    "show_stats": "Show Statistics"
+  },
   "landing_page": {
     "header": {
       "logo_text": "Iraq Medical Platform",

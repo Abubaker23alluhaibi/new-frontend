@@ -30,6 +30,30 @@
     "cancel_booking_for_other": "إلغاء الحجز لشخص آخر"
   },
   "booked_by": "تم الحجز بواسطة",
+  "stats": {
+    "booking_for_others": "إحصائيات الحجز لشخص آخر",
+    "top_users": "أكثر 10 مستخدمين",
+    "doctor_stats": "إحصائيات الأطباء",
+    "total_bookings": "إجمالي الحجوزات لشخص آخر",
+    "unique_users": "مستخدمين قاموا بالحجز لشخص آخر",
+    "total_users": "إجمالي المستخدمين",
+    "percentage_users": "نسبة المستخدمين الذين حجزوا لشخص آخر",
+    "overview": "نظرة عامة على الحجز لشخص آخر",
+    "most_bookings": "أكثر 10 مستخدمين قاموا بحجز مواعيد لشخص آخر",
+    "doctor_booking_stats": "إحصائيات الأطباء - الحجز لشخص آخر",
+    "bookings_for_others": "حجز لشخص آخر",
+    "different_patients": "مريض مختلف",
+    "different_users": "مستخدم مختلف",
+    "bookings_per_month": "حجز/شهر",
+    "patients": "المرضى",
+    "first_booking": "أول حجز",
+    "last_booking": "آخر حجز",
+    "phone_not_available": "رقم هاتف غير محدد",
+    "user_not_available": "مستخدم غير محدد",
+    "doctor_not_available": "طبيب غير محدد",
+    "specialty_not_available": "تخصص غير محدد",
+    "show_stats": "عرض الإحصائيات"
+  },
   "landing_page": {
     "header": {
       "logo_text": "منصة طبيب العراق",

@@ -13,6 +13,9 @@ function DoctorAnalyticsPage() {
   const [error, setError] = useState('');
   const [timeFilter, setTimeFilter] = useState('all'); // all, weekly, monthly, yearly
   const [isMobile, setIsMobile] = useState(false);
+  const [topUsersForOthers, setTopUsersForOthers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [showUserSelection, setShowUserSelection] = useState(false);
 
   // مراقبة حجم النافذة
   useEffect(() => {
@@ -48,53 +51,69 @@ function DoctorAnalyticsPage() {
     }
   }, [profile?._id, t]);
 
+  // جلب إحصائيات المستخدمين الذين حجزوا لشخص آخر
+  const fetchTopUsersForOthers = useCallback(async () => {
+    if (!profile?._id) return;
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctor-top-users-booking-for-others/${profile._id}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setTopUsersForOthers(data.data);
+      } else {
+        console.error('خطأ في جلب إحصائيات المستخدمين:', data.error);
+      }
+    } catch (err) {
+      console.error('خطأ في جلب إحصائيات المستخدمين:', err);
+    }
+  }, [profile?._id]);
+
   useEffect(() => {
     fetchAllAppointments();
-  }, [profile?._id, fetchAllAppointments]);
+    fetchTopUsersForOthers();
+  }, [profile?._id, fetchAllAppointments, fetchTopUsersForOthers]);
 
   // دالة التصفية الزمنية
-  const filterAppointmentsByTime = (appointments, filter) => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
-    switch (filter) {
-      case 'weekly':
-        const weekAgo = new Date(today);
-        weekAgo.setDate(today.getDate() - 7);
-        return appointments.filter(apt => new Date(apt.date) >= weekAgo);
-      
-      case 'monthly':
-        const monthAgo = new Date(today);
-        monthAgo.setMonth(today.getMonth() - 1);
-        return appointments.filter(apt => new Date(apt.date) >= monthAgo);
-      
-      case 'yearly':
-        const yearAgo = new Date(today);
-        yearAgo.setFullYear(today.getFullYear() - 1);
-        return appointments.filter(apt => new Date(apt.date) >= yearAgo);
-      
-      default:
-        return appointments;
-    }
-  };
-
-  // دالة تحويل الوقت إلى ساعة كاملة
   const getHourFromTime = (timeString) => {
-    if (!timeString) return 'غير محدد';
-    
-    // استخراج الساعة من الوقت (مثال: "10:30" -> "10:00")
-    const timeParts = timeString.split(':');
-    if (timeParts.length >= 2) {
-      const hour = parseInt(timeParts[0]);
-      return `${hour.toString().padStart(2, '0')}:00`;
-    }
-    
-    return timeString;
+    if (!timeString) return 0;
+    const time = timeString.split(':');
+    return parseInt(time[0]) || 0;
   };
 
+  const filterAppointmentsByTime = (appointments, filter) => {
+    if (filter === 'all') return appointments;
+    
+    const now = new Date();
+    const filtered = appointments.filter(apt => {
+      const aptDate = new Date(apt.date);
+      
+      switch (filter) {
+        case 'weekly':
+          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          return aptDate >= weekAgo;
+        case 'monthly':
+          const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          return aptDate >= monthAgo;
+        case 'yearly':
+          const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+          return aptDate >= yearAgo;
+        default:
+          return true;
+      }
+    });
+    
+    return filtered;
+  };
 
-
-
+  const getTimeFilterText = (filter) => {
+    switch (filter) {
+      case 'weekly': return t('weekly');
+      case 'monthly': return t('monthly');
+      case 'yearly': return t('yearly');
+      default: return t('all_time');
+    }
+  };
 
   // دالة التحليل
   const getAnalytics = () => {
@@ -116,56 +135,71 @@ function DoctorAnalyticsPage() {
       // تحليل حسب الأيام
       appointmentsByDay: {},
       appointmentsByMonth: {},
-      appointmentsByHour: {}, // تغيير من appointmentsByTime إلى appointmentsByHour
+      appointmentsByHour: {},
       
       // إحصائيات إضافية
       mostBusyDay: null,
-      mostBusyHour: null, // تغيير من mostBusyTime إلى mostBusyHour
+      mostBusyHour: null,
       averageAppointmentsPerDay: 0,
-      totalPatients: new Set()
+      totalPatients: new Set(),
+      
+      // إحصائيات الحجز لشخص آخر
+      bookingForOthersStats: {
+        total: filteredAppointments.filter(apt => apt.isBookingForOther).length,
+        percentage: filteredAppointments.length > 0 ? 
+          ((filteredAppointments.filter(apt => apt.isBookingForOther).length / filteredAppointments.length) * 100).toFixed(1) : 0,
+        uniqueBookers: new Set(filteredAppointments.filter(apt => apt.isBookingForOther).map(apt => apt.userId?._id || apt.userId)).size,
+        uniquePatients: new Set(filteredAppointments.filter(apt => apt.isBookingForOther).map(apt => apt.patientName || apt.userName)).size
+      }
     };
 
     // تحليل حسب الأيام
     filteredAppointments.forEach(apt => {
       const date = new Date(apt.date);
-      const dayKey = date.toLocaleDateString('ar-EG', { weekday: 'long' });
-      const monthKey = date.toLocaleDateString('ar-EG', { month: 'long', year: 'numeric' });
-      const hourKey = getHourFromTime(apt.time); // استخدام الساعة الكاملة
+      const dayName = date.toLocaleDateString('ar-EG', { weekday: 'long' });
+      const monthName = date.toLocaleDateString('ar-EG', { month: 'long' });
+      const hour = getHourFromTime(apt.time);
       
-      analytics.appointmentsByDay[dayKey] = (analytics.appointmentsByDay[dayKey] || 0) + 1;
-      analytics.appointmentsByMonth[monthKey] = (analytics.appointmentsByMonth[monthKey] || 0) + 1;
-      analytics.appointmentsByHour[hourKey] = (analytics.appointmentsByHour[hourKey] || 0) + 1;
+      analytics.appointmentsByDay[dayName] = (analytics.appointmentsByDay[dayName] || 0) + 1;
+      analytics.appointmentsByMonth[monthName] = (analytics.appointmentsByMonth[monthName] || 0) + 1;
+      analytics.appointmentsByHour[hour] = (analytics.appointmentsByHour[hour] || 0) + 1;
       
-      // إضافة المريض للمجموعة
-      analytics.totalPatients.add(apt.userId?._id || apt.userName);
+      // إضافة المريض إلى المجموعة
+      if (apt.isBookingForOther && apt.patientName) {
+        analytics.totalPatients.add(apt.patientName);
+      } else if (apt.userId?.first_name) {
+        analytics.totalPatients.add(apt.userId.first_name);
+      }
     });
 
-    // العثور على أكثر يوم مشغول
-    analytics.mostBusyDay = Object.entries(analytics.appointmentsByDay)
-      .sort(([,a], [,b]) => b - a)[0];
+    // حساب أكثر الأيام والأوقات ازدحاماً
+    analytics.mostBusyDay = Object.keys(analytics.appointmentsByDay).reduce((a, b) => 
+      analytics.appointmentsByDay[a] > analytics.appointmentsByDay[b] ? a : b, null);
     
-    // العثور على أكثر ساعة مشغولة
-    analytics.mostBusyHour = Object.entries(analytics.appointmentsByHour)
-      .sort(([,a], [,b]) => b - a)[0];
+    analytics.mostBusyHour = Object.keys(analytics.appointmentsByHour).reduce((a, b) => 
+      analytics.appointmentsByHour[a] > analytics.appointmentsByHour[b] ? a : b, null);
     
-    // متوسط المواعيد يومياً
-    const uniqueDays = Object.keys(analytics.appointmentsByDay).length;
-    analytics.averageAppointmentsPerDay = uniqueDays > 0 ? 
-      (analytics.totalAppointments / uniqueDays).toFixed(1) : 0;
-    
+    analytics.averageAppointmentsPerDay = analytics.totalAppointments / 30;
     analytics.totalPatients = analytics.totalPatients.size;
-    
+
     return analytics;
   };
 
-  // دالة الحصول على نص التصفية الزمنية
-  const getTimeFilterText = () => {
-    switch (timeFilter) {
-      case 'weekly': return t('weekly_analysis');
-      case 'monthly': return t('monthly_analysis');
-      case 'yearly': return t('yearly_analysis');
-      default: return t('all_time_analysis');
+  // دالة اختيار المستخدمين من كارت الموعد
+  const handleUserSelection = (user) => {
+    if (selectedUsers.find(u => u.userId === user.userId)) {
+      setSelectedUsers(selectedUsers.filter(u => u.userId !== user.userId));
+    } else {
+      setSelectedUsers([...selectedUsers, user]);
     }
+  };
+
+  // دالة إضافة المستخدمين المختارين للإحصائيات
+  const addSelectedUsersToStats = () => {
+    const updatedStats = [...topUsersForOthers, ...selectedUsers];
+    setTopUsersForOthers(updatedStats);
+    setSelectedUsers([]);
+    setShowUserSelection(false);
   };
 
   if (loading) {
@@ -239,7 +273,7 @@ function DoctorAnalyticsPage() {
             fontSize: isMobile ? 16 : 28,
             margin: 0
           }}>
-            📊 {t('analytics_full_title')}
+            📊 {t('analytics')}
           </h1>
         </div>
         
@@ -273,6 +307,14 @@ function DoctorAnalyticsPage() {
           timeFilter={timeFilter}
           setTimeFilter={setTimeFilter}
           getTimeFilterText={getTimeFilterText}
+          topUsersForOthers={topUsersForOthers}
+          selectedUsers={selectedUsers}
+          showUserSelection={showUserSelection}
+          setShowUserSelection={setShowUserSelection}
+          handleUserSelection={handleUserSelection}
+          addSelectedUsersToStats={addSelectedUsersToStats}
+          appointments={appointments}
+          isMobile={isMobile}
         />
       </div>
     </div>
@@ -280,129 +322,67 @@ function DoctorAnalyticsPage() {
 }
 
 // مكون التحليل الكامل
-function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText }) {
+function AnalyticsView({ 
+  analytics, 
+  timeFilter, 
+  setTimeFilter, 
+  getTimeFilterText,
+  topUsersForOthers,
+  selectedUsers,
+  showUserSelection,
+  setShowUserSelection,
+  handleUserSelection,
+  addSelectedUsersToStats,
+  appointments,
+  isMobile
+}) {
   const { t } = useTranslation();
-  const [isMobile, setIsMobile] = useState(false);
-  const [showMoreTimes, setShowMoreTimes] = useState(false);
 
-  // مراقبة حجم النافذة
-  useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 500);
-    };
-    
-    checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    
-    return () => window.removeEventListener('resize', checkIsMobile);
-  }, []);
-  
   return (
-    <div style={{display:'flex', flexDirection:'column', gap: isMobile ? '1rem' : '2rem'}}>
-      {/* تصفية زمنية */}
+    <div>
+      {/* فلتر الوقت */}
       <div style={{
-        background:'#fff', 
-        borderRadius: isMobile ? 12 : 16, 
-        boxShadow:'0 2px 12px #7c4dff11', 
-        padding: isMobile ? '1rem 0.8rem' : '1.5rem'
+        background: '#fff',
+        borderRadius: isMobile ? 12 : 16,
+        boxShadow: '0 2px 12px rgba(10, 143, 130, 0.1)',
+        padding: isMobile ? '1rem 0.8rem' : '1.5rem',
+        marginBottom: '2rem',
+        border: '2px solid #0A8F82'
       }}>
         <h3 style={{
-          color:'#0A8F82', 
-          marginBottom: isMobile ? '0.8rem' : '1rem', 
-          textAlign:'center',
+          color: '#0A8F82',
+          marginBottom: '1rem',
+          textAlign: 'center',
           fontSize: isMobile ? '1.1rem' : '1.3rem'
-        }}>{t('time_period_filter')}</h3>
+        }}>
+          ⏰ {t('time_filter')}
+        </h3>
         
         <div style={{
-          display:'flex', 
-          justifyContent:'center', 
-          gap: isMobile ? '0.5rem' : '1rem',
-          flexWrap:'wrap'
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '1rem',
+          flexWrap: 'wrap'
         }}>
-          <button
-            onClick={() => setTimeFilter('all')}
-            style={{
-              background: timeFilter === 'all' ? '#0A8F82' : '#f8f9fa',
-              color: timeFilter === 'all' ? '#fff' : '#0A8F82',
-              border: timeFilter === 'all' ? 'none' : '2px solid #0A8F82',
-              borderRadius: isMobile ? 8 : 12,
-              padding: isMobile ? '0.6rem 1rem' : '0.8rem 1.5rem',
-              fontWeight: 700,
-              fontSize: isMobile ? '0.9rem' : '1rem',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            📅 {t('all_time')}
-          </button>
-          
-          <button
-            onClick={() => setTimeFilter('weekly')}
-            style={{
-              background: timeFilter === 'weekly' ? '#0A8F82' : '#f8f9fa',
-              color: timeFilter === 'weekly' ? '#fff' : '#0A8F82',
-              border: timeFilter === 'weekly' ? 'none' : '2px solid #0A8F82',
-              borderRadius: isMobile ? 8 : 12,
-              padding: isMobile ? '0.6rem 1rem' : '0.8rem 1.5rem',
-              fontWeight: 700,
-              fontSize: isMobile ? '0.9rem' : '1rem',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            📊 {t('weekly')}
-          </button>
-          
-          <button
-            onClick={() => setTimeFilter('monthly')}
-            style={{
-              background: timeFilter === 'monthly' ? '#0A8F82' : '#f8f9fa',
-              color: timeFilter === 'monthly' ? '#fff' : '#0A8F82',
-              border: timeFilter === 'monthly' ? 'none' : '2px solid #0A8F82',
-              borderRadius: isMobile ? 8 : 12,
-              padding: isMobile ? '0.6rem 1rem' : '0.8rem 1.5rem',
-              fontWeight: 700,
-              fontSize: isMobile ? '0.9rem' : '1rem',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            📈 {t('monthly')}
-          </button>
-          
-          <button
-            onClick={() => setTimeFilter('yearly')}
-            style={{
-              background: timeFilter === 'yearly' ? '#0A8F82' : '#f8f9fa',
-              color: timeFilter === 'yearly' ? '#fff' : '#0A8F82',
-              border: timeFilter === 'yearly' ? 'none' : '2px solid #0A8F82',
-              borderRadius: isMobile ? 8 : 12,
-              padding: isMobile ? '0.6rem 1rem' : '0.8rem 1.5rem',
-              fontWeight: 700,
-              fontSize: isMobile ? '0.9rem' : '1rem',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            🎯 {t('yearly')}
-          </button>
-        </div>
-        
-        <div style={{
-          textAlign:'center',
-          marginTop: isMobile ? '0.8rem' : '1rem',
-          padding: isMobile ? '0.8rem' : '1rem',
-          background:'#f8f9fa',
-          borderRadius: isMobile ? 8 : 12,
-          border: '2px solid #0A8F82'
-        }}>
-          <span style={{
-            color:'#0A8F82',
-            fontWeight:700,
-            fontSize: isMobile ? '0.9rem' : '1rem'
-          }}>
-            📊 {getTimeFilterText()}
-          </span>
+          {['all', 'weekly', 'monthly', 'yearly'].map(filter => (
+            <button
+              key={filter}
+              onClick={() => setTimeFilter(filter)}
+              style={{
+                background: timeFilter === filter ? '#0A8F82' : '#f8f9fa',
+                color: timeFilter === filter ? '#fff' : '#0A8F82',
+                border: timeFilter === filter ? 'none' : '2px solid #0A8F82',
+                borderRadius: 12,
+                padding: '0.8rem 1.5rem',
+                fontWeight: 700,
+                fontSize: '1rem',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              {getTimeFilterText(filter)}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -410,7 +390,8 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
       <div style={{
         display:'grid', 
         gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))', 
-        gap: isMobile ? '0.8rem' : '1rem'
+        gap: isMobile ? '0.8rem' : '1rem',
+        marginBottom: '2rem'
       }}>
         <div style={{
           background:'#fff', 
@@ -437,472 +418,489 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
           <div style={{color:'#666', fontSize: isMobile ? '0.9rem' : '1rem'}}>{t('total_patients')}</div>
         </div>
         <div style={{
-          background:'#fff', 
-          borderRadius: isMobile ? 12 : 16, 
-          boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
-          padding: isMobile ? '1rem 0.8rem' : '1.5rem', 
-          textAlign:'center',
-          border: '2px solid #0A8F82'
-        }}>
-          <div style={{fontSize: isMobile ? '1.5rem' : '2rem', marginBottom:'0.5rem'}}>📈</div>
-          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#0A8F82', marginBottom:'0.5rem'}}>{analytics.averageAppointmentsPerDay}</div>
-          <div style={{color:'#666', fontSize: isMobile ? '0.9rem' : '1rem'}}>{t('average_appointments_per_day')}</div>
-        </div>
-        <div style={{
-          background:'#fff', 
-          borderRadius: isMobile ? 12 : 16, 
-          boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
-          padding: isMobile ? '1rem 0.8rem' : '1.5rem', 
-          textAlign:'center',
-          border: '2px solid #0A8F82'
-        }}>
-          <div style={{fontSize: isMobile ? '1.5rem' : '2rem', marginBottom:'0.5rem'}}>🔥</div>
-          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#0A8F82', marginBottom:'0.5rem'}}>{analytics.mostBusyDay?.[1] || 0}</div>
-          <div style={{color:'#666', fontSize: isMobile ? '0.9rem' : '1rem'}}>{t('most_busy_day')}</div>
-        </div>
-        <div style={{
-          background:'#fff', 
-          borderRadius: isMobile ? 12 : 16, 
-          boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
-          padding: isMobile ? '1rem 0.8rem' : '1.5rem', 
-          textAlign:'center',
-          border: '2px solid #0A8F82'
-        }}>
-          <div style={{fontSize: isMobile ? '1.5rem' : '2rem', marginBottom:'0.5rem'}}>✅</div>
-          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#0A8F82', marginBottom:'0.5rem'}}>{analytics.attendanceStats.present}</div>
-          <div style={{color:'#666', fontSize: isMobile ? '0.9rem' : '1rem'}}>{t('present_count')}</div>
-        </div>
-        <div style={{
-          background:'#fff', 
-          borderRadius: isMobile ? 12 : 16, 
-          boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
-          padding: isMobile ? '1rem 0.8rem' : '1.5rem', 
-          textAlign:'center',
-          border: '2px solid #0A8F82'
-        }}>
-          <div style={{fontSize: isMobile ? '1.5rem' : '2rem', marginBottom:'0.5rem'}}>❌</div>
-          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#0A8F82', marginBottom:'0.5rem'}}>{analytics.attendanceStats.absent}</div>
-          <div style={{color:'#666', fontSize: isMobile ? '0.9rem' : '1rem'}}>{t('absent_count')}</div>
-        </div>
-      </div>
-
-      {/* تحليل الحضور والغياب */}
-      <div style={{
-        background:'#fff', 
-        borderRadius: isMobile ? 12 : 16, 
-        boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
-        padding: isMobile ? '1rem 0.8rem' : '1.5rem',
-        border: '2px solid #0A8F82'
-      }}>
-        <h3 style={{
-          color:'#0A8F82', 
-          marginBottom: isMobile ? '0.8rem' : '1rem', 
-          textAlign:'center',
-          fontSize: isMobile ? '1.1rem' : '1.3rem'
-        }}>{t('attendance_analysis')}</h3>
-        
-        {/* إحصائيات الحضور */}
-        <div style={{
-          display:'grid', 
-          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(2, 1fr)', 
-          gap: isMobile ? '0.8rem' : '1rem',
-          marginBottom: isMobile ? '1rem' : '1.5rem'
-        }}>
-          <div style={{
-            background:'#e8f5e8',
-            padding: isMobile ? '0.8rem 0.6rem' : '1rem',
-            borderRadius: isMobile ? 8 : 12,
-            textAlign:'center',
-            border: '2px solid #0A8F82'
-          }}>
-            <div style={{
-              fontSize: isMobile ? '1.5rem' : '2rem', 
-              marginBottom:'0.5rem'
-            }}>✅</div>
-            <div style={{
-              fontSize: isMobile ? '1.2rem' : '1.5rem', 
-              fontWeight:700, 
-              color:'#0A8F82',
-              marginBottom:'0.3rem'
-            }}>{analytics.attendanceStats.present}</div>
-            <div style={{
-              fontSize: isMobile ? '0.8rem' : '0.9rem', 
-              color:'#0A8F82',
-              fontWeight:600
-            }}>{t('present')}</div>
-          </div>
-          
-          <div style={{
-            background:'#ffebee',
-            padding: isMobile ? '0.8rem 0.6rem' : '1rem',
-            borderRadius: isMobile ? 8 : 12,
-            textAlign:'center',
-            border: '2px solid #0A8F82'
-          }}>
-            <div style={{
-              fontSize: isMobile ? '1.5rem' : '2rem', 
-              marginBottom:'0.5rem'
-            }}>❌</div>
-            <div style={{
-              fontSize: isMobile ? '1.2rem' : '1.5rem', 
-              fontWeight:700, 
-              color:'#0A8F82',
-              marginBottom:'0.3rem'
-            }}>{analytics.attendanceStats.absent}</div>
-            <div style={{
-              fontSize: isMobile ? '0.8rem' : '0.9rem', 
-              color:'#0A8F82',
-              fontWeight:600
-            }}>{t('absent')}</div>
-          </div>
-        </div>
-
-        {/* نسب الحضور */}
-        <div style={{
-          background:'#f8f9fa',
+          background:'#fff',
+          borderRadius: isMobile ? 12 : 16,
+          boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)',
           padding: isMobile ? '1rem 0.8rem' : '1.5rem',
-          borderRadius: isMobile ? 8 : 12,
+          textAlign:'center',
           border: '2px solid #0A8F82'
         }}>
-          <h4 style={{
-            color:'#0A8F82',
-            marginBottom: isMobile ? '0.8rem' : '1rem',
-            textAlign:'center',
-            fontSize: isMobile ? '1rem' : '1.1rem',
-            fontWeight:600
-          }}>{t('attendance_percentage')}</h4>
+          <div style={{fontSize: isMobile ? '1.5rem' : '2rem', marginBottom:'0.5rem'}}>📅</div>
+          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#0A8F82', marginBottom:'0.5rem'}}>{analytics.todayAppointments}</div>
+          <div style={{color:'#666', fontSize: isMobile ? '0.9rem' : '1rem'}}>{t('today_appointments')}</div>
+        </div>
+        <div style={{
+          background:'#fff',
+          borderRadius: isMobile ? 12 : 16,
+          boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)',
+          padding: isMobile ? '1rem 0.8rem' : '1.5rem',
+          textAlign:'center',
+          border: '2px solid #0A8F82'
+        }}>
+          <div style={{fontSize: isMobile ? '1.5rem' : '2rem', marginBottom:'0.5rem'}}>⏰</div>
+          <div style={{fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight:700, color:'#0A8F82', marginBottom:'0.5rem'}}>{analytics.upcomingAppointments}</div>
+          <div style={{color:'#666', fontSize: isMobile ? '0.9rem' : '1rem'}}>{t('upcoming_appointments')}</div>
+        </div>
+      </div>
+
+      {/* إحصائيات الحجز لشخص آخر */}
+      <div style={{
+        background: '#fff',
+        borderRadius: isMobile ? 12 : 16,
+        boxShadow: '0 2px 12px rgba(10, 143, 130, 0.1)',
+        padding: isMobile ? '1rem 0.8rem' : '1.5rem',
+        marginBottom: '2rem',
+        border: '2px solid #0A8F82'
+      }}>
+        <h3 style={{
+          color: '#0A8F82',
+          marginBottom: '1rem',
+          textAlign: 'center',
+          fontSize: isMobile ? '1.1rem' : '1.3rem'
+        }}>
+          👥 {t('booking_for_others_stats')}
+        </h3>
+        
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '1rem'
+        }}>
+          <div style={{
+            background: '#e3f2fd',
+            padding: '1rem',
+            borderRadius: 12,
+            textAlign: 'center',
+            border: '2px solid #1976d2'
+          }}>
+            <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📊</div>
+            <div style={{fontSize: '1.5rem', fontWeight: 700, color: '#1976d2', marginBottom: '0.5rem'}}>
+              {analytics.bookingForOthersStats.total}
+            </div>
+            <div style={{color: '#666', fontSize: '0.9rem'}}>{t('total_bookings_for_others')}</div>
+          </div>
           
           <div style={{
-            display:'flex',
-            flexDirection:'column',
-            gap: isMobile ? '0.6rem' : '0.8rem'
+            background: '#e8f5e8',
+            padding: '1rem',
+            borderRadius: 12,
+            textAlign: 'center',
+            border: '2px solid #2e7d32'
           }}>
-            {/* نسبة الحضور */}
-            <div style={{
-              display:'flex',
-              justifyContent:'space-between',
-              alignItems:'center',
-              padding: isMobile ? '0.5rem 0.8rem' : '0.8rem 1rem',
-              background:'#e8f5e8',
-              borderRadius: isMobile ? 6 : 8
-            }}>
-              <span style={{fontWeight:600, color:'#0A8F82'}}>{t('present')}</span>
-              <div style={{
-                background:'#0A8F82',
-                color:'#fff',
-                padding: isMobile ? '0.3rem 0.6rem' : '0.4rem 0.8rem',
-                borderRadius: isMobile ? 4 : 6,
-                fontWeight:700,
-                fontSize: isMobile ? '0.8rem' : '0.9rem'
-              }}>
-                {analytics.totalAppointments > 0 ? 
-                  ((analytics.attendanceStats.present / analytics.totalAppointments) * 100).toFixed(1) : 0}%
-              </div>
+            <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>📈</div>
+            <div style={{fontSize: '1.5rem', fontWeight: 700, color: '#2e7d32', marginBottom: '0.5rem'}}>
+              {analytics.bookingForOthersStats.percentage}%
             </div>
-            
-            {/* نسبة الغياب */}
-            <div style={{
-              display:'flex',
-              justifyContent:'space-between',
-              alignItems:'center',
-              padding: isMobile ? '0.5rem 0.8rem' : '0.8rem 1rem',
-              background:'#ffebee',
-              borderRadius: isMobile ? 6 : 8
-            }}>
-              <span style={{fontWeight:600, color:'#0A8F82'}}>{t('absent')}</span>
-              <div style={{
-                background:'#0A8F82',
-                color:'#fff',
-                padding: isMobile ? '0.3rem 0.6rem' : '0.4rem 0.8rem',
-                borderRadius: isMobile ? 4 : 6,
-                fontWeight:700,
-                fontSize: isMobile ? '0.8rem' : '0.9rem'
-              }}>
-                {analytics.totalAppointments > 0 ? 
-                  ((analytics.attendanceStats.absent / analytics.totalAppointments) * 100).toFixed(1) : 0}%
-              </div>
+            <div style={{color: '#666', fontSize: '0.9rem'}}>{t('percentage_of_total')}</div>
+          </div>
+          
+          <div style={{
+            background: '#fff3e0',
+            padding: '1rem',
+            borderRadius: 12,
+            textAlign: 'center',
+            border: '2px solid #ef6c00'
+          }}>
+            <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>👤</div>
+            <div style={{fontSize: '1.5rem', fontWeight: 700, color: '#ef6c00', marginBottom: '0.5rem'}}>
+              {analytics.bookingForOthersStats.uniqueBookers}
             </div>
+            <div style={{color: '#666', fontSize: '0.9rem'}}>{t('unique_bookers')}</div>
+          </div>
+          
+          <div style={{
+            background: '#f3e5f5',
+            padding: '1rem',
+            borderRadius: 12,
+            textAlign: 'center',
+            border: '2px solid #7b1fa2'
+          }}>
+            <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>🏥</div>
+            <div style={{fontSize: '1.5rem', fontWeight: 700, color: '#7b1fa2', marginBottom: '0.5rem'}}>
+              {analytics.bookingForOthersStats.uniquePatients}
+            </div>
+            <div style={{color: '#666', fontSize: '0.9rem'}}>{t('unique_patients')}</div>
           </div>
         </div>
       </div>
 
-      {/* تحليل الأوقات حسب الساعات */}
+      {/* أعلى المستخدمين الذين حجزوا لشخص آخر */}
       <div style={{
-        background:'#fff', 
-        borderRadius: isMobile ? 12 : 16, 
-        boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
+        background: '#fff',
+        borderRadius: isMobile ? 12 : 16,
+        boxShadow: '0 2px 12px rgba(10, 143, 130, 0.1)',
         padding: isMobile ? '1rem 0.8rem' : '1.5rem',
+        marginBottom: '2rem',
         border: '2px solid #0A8F82'
       }}>
-        <h3 style={{
-          color:'#0A8F82', 
-          marginBottom: isMobile ? '0.8rem' : '1rem', 
-          textAlign:'center',
-          fontSize: isMobile ? '1.1rem' : '1.3rem'
-        }}>{t('appointments_by_hour') || 'المواعيد حسب الساعات'}</h3>
-        
-        {/* جدول منظم للساعات */}
         <div style={{
-          display: 'table',
-          width: '100%',
-          borderCollapse: 'collapse',
-          marginTop: '1rem'
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1rem',
+          flexWrap: 'wrap',
+          gap: '1rem'
         }}>
-          <div style={{
-            display: 'table-header-group',
-            background: '#f8f9fa',
-            fontWeight: 700,
-            fontSize: isMobile ? '0.9rem' : '1rem'
+          <h3 style={{
+            color: '#0A8F82',
+            margin: 0,
+            fontSize: isMobile ? '1.1rem' : '1.3rem'
           }}>
-            <div style={{
-              display: 'table-row'
-            }}>
-              <div style={{
-                display: 'table-cell',
-                padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                borderBottom: '2px solid #0A8F82',
-                textAlign: 'center',
-                color: '#0A8F82'
-              }}>
-                {t('hour') || 'الساعة'}
-              </div>
-              <div style={{
-                display: 'table-cell',
-                padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                borderBottom: '2px solid #0A8F82',
-                textAlign: 'center',
-                color: '#0A8F82'
-              }}>
-                {t('appointments_count') || 'عدد المواعيد'}
-              </div>
-              <div style={{
-                display: 'table-cell',
-                padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                borderBottom: '2px solid #0A8F82',
-                textAlign: 'center',
-                color: '#0A8F82'
-              }}>
-                {t('status') || 'الحالة'}
-              </div>
-            </div>
-          </div>
+            🏆 {t('top_users_booking_for_others')}
+          </h3>
           
-          <div style={{display: 'table-row-group'}}>
-            {Object.entries(analytics.appointmentsByHour)
-              .sort(([,a], [,b]) => b - a) // ترتيب تنازلي
-              .slice(0, showMoreTimes ? 10 : 5) // عرض 5 أو 10 حسب الحالة
-              .map(([hour, count], index) => (
-                <div key={hour} style={{
-                  display: 'table-row',
-                  background: index % 2 === 0 ? '#fff' : '#f8f9fa',
-                  borderBottom: '1px solid #dee2e6'
-                }}>
-                  <div style={{
-                    display: 'table-cell',
-                    padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                    textAlign: 'center',
-                    fontWeight: 600,
-                    fontSize: isMobile ? '0.9rem' : '1rem'
-                  }}>
-                    {hour}
-                  </div>
-                  <div style={{
-                    display: 'table-cell',
-                    padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                    textAlign: 'center',
-                    fontWeight: 700,
-                    fontSize: isMobile ? '1.1rem' : '1.2rem',
-                    color: '#0A8F82'
-                  }}>
-                    {count}
-                  </div>
-                  <div style={{
-                    display: 'table-cell',
-                    padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 1rem',
-                    textAlign: 'center'
-                  }}>
-                    {hour === analytics.mostBusyHour?.[0] ? (
-                      <span style={{
-                        background: '#0A8F82',
-                        color: '#fff',
-                        padding: isMobile ? '0.2rem 0.5rem' : '0.3rem 0.8rem',
-                        borderRadius: isMobile ? 8 : 12,
-                        fontSize: isMobile ? '0.7rem' : '0.8rem',
-                        fontWeight: 600
-                      }}>
-                        🔥 {t('most_requested') || 'الأكثر طلباً'}
-                      </span>
-                    ) : (
-                      <span style={{
-                        color: '#6c757d',
-                        fontSize: isMobile ? '0.7rem' : '0.8rem'
-                      }}>
-                        -
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-          </div>
-        </div>
-        
-        {/* زر عرض المزيد للساعات */}
-        {Object.entries(analytics.appointmentsByHour).length > 5 && (
           <div style={{
-            textAlign: 'center',
-            marginTop: '1rem'
+            display: 'flex',
+            gap: '0.5rem'
           }}>
             <button
-              onClick={() => setShowMoreTimes(!showMoreTimes)}
+              onClick={() => setShowUserSelection(!showUserSelection)}
               style={{
                 background: '#0A8F82',
                 color: '#fff',
                 border: 'none',
-                borderRadius: isMobile ? 8 : 12,
-                padding: isMobile ? '0.6rem 1.2rem' : '0.8rem 1.5rem',
+                borderRadius: 8,
+                padding: '0.5rem 1rem',
                 fontWeight: 600,
-                fontSize: isMobile ? '0.9rem' : '1rem',
+                fontSize: '0.9rem',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 2px 8px rgba(10, 143, 130, 0.3)'
+                transition: 'all 0.3s ease'
               }}
             >
-              {showMoreTimes ? t('show_less') || 'عرض أقل' : t('show_more') || 'عرض المزيد'} ({Object.entries(analytics.appointmentsByHour).length - 5} {t('more') || 'أكثر'})
+              {showUserSelection ? t('hide_selection') : t('add_users')}
             </button>
+            
+            {selectedUsers.length > 0 && (
+              <button
+                onClick={addSelectedUsersToStats}
+                style={{
+                  background: '#4caf50',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  padding: '0.5rem 1rem',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                {t('add_selected')} ({selectedUsers.length})
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* قائمة المستخدمين المختارين */}
+        {showUserSelection && (
+          <div style={{
+            background: '#f8f9fa',
+            borderRadius: 8,
+            padding: '1rem',
+            marginBottom: '1rem',
+            border: '2px solid #0A8F82'
+          }}>
+            <h4 style={{
+              color: '#0A8F82',
+              margin: '0 0 1rem 0',
+              fontSize: '1rem'
+            }}>
+              📋 {t('select_users_from_appointments')}
+            </h4>
+            
+            <div style={{
+              display: 'grid',
+              gap: '0.5rem',
+              maxHeight: '200px',
+              overflowY: 'auto'
+            }}>
+              {appointments
+                .filter(apt => apt.isBookingForOther && apt.userId)
+                .map((apt, index) => {
+                  const user = {
+                    userId: apt.userId._id || apt.userId,
+                    userName: apt.userName || apt.userId?.first_name || t('user_not_available'),
+                    userPhone: apt.userId?.phone || t('phone_not_available'),
+                    totalBookingsForOthers: 1,
+                    uniquePatients: 1,
+                    patientNames: [apt.patientName || apt.userName || t('patient_not_available')],
+                    firstBookingDate: apt.date,
+                    lastBookingDate: apt.date
+                  };
+                  
+                  return (
+                    <div
+                      key={`${apt._id}-${index}`}
+                      onClick={() => handleUserSelection(user)}
+                      style={{
+                        background: selectedUsers.find(u => u.userId === user.userId) ? '#e8f5e8' : '#fff',
+                        border: selectedUsers.find(u => u.userId === user.userId) ? '2px solid #4caf50' : '1px solid #ddd',
+                        borderRadius: 6,
+                        padding: '0.5rem',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      <div style={{fontWeight: 600, color: '#0A8F82'}}>
+                        👤 {user.userName}
+                      </div>
+                      <div style={{fontSize: '0.8rem', color: '#666'}}>
+                        📞 {user.userPhone} | 📅 {new Date(apt.date).toLocaleDateString('ar-EG')}
+                      </div>
+                      <div style={{fontSize: '0.8rem', color: '#666'}}>
+                        🏥 {t('patient')}: {apt.patientName || apt.userName || t('patient_not_available')}
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
           </div>
         )}
-      </div>
 
-      {/* تحليل أيام الأسبوع */}
-      <div style={{
-        background:'#fff', 
-        borderRadius: isMobile ? 12 : 16, 
-        boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
-        padding: isMobile ? '1rem 0.8rem' : '1.5rem',
-        border: '2px solid #0A8F82'
-      }}>
-        <h3 style={{
-          color:'#0A8F82', 
-          marginBottom: isMobile ? '0.8rem' : '1rem', 
-          textAlign:'center',
-          fontSize: isMobile ? '1.1rem' : '1.3rem'
-        }}>{t('appointments_by_weekday') || 'المواعيد حسب أيام الأسبوع'}</h3>
-        
-        {/* ترتيب أيام الأسبوع */}
+        {/* عرض المستخدمين */}
         <div style={{
-          display:'grid', 
-          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(150px, 1fr))', 
-          gap: isMobile ? '0.8rem' : '1rem'
+          display: 'grid',
+          gap: '1rem'
         }}>
-          {Object.entries(analytics.appointmentsByDay)
-            .sort(([a], [b]) => {
-              // ترتيب أيام الأسبوع من الأحد إلى السبت
-              const weekdays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-              return weekdays.indexOf(a) - weekdays.indexOf(b);
-            })
-            .map(([day, count]) => (
-              <div key={day} style={{
-                background: day === analytics.mostBusyDay?.[0] ? '#fff3cd' : '#f5f5f5',
-                padding: isMobile ? '0.8rem 0.6rem' : '1rem',
-                borderRadius: isMobile ? 6 : 8,
-                textAlign:'center',
-                border: day === analytics.mostBusyDay?.[0] ? '2px solid #ffc107' : '2px solid #0A8F82'
+          {topUsersForOthers.length === 0 ? (
+            <div style={{
+              textAlign: 'center',
+              color: '#666',
+              fontStyle: 'italic',
+              padding: '2rem'
+            }}>
+              {t('no_users_found')}
+            </div>
+          ) : (
+            topUsersForOthers.map((user, index) => (
+              <div key={user.userId} style={{
+                background: index < 3 ? '#fff3cd' : '#f8f9fa',
+                padding: '1rem',
+                borderRadius: 12,
+                border: index < 3 ? '2px solid #ffc107' : '2px solid #0A8F82',
+                position: 'relative'
               }}>
+                {/* ترتيب المستخدم */}
                 <div style={{
-                  fontSize: isMobile ? '1rem' : '1.1rem', 
-                  fontWeight:700, 
-                  marginBottom:'0.5rem',
-                  color: day === analytics.mostBusyDay?.[0] ? '#856404' : '#0A8F82'
-                }}>{(() => {
-                  const dayMap = {
-                    'الأحد': 'sunday',
-                    'الاثنين': 'monday', 
-                    'الثلاثاء': 'tuesday',
-                    'الأربعاء': 'wednesday',
-                    'الخميس': 'thursday',
-                    'الجمعة': 'friday',
-                    'السبت': 'saturday'
-                  };
-                  const englishKey = dayMap[day];
-                  return englishKey ? t(`weekdays.${englishKey}`) : day;
-                })()}</div>
+                  position: 'absolute',
+                  top: '-10px',
+                  right: '-10px',
+                  background: index < 3 ? '#ffc107' : '#0A8F82',
+                  color: '#fff',
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 700,
+                  fontSize: '1rem'
+                }}>
+                  {index + 1}
+                </div>
+                
                 <div style={{
-                  fontSize: isMobile ? '1.2rem' : '1.3rem', 
-                  fontWeight:700, 
-                  color: day === analytics.mostBusyDay?.[0] ? '#ffc107' : '#0A8F82'
-                }}>{count}</div>
-                {day === analytics.mostBusyDay?.[0] && (
-                  <div style={{
-                    fontSize: isMobile ? '0.7rem' : '0.8rem',
-                    color: '#856404',
-                    fontWeight: 600,
-                    marginTop: '0.3rem'
-                  }}>
-                    🔥 {t('most_busy') || 'الأكثر انشغالاً'}
+                  display: 'grid',
+                  gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: '1rem'
+                }}>
+                  <div>
+                    <h4 style={{
+                      color: '#0A8F82',
+                      margin: '0 0 0.5rem 0',
+                      fontSize: '1.1rem',
+                      fontWeight: 700
+                    }}>
+                      👤 {user.userName || t('user_not_available')}
+                    </h4>
+                    <p style={{margin: '0.3rem 0', color: '#666'}}>
+                      📞 {user.userPhone || t('phone_not_available')}
+                    </p>
+                    <p style={{margin: '0.3rem 0', color: '#666'}}>
+                      📅 {t('first_booking')}: {new Date(user.firstBookingDate).toLocaleDateString('ar-EG')}
+                    </p>
+                    <p style={{margin: '0.3rem 0', color: '#666'}}>
+                      📅 {t('last_booking')}: {new Date(user.lastBookingDate).toLocaleDateString('ar-EG')}
+                    </p>
                   </div>
-                )}
+                  
+                  <div>
+                    <div style={{
+                      background: '#0A8F82',
+                      color: '#fff',
+                      padding: '0.5rem 1rem',
+                      borderRadius: 8,
+                      textAlign: 'center',
+                      marginBottom: '0.5rem'
+                    }}>
+                      <div style={{fontSize: '1.5rem', fontWeight: 700}}>
+                        {user.totalBookingsForOthers}
+                      </div>
+                      <div style={{fontSize: '0.9rem'}}>{t('bookings_for_others')}</div>
+                    </div>
+                    
+                    <div style={{
+                      background: '#e8f5e8',
+                      padding: '0.5rem 1rem',
+                      borderRadius: 8,
+                      textAlign: 'center',
+                      marginBottom: '0.5rem'
+                    }}>
+                      <div style={{fontSize: '1.2rem', fontWeight: 700, color: '#2e7d32'}}>
+                        {user.uniquePatients}
+                      </div>
+                      <div style={{fontSize: '0.8rem', color: '#2e7d32'}}>{t('different_patients')}</div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h5 style={{
+                      color: '#0A8F82',
+                      margin: '0 0 0.5rem 0',
+                      fontSize: '1rem'
+                    }}>
+                      👥 {t('patients')}:
+                    </h5>
+                    <div style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: '0.5rem'
+                    }}>
+                      {user.patientNames.slice(0, 3).map((patient, idx) => (
+                        <span key={idx} style={{
+                          background: '#e3f2fd',
+                          color: '#1976d2',
+                          padding: '0.3rem 0.6rem',
+                          borderRadius: 6,
+                          fontSize: '0.8rem',
+                          fontWeight: 600
+                        }}>
+                          {patient}
+                        </span>
+                      ))}
+                      {user.patientNames.length > 3 && (
+                        <span style={{
+                          background: '#f5f5f5',
+                          color: '#666',
+                          padding: '0.3rem 0.6rem',
+                          borderRadius: 6,
+                          fontSize: '0.8rem'
+                        }}>
+                          +{user.patientNames.length - 3} {t('more')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
-            ))}
+            ))
+          )}
         </div>
       </div>
 
-      {/* تحليل الأشهر */}
+      {/* باقي الإحصائيات */}
       <div style={{
-        background:'#fff', 
-        borderRadius: isMobile ? 12 : 16, 
-        boxShadow:'0 2px 12px rgba(10, 143, 130, 0.1)', 
+        background: '#fff',
+        borderRadius: isMobile ? 12 : 16,
+        boxShadow: '0 2px 12px rgba(10, 143, 130, 0.1)',
         padding: isMobile ? '1rem 0.8rem' : '1.5rem',
+        marginBottom: '2rem',
         border: '2px solid #0A8F82'
       }}>
         <h3 style={{
-          color:'#0A8F82', 
-          marginBottom: isMobile ? '0.8rem' : '1rem', 
-          textAlign:'center',
+          color: '#0A8F82',
+          marginBottom: '1rem',
+          textAlign: 'center',
           fontSize: isMobile ? '1.1rem' : '1.3rem'
-        }}>{t('appointments_by_month')}</h3>
-        <div style={{
-          display:'grid', 
-          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))', 
-          gap: isMobile ? '0.8rem' : '1rem'
         }}>
-          {Object.entries(analytics.appointmentsByMonth).map(([month, count]) => (
-            <div key={month} style={{
-              background:'#f5f5f5',
-              padding: isMobile ? '0.8rem 0.6rem' : '1rem',
-              borderRadius: isMobile ? 6 : 8,
-              textAlign:'center',
-              border: '2px solid #0A8F82'
+          📈 {t('detailed_analytics')}
+        </h3>
+        
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '2rem'
+        }}>
+          {/* إحصائيات الحضور */}
+          <div>
+            <h4 style={{
+              color: '#0A8F82',
+              marginBottom: '1rem',
+              textAlign: 'center'
+            }}>
+              ✅ {t('attendance_stats')}
+            </h4>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '1rem'
             }}>
               <div style={{
-                fontSize: isMobile ? '1rem' : '1.1rem', 
-                fontWeight:700, 
-                marginBottom:'0.5rem',
-                color: '#0A8F82'
-              }}>{(() => {
-                const monthMap = {
-                  'كانون الثاني': 'january',
-                  'شباط': 'february',
-                  'آذار': 'march',
-                  'نيسان': 'april',
-                  'أيار': 'may',
-                  'حزيران': 'june',
-                  'تموز': 'july',
-                  'آب': 'august',
-                  'أيلول': 'september',
-                  'تشرين الأول': 'october',
-                  'تشرين الثاني': 'november',
-                  'كانون الأول': 'december'
-                };
-                const englishKey = monthMap[month];
-                return englishKey ? t(`months.${englishKey}`) : month;
-              })()}</div>
+                background: '#e8f5e8',
+                padding: '1rem',
+                borderRadius: 8,
+                textAlign: 'center',
+                border: '2px solid #2e7d32'
+              }}>
+                <div style={{fontSize: '1.5rem', fontWeight: 700, color: '#2e7d32'}}>
+                  {analytics.attendanceStats.present}
+                </div>
+                <div style={{color: '#666', fontSize: '0.9rem'}}>{t('present')}</div>
+              </div>
               <div style={{
-                fontSize: isMobile ? '1.2rem' : '1.3rem', 
-                fontWeight:700, 
-                color:'#0A8F82'
-              }}>{count}</div>
+                background: '#ffebee',
+                padding: '1rem',
+                borderRadius: 8,
+                textAlign: 'center',
+                border: '2px solid #c62828'
+              }}>
+                <div style={{fontSize: '1.5rem', fontWeight: 700, color: '#c62828'}}>
+                  {analytics.attendanceStats.absent}
+                </div>
+                <div style={{color: '#666', fontSize: '0.9rem'}}>{t('absent')}</div>
+              </div>
             </div>
-          ))}
+          </div>
+
+          {/* أكثر الأيام والأوقات ازدحاماً */}
+          <div>
+            <h4 style={{
+              color: '#0A8F82',
+              marginBottom: '1rem',
+              textAlign: 'center'
+            }}>
+              🕐 {t('busy_times')}
+            </h4>
+            <div style={{
+              display: 'grid',
+              gap: '1rem'
+            }}>
+              <div style={{
+                background: '#fff3e0',
+                padding: '1rem',
+                borderRadius: 8,
+                textAlign: 'center',
+                border: '2px solid #ef6c00'
+              }}>
+                <div style={{fontSize: '1.2rem', fontWeight: 700, color: '#ef6c00'}}>
+                  {analytics.mostBusyDay || t('not_available')}
+                </div>
+                <div style={{color: '#666', fontSize: '0.9rem'}}>{t('most_busy_day')}</div>
+              </div>
+              <div style={{
+                background: '#e1f5fe',
+                padding: '1rem',
+                borderRadius: 8,
+                textAlign: 'center',
+                border: '2px solid #0277bd'
+              }}>
+                <div style={{fontSize: '1.2rem', fontWeight: 700, color: '#0277bd'}}>
+                  {analytics.mostBusyHour ? `${analytics.mostBusyHour}:00` : t('not_available')}
+                </div>
+                <div style={{color: '#666', fontSize: '0.9rem'}}>{t('most_busy_hour')}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

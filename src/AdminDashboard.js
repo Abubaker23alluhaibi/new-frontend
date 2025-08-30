@@ -2292,6 +2292,40 @@ function AdminDashboard() {
               <h2 style={{margin:0, color:'#333'}}>📊 التحليل والإحصائيات</h2>
             </div>
             <div style={{padding:'1.5rem'}}>
+              {/* إضافة رابط لإحصائيات الحجز لشخص آخر */}
+              <div style={{
+                background: '#e8f5e8',
+                padding: '1rem',
+                borderRadius: 12,
+                marginBottom: '1.5rem',
+                border: '2px solid #0A8F82',
+                textAlign: 'center'
+              }}>
+                                 <h3 style={{color: '#0A8F82', margin: '0 0 0.5rem 0'}}>
+                   📊 {t('stats.booking_for_others')}
+                 </h3>
+                 <p style={{color: '#666', margin: '0 0 1rem 0'}}>
+                   {t('stats.most_bookings')}
+                 </p>
+                <button
+                  onClick={() => navigate('/user-booking-for-others-stats')}
+                  style={{
+                    background: 'linear-gradient(135deg, #0A8F82 0%, #00796b 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 8,
+                    padding: '0.8rem 1.5rem',
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    boxShadow: '0 2px 8px rgba(10, 143, 130, 0.3)'
+                  }}
+                >
+                                     👥 {t('stats.show_stats')}
+                </button>
+              </div>
+              
               <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(250px, 1fr))', gap:'1rem', marginBottom:'2rem'}}>
                 <div style={{background:'#e3f2fd', padding:'1.5rem', borderRadius:12, textAlign:'center'}}>
                   <div style={{fontSize:'2rem', fontWeight:'bold', color:'#1976d2'}}>{users.length}</div>
