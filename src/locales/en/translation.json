@@ -672,6 +672,7 @@
   "present": "Present",
   "absent": "Absent",
   "mark_present": "Mark Present",
+  "mark_absent": "Mark Absent",
   "mark_attended": "Mark as Attended",
   "attendance_updated": "Attendance status updated successfully",
   "attendance_stats": "Attendance Statistics",

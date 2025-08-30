@@ -905,7 +905,7 @@ function DoctorDashboard() {
                         
                         {/* حالة الحضور */}
                         <div style={{marginBottom:'0.8rem'}}>
-                          {appointment.attendance === 'attended' ? (
+                          {appointment.attendance === 'present' ? (
                             <div style={{
                               background:'#4caf50',
                               color:'#fff',
@@ -916,7 +916,7 @@ function DoctorDashboard() {
                               textAlign:'center',
                               display:'inline-block'
                             }}>
-                              ✅ {t('attended')}
+                              ✅ {t('present')}
                             </div>
                           ) : appointment.attendance === 'absent' ? (
                             <div style={{
@@ -1060,7 +1060,7 @@ function DoctorDashboard() {
                     
                     {/* حالة الحضور */}
                     <div style={{marginBottom:'0.8rem'}}>
-                      {appointment.attendance === 'attended' ? (
+                      {appointment.attendance === 'present' ? (
                         <div style={{
                           background:'#4caf50',
                           color:'#fff',
@@ -1071,7 +1071,7 @@ function DoctorDashboard() {
                           textAlign:'center',
                           display:'inline-block'
                         }}>
-                          ✅ {t('attended')}
+                          ✅ {t('present')}
                         </div>
                       ) : (
                         <div style={{
@@ -1093,7 +1093,7 @@ function DoctorDashboard() {
                     <div style={{display:'flex', gap:'0.5rem', justifyContent:'flex-end', flexWrap:'wrap'}}>
                       {(!appointment.attendance || appointment.attendance === 'absent') && (
                         <button 
-                          onClick={() => handleAttendanceUpdate(appointment._id, 'attended')}
+                          onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
                           style={{
                             background:'#4caf50',
                             color:'#fff',
@@ -1106,7 +1106,7 @@ function DoctorDashboard() {
                             transition:'all 0.3s ease'
                           }}
                         >
-                          ✅ {t('mark_attended')}
+                          ✅ {t('mark_present')}
                         </button>
                       )}
                       <button 

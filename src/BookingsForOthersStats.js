@@ -114,7 +114,7 @@ const BookingsForOthersStats = () => {
     }
 
     const totalBookings = filteredBookings.length;
-    const attendedBookings = filteredBookings.filter(booking => booking.attendance === 'attended').length;
+    const attendedBookings = filteredBookings.filter(booking => booking.attendance === 'present').length;
     const attendanceRate = totalBookings > 0 ? Math.round((attendedBookings / totalBookings) * 100) : 0;
 
     return { totalBookings, attendedBookings, attendanceRate };

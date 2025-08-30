@@ -699,59 +699,79 @@ function DoctorAppointments() {
                       </div>
                     )}
                     
-                    {/* حالة الحضور */}
-                    <div style={{marginTop:'0.8rem'}}>
-                      {appointment.attendance === 'present' ? (
-                        <div style={{
-                          background:'#4caf50',
-                          color:'#fff',
-                          padding:'0.3rem 0.6rem',
-                          borderRadius:6,
-                          fontSize:'0.75rem',
-                          fontWeight:600,
-                          textAlign:'center',
-                          display:'inline-block'
-                        }}>
-                          ✅ {t('present')}
-                        </div>
-                      ) : (
-                        <div style={{
-                          background:'#f44336',
-                          color:'#fff',
-                          padding:'0.3rem 0.6rem',
-                          borderRadius:6,
-                          fontSize:'0.75rem',
-                          fontWeight:600,
-                          textAlign:'center',
-                          display:'inline-block'
-                        }}>
-                          ❌ {t('absent')}
-                        </div>
-                      )}
-                    </div>
+                                         {/* حالة الحضور */}
+                     <div style={{marginTop:'0.8rem'}}>
+                       {appointment.attendance === 'present' ? (
+                         <div style={{
+                           background:'#4caf50',
+                           color:'#fff',
+                           padding:'0.3rem 0.6rem',
+                           borderRadius:6,
+                           fontSize:'0.75rem',
+                           fontWeight:600,
+                           textAlign:'center',
+                           display:'inline-block'
+                         }}>
+                           ✅ {t('present')}
+                         </div>
+                       ) : (
+                         <div style={{
+                           background:'#f44336',
+                           color:'#fff',
+                           padding:'0.3rem 0.6rem',
+                           borderRadius:6,
+                           fontSize:'0.75rem',
+                           fontWeight:600,
+                           textAlign:'center',
+                           display:'inline-block'
+                         }}>
+                           ❌ {t('absent')}
+                         </div>
+                       )}
+                     </div>
                   </div>
                   <div className="no-print" style={{display:'flex', gap:'0.5rem', flexWrap:'wrap'}}>
-                    {/* أزرار الحضور والغياب - تظهر فقط إذا لم يتم تحديد الحضور بعد */}
-                    {(!appointment.attendance || appointment.attendance === 'absent') && (
-                      <button 
-                        onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
-                        style={{
-                          background:'#4caf50',
-                          color:'#fff',
-                          border:'none',
-                          borderRadius:8,
-                          padding:'0.5rem 1rem',
-                          fontWeight:700,
-                          cursor:'pointer',
-                          fontSize:'0.9rem',
-                          display:'flex',
-                          alignItems:'center',
-                          gap:'0.3rem'
-                        }}
-                      >
-                        ✅ {t('mark_present')}
-                      </button>
-                    )}
+                                         {/* أزرار الحضور والغياب - تظهر فقط إذا لم يتم تحديد الحضور بعد */}
+                     {(!appointment.attendance || appointment.attendance === 'present') && (
+                       <button 
+                         onClick={() => handleAttendanceUpdate(appointment._id, 'absent')}
+                         style={{
+                           background:'#f44336',
+                           color:'#fff',
+                           border:'none',
+                           borderRadius:8,
+                           padding:'0.5rem 1rem',
+                           fontWeight:700,
+                           cursor:'pointer',
+                           fontSize:'0.9rem',
+                           display:'flex',
+                           alignItems:'center',
+                           gap:'0.3rem'
+                         }}
+                       >
+                         ❌ {t('mark_absent')}
+                       </button>
+                     )}
+                     {(!appointment.attendance || appointment.attendance === 'absent') && (
+                       <button 
+                         onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
+                         style={{
+                           background:'#4caf50',
+                           color:'#fff',
+                           border:'none',
+                           borderRadius:8,
+                           padding:'0.5rem 1rem',
+                           fontWeight:700,
+                           cursor:'pointer',
+                           fontSize:'0.9rem',
+                           display:'flex',
+                           alignItems:'center',
+                           gap:'0.3rem'
+                         }}
+                       >
+                         ✅ {t('mark_present')}
+                       </button>
+                     )}
                     
                     {/* زر إضافة للمواعيد الخاصة */}
                     <button 
