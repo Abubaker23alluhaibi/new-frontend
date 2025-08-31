@@ -41,9 +41,8 @@ function DoctorDetails() {
   const [patientPhone, setPatientPhone] = useState('');
   const [migratingImage, setMigratingImage] = useState(false);
   const [showAppRedirect, setShowAppRedirect] = useState(false);
-  const [currentPage, setCurrentPage] = useState('info'); // 'info' or 'booking'
+  const [currentPage, setCurrentPage] = useState('info');
 
-  // دالة للكشف عن وجود التطبيق
   const checkAppInstalled = useCallback(() => {
     const deepLink = `tabibiq://doctor/${id}`;
     const iframe = document.createElement('iframe');
@@ -93,28 +92,15 @@ function DoctorDetails() {
 
   const getImageUrl = (doctor) => {
     const img = doctor.image || doctor.profileImage;
-    if (!img) {
-      return '/logo.png';
-    }
-    
-    if (img.startsWith('https://res.cloudinary.com')) {
-      return img;
-    }
-    
-    if (img.startsWith('/uploads/')) {
-      return process.env.REACT_APP_API_URL + img;
-    }
-    
-    if (img.startsWith('http')) {
-      return img;
-    }
-    
+    if (!img) return '/logo.png';
+    if (img.startsWith('https://res.cloudinary.com')) return img;
+    if (img.startsWith('/uploads/')) return process.env.REACT_APP_API_URL + img;
+    if (img.startsWith('http')) return img;
     return '/logo.png';
   };
 
   useEffect(() => {
     if (authLoading) return;
-    
     const savedUser = localStorage.getItem('user');
     const savedProfile = localStorage.getItem('profile');
     const hasUser = user || profile;
@@ -143,34 +129,24 @@ function DoctorDetails() {
 
   const migrateImageToCloudinary = async () => {
     if (!doctor) return;
-    
     const imagePath = doctor.image || doctor.profileImage;
     if (!imagePath || !imagePath.startsWith('/uploads/')) {
       alert('لا توجد صورة محلية للتحويل');
       return;
     }
-
-    if (!window.confirm('هل تريد تحويل هذه الصورة إلى Cloudinary؟')) {
-      return;
-    }
-
+    if (!window.confirm('هل تريد تحويل هذه الصورة إلى Cloudinary؟')) return;
     setMigratingImage(true);
-
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/migrate-single-image`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           imagePath,
           userId: doctor._id,
           userType: 'doctor'
         })
       });
-
       const data = await response.json();
-
       if (response.ok) {
         alert('تم تحويل الصورة إلى Cloudinary بنجاح!');
         window.location.reload();
@@ -192,9 +168,7 @@ function DoctorDetails() {
 
   const generateTimeSlots = (from, to) => {
     const slots = [];
-    if (typeof from !== 'string' || typeof to !== 'string') {
-      return [];
-    }
+    if (typeof from !== 'string' || typeof to !== 'string') return [];
     try {
       const start = new Date(`2000-01-01 ${from}`);
       const end = new Date(`2000-01-01 ${to}`);
@@ -231,9 +205,7 @@ function DoctorDetails() {
     const weekDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
     const dayName = weekDays[date.getDay()];
     
-    if (!getAvailableDays().includes(dayName)) {
-      return false;
-    }
+    if (!getAvailableDays().includes(dayName)) return false;
     
     if (doctor?.vacationDays && Array.isArray(doctor.vacationDays)) {
       const year = date.getFullYear();
@@ -243,7 +215,6 @@ function DoctorDetails() {
       for (const vacation of doctor.vacationDays) {
         if (vacation) {
           let vacationDate;
-          
           if (typeof vacation === 'string') {
             vacationDate = new Date(vacation);
           } else if (vacation && typeof vacation === 'object' && vacation.date) {
@@ -260,7 +231,6 @@ function DoctorDetails() {
         }
       }
     }
-    
     return true;
   };
 
@@ -304,7 +274,6 @@ function DoctorDetails() {
     
     if (!user?._id) {
       const currentUrl = window.location.pathname + window.location.search;
-      console.log('🔄 DoctorDetails: توجيه المستخدم غير المسجل لصفحة التسجيل مع redirect:', currentUrl);
       navigate(`/signup?redirect=${encodeURIComponent(currentUrl)}`);
       return;
     }
