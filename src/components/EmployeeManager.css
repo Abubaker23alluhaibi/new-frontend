@@ -143,12 +143,7 @@
   font-size: 1.3rem;
 }
 
-.employee-email,
-.employee-phone {
-  color: #666;
-  margin: 0.2rem 0;
-  font-size: 0.9rem;
-}
+
 
 .employee-type {
   margin: 0.5rem 0;

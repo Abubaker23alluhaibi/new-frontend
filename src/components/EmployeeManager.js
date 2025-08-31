@@ -11,19 +11,19 @@ const EmployeeManager = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
-    phone: '',
     employeeType: 'secretary', // secretary, employee, assistant
     accessCode: '',
     permissions: {
       VIEW_APPOINTMENTS: true,
       MANAGE_APPOINTMENTS: false,
-      VIEW_PATIENT_INFO: true,
+      VIEW_CALENDAR: true,
       MANAGE_WORK_TIMES: false,
-      VIEW_NOTIFICATIONS: true,
-      MANAGE_BASIC_PROFILE: false,
       VIEW_ANALYTICS: false,
-      MANAGE_ADVERTISEMENTS: false
+      VIEW_PROFILE: true,
+      MANAGE_EMPLOYEES: false,
+      MANAGE_SPECIAL_APPOINTMENTS: false,
+      MANAGE_APPOINTMENT_DURATION: false,
+      VIEW_BOOKINGS_STATS: false
     }
   });
 
@@ -85,19 +85,19 @@ const EmployeeManager = () => {
         setShowAddModal(false);
         setFormData({
           name: '',
-          email: '',
-          phone: '',
           employeeType: 'secretary',
           accessCode: '',
           permissions: {
             VIEW_APPOINTMENTS: true,
             MANAGE_APPOINTMENTS: false,
-            VIEW_PATIENT_INFO: true,
+            VIEW_CALENDAR: true,
             MANAGE_WORK_TIMES: false,
-            VIEW_NOTIFICATIONS: true,
-            MANAGE_BASIC_PROFILE: false,
             VIEW_ANALYTICS: false,
-            MANAGE_ADVERTISEMENTS: false
+            VIEW_PROFILE: true,
+            MANAGE_EMPLOYEES: false,
+            MANAGE_SPECIAL_APPOINTMENTS: false,
+            MANAGE_APPOINTMENT_DURATION: false,
+            VIEW_BOOKINGS_STATS: false
           }
         });
         fetchEmployees();
@@ -276,21 +276,19 @@ const EmployeeManager = () => {
                 <div className="employee-avatar">
                   {employee.name.charAt(0).toUpperCase()}
                 </div>
-                <div className="employee-details">
-                  <h3>{employee.name}</h3>
-                  <p className="employee-email">{employee.email}</p>
-                  <p className="employee-phone">{employee.phone}</p>
-                  <div className="employee-type">
-                    <span className={`type-badge ${employee.employeeType}`}>
-                      {getEmployeeTypeLabel(employee.employeeType)}
-                    </span>
-                  </div>
-                  <div className="employee-status">
-                    <span className={`status-badge ${employee.isActive ? 'active' : 'inactive'}`}>
-                      {employee.isActive ? 'نشط' : 'غير نشط'}
-                    </span>
-                  </div>
-                </div>
+                                 <div className="employee-details">
+                   <h3>{employee.name}</h3>
+                   <div className="employee-type">
+                     <span className={`type-badge ${employee.employeeType}`}>
+                       {getEmployeeTypeLabel(employee.employeeType)}
+                     </span>
+                   </div>
+                   <div className="employee-status">
+                     <span className={`status-badge ${employee.isActive ? 'active' : 'inactive'}`}>
+                       {employee.isActive ? 'نشط' : 'غير نشط'}
+                     </span>
+                   </div>
+                 </div>
               </div>
               
               <div className="employee-access">
@@ -349,38 +347,16 @@ const EmployeeManager = () => {
             </div>
             
             <form onSubmit={handleAddEmployee} className="employee-form">
-              <div className="form-group">
-                <label>اسم الموظف *</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={e => setFormData({...formData, name: e.target.value})}
-                  required
-                  placeholder="أدخل اسم الموظف"
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>البريد الإلكتروني *</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={e => setFormData({...formData, email: e.target.value})}
-                  required
-                  placeholder="أدخل البريد الإلكتروني"
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>رقم الهاتف *</label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={e => setFormData({...formData, phone: e.target.value})}
-                  required
-                  placeholder="أدخل رقم الهاتف"
-                />
-              </div>
+                             <div className="form-group">
+                 <label>اسم الموظف *</label>
+                 <input
+                   type="text"
+                   value={formData.name}
+                   onChange={e => setFormData({...formData, name: e.target.value})}
+                   required
+                   placeholder="أدخل اسم الموظف"
+                 />
+               </div>
               
               <div className="form-group">
                 <label>نوع الموظف *</label>
@@ -389,9 +365,9 @@ const EmployeeManager = () => {
                   onChange={e => setFormData({...formData, employeeType: e.target.value})}
                   required
                 >
-                  <option value="secretary">سكرتيرة</option>
-                  <option value="assistant">مساعد</option>
-                  <option value="employee">موظف</option>
+                                     <option value="secretary">سكرتير</option>
+                   <option value="assistant">مساعد</option>
+                   <option value="employee">موظف</option>
                 </select>
               </div>
               
@@ -533,7 +509,7 @@ const EmployeeManager = () => {
 // دالة لترجمة نوع الموظف
 const getEmployeeTypeLabel = (type) => {
   const labels = {
-    secretary: 'سكرتيرة',
+    secretary: 'سكرتير',
     assistant: 'مساعد',
     employee: 'موظف'
   };
@@ -545,12 +521,14 @@ const getPermissionLabel = (permission) => {
   const labels = {
     VIEW_APPOINTMENTS: 'عرض المواعيد',
     MANAGE_APPOINTMENTS: 'إدارة المواعيد',
-    VIEW_PATIENT_INFO: 'عرض معلومات المرضى',
+    VIEW_CALENDAR: 'عرض التقويم',
     MANAGE_WORK_TIMES: 'إدارة أوقات العمل',
-    VIEW_NOTIFICATIONS: 'عرض الإشعارات',
-    MANAGE_BASIC_PROFILE: 'إدارة المعلومات الأساسية',
     VIEW_ANALYTICS: 'عرض الإحصائيات',
-    MANAGE_ADVERTISEMENTS: 'إدارة الإعلانات'
+    VIEW_PROFILE: 'عرض الملف الشخصي',
+    MANAGE_EMPLOYEES: 'إدارة الموظفين',
+    MANAGE_SPECIAL_APPOINTMENTS: 'إدارة المواعيد الخاصة',
+    MANAGE_APPOINTMENT_DURATION: 'إدارة مدة المواعيد',
+    VIEW_BOOKINGS_STATS: 'عرض إحصائيات الحجز'
   };
   return labels[permission] || permission;
 };

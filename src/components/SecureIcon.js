@@ -85,7 +85,7 @@ const SecureIcon = ({
                 <div className="current-user-info">
                   <span className="user-type-badge">
                     {currentUserType === 'doctor' ? '👨‍⚕️ دكتور' : 
-                     currentUserType === 'secretary' ? '👩‍💼 سكرتيرة' : 
+                     currentUserType === 'secretary' ? '👨‍💼 سكرتير' : 
                      '👤 موظف'}
                   </span>
                 </div>
@@ -273,12 +273,14 @@ const getPermissionLabel = (permission) => {
   const labels = {
     VIEW_APPOINTMENTS: 'عرض المواعيد',
     MANAGE_APPOINTMENTS: 'إدارة المواعيد',
-    VIEW_PATIENT_INFO: 'عرض معلومات المرضى',
+    VIEW_CALENDAR: 'عرض التقويم',
     MANAGE_WORK_TIMES: 'إدارة أوقات العمل',
-    VIEW_NOTIFICATIONS: 'عرض الإشعارات',
-    MANAGE_BASIC_PROFILE: 'إدارة المعلومات الأساسية',
     VIEW_ANALYTICS: 'عرض الإحصائيات',
-    MANAGE_ADVERTISEMENTS: 'إدارة الإعلانات'
+    VIEW_PROFILE: 'عرض الملف الشخصي',
+    MANAGE_EMPLOYEES: 'إدارة الموظفين',
+    MANAGE_SPECIAL_APPOINTMENTS: 'إدارة المواعيد الخاصة',
+    MANAGE_APPOINTMENT_DURATION: 'إدارة مدة المواعيد',
+    VIEW_BOOKINGS_STATS: 'عرض إحصائيات الحجز'
   };
   return labels[permission] || permission;
 };

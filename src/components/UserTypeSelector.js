@@ -238,7 +238,7 @@ const UserTypeSelector = () => {
 // دالة لترجمة نوع الموظف
 const getEmployeeTypeLabel = (type) => {
   const labels = {
-    secretary: 'سكرتيرة',
+    secretary: 'سكرتير',
     assistant: 'مساعد',
     employee: 'موظف'
   };
@@ -248,7 +248,7 @@ const getEmployeeTypeLabel = (type) => {
 // دالة لإعطاء أيقونة الموظف
 const getEmployeeIcon = (type) => {
   const icons = {
-    secretary: '👩‍💼',
+    secretary: '👨‍💼',
     assistant: '👨‍💼',
     employee: '👤'
   };
