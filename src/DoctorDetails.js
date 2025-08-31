@@ -4,8 +4,8 @@ import { useAuth } from './AuthContext';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ar } from 'date-fns/locale';
-
 import { useTranslation } from 'react-i18next';
+import './DoctorDetails.css';
 
 function DoctorDetails() {
   const { id } = useParams();
@@ -41,6 +41,7 @@ function DoctorDetails() {
   const [patientPhone, setPatientPhone] = useState('');
   const [migratingImage, setMigratingImage] = useState(false);
   const [showAppRedirect, setShowAppRedirect] = useState(false);
+  const [currentPage, setCurrentPage] = useState('info'); // 'info' or 'booking'
 
   // دالة للكشف عن وجود التطبيق
   const checkAppInstalled = useCallback(() => {
@@ -515,38 +516,424 @@ function DoctorDetails() {
   }
 
   return (
-    <div style={{
-      background: `linear-gradient(135deg, rgba(0, 188, 212, 0.7) 0%, rgba(0, 150, 136, 0.7) 100%), url('/images/det.jpg?v=${Date.now()}') center center/cover no-repeat`,
-      minHeight: '100vh',
-      position: 'relative'
-    }}>
-      {/* خلفية إضافية للعمق */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'radial-gradient(circle at 20% 80%, rgba(0, 188, 212, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0, 150, 136, 0.1) 0%, transparent 50%)',
-        pointerEvents: 'none',
-        zIndex: 0
-      }} />
+    <div className="doctor-details-container">
+      {/* صفحة معلومات الطبيب */}
+      {currentPage === 'info' && (
+        <>
+          {/* رأس الصفحة مع معلومات الطبيب */}
+          <div className="doctor-header">
+            <div className="doctor-header-content">
+              <img 
+                src={getImageUrl(doctor)} 
+                alt={doctor.name} 
+                onError={(e) => {
+                  e.target.src = '/logo.png';
+                }}
+                className="doctor-avatar"
+                title="اضغط لتكبير الصورة" 
+                onClick={()=>setShowImageModal(true)} 
+              />
+              
+              <div className="doctor-name">{doctor.name}</div>
+              <div className="doctor-specialty">
+                {specialties[doctor.specialty] || doctor.specialty}
+              </div>
+              <div className="doctor-location">
+                <span role="img" aria-label="governorate">🏛️</span> 
+                <span>{provinces[doctor.province] || doctor.province}</span> 
+                <span role="img" aria-label="area">📍</span> 
+                <span>{doctor.area}</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* قسم معلومات الطبيب */}
+          <div className="doctor-info-section">
+            <div className="info-grid">
+              {doctor.clinicLocation && (
+                <div className="info-item">
+                  <span className="info-icon">🏥</span>
+                  <div className="info-text">
+                    <strong>موقع العيادة:</strong> {doctor.clinicLocation}
+                  </div>
+                </div>
+              )}
+              {doctor.mapLocation && (
+                <div className="info-item">
+                  <span className="info-icon">🗺️</span>
+                  <div className="info-text">
+                    <strong>الموقع على الخريطة:</strong> متاح
+                  </div>
+                </div>
+              )}
+              {doctor.phone && (
+                <div className="info-item">
+                  <span className="info-icon">📞</span>
+                  <div className="info-text">
+                    <strong>رقم الهاتف:</strong> {doctor.phone}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {doctor.about && (
+              <div className="doctor-about">
+                <div className="about-title">
+                  <span>👨‍⚕️</span>
+                  <span>نبذة عن الطبيب</span>
+                </div>
+                <div className="about-content">{doctor.about}</div>
+              </div>
+            )}
+          </div>
+          
+          {/* أزرار الإجراءات */}
+          <div className="action-buttons">
+            <button
+              onClick={() => setCurrentPage('booking')}
+              className="btn-primary"
+            >
+              <span>📅</span>
+              حجز موعد
+            </button>
+            <button
+              onClick={() => setShowBookingForOtherModal(true)}
+              className="btn-secondary"
+            >
+              <span>👥</span>
+              حجز لشخص آخر
+            </button>
+            {doctor.mapLocation && (
+              <button
+                onClick={() => window.open(doctor.mapLocation, '_blank')}
+                className="btn-secondary"
+              >
+                <span>🗺️</span>
+                فتح الخريطة
+              </button>
+            )}
+          </div>
+        </>
+      )}
+      
+      {/* صفحة حجز المواعيد */}
+      {currentPage === 'booking' && (
+        <>
+          {/* رأس صفحة الحجز */}
+          <div className="doctor-header">
+            <div className="doctor-header-content">
+              <img 
+                src={getImageUrl(doctor)} 
+                alt={doctor.name} 
+                onError={(e) => {
+                  e.target.src = '/logo.png';
+                }}
+                className="doctor-avatar"
+                style={{width: '60px', height: '60px'}}
+              />
+              <div className="doctor-name" style={{fontSize: '1.3rem'}}>{doctor.name}</div>
+              <div className="doctor-specialty" style={{fontSize: '0.9rem'}}>
+                {specialties[doctor.specialty] || doctor.specialty}
+              </div>
+              <button
+                onClick={() => setCurrentPage('info')}
+                className="btn-secondary"
+                style={{marginTop: '1rem', padding: '0.5rem 1rem', fontSize: '0.8rem'}}
+              >
+                <span>←</span>
+                العودة للمعلومات
+              </button>
+            </div>
+          </div>
+          
+          {/* قسم حجز المواعيد */}
+          <div className="booking-section">
+            <div className="booking-title">اختر موعد الحجز</div>
+            
+            {/* التقويم */}
+            <div className="calendar-container">
+              <div className="weekdays-bar">
+                {weekdays.map(day => (
+                  <div key={day} className="weekday">{day}</div>
+                ))}
+              </div>
+              
+              {selectedDate && (
+                <div className="month-year">
+                  {months[selectedDate.getMonth()]} {selectedDate.getFullYear()}
+                </div>
+              )}
+              
+              <div style={{
+                transform: window.innerWidth < 500 ? 'scale(0.9)' : 'scale(1)',
+                transformOrigin: 'top center'
+              }}>
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={date => setSelectedDate(date)}
+                  filterDate={isDayAvailable}
+                  placeholderText="اختر يوم متاح..."
+                  dateFormat="yyyy-MM-dd"
+                  minDate={new Date()}
+                  inline
+                  locale={ar}
+                />
+              </div>
+            </div>
+            
+            {/* الأوقات المتاحة */}
+            {selectedDate && availableTimes.length > 0 && (
+              <div className="time-slots">
+                <div className="time-slots-title">اختر موعد الحجز:</div>
+                <div className="time-grid">
+                  {availableTimes.map((time, idx) => {
+                    const isBooked = bookedTimes.includes(time);
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        disabled={isBooked}
+                        onClick={()=>!isBooked && setSelectedTime(time)}
+                        className={`time-slot ${selectedTime === time ? 'selected' : ''} ${isBooked ? 'booked' : ''}`}
+                      >
+                        {time} {isBooked && '(محجوز)'}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            
+            {/* نموذج الحجز */}
+            <form onSubmit={handleBook} className="booking-form">
+              <input type="hidden" value={selectedDate ? selectedDate.toISOString().slice(0,10) : ''} />
+              <input type="hidden" value={selectedTime} />
+              
+              {/* مؤشر الحجز لشخص آخر */}
+              {isBookingForOther && (
+                <div className="booking-type-indicator">
+                  <div className="booking-type-title">
+                    👥 {t('booking.booking_for_other_person')}
+                  </div>
+                  <div className="booking-type-details">
+                    <strong>{t('booking.patient_name')}:</strong> {patientName} | 
+                    <strong> {t('booking.patient_phone')}:</strong> {patientPhone}
+                  </div>
+                </div>
+              )}
+              
+              <div className="form-group">
+                <label className="form-label">{t('reason_optional')}</label>
+                <textarea 
+                  value={reason} 
+                  onChange={e=>setReason(e.target.value)} 
+                  rows={2} 
+                  className="form-input form-textarea"
+                />
+              </div>
+              
+              <div className="form-group">
+                <label className="form-label">{t('common.patient_age')} *</label>
+                <input 
+                  type="number" 
+                  value={patientAge} 
+                  onChange={e=>setPatientAge(e.target.value)} 
+                  placeholder={t('common.age')}
+                  min="1" 
+                  max="120"
+                  required
+                  className="form-input"
+                />
+              </div>
+              
+              <button 
+                type="submit" 
+                disabled={booking || !selectedDate || !selectedTime || !patientAge} 
+                className="btn-book"
+              >
+                <span>📅</span>
+                {booking ? t('booking_in_progress') : (isBookingForOther ? t('booking.book_for_other_button') : t('book_appointment_button'))}
+              </button>
+              
+              {success && (
+                <div className="success-message">{success}</div>
+              )}
+              
+              {/* زر إلغاء الحجز لشخص آخر */}
+              {isBookingForOther && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsBookingForOther(false);
+                    setPatientName('');
+                    setPatientPhone('');
+                  }}
+                  className="btn-cancel-booking"
+                >
+                  {t('booking.cancel_booking_for_other')}
+                </button>
+              )}
+            </form>
+          </div>
+        </>
+      )}
       
       {/* مودال تكبير الصورة */}
       {showImageModal && (
         <div onClick={()=>setShowImageModal(false)} style={{position:'fixed', top:0, left:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.55)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:10000}}>
           <div style={{position:'relative', background:'none'}} onClick={e=>e.stopPropagation()}>
-                          <img 
-                src={getImageUrl(doctor)} 
-                alt={doctor.name} 
-                onError={(e) => {
-                  // إذا فشل تحميل الصورة الحقيقية، استخدم شعار المشروع
-                  e.target.src = '/logo.png';
-                }}
-                style={{maxWidth:'90vw', maxHeight:'80vh', borderRadius:18, boxShadow:'0 4px 32px #0008'}} 
-              />
+            <img 
+              src={getImageUrl(doctor)} 
+              alt={doctor.name} 
+              onError={(e) => {
+                e.target.src = '/logo.png';
+              }}
+              style={{maxWidth:'90vw', maxHeight:'80vh', borderRadius:18, boxShadow:'0 4px 32px #0008'}} 
+            />
             <button onClick={()=>setShowImageModal(false)} style={{position:'absolute', top:10, left:10, background:'#e53935', color:'#fff', border:'none', borderRadius:8, fontSize:22, fontWeight:900, padding:'0.2rem 0.8rem', cursor:'pointer'}}>×</button>
           </div>
+        </div>
+      )}
+
+      {/* رسالة التوجيه للتطبيق */}
+      {showAppRedirect && (
+        <div style={{
+          background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+          border: '2px solid #2196f3',
+          borderRadius: 12,
+          padding: '1rem',
+          margin: '1rem',
+          textAlign: 'center',
+          boxShadow: '0 2px 8px #2196f322'
+        }}>
+          <div style={{fontSize: 16, fontWeight: 600, color: '#1976d2', marginBottom: '0.8rem'}}>
+            📱 {t('app_redirect_title') || 'افتح التطبيق للحصول على تجربة أفضل!'}
+          </div>
+          <div style={{fontSize: 14, color: '#1976d2', marginBottom: '1rem'}}>
+            {t('app_redirect_description') || 'يمكنك الوصول لجميع الميزات وحجز المواعيد بسهولة'}
+          </div>
+          <div style={{display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap'}}>
+            <button 
+              onClick={openApp}
+              style={{
+                background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 8,
+                padding: '0.6rem 1.2rem',
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px #2196f322'
+              }}
+            >
+              📱 {t('open_app') || 'افتح التطبيق'}
+            </button>
+            <button 
+              onClick={openAppStore}
+              style={{
+                background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 8,
+                padding: '0.6rem 1.2rem',
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px #4caf5022'
+              }}
+            >
+              🛒 {t('download_app') || 'حمل التطبيق'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* زر نسخ رابط صفحة الدكتور */}
+      <div style={{display:'flex', justifyContent:'flex-end', margin:'1rem'}}>
+        <button
+          onClick={() => {
+            const currentUrl = window.location.href;
+            navigator.clipboard.writeText(currentUrl).then(() => {
+              setCopySuccess(true);
+              setTimeout(() => setCopySuccess(false), 2000);
+            }).catch(() => {
+              // Fallback for older browsers
+              const textArea = document.createElement('textarea');
+              textArea.value = currentUrl;
+              document.body.appendChild(textArea);
+              textArea.select();
+              document.execCommand('copy');
+              document.body.removeChild(textArea);
+              setCopySuccess(true);
+              setTimeout(() => setCopySuccess(false), 2000);
+            });
+          }}
+          style={{
+            background: copySuccess ? '#4caf50' : 'linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '20px',
+            padding: '0.5rem 1rem',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 2px 8px rgba(76, 175, 80, 0.2)'
+          }}
+          onMouseEnter={(e) => {
+            if (!copySuccess) {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 4px 12px rgba(76, 175, 80, 0.3)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.transform = 'translateY(0)';
+            e.target.style.boxShadow = '0 2px 8px rgba(76, 175, 80, 0.2)';
+          }}
+        >
+          {copySuccess ? '✅ تم نسخ الرابط!' : '📋 نسخ الرابط'}
+        </button>
+      </div>
+      {copySuccess && <div style={{color:'#4caf50', textAlign:'center', fontWeight:700, margin:'0 1rem 1rem'}}>تم نسخ الرابط!</div>}
+      
+      {/* زر تحويل الصورة إلى Cloudinary (للمطورين فقط) */}
+      {(doctor.image?.startsWith('/uploads/') || doctor.profileImage?.startsWith('/uploads/')) && (
+        <div style={{textAlign: 'center', margin: '1rem'}}>
+          <button
+            onClick={migrateImageToCloudinary}
+            disabled={migratingImage}
+            style={{
+              background: migratingImage ? '#ccc' : 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '12px',
+              padding: '0.5rem 1rem',
+              fontSize: '0.8rem',
+              fontWeight: '600',
+              cursor: migratingImage ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              transition: 'all 0.3s ease',
+              margin: '0 auto'
+            }}
+          >
+            {migratingImage ? (
+              <>
+                <span style={{fontSize: '1.2em'}}>⏳</span>
+                جاري التحويل...
+              </>
+            ) : (
+              <>
+                <span style={{fontSize: '1.2em'}}>☁️</span>
+                تحويل للـ Cloudinary
+              </>
+            )}
+          </button>
         </div>
       )}
 
