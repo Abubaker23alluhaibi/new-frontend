@@ -1,60 +1,47 @@
-// Service Worker for Tabib IQ - Cache Control
-const CACHE_NAME = 'tabib-iq-v1-' + Date.now();
-const urlsToCache = [
-  '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/manifest.json'
-];
+// Service Worker for Tabib IQ - Simplified Version
+const CACHE_NAME = 'tabib-iq-v1';
 
-// Install event - clear old caches and set up new ones
+// Install event - basic caching
 self.addEventListener('install', (event) => {
   console.log('Service Worker: Installing...');
-  
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Service Worker: Deleting old cache', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      console.log('Service Worker: Caching app shell');
-      return caches.open(CACHE_NAME);
-    }).then((cache) => {
-      return cache.addAll(urlsToCache);
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Service Worker: Cache opened');
+        return cache;
+      })
   );
 });
 
-// Fetch event - always fetch fresh content
+// Fetch event - network first, cache fallback
 self.addEventListener('fetch', (event) => {
-  console.log('Service Worker: Fetching', event.request.url);
-  
-  // Skip caching for non-GET requests (POST, PUT, DELETE)
+  // Skip non-GET requests
   if (event.request.method !== 'GET') {
-    event.respondWith(fetch(event.request));
     return;
   }
-  
+
+  // Skip external requests
+  if (!event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
-      .then((response) => {
-        // Clone the response before using it
+      .then(response => {
+        // Clone response for caching
         const responseClone = response.clone();
         
-        // Cache the fresh response (only for GET requests)
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseClone);
-        });
+        // Cache successful responses
+        if (response.status === 200) {
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseClone);
+          });
+        }
         
         return response;
       })
       .catch(() => {
-        // If network fails, try to get from cache
+        // Fallback to cache if network fails
         return caches.match(event.request);
       })
   );
@@ -63,11 +50,10 @@ self.addEventListener('fetch', (event) => {
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
   console.log('Service Worker: Activating...');
-  
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map((cacheName) => {
+        cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
             console.log('Service Worker: Deleting old cache', cacheName);
             return caches.delete(cacheName);
@@ -78,7 +64,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Skip waiting to activate immediately
+// Handle messages
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();

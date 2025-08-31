@@ -4,24 +4,39 @@ import './index.css';
 import App from './App';
 import './i18n';
 
-// Register Service Worker for cache control
+// Register Service Worker for cache control (with fallback options)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    // Try the simple service worker first to avoid mobile issues
+    const serviceWorkerPath = '/sw-simple.js';
+    
+    navigator.serviceWorker.register(serviceWorkerPath)
       .then((registration) => {
+        console.log('Simple Service Worker registered successfully');
+        
         // Check for updates
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New content is available, reload the page
+              console.log('New content available, reloading...');
               window.location.reload();
             }
           });
         });
       })
-      .catch((registrationError) => {
-        // Service worker registration failed silently
+      .catch((error) => {
+        console.log('Simple Service Worker failed, trying main one:', error);
+        
+        // Fallback to main service worker
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('Main Service Worker registered successfully');
+          })
+          .catch((fallbackError) => {
+            console.log('All Service Workers failed:', fallbackError);
+            // Continue without service worker
+          });
       });
   });
 }

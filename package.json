@@ -23,6 +23,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:no-sw": "cp src/index-no-sw.js src/index.js && react-scripts build && git checkout src/index.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "echo \"No linting configured\"",
