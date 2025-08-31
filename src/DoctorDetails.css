@@ -21,8 +21,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('/images/det.jpg') center center/cover no-repeat;
-  opacity: 0.1;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(56, 142, 60, 0.1) 100%);
   z-index: 0;
 }
 
