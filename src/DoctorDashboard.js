@@ -498,6 +498,20 @@ function DoctorDashboard() {
                 // إعادة تحميل المواعيد عند فتح صفحة إحصائيات الحجز للآخرين
                 fetchAllAppointments();
               }} style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
+                <span role="img" aria-label="إحصائيات الحجز للآخرين">📊</span> {t('bookings_for_others_stats')}
+              </button>
+              <button onClick={()=>{
+                navigate('/employee-manager'); 
+                setShowSidebar(false);
+              }} style={{background: '#9c27b0', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
+                <span role="img" aria-label="إدارة الموظفين">👥</span> إدارة الموظفين
+              </button>
+              <button onClick={()=>{
+                setShowSpecialAppointments(true); 
+                setShowSidebar(false);
+                // إعادة تحميل المواعيد عند فتح المواعيد الخاصة
+                fetchAllAppointments();
+              }} style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
                 <span role="img" aria-label={t('doctor_dashboard.appointments_for_others')}>👥</span> {t('doctor_dashboard.appointments_for_others')}
               </button>
               <button onClick={()=>{

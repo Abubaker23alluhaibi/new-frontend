@@ -70,7 +70,8 @@ function Login() {
       if (redirect) {
         navigate(redirect, { replace: true });
       } else if (loginType === 'doctor') {
-        navigate('/doctor-dashboard');
+        // توجيه الدكتور لصفحة اختيار نوع المستخدم
+        navigate('/user-type-selector');
       } else {
         navigate('/home');
       }

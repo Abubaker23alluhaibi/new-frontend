@@ -13,6 +13,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
   const [dataVersion, setDataVersion] = useState(0);
+  const [currentUserType, setCurrentUserType] = useState(null);
+  const [currentPermissions, setCurrentPermissions] = useState({});
 
   // دالة لتحديث البيانات
   const refreshAuthData = useCallback(() => {
@@ -101,6 +103,19 @@ export const AuthProvider = ({ children }) => {
       }
     }
     
+    // التحقق من نوع المستخدم الحالي
+    const savedCurrentUser = localStorage.getItem('currentUser');
+    if (savedCurrentUser) {
+      try {
+        const currentUserData = JSON.parse(savedCurrentUser);
+        setCurrentUserType(currentUserData.currentUserType);
+        setCurrentPermissions(currentUserData.permissions || {});
+      } catch (error) {
+        console.error('❌ AuthContext: خطأ في تحليل بيانات المستخدم الحالي:', error);
+        localStorage.removeItem('currentUser');
+      }
+    }
+    
     console.log('🏁 AuthContext: انتهى التحقق من حالة المستخدم');
     setLoading(false);
 
@@ -179,9 +194,12 @@ export const AuthProvider = ({ children }) => {
       // حذف البيانات من localStorage
       localStorage.removeItem('user');
       localStorage.removeItem('profile');
+      localStorage.removeItem('currentUser');
       
       setUser(null);
       setProfile(null);
+      setCurrentUserType(null);
+      setCurrentPermissions({});
     } catch (error) {
       // Error signing out
     }
@@ -249,6 +267,10 @@ export const AuthProvider = ({ children }) => {
     updateProfile,
     logout: signOut,
     setUser,
+    currentUserType,
+    setCurrentUserType,
+    currentPermissions,
+    setCurrentPermissions,
   };
 
   return (

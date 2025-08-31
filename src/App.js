@@ -21,6 +21,8 @@ import CenterHome from './CenterHome';
 import DoctorCalendar from './DoctorCalendar';
 import DoctorAnalyticsPage from './DoctorAnalyticsPage';
 import BookingsForOthersStats from './BookingsForOthersStats';
+import EmployeeManager from './components/EmployeeManager';
+import UserTypeSelector from './components/UserTypeSelector';
 
 import LandingPage from './LandingPage';
 import DashboardPreview from './DashboardPreview';
@@ -225,6 +227,16 @@ function App() {
           <Route path="/bookings-for-others-stats" element={
             <ProtectedRoute requiredUserType="doctor">
               <BookingsForOthersStats />
+            </ProtectedRoute>
+          } />
+          <Route path="/user-type-selector" element={
+            <ProtectedRoute requiredUserType="doctor">
+              <UserTypeSelector />
+            </ProtectedRoute>
+          } />
+          <Route path="/employee-manager" element={
+            <ProtectedRoute requiredUserType="doctor">
+              <EmployeeManager />
             </ProtectedRoute>
           } />
 
