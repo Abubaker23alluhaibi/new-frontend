@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './AuthContext';
 import ProtectedRoute from './ProtectedRoute';
+import PermissionProtectedRoute from './PermissionProtectedRoute';
 import Login from './Login';
 import UserSignUp from './UserSignUp';
 import DoctorSignUp from './DoctorSignUp';
@@ -175,9 +176,9 @@ function App() {
             </ProtectedRoute>
           } />
           <Route path="/doctor-dashboard" element={
-            <ProtectedRoute requiredUserType="doctor">
+            <PermissionProtectedRoute requiredPermission="VIEW_APPOINTMENTS">
               <DoctorDashboard appointments={doctorAppointments} setAppointments={setDoctorAppointments} />
-            </ProtectedRoute>
+            </PermissionProtectedRoute>
           } />
           <Route path="/doctor/:id" element={<DoctorDetails />} />
           <Route path="/my-appointments" element={
@@ -196,16 +197,20 @@ function App() {
             </ProtectedRoute>
           } />
           <Route path="/doctor-profile" element={
-            <ProtectedRoute requiredUserType="doctor">
+            <PermissionProtectedRoute requiredPermission="VIEW_PROFILE">
               <DoctorProfile />
-            </ProtectedRoute>
+            </PermissionProtectedRoute>
           } />
           <Route path="/doctor-appointments" element={
-            <ProtectedRoute requiredUserType="doctor">
+            <PermissionProtectedRoute requiredPermission="VIEW_APPOINTMENTS">
               <DoctorAppointments />
-            </ProtectedRoute>
+            </PermissionProtectedRoute>
           } />
-          <Route path="/doctor-calendar" element={<DoctorCalendar appointments={doctorAppointments} />} />
+          <Route path="/doctor-calendar" element={
+            <PermissionProtectedRoute requiredPermission="VIEW_CALENDAR">
+              <DoctorCalendar appointments={doctorAppointments} />
+            </PermissionProtectedRoute>
+          } />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin" element={
             <ProtectedRoute requiredUserType="admin">
@@ -220,14 +225,14 @@ function App() {
           <Route path="/center-login" element={<CenterLogin />} />
           <Route path="/center-home" element={<CenterHome />} />
           <Route path="/doctor-analytics" element={
-            <ProtectedRoute requiredUserType="doctor">
+            <PermissionProtectedRoute requiredPermission="VIEW_ANALYTICS">
               <DoctorAnalyticsPage />
-            </ProtectedRoute>
+            </PermissionProtectedRoute>
           } />
           <Route path="/bookings-for-others-stats" element={
-            <ProtectedRoute requiredUserType="doctor">
+            <PermissionProtectedRoute requiredPermission="VIEW_BOOKINGS_STATS">
               <BookingsForOthersStats />
-            </ProtectedRoute>
+            </PermissionProtectedRoute>
           } />
           <Route path="/user-type-selector" element={
             <ProtectedRoute requiredUserType="doctor">
@@ -235,9 +240,9 @@ function App() {
             </ProtectedRoute>
           } />
           <Route path="/employee-manager" element={
-            <ProtectedRoute requiredUserType="doctor">
+            <PermissionProtectedRoute requiredPermission="MANAGE_EMPLOYEES">
               <EmployeeManager />
-            </ProtectedRoute>
+            </PermissionProtectedRoute>
           } />
 
         </Routes>

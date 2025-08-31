@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './UserTypeSelector.css';
 
 const UserTypeSelector = () => {
-  const { profile, setCurrentUserType } = useAuth();
+  const { profile, setCurrentUserType, setCurrentPermissions } = useAuth();
   const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -107,7 +107,10 @@ const UserTypeSelector = () => {
         };
 
         localStorage.setItem('currentUser', JSON.stringify(userData));
+        
+        // تحديث AuthContext مباشرة
         setCurrentUserType(selectedType);
+        setCurrentPermissions(data.permissions || {});
 
         // التوجيه للوحة التحكم
         navigate('/doctor-dashboard');

@@ -138,6 +138,18 @@ export const AuthProvider = ({ children }) => {
     };
   }, [refreshAuthData]);
 
+  // حفظ البيانات في localStorage عند تغيير currentUserType أو currentPermissions
+  useEffect(() => {
+    if (currentUserType || Object.keys(currentPermissions).length > 0) {
+      const currentUserData = {
+        currentUserType,
+        permissions: currentPermissions
+      };
+      localStorage.setItem('currentUser', JSON.stringify(currentUserData));
+      console.log('💾 AuthContext: تم حفظ بيانات المستخدم الحالي:', currentUserData);
+    }
+  }, [currentUserType, currentPermissions]);
+
   const signUp = async (email, password, userData) => {
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
