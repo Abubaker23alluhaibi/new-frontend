@@ -10,6 +10,7 @@ import { normalizePhone } from './utils/phoneUtils';
 import WorkTimesEditor from './WorkTimesEditor';
 import AppointmentDurationEditor from './AppointmentDurationEditor';
 import AdvertisementSlider from './components/AdvertisementSlider';
+import { SecureButton, SecureSection } from './components/SecureIcon';
 
 function getToday() {
   const d = new Date();
@@ -460,14 +461,18 @@ function DoctorDashboard() {
               <button onClick={() => navigate('/')} style={{background: '#4caf50', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
                 <span role="img" aria-label="العودة للصفحة الرئيسية">🏠</span> {t('back_to_home')}
               </button>
-              <button onClick={()=>{
-                setShowAdd(true); 
-                setShowSidebar(false);
-                // إعادة تحميل المواعيد عند فتح إضافة موعد خاص
-                fetchAllAppointments();
-              }} style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
+              <SecureButton 
+                permission="MANAGE_SPECIAL_APPOINTMENTS"
+                onClick={()=>{
+                  setShowAdd(true); 
+                  setShowSidebar(false);
+                  // إعادة تحميل المواعيد عند فتح إضافة موعد خاص
+                  fetchAllAppointments();
+                }} 
+                style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
+              >
                 <span role="img" aria-label="إضافة موعد خاص">⭐</span> {t('add_special_appointment')}
-              </button>
+              </SecureButton>
               <button onClick={()=>{
                 setShowContactModal(true); 
                 setShowSidebar(false);
@@ -476,53 +481,77 @@ function DoctorDashboard() {
               }} style={{background: '#0A8F82', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
                 <span role="img" aria-label="اتصل بنا">📞</span> {t('contact_us')}
               </button>
-              <button onClick={()=>{
-                setShowWorkTimesModal(true); 
-                setShowSidebar(false);
-                // إعادة تحميل المواعيد عند فتح تعديل الدوام
-                fetchAllAppointments();
-              }} style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
+              <SecureButton 
+                permission="MANAGE_WORK_TIMES"
+                onClick={()=>{
+                  setShowWorkTimesModal(true); 
+                  setShowSidebar(false);
+                  // إعادة تحميل المواعيد عند فتح تعديل الدوام
+                  fetchAllAppointments();
+                }} 
+                style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
+              >
                 <span role="img" aria-label={t('doctor_dashboard.edit_schedule_vacations')}>📅</span> {t('doctor_dashboard.edit_schedule_vacations')}
-              </button>
-              <button onClick={()=>{
-                setShowAppointmentDurationModal(true); 
-                setShowSidebar(false);
-                // إعادة تحميل المواعيد عند فتح تعديل مدة الموعد
-                fetchAllAppointments();
-              }} style={{background: '#0A8F82', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
+              </SecureButton>
+              <SecureButton 
+                permission="MANAGE_APPOINTMENT_DURATION"
+                onClick={()=>{
+                  setShowAppointmentDurationModal(true); 
+                  setShowSidebar(false);
+                  // إعادة تحميل المواعيد عند فتح تعديل مدة الموعد
+                  fetchAllAppointments();
+                }} 
+                style={{background: '#0A8F82', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
+              >
                 <span role="img" aria-label={t('doctor_dashboard.edit_appointment_duration')}>⏱️</span> {t('doctor_dashboard.edit_appointment_duration')}
-              </button>
-              <button onClick={()=>{
-                navigate('/bookings-for-others-stats'); 
-                setShowSidebar(false);
-                // إعادة تحميل المواعيد عند فتح صفحة إحصائيات الحجز للآخرين
-                fetchAllAppointments();
-              }} style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
+              </SecureButton>
+              <SecureButton 
+                permission="VIEW_BOOKINGS_STATS"
+                onClick={()=>{
+                  navigate('/bookings-for-others-stats'); 
+                  setShowSidebar(false);
+                  // إعادة تحميل المواعيد عند فتح صفحة إحصائيات الحجز للآخرين
+                  fetchAllAppointments();
+                }} 
+                style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
+              >
                 <span role="img" aria-label="إحصائيات الحجز للآخرين">📊</span> {t('bookings_for_others_stats')}
-              </button>
-              <button onClick={()=>{
-                navigate('/employee-manager'); 
-                setShowSidebar(false);
-              }} style={{background: '#9c27b0', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
+              </SecureButton>
+              <SecureButton 
+                permission="MANAGE_EMPLOYEES"
+                onClick={()=>{
+                  navigate('/employee-manager'); 
+                  setShowSidebar(false);
+                }} 
+                style={{background: '#9c27b0', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
+              >
                 <span role="img" aria-label="إدارة الموظفين">👥</span> إدارة الموظفين
-              </button>
-              <button onClick={()=>{
-                setShowSpecialAppointments(true); 
-                setShowSidebar(false);
-                // إعادة تحميل المواعيد عند فتح المواعيد الخاصة
-                fetchAllAppointments();
-              }} style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
+              </SecureButton>
+              <SecureButton 
+                permission="MANAGE_SPECIAL_APPOINTMENTS"
+                onClick={()=>{
+                  setShowSpecialAppointments(true); 
+                  setShowSidebar(false);
+                  // إعادة تحميل المواعيد عند فتح المواعيد الخاصة
+                  fetchAllAppointments();
+                }} 
+                style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
+              >
                 <span role="img" aria-label={t('doctor_dashboard.appointments_for_others')}>👥</span> {t('doctor_dashboard.appointments_for_others')}
-              </button>
-              <button onClick={()=>{
-                console.log('🔍 تم الضغط على الملف الشخصي');
-                navigate('/doctor-profile'); 
-                setShowSidebar(false);
-                // إعادة تحميل المواعيد عند فتح الملف الشخصي
-                fetchAllAppointments();
-              }} style={{background: '#fff', color: '#0A8F82', border: '2px solid #0A8F82', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}>
+              </SecureButton>
+              <SecureButton 
+                permission="VIEW_PROFILE"
+                onClick={()=>{
+                  console.log('🔍 تم الضغط على الملف الشخصي');
+                  navigate('/doctor-profile'); 
+                  setShowSidebar(false);
+                  // إعادة تحميل المواعيد عند فتح الملف الشخصي
+                  fetchAllAppointments();
+                }} 
+                style={{background: '#fff', color: '#0A8F82', border: '2px solid #0A8F82', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
+              >
                 <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="#0A8F82" strokeWidth="2"/><path d="M4 20c0-2.21 3.58-4 8-4s8 1.79 8 4" stroke="#0A8F82" strokeWidth="2"/></svg> {t('my_profile')}
-              </button>
+              </SecureButton>
               <button onClick={()=>{
                 signOut(); 
                 setShowSidebar(false);
@@ -686,10 +715,11 @@ function DoctorDashboard() {
                             <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.all_appointments')}</div>
 
             {/* زر تحليل المواعيد */}
-            <button 
+            <SecureButton 
+              permission="VIEW_ANALYTICS"
               onClick={() => {
-  navigate('/doctor-analytics');
-}}
+    navigate('/doctor-analytics');
+  }}
               style={{
                 background:'#0A8F82',
                 color:'#fff',
@@ -709,7 +739,7 @@ function DoctorDashboard() {
               }}
             >
               <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
-            </button>
+            </SecureButton>
                             <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.appointment_analysis')}</div>
 
 
@@ -717,7 +747,8 @@ function DoctorDashboard() {
 
 
             {/* زر الملف الشخصي */}
-            <button 
+            <SecureButton 
+              permission="VIEW_PROFILE"
               onClick={() => {
                 navigate('/doctor-profile');
               }}
@@ -740,7 +771,7 @@ function DoctorDashboard() {
               }}
             >
               <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>👤</div>
-            </button>
+            </SecureButton>
                             <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.profile')}</div>
           </div>
         </div>
@@ -1123,7 +1154,8 @@ function DoctorDashboard() {
                           ✅ {t('mark_present')}
                         </button>
                       )}
-                      <button 
+                      <SecureButton 
+                        permission="VIEW_APPOINTMENTS"
                         onClick={() => navigate('/doctor-appointments')}
                         style={{
                           background:'#0A8F82',
@@ -1138,7 +1170,7 @@ function DoctorDashboard() {
                         }}
                       >
                         {t('manage')}
-                      </button>
+                      </SecureButton>
                       <button 
                         onClick={() => openNoteModal(appointment.patientPhone || appointment.userId?.phone || appointment.notes)}
                         style={{
@@ -1222,20 +1254,22 @@ function DoctorDashboard() {
                 </button>
               </div>
               
-              <AddSpecialAppointmentForm 
-                onClose={()=>{
-  setShowAdd(false);
-  // إعادة تحميل المواعيد عند إغلاق نافذة الإضافة
-  fetchAllAppointments();
-}} 
-                onAdd={(newAppointment) => {
-                  const updatedAppointments = [newAppointment, ...appointments];
-                  setAppointments(updatedAppointments);
-                  localStorage.setItem('specialAppointments', JSON.stringify(updatedAppointments));
-                  setShowAdd(false);
-                }}
-                profile={profile}
-              />
+              <SecureSection permission="MANAGE_SPECIAL_APPOINTMENTS">
+                <AddSpecialAppointmentForm 
+                  onClose={()=>{
+    setShowAdd(false);
+    // إعادة تحميل المواعيد عند إغلاق نافذة الإضافة
+    fetchAllAppointments();
+  }} 
+                  onAdd={(newAppointment) => {
+                    const updatedAppointments = [newAppointment, ...appointments];
+                    setAppointments(updatedAppointments);
+                    localStorage.setItem('specialAppointments', JSON.stringify(updatedAppointments));
+                    setShowAdd(false);
+                  }}
+                  profile={profile}
+                />
+              </SecureSection>
             </div>
           </div>
         )}
@@ -1283,21 +1317,23 @@ function DoctorDashboard() {
                 </button>
               </div>
               <div style={{overflowX: window.innerWidth < 500 ? 'auto' : 'visible'}}>
-                <SpecialAppointmentsList 
-                  appointments={specialAppointments} 
-                  onDelete={(id) => {
-                    const updatedAppointments = appointments.filter(apt => apt.id !== id);
-                    setAppointments(updatedAppointments);
-                    localStorage.setItem('specialAppointments', JSON.stringify(updatedAppointments));
-                    // إعادة تحميل المواعيد من الخادم
-                    fetchAllAppointments();
-                  }}
-                  onEdit={(appointment) => {
-                    setSelectedAppointmentForEdit(appointment);
-                    setShowEditSpecial(true);
-                  }}
-                  onOpenNote={openNoteModal}
-                />
+                <SecureSection permission="MANAGE_SPECIAL_APPOINTMENTS">
+                  <SpecialAppointmentsList 
+                    appointments={specialAppointments} 
+                    onDelete={(id) => {
+                      const updatedAppointments = appointments.filter(apt => apt.id !== id);
+                      setAppointments(updatedAppointments);
+                      localStorage.setItem('specialAppointments', JSON.stringify(updatedAppointments));
+                      // إعادة تحميل المواعيد من الخادم
+                      fetchAllAppointments();
+                    }}
+                    onEdit={(appointment) => {
+                      setSelectedAppointmentForEdit(appointment);
+                      setShowEditSpecial(true);
+                    }}
+                    onOpenNote={openNoteModal}
+                  />
+                </SecureSection>
               </div>
             </div>
           </div>
@@ -1332,29 +1368,31 @@ function DoctorDashboard() {
                 </button>
               </div>
               
-              <EditSpecialAppointmentForm 
-                appointment={selectedAppointmentForEdit}
-                onSubmit={(updatedData) => {
-                  const updatedAppointments = appointments.map(apt => 
-                    apt.id === selectedAppointmentForEdit.id 
-                      ? { ...apt, ...updatedData }
-                      : apt
-                  );
-                  setAppointments(updatedAppointments);
-                  localStorage.setItem('specialAppointments', JSON.stringify(updatedAppointments));
-                  setShowEditSpecial(false);
-                  setSelectedAppointmentForEdit(null);
-                  alert(t('special_appointment_updated_successfully'));
-                  // إعادة تحميل المواعيد من الخادم
-                  fetchAllAppointments();
-                }}
-                onClose={() => {
-  setShowEditSpecial(false); 
-  setSelectedAppointmentForEdit(null);
-  // إعادة تحميل المواعيد عند إغلاق نافذة التعديل
-  fetchAllAppointments();
-}}
-              />
+              <SecureSection permission="MANAGE_SPECIAL_APPOINTMENTS">
+                <EditSpecialAppointmentForm 
+                  appointment={selectedAppointmentForEdit}
+                  onSubmit={(updatedData) => {
+                    const updatedAppointments = appointments.map(apt => 
+                      apt.id === selectedAppointmentForEdit.id 
+                        ? { ...apt, ...updatedData }
+                        : apt
+                    );
+                    setAppointments(updatedAppointments);
+                    localStorage.setItem('specialAppointments', JSON.stringify(updatedAppointments));
+                    setShowEditSpecial(false);
+                    setSelectedAppointmentForEdit(null);
+                    alert(t('special_appointment_updated_successfully'));
+                    // إعادة تحميل المواعيد من الخادم
+                    fetchAllAppointments();
+                  }}
+                  onClose={() => {
+    setShowEditSpecial(false); 
+    setSelectedAppointmentForEdit(null);
+    // إعادة تحميل المواعيد عند إغلاق نافذة التعديل
+    fetchAllAppointments();
+  }}
+                />
+              </SecureSection>
             </div>
           </div>
         )}
@@ -1504,39 +1542,41 @@ function DoctorDashboard() {
                               <h3 style={{color:'#0A8F82', margin:0, fontWeight:700}}>📅 {t('doctor_dashboard.edit_schedule_vacations')}</h3>
               <button onClick={()=>setShowWorkTimesModal(false)} style={{background:'#e53935', color:'#fff', border:'none', borderRadius:8, fontSize:20, fontWeight:900, padding:'0.2rem 0.8rem', cursor:'pointer'}}>×</button>
             </div>
-            <WorkTimesEditor 
-              profile={profile} 
-              onClose={()=>setShowWorkTimesModal(false)}
-              onUpdate={(updatedData) => {
-                console.log('🔄 DoctorDashboard: استلام البيانات المحدثة:', updatedData);
-                setShowWorkTimesModal(false);
-                
-                // تحديث البيانات المحلية مباشرة مع الحفاظ على الصورة الشخصية
-                if (updatedData) {
-                  const updatedProfile = { 
-                    ...profile, 
-                    workTimes: updatedData.workTimes || profile.workTimes,
-                    vacationDays: updatedData.vacationDays || profile.vacationDays,
-                    lastUpdated: updatedData.lastUpdated || new Date().toISOString()
-                  };
+            <SecureSection permission="MANAGE_WORK_TIMES">
+              <WorkTimesEditor 
+                profile={profile} 
+                onClose={()=>setShowWorkTimesModal(false)}
+                onUpdate={(updatedData) => {
+                  console.log('🔄 DoctorDashboard: استلام البيانات المحدثة:', updatedData);
+                  setShowWorkTimesModal(false);
                   
-                  console.log('💾 DoctorDashboard: حفظ البيانات المحدثة في localStorage:', updatedProfile);
-                  localStorage.setItem('profile', JSON.stringify(updatedProfile));
-                  
-                  // تحديث state فوراً
-                  setProfile(updatedProfile);
-                  
-                  // إعادة جلب المواعيد بعد تأخير قصير للتأكد من تحديث البيانات
-                  setTimeout(() => {
-                    fetchAllAppointments();
-                  }, 300);
-                  
-                  // إضافة timestamp منفصل للتأكد من تحديث البيانات
-                  localStorage.setItem('profile_lastUpdated', updatedProfile.lastUpdated);
-                }
-              }}
-              fetchAllAppointments={fetchAllAppointments}
-            />
+                  // تحديث البيانات المحلية مباشرة مع الحفاظ على الصورة الشخصية
+                  if (updatedData) {
+                    const updatedProfile = { 
+                      ...profile, 
+                      workTimes: updatedData.workTimes || profile.workTimes,
+                      vacationDays: updatedData.vacationDays || profile.vacationDays,
+                      lastUpdated: updatedData.lastUpdated || new Date().toISOString()
+                    };
+                    
+                    console.log('💾 DoctorDashboard: حفظ البيانات المحدثة في localStorage:', updatedProfile);
+                    localStorage.setItem('profile', JSON.stringify(updatedProfile));
+                    
+                    // تحديث state فوراً
+                    setProfile(updatedProfile);
+                    
+                    // إعادة جلب المواعيد بعد تأخير قصير للتأكد من تحديث البيانات
+                    setTimeout(() => {
+                      fetchAllAppointments();
+                    }, 300);
+                    
+                    // إضافة timestamp منفصل للتأكد من تحديث البيانات
+                    localStorage.setItem('profile_lastUpdated', updatedProfile.lastUpdated);
+                  }
+                }}
+                fetchAllAppointments={fetchAllAppointments}
+              />
+            </SecureSection>
           </div>
         </div>
       )}
@@ -1549,25 +1589,27 @@ function DoctorDashboard() {
                               <h3 style={{color:'#7c4dff', margin:0, fontWeight:700}}>⏱️ {t('doctor_dashboard.edit_appointment_duration_title')}</h3>
               <button onClick={()=>setShowAppointmentDurationModal(false)} style={{background:'#e53935', color:'#fff', border:'none', borderRadius:8, fontSize:20, fontWeight:900, padding:'0.2rem 0.8rem', cursor:'pointer'}}>×</button>
             </div>
-            <AppointmentDurationEditor 
-              profile={profile} 
-              onClose={()=>setShowAppointmentDurationModal(false)}
-              onUpdate={(updatedDuration) => {
-                setShowAppointmentDurationModal(false);
-                // تحديث البيانات المحلية مباشرة مع الحفاظ على الصورة الشخصية
-                if (updatedDuration) {
-                  const updatedProfile = { 
-                    ...profile, 
-                    appointmentDuration: updatedDuration 
-                  };
-                  localStorage.setItem('profile', JSON.stringify(updatedProfile));
-                  // تحديث state بدلاً من إعادة تحميل الصفحة
-                  setProfile(updatedProfile);
-                  // إعادة جلب المواعيد لتحديث البيانات
-                  fetchAllAppointments();
-                }
-              }}
-            />
+            <SecureSection permission="MANAGE_APPOINTMENT_DURATION">
+              <AppointmentDurationEditor 
+                profile={profile} 
+                onClose={()=>setShowAppointmentDurationModal(false)}
+                onUpdate={(updatedDuration) => {
+                  setShowAppointmentDurationModal(false);
+                  // تحديث البيانات المحلية مباشرة مع الحفاظ على الصورة الشخصية
+                  if (updatedDuration) {
+                    const updatedProfile = { 
+                      ...profile, 
+                      appointmentDuration: updatedDuration 
+                    };
+                    localStorage.setItem('profile', JSON.stringify(updatedProfile));
+                    // تحديث state بدلاً من إعادة تحميل الصفحة
+                    setProfile(updatedProfile);
+                    // إعادة جلب المواعيد لتحديث البيانات
+                    fetchAllAppointments();
+                  }
+                }}
+              />
+            </SecureSection>
           </div>
         </div>
       )}
