@@ -25,7 +25,33 @@ const UserTypeSelector = () => {
       const data = await response.json();
       
       if (!data.hasEmployees) {
-        // إذا لم يكن لدى الدكتور موظفين، توجيه مباشرة للوحة التحكم
+        // إذا لم يكن لدى الدكتور موظفين، تعيين الصلاحيات الكاملة له
+        const fullPermissions = {
+          VIEW_APPOINTMENTS: true,
+          MANAGE_APPOINTMENTS: true,
+          VIEW_CALENDAR: true,
+          MANAGE_WORK_TIMES: true,
+          VIEW_ANALYTICS: true,
+          VIEW_PROFILE: true,
+          MANAGE_EMPLOYEES: true,
+          MANAGE_SPECIAL_APPOINTMENTS: true,
+          MANAGE_APPOINTMENT_DURATION: true,
+          VIEW_BOOKINGS_STATS: true
+        };
+        
+        // حفظ البيانات في localStorage
+        const userData = {
+          ...profile,
+          currentUserType: 'doctor',
+          permissions: fullPermissions
+        };
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        
+        // تحديث AuthContext
+        setCurrentUserType('doctor');
+        setCurrentPermissions(fullPermissions);
+        
+        // التوجيه للوحة التحكم
         navigate('/doctor-dashboard');
         return;
       }
@@ -34,7 +60,30 @@ const UserTypeSelector = () => {
       fetchEmployees();
     } catch (error) {
       console.error('خطأ في التحقق من وجود موظفين:', error);
-      // في حالة الخطأ، توجيه للوحة التحكم
+      // في حالة الخطأ، تعيين الصلاحيات الكاملة للدكتور
+      const fullPermissions = {
+        VIEW_APPOINTMENTS: true,
+        MANAGE_APPOINTMENTS: true,
+        VIEW_CALENDAR: true,
+        MANAGE_WORK_TIMES: true,
+        VIEW_ANALYTICS: true,
+        VIEW_PROFILE: true,
+        MANAGE_EMPLOYEES: true,
+        MANAGE_SPECIAL_APPOINTMENTS: true,
+        MANAGE_APPOINTMENT_DURATION: true,
+        VIEW_BOOKINGS_STATS: true
+      };
+      
+      const userData = {
+        ...profile,
+        currentUserType: 'doctor',
+        permissions: fullPermissions
+      };
+      localStorage.setItem('currentUser', JSON.stringify(userData));
+      
+      setCurrentUserType('doctor');
+      setCurrentPermissions(fullPermissions);
+      
       navigate('/doctor-dashboard');
     }
   };

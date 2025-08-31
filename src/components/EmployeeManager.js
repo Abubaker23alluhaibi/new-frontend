@@ -121,7 +121,20 @@ const EmployeeManager = () => {
       });
       
       if (response.ok) {
-        fetchEmployees();
+        // تحديث الحالة المحلية فوراً
+        setSelectedEmployee(prev => ({
+          ...prev,
+          permissions: permissions
+        }));
+        
+        // تحديث قائمة الموظفين
+        setEmployees(prev => 
+          prev.map(emp => 
+            emp._id === employeeId 
+              ? { ...emp, permissions: permissions }
+              : emp
+          )
+        );
       }
     } catch (error) {
       console.error('خطأ في تحديث الصلاحيات:', error);
@@ -276,19 +289,19 @@ const EmployeeManager = () => {
                 <div className="employee-avatar">
                   {employee.name.charAt(0).toUpperCase()}
                 </div>
-                                 <div className="employee-details">
-                   <h3>{employee.name}</h3>
-                   <div className="employee-type">
-                     <span className={`type-badge ${employee.employeeType}`}>
-                       {getEmployeeTypeLabel(employee.employeeType)}
-                     </span>
-                   </div>
-                   <div className="employee-status">
-                     <span className={`status-badge ${employee.isActive ? 'active' : 'inactive'}`}>
-                       {employee.isActive ? 'نشط' : 'غير نشط'}
-                     </span>
-                   </div>
-                 </div>
+                <div className="employee-details">
+                  <h3>{employee.name}</h3>
+                  <div className="employee-type">
+                    <span className={`type-badge ${employee.employeeType}`}>
+                      {getEmployeeTypeLabel(employee.employeeType)}
+                    </span>
+                  </div>
+                  <div className="employee-status">
+                    <span className={`status-badge ${employee.isActive ? 'active' : 'inactive'}`}>
+                      {employee.isActive ? 'نشط' : 'غير نشط'}
+                    </span>
+                  </div>
+                </div>
               </div>
               
               <div className="employee-access">
@@ -347,16 +360,16 @@ const EmployeeManager = () => {
             </div>
             
             <form onSubmit={handleAddEmployee} className="employee-form">
-                             <div className="form-group">
-                 <label>اسم الموظف *</label>
-                 <input
-                   type="text"
-                   value={formData.name}
-                   onChange={e => setFormData({...formData, name: e.target.value})}
-                   required
-                   placeholder="أدخل اسم الموظف"
-                 />
-               </div>
+              <div className="form-group">
+                <label>اسم الموظف *</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={e => setFormData({...formData, name: e.target.value})}
+                  required
+                  placeholder="أدخل اسم الموظف"
+                />
+              </div>
               
               <div className="form-group">
                 <label>نوع الموظف *</label>
@@ -365,9 +378,9 @@ const EmployeeManager = () => {
                   onChange={e => setFormData({...formData, employeeType: e.target.value})}
                   required
                 >
-                                     <option value="secretary">سكرتير</option>
-                   <option value="assistant">مساعد</option>
-                   <option value="employee">موظف</option>
+                  <option value="secretary">سكرتير</option>
+                  <option value="assistant">مساعد</option>
+                  <option value="employee">موظف</option>
                 </select>
               </div>
               
@@ -426,6 +439,12 @@ const EmployeeManager = () => {
                           ...selectedEmployee.permissions,
                           [permission]: e.target.checked
                         };
+                        // تحديث الحالة المحلية فوراً
+                        setSelectedEmployee(prev => ({
+                          ...prev,
+                          permissions: updatedPermissions
+                        }));
+                        // إرسال التحديث للخادم
                         handleUpdatePermissions(selectedEmployee._id, updatedPermissions);
                       }}
                     />
