@@ -869,36 +869,36 @@ function DoctorDetails() {
               setTimeout(() => setCopySuccess(false), 2000);
             });
           }}
-          style={{
-            background: copySuccess ? '#4caf50' : 'linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '20px',
-            padding: '0.5rem 1rem',
-            fontSize: '0.9rem',
-            fontWeight: '600',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            transition: 'all 0.3s ease',
-            boxShadow: '0 2px 8px rgba(76, 175, 80, 0.2)'
-          }}
-          onMouseEnter={(e) => {
-            if (!copySuccess) {
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 12px rgba(76, 175, 80, 0.3)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = '0 2px 8px rgba(76, 175, 80, 0.2)';
-          }}
+                        style={{
+                background: copySuccess ? '#0A8F82' : 'linear-gradient(135deg, #0A8F82 0%, #077a6f 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '20px',
+                padding: '0.5rem 1rem',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 2px 8px rgba(10, 143, 130, 0.2)'
+              }}
+                        onMouseEnter={(e) => {
+                if (!copySuccess) {
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 4px 12px rgba(10, 143, 130, 0.3)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 2px 8px rgba(10, 143, 130, 0.2)';
+              }}
         >
           {copySuccess ? '✅ تم نسخ الرابط!' : '📋 نسخ الرابط'}
         </button>
       </div>
-      {copySuccess && <div style={{color:'#4caf50', textAlign:'center', fontWeight:700, margin:'0 1rem 1rem'}}>تم نسخ الرابط!</div>}
+              {copySuccess && <div style={{color:'#0A8F82', textAlign:'center', fontWeight:700, margin:'0 1rem 1rem'}}>تم نسخ الرابط!</div>}
       
       {/* زر تحويل الصورة إلى Cloudinary (للمطورين فقط) */}
       {(doctor.image?.startsWith('/uploads/') || doctor.profileImage?.startsWith('/uploads/')) && (
