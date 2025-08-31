@@ -45,45 +45,32 @@ function DoctorDetails() {
 
   // دالة للكشف عن وجود التطبيق
   const checkAppInstalled = useCallback(() => {
-    // محاولة فتح التطبيق عبر Deep Link
     const deepLink = `tabibiq://doctor/${id}`;
-    
-    // إنشاء iframe مخفي لاختبار فتح التطبيق
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
     document.body.appendChild(iframe);
-    
-    // محاولة فتح التطبيق
     iframe.src = deepLink;
     
-    // انتظار قليل ثم التحقق من النتيجة
     setTimeout(() => {
       document.body.removeChild(iframe);
-      
-      // إذا لم يتم فتح التطبيق، عرض رسالة التوجيه
       setShowAppRedirect(true);
       
-      // محاولة فتح متجر التطبيقات بعد 3 ثواني
       setTimeout(() => {
         const userAgent = navigator.userAgent.toLowerCase();
         if (/iphone|ipad|ipod/.test(userAgent)) {
-          // iOS - فتح App Store
           window.location.href = 'https://apps.apple.com/app/tabibiq/id123456789';
         } else if (/android/.test(userAgent)) {
-          // Android - فتح Google Play
           window.location.href = 'https://play.google.com/store/apps/details?id=com.tabibiq.app';
         }
       }, 3000);
     }, 1000);
   }, [id]);
 
-  // دالة فتح التطبيق مباشرة
   const openApp = () => {
     const deepLink = `tabibiq://doctor/${id}`;
     window.location.href = deepLink;
   };
 
-  // دالة فتح متجر التطبيقات
   const openAppStore = () => {
     const userAgent = navigator.userAgent.toLowerCase();
     if (/iphone|ipad|ipod/.test(userAgent)) {
@@ -93,9 +80,7 @@ function DoctorDetails() {
     }
   };
 
-  // مسح الكاش عند تحميل الصفحة
   useEffect(() => {
-    // إجبار المتصفح على تحميل الملفات الجديدة
     if ('caches' in window) {
       caches.keys().then(names => {
         names.forEach(name => {
@@ -103,52 +88,38 @@ function DoctorDetails() {
         });
       });
     }
-    
-    // محاولة فتح التطبيق عند تحميل الصفحة
     checkAppInstalled();
   }, [id]);
 
-  // دالة مساعدة لمسار صورة الدكتور
   const getImageUrl = (doctor) => {
-    // التحقق من كلا الحقلين: image و profileImage
     const img = doctor.image || doctor.profileImage;
     if (!img) {
-      // إرجاع شعار المشروع كصورة افتراضية
       return '/logo.png';
     }
     
-    // إذا كانت الصورة من Cloudinary (تبدأ بـ https://res.cloudinary.com)
     if (img.startsWith('https://res.cloudinary.com')) {
       return img;
     }
     
-    // إذا كانت الصورة محلية (تبدأ بـ /uploads/)
     if (img.startsWith('/uploads/')) {
-      // محاولة تحميل الصورة الحقيقية من الخادم
       return process.env.REACT_APP_API_URL + img;
     }
     
-    // إذا كانت الصورة رابط كامل
     if (img.startsWith('http')) {
       return img;
     }
     
-    // إرجاع شعار المشروع كصورة افتراضية
     return '/logo.png';
   };
 
-  // التحقق من حالة تسجيل الدخول والتوجيه
   useEffect(() => {
-    // انتظار حتى يتم تحميل AuthContext بالكامل
     if (authLoading) return;
     
-    // التحقق من وجود بيانات المستخدم في localStorage أو وجود user/profile
     const savedUser = localStorage.getItem('user');
     const savedProfile = localStorage.getItem('profile');
     const hasUser = user || profile;
     const hasSavedData = savedUser || savedProfile;
     
-    // إذا لم يكن هناك بيانات محفوظة ولا user، توجيه لصفحة تسجيل الدخول
     if (!hasSavedData && !hasUser) {
       const currentUrl = window.location.pathname + window.location.search;
       navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
@@ -170,7 +141,6 @@ function DoctorDetails() {
       });
   }, [id]);
 
-  // دالة تحويل الصورة المحلية إلى Cloudinary
   const migrateImageToCloudinary = async () => {
     if (!doctor) return;
     
@@ -203,7 +173,6 @@ function DoctorDetails() {
 
       if (response.ok) {
         alert('تم تحويل الصورة إلى Cloudinary بنجاح!');
-        // إعادة تحميل بيانات الطبيب
         window.location.reload();
       } else {
         alert('حدث خطأ أثناء تحويل الصورة: ' + (data.error || 'خطأ غير معروف'));
@@ -216,13 +185,11 @@ function DoctorDetails() {
     }
   };
 
-  // استخراج الأيام المتاحة من workTimes
   const getAvailableDays = () => {
     if (!doctor?.workTimes || !Array.isArray(doctor.workTimes)) return [];
     return doctor.workTimes.map(wt => wt.day).filter(Boolean);
   };
 
-  // تقسيم الفترة الزمنية إلى مواعيد منفصلة حسب مدة الموعد الافتراضية للطبيب
   const generateTimeSlots = (from, to) => {
     const slots = [];
     if (typeof from !== 'string' || typeof to !== 'string') {
@@ -231,7 +198,6 @@ function DoctorDetails() {
     try {
       const start = new Date(`2000-01-01 ${from}`);
       const end = new Date(`2000-01-01 ${to}`);
-      // استخدم مدة الموعد الافتراضية للطبيب أو 30 دقيقة كافتراضي
       const duration = doctor?.appointmentDuration ? Number(doctor.appointmentDuration) : 30;
       while (start < end) {
         const timeString = start.toTimeString().slice(0, 5);
@@ -244,7 +210,6 @@ function DoctorDetails() {
     return slots;
   };
 
-  // جلب المواعيد المحجوزة لطبيب معين في تاريخ محدد
   const fetchBookedAppointments = async (doctorId, date) => {
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/appointments/${doctorId}/${date}`);
@@ -262,34 +227,26 @@ function DoctorDetails() {
     }
   };
 
-  // تحديد الأيام المتاحة للتقويم
   const isDayAvailable = date => {
-    // ترتيب الأيام حسب جافاسكريبت: الأحد=0، الاثنين=1، ... السبت=6
     const weekDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
     const dayName = weekDays[date.getDay()];
     
-    // التحقق من أن اليوم ضمن أيام العمل الأسبوعية
     if (!getAvailableDays().includes(dayName)) {
       return false;
     }
     
-    // التحقق من أيام الإجازات
     if (doctor?.vacationDays && Array.isArray(doctor.vacationDays)) {
       const year = date.getFullYear();
-      const month = date.getMonth() + 1; // 1-12
+      const month = date.getMonth() + 1;
       const day = date.getDate();
       
       for (const vacation of doctor.vacationDays) {
-        // التحقق من الإجازة اليومية (التاريخ كاملاً)
         if (vacation) {
           let vacationDate;
           
-          // التعامل مع البيانات القديمة والجديدة
           if (typeof vacation === 'string') {
-            // البيانات الجديدة - تاريخ كسلسلة نصية
             vacationDate = new Date(vacation);
           } else if (vacation && typeof vacation === 'object' && vacation.date) {
-            // البيانات القديمة - كائن مع حقل date
             vacationDate = new Date(vacation.date);
           }
           
@@ -307,7 +264,6 @@ function DoctorDetails() {
     return true;
   };
 
-  // عند اختيار يوم بالتقويم، أظهر الأوقات المتاحة لذلك اليوم
   useEffect(() => {
     if (!selectedDate || !doctor?.workTimes) {
       setAvailableTimes([]);
@@ -315,21 +271,16 @@ function DoctorDetails() {
       return;
     }
     
-    // التحقق من أن اليوم ليس يوم إجازة
     if (!isDayAvailable(selectedDate)) {
       setAvailableTimes([]);
       setBookedTimes([]);
       return;
     }
     
-    // ترتيب الأيام حسب جافاسكريبت: الأحد=0، الاثنين=1، ... السبت=6
     const weekDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
     const dayName = weekDays[selectedDate.getDay()];
     const times = doctor.workTimes.filter(wt => wt.day === dayName);
     
-    
-    
-    // تقسيم كل فترة زمنية إلى مواعيد منفصلة
     const allSlots = [];
     times.forEach(wt => {
       if (wt.from && wt.to) {
@@ -338,11 +289,9 @@ function DoctorDetails() {
       }
     });
     
-    
     setAvailableTimes(allSlots);
     setSelectedTime('');
     
-    // جلب المواعيد المحجوزة لهذا اليوم - إصلاح مشكلة المنطقة الزمنية
     const year = selectedDate.getFullYear();
     const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
     const day = String(selectedDate.getDate()).padStart(2, '0');
@@ -353,9 +302,7 @@ function DoctorDetails() {
   const handleBook = async (e) => {
     e.preventDefault();
     
-    // فحص البيانات قبل الإرسال
     if (!user?._id) {
-      // توجيه المستخدم لصفحة التسجيل مع حفظ الرابط الحالي
       const currentUrl = window.location.pathname + window.location.search;
       console.log('🔄 DoctorDetails: توجيه المستخدم غير المسجل لصفحة التسجيل مع redirect:', currentUrl);
       navigate(`/signup?redirect=${encodeURIComponent(currentUrl)}`);
@@ -372,7 +319,6 @@ function DoctorDetails() {
       return;
     }
     
-    // التحقق من الحقول المطلوبة للحجز لشخص آخر
     if (isBookingForOther && (!patientName || !patientPhone)) {
       setSuccess('يرجى إدخال اسم المريض ورقم الهاتف');
       return;
@@ -387,7 +333,6 @@ function DoctorDetails() {
     setBooking(true);
     setSuccess('');
     
-    // إصلاح مشكلة المنطقة الزمنية في حجز الموعد
     const year = selectedDate.getFullYear();
     const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
     const day = String(selectedDate.getDate()).padStart(2, '0');
@@ -403,14 +348,11 @@ function DoctorDetails() {
       reason: reason || '',
       patientAge: parseInt(patientAge),
       duration: doctor?.appointmentDuration || 30,
-      // إضافة حقول الحجز لشخص آخر
       isBookingForOther: isBookingForOther,
       patientName: isBookingForOther ? patientName : '',
       patientPhone: isBookingForOther ? patientPhone : '',
       bookerName: profile?.first_name || 'مستخدم'
     };
-    
-    
     
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/appointments`, {
@@ -420,14 +362,12 @@ function DoctorDetails() {
       });
       const data = await res.json();
       
-      
       if (res.ok) {
         setSuccess('تم حجز الموعد بنجاح!');
         setSelectedDate(null);
         setSelectedTime('');
         setReason('');
         setPatientAge('');
-        // مسح حقول الحجز لشخص آخر
         setIsBookingForOther(false);
         setPatientName('');
         setPatientPhone('');
@@ -435,7 +375,7 @@ function DoctorDetails() {
         setSuccess(data.error || t('error_booking_appointment'));
       }
     } catch (err) {
-              setSuccess(t('error_booking_appointment'));
+      setSuccess(t('error_booking_appointment'));
     }
     setBooking(false);
   };
@@ -444,7 +384,6 @@ function DoctorDetails() {
   if (loading) return <div style={{textAlign:'center', marginTop:40}}>جاري التحميل...</div>;
   if (error || !doctor) return <div style={{textAlign:'center', marginTop:40, color:'#e53935'}}>{error || 'لم يتم العثور على الطبيب'}</div>;
   
-  // التحقق من حالة تعطيل الطبيب
   if (doctor && doctor.disabled) {
     return (
       <div style={{
@@ -465,24 +404,11 @@ function DoctorDetails() {
           textAlign: 'center',
           border: '2px solid #e53935'
         }}>
-          <div style={{
-            fontSize: 60,
-            marginBottom: '1rem'
-          }}>🚫</div>
-          <div style={{
-            fontSize: 24,
-            fontWeight: 700,
-            color: '#e53935',
-            marginBottom: '1rem'
-          }}>
+          <div style={{fontSize: 60, marginBottom: '1rem'}}>🚫</div>
+          <div style={{fontSize: 24, fontWeight: 700, color: '#e53935', marginBottom: '1rem'}}>
             الطبيب غير متاح
           </div>
-          <div style={{
-            fontSize: 16,
-            color: '#666',
-            lineHeight: 1.6,
-            marginBottom: '2rem'
-          }}>
+          <div style={{fontSize: 16, color: '#666', lineHeight: 1.6, marginBottom: '2rem'}}>
             عذراً، هذا الطبيب غير متاح حالياً لحجز المواعيد. يرجى اختيار طبيب آخر من قائمة الأطباء المتاحين.
           </div>
           <button
@@ -858,7 +784,6 @@ function DoctorDetails() {
               setCopySuccess(true);
               setTimeout(() => setCopySuccess(false), 2000);
             }).catch(() => {
-              // Fallback for older browsers
               const textArea = document.createElement('textarea');
               textArea.value = currentUrl;
               document.body.appendChild(textArea);
@@ -869,36 +794,36 @@ function DoctorDetails() {
               setTimeout(() => setCopySuccess(false), 2000);
             });
           }}
-                        style={{
-                background: copySuccess ? '#0A8F82' : 'linear-gradient(135deg, #0A8F82 0%, #077a6f 100%)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '20px',
-                padding: '0.5rem 1rem',
-                fontSize: '0.9rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 2px 8px rgba(10, 143, 130, 0.2)'
-              }}
-                        onMouseEnter={(e) => {
-                if (!copySuccess) {
-                  e.target.style.transform = 'translateY(-2px)';
-                  e.target.style.boxShadow = '0 4px 12px rgba(10, 143, 130, 0.3)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 2px 8px rgba(10, 143, 130, 0.2)';
-              }}
+          style={{
+            background: copySuccess ? '#0A8F82' : 'linear-gradient(135deg, #0A8F82 0%, #077a6f 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '20px',
+            padding: '0.5rem 1rem',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 2px 8px rgba(10, 143, 130, 0.2)'
+          }}
+          onMouseEnter={(e) => {
+            if (!copySuccess) {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 4px 12px rgba(10, 143, 130, 0.3)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.transform = 'translateY(0)';
+            e.target.style.boxShadow = '0 2px 8px rgba(10, 143, 130, 0.2)';
+          }}
         >
           {copySuccess ? '✅ تم نسخ الرابط!' : '📋 نسخ الرابط'}
         </button>
       </div>
-              {copySuccess && <div style={{color:'#0A8F82', textAlign:'center', fontWeight:700, margin:'0 1rem 1rem'}}>تم نسخ الرابط!</div>}
+      {copySuccess && <div style={{color:'#0A8F82', textAlign:'center', fontWeight:700, margin:'0 1rem 1rem'}}>تم نسخ الرابط!</div>}
       
       {/* زر تحويل الصورة إلى Cloudinary (للمطورين فقط) */}
       {(doctor.image?.startsWith('/uploads/') || doctor.profileImage?.startsWith('/uploads/')) && (
@@ -1067,594 +992,8 @@ function DoctorDetails() {
           </div>
         </div>
       )}
-
-      <div style={{
-        maxWidth: window.innerWidth < 500 ? '92vw' : 480, 
-        margin: window.innerWidth < 500 ? '0.8rem auto' : '1.5rem auto', 
-        background:'#fff', 
-        borderRadius: window.innerWidth < 500 ? 10 : 16, 
-        boxShadow:'0 2px 12px #7c4dff22', 
-        padding: window.innerWidth < 500 ? '1.2rem 0.8rem' : '2rem 1.5rem', 
-        position:'relative', 
-        zIndex:1
-      }}>
-        {/* رسالة التوجيه للتطبيق */}
-        {showAppRedirect && (
-          <div style={{
-            background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
-            border: '2px solid #2196f3',
-            borderRadius: 12,
-            padding: '1rem',
-            marginBottom: '1rem',
-            textAlign: 'center',
-            boxShadow: '0 2px 8px #2196f322'
-          }}>
-            <div style={{fontSize: 16, fontWeight: 600, color: '#1976d2', marginBottom: '0.8rem'}}>
-              📱 {t('app_redirect_title') || 'افتح التطبيق للحصول على تجربة أفضل!'}
-            </div>
-            <div style={{fontSize: 14, color: '#1976d2', marginBottom: '1rem'}}>
-              {t('app_redirect_description') || 'يمكنك الوصول لجميع الميزات وحجز المواعيد بسهولة'}
-            </div>
-            <div style={{display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap'}}>
-              <button 
-                onClick={openApp}
-                style={{
-                  background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 8,
-                  padding: '0.6rem 1.2rem',
-                  fontSize: 14,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 8px #2196f322'
-                }}
-              >
-                📱 {t('open_app') || 'افتح التطبيق'}
-              </button>
-              <button 
-                onClick={openAppStore}
-                style={{
-                  background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 8,
-                  padding: '0.6rem 1.2rem',
-                  fontSize: 14,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 8px #4caf5022'
-                }}
-              >
-                🛒 {t('download_app') || 'حمل التطبيق'}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* زر نسخ رابط صفحة الدكتور */}
-        <div style={{display:'flex', justifyContent:'flex-end', marginBottom:8}}>
-          <button
-            onClick={() => {
-              const currentUrl = window.location.href;
-              navigator.clipboard.writeText(currentUrl).then(() => {
-                setCopySuccess(true);
-                setTimeout(() => setCopySuccess(false), 2000);
-              }).catch(() => {
-                // Fallback for older browsers
-                const textArea = document.createElement('textarea');
-                textArea.value = currentUrl;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                setCopySuccess(true);
-                setTimeout(() => setCopySuccess(false), 2000);
-              });
-            }}
-            style={{
-              background: copySuccess ? '#4caf50' : 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '20px',
-              padding: '0.5rem 1rem',
-              fontSize: '0.9rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 2px 8px rgba(0, 188, 212, 0.2)'
-            }}
-            onMouseEnter={(e) => {
-              if (!copySuccess) {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 4px 12px rgba(0, 188, 212, 0.3)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!copySuccess) {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 2px 8px rgba(0, 188, 212, 0.2)';
-              }
-            }}
-          >
-            {copySuccess ? '✅ تم نسخ الرابط!' : '📋 نسخ الرابط'}
-          </button>
-        </div>
-        {copySuccess && <div style={{color:'#00c853', textAlign:'center', fontWeight:700, marginBottom:8}}>تم نسخ الرابط!</div>}
-        
-        <div style={{display:'flex', flexDirection:'column', alignItems:'center', gap: window.innerWidth < 500 ? 6 : 10}}>
-          {/* صورة الطبيب */}
-          <img 
-            src={getImageUrl(doctor)} 
-            alt={doctor.name} 
-            onError={(e) => {
-              // إذا فشل تحميل الصورة الحقيقية، استخدم شعار المشروع
-              e.target.src = '/logo.png';
-            }}
-            style={{
-              width: window.innerWidth < 500 ? 60 : 80, 
-              height: window.innerWidth < 500 ? 60 : 80, 
-              borderRadius:'50%', 
-              objectFit:'cover', 
-              border:'2px solid #7c4dff', 
-              cursor:'pointer'
-            }} 
-            title="اضغط لتكبير الصورة" 
-            onClick={()=>setShowImageModal(true)} 
-          />
-          
-          {/* زر تحويل الصورة إلى Cloudinary (للمطورين فقط) */}
-          {(doctor.image?.startsWith('/uploads/') || doctor.profileImage?.startsWith('/uploads/')) && (
-            <button
-              onClick={migrateImageToCloudinary}
-              disabled={migratingImage}
-              style={{
-                background: migratingImage ? '#ccc' : 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '12px',
-                padding: '0.5rem 1rem',
-                fontSize: '0.8rem',
-                fontWeight: '600',
-                cursor: migratingImage ? 'not-allowed' : 'pointer',
-                marginTop: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                transition: 'all 0.3s ease'
-              }}
-            >
-              {migratingImage ? (
-                <>
-                  <span style={{fontSize: '1.2em'}}>⏳</span>
-                  جاري التحويل...
-                </>
-              ) : (
-                <>
-                  <span style={{fontSize: '1.2em'}}>☁️</span>
-                  تحويل للـ Cloudinary
-                </>
-              )}
-            </button>
-          )}
-          
-          {/* اسم الطبيب والتخصص */}
-          <div style={{
-            fontWeight:900, 
-            fontSize: window.innerWidth < 500 ? 18 : 22, 
-            color:'#222',
-            textAlign: 'center'
-          }}>
-            {doctor.name}
-          </div>
-          <div style={{
-            color:'#495057', 
-            fontWeight:700, 
-            fontSize: window.innerWidth < 500 ? 13 : 16,
-            textAlign: 'center'
-          }}>
-            {specialties[doctor.specialty] || doctor.specialty}
-          </div>
-          <div style={{
-            fontSize: window.innerWidth < 500 ? 12 : 14, 
-            color:'#666',
-            textAlign: 'center',
-            marginTop: 8
-          }}>
-            <span role="img" aria-label="governorate" style={{fontSize: '1.2em', marginRight: '4px'}}>🏛️</span> 
-            <span style={{fontWeight: 600, color: '#495057'}}>{provinces[doctor.province] || doctor.province}</span> 
-            &nbsp;&nbsp;
-            <span role="img" aria-label="area" style={{fontSize: '1.2em', marginRight: '4px'}}>📍</span> 
-            <span style={{fontWeight: 600, color: '#495057'}}>{doctor.area}</span>
-          </div>
-          {doctor.clinicLocation && (
-            <div style={{
-              color:'#495057', 
-              fontSize: window.innerWidth < 500 ? 13 : 15, 
-              marginTop: 12,
-              textAlign: 'center',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              flexWrap: 'wrap'
-            }}>
-              <span style={{fontSize: '1.2em'}}>🏥</span>
-              <span style={{fontWeight: 600}}>{t('clinic_location_label')}:</span>
-              <span style={{fontWeight: 700, color: '#495057'}}>{doctor.clinicLocation}</span>
-            </div>
-          )}
-          {doctor.mapLocation && (
-            <div style={{marginTop: 12}}>
-              <button
-                onClick={() => window.open(doctor.mapLocation, '_blank')}
-                style={{
-                  background: 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: 16,
-                  padding: window.innerWidth < 500 ? '0.8rem 1.5rem' : '1rem 2rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  fontSize: window.innerWidth < 500 ? 13 : 15,
-                  boxShadow: '0 4px 12px rgba(0, 188, 212, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                      gap: 10,
-                  margin: '0 auto',
-                  transition: 'all 0.3s ease',
-                  transform: 'translateY(0)'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.transform = 'translateY(-2px)';
-                  e.target.style.boxShadow = '0 6px 16px rgba(0, 188, 212, 0.4)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = '0 4px 12px rgba(0, 188, 212, 0.3)';
-                }}
-              >
-                <span style={{fontSize: '1.3em'}}>🗺️</span> {t('open_map_location')}
-              </button>
-            </div>
-          )}
-          {/* تم إخفاء رقم الهاتف بناءً على طلب المستخدم */}
-          {/* {doctor.phone && (
-            <div style={{
-              color:'#495057', 
-              fontSize: window.innerWidth < 500 ? 13 : 15, 
-              marginTop: 12,
-              textAlign: 'center',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
-            }}>
-              <span style={{fontSize: '1.2em'}}>📞</span>
-              <span style={{fontWeight: 600}}>{t('phone_label')}:</span>
-              <span style={{fontWeight: 700, color: '#495057'}}>{doctor.phone}</span>
-            </div>
-          )} */}
-          {doctor.about && (
-            <div style={{
-              color:'#495057', 
-              fontSize: window.innerWidth < 500 ? 13 : 15, 
-              marginTop: 16, 
-              textAlign:'center', 
-              lineHeight:1.6
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                marginBottom: '8px'
-              }}>
-                <span style={{fontSize: '1.3em'}}>👨‍⚕️</span>
-                <span style={{fontWeight: 700, color: '#495057'}}>{t('about_doctor_label')}:</span>
-              </div>
-              <div style={{
-                color: '#495057',
-                fontWeight: 500,
-                lineHeight: 1.7
-              }}>
-                {doctor.about}
-              </div>
-            </div>
-          )}
-          
-          {/* زر حجز لمستخدم آخر */}
-          <button
-            onClick={() => setShowBookingForOtherModal(true)}
-            style={{
-              background: 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 16,
-              padding: window.innerWidth < 500 ? '0.8rem 1.5rem' : '1rem 2rem',
-              fontWeight: 700,
-              fontSize: window.innerWidth < 500 ? 13 : 15,
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(0, 188, 212, 0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              marginTop: window.innerWidth < 500 ? 12 : 16,
-              transition: 'all 0.3s ease',
-              transform: 'translateY(0)'
-            }}
-            onMouseOver={(e) => {
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 6px 16px rgba(0, 188, 212, 0.4)';
-            }}
-            onMouseOut={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 4px 12px rgba(0, 188, 212, 0.3)';
-            }}
-          >
-            <span style={{fontSize: '1.2em'}}>📝</span> {window.innerWidth < 500 ? t('book_for_other_user_short') : t('book_for_other_user')}
-          </button>
-        </div>
-        
-        {/* الأوقات المتاحة */}
-        <div style={{marginTop: window.innerWidth < 500 ? 15 : 25}}>
-          <div style={{
-            fontWeight:700, 
-            fontSize: window.innerWidth < 500 ? 14 : 16, 
-            color:'#7c4dff', 
-            marginBottom:8,
-            textAlign: 'center'
-          }}>
-            {t('choose_booking_day')}
-          </div>
-          {/* شريط أيام الأسبوع بالكردية */}
-          <div style={{
-            display:'flex', 
-            justifyContent:'space-between', 
-            margin:'0 0 4px 0', 
-            fontWeight:700, 
-            color:'#7c4dff', 
-            fontSize: window.innerWidth < 500 ? 10 : 13
-          }}>
-            {weekdays.map(day => (
-              <div key={day} style={{width:'14.2%', textAlign:'center'}}>{day}</div>
-            ))}
-          </div>
-          {/* اسم الشهر والسنة بالكردية */}
-          {selectedDate && (
-            <div style={{
-              textAlign:'center', 
-              color:'#009688', 
-              fontWeight:800, 
-              fontSize: window.innerWidth < 500 ? 15 : 17, 
-              marginBottom:4
-            }}>
-              {months[selectedDate.getMonth()]} {selectedDate.getFullYear()}
-            </div>
-          )}
-          {/* التقويم الشهري الافتراضي بدون تخصيص */}
-          <div style={{
-            transform: window.innerWidth < 500 ? 'scale(0.9)' : 'scale(1)',
-            transformOrigin: 'top center'
-          }}>
-            <DatePicker
-              selected={selectedDate}
-              onChange={date => setSelectedDate(date)}
-              filterDate={isDayAvailable}
-              placeholderText="اختر يوم متاح..."
-              dateFormat="yyyy-MM-dd"
-              minDate={new Date()}
-              inline
-              locale={ar}
-            />
-          </div>
-          {selectedDate && availableTimes.length > 0 && (
-            <div style={{marginTop: window.innerWidth < 500 ? 12 : 18}}>
-              <div style={{
-                fontWeight:700, 
-                fontSize: window.innerWidth < 500 ? 14 : 16, 
-                color:'#7c4dff', 
-                marginBottom:8
-              }}>
-                اختر موعد الحجز:
-              </div>
-              <div style={{
-                display:'flex', 
-                flexWrap:'wrap', 
-                gap: window.innerWidth < 500 ? 6 : 8
-              }}>
-                {availableTimes.map((time, idx) => {
-                  const isBooked = bookedTimes.includes(time);
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      disabled={isBooked}
-                      onClick={()=>!isBooked && setSelectedTime(time)}
-                      style={{
-                        background: isBooked ? '#f5f5f5' : (selectedTime === time ? 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)' : '#f0f0f0'),
-                        color: isBooked ? '#999' : (selectedTime === time ? '#fff' : '#333'),
-                        border:'none', 
-                        borderRadius:12, 
-                        padding: window.innerWidth < 500 ? '0.6rem 1rem' : '0.8rem 1.2rem', 
-                        fontWeight:700, 
-                        fontSize: window.innerWidth < 500 ? 12 : 14, 
-                        cursor: isBooked ? 'not-allowed' : 'pointer', 
-                        boxShadow: selectedTime === time ? '0 2px 8px rgba(0, 188, 212, 0.3)' : '0 1px 4px #00000022',
-                        transition:'all 0.2s ease', 
-                        minWidth: window.innerWidth < 500 ? 70 : 80, 
-                        textAlign:'center',
-                        opacity: isBooked ? 0.6 : 1
-                      }}
-                    >
-                      {time} {isBooked && '(محجوز)'}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </div>
-        
-        {/* نموذج الحجز */}
-        <form onSubmit={handleBook} style={{
-          marginTop: window.innerWidth < 500 ? 10 : 15, 
-          display:'flex', 
-          flexDirection:'column', 
-          gap: window.innerWidth < 500 ? 6 : 8
-        }}>
-          <input type="hidden" value={selectedDate ? selectedDate.toISOString().slice(0,10) : ''} />
-          <input type="hidden" value={selectedTime} />
-          
-          {/* مؤشر الحجز لشخص آخر */}
-          {isBookingForOther && (
-            <div style={{
-              background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
-              border: '2px solid #4caf50',
-              borderRadius: '8px',
-              padding: '12px',
-              marginBottom: '8px',
-              textAlign: 'center'
-            }}>
-              <div style={{fontSize: 14, fontWeight: 600, color: '#2e7d32', marginBottom: '8px'}}>
-                👥 {t('booking.booking_for_other_person')}
-              </div>
-              <div style={{fontSize: 12, color: '#2e7d32'}}>
-                <strong>{t('booking.patient_name')}:</strong> {patientName} | 
-                <strong> {t('booking.patient_phone')}:</strong> {patientPhone}
-              </div>
-            </div>
-          )}
-          
-          <label style={{
-            fontSize: window.innerWidth < 500 ? 12 : 14,
-            fontWeight: 600,
-            color: '#333',
-            textAlign: 'center'
-          }}>
-            {t('reason_optional')}
-          </label>
-          <textarea 
-            value={reason} 
-            onChange={e=>setReason(e.target.value)} 
-            rows={2} 
-            style={{
-              padding: window.innerWidth < 500 ? 5 : 7, 
-              borderRadius:6, 
-              border:'2px solid #00bcd4', 
-              outline:'none', 
-              fontSize: window.innerWidth < 500 ? 12 : 14, 
-              minHeight: window.innerWidth < 500 ? 35 : 40, 
-              background:'#f7fafd'
-            }} 
-          />
-          
-          {/* حقل العمر */}
-          <label style={{
-            fontSize: window.innerWidth < 500 ? 12 : 14,
-            fontWeight: 600,
-            color: '#333',
-            textAlign: 'center'
-          }}>
-            {t('common.patient_age')} *
-          </label>
-          <input 
-            type="number" 
-            value={patientAge} 
-            onChange={e=>setPatientAge(e.target.value)} 
-            placeholder={t('common.age')}
-            min="1" 
-            max="120"
-            required
-            style={{
-              padding: window.innerWidth < 500 ? 5 : 7, 
-              borderRadius:6, 
-              border:'2px solid #00bcd4', 
-              outline:'none', 
-              fontSize: window.innerWidth < 500 ? 12 : 14, 
-              height: window.innerWidth < 500 ? 35 : 40, 
-              background:'#f7fafd',
-              textAlign: 'center'
-            }} 
-          />
-          <button 
-            type="submit" 
-            disabled={booking || !selectedDate || !selectedTime || !patientAge} 
-            style={{
-              background: booking || !selectedDate || !selectedTime || !patientAge ? '#ccc' : 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
-              color:'#fff', 
-              border:'none', 
-              borderRadius:16, 
-              padding: window.innerWidth < 500 ? '0.8rem 1.5rem' : '1rem 2rem', 
-              fontWeight:700, 
-              fontSize: window.innerWidth < 500 ? 14 : 16, 
-              cursor: booking || !selectedDate || !selectedTime || !patientAge ? 'not-allowed' : 'pointer', 
-              marginTop:12,
-              boxShadow: booking || !selectedDate || !selectedTime || !patientAge ? 'none' : '0 4px 12px rgba(0, 188, 212, 0.3)',
-              transition: 'all 0.3s ease',
-              transform: 'translateY(0)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
-            }}
-            onMouseEnter={(e) => {
-              if (!booking && selectedDate && selectedTime && patientAge) {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 6px 16px rgba(0, 188, 212, 0.4)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = booking || !selectedDate || !selectedTime || !patientAge ? 'none' : '0 4px 12px rgba(0, 188, 212, 0.3)';
-            }}
-          >
-            <span style={{fontSize: '1.2em'}}>📅</span>
-            {booking ? t('booking_in_progress') : (isBookingForOther ? t('booking.book_for_other_button') : t('book_appointment_button'))}
-          </button>
-          {success && (
-            <div style={{
-              color:'#00c853', 
-              fontWeight:700, 
-              marginTop:8,
-              fontSize: window.innerWidth < 500 ? 14 : 16
-            }}>
-              {success}
-            </div>
-          )}
-          
-          {/* زر إلغاء الحجز لشخص آخر */}
-          {isBookingForOther && (
-            <button
-              type="button"
-              onClick={() => {
-                setIsBookingForOther(false);
-                setPatientName('');
-                setPatientPhone('');
-              }}
-              style={{
-                background: '#f44336',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '8px 16px',
-                fontSize: '12px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                marginTop: '8px',
-                width: '100%'
-              }}
-            >
-              {t('booking.cancel_booking_for_other')}
-            </button>
-          )}
-        </form>
-      </div>
     </div>
   );
 }
 
-export default DoctorDetails; 
+export default DoctorDetails;
