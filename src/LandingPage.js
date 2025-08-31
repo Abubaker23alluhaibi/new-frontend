@@ -257,6 +257,20 @@ const LandingPage = () => {
           </nav>
 
           <div className="header-actions">
+            {/* Language Selector - Mobile & Desktop */}
+            <div className="language-selector">
+              <select 
+                value={currentLanguage} 
+                onChange={(e) => changeLanguage(e.target.value)} 
+                className="language-select-new"
+                disabled={isLanguageChanging}
+              >
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+                <option value="ku">کوردی</option>
+              </select>
+            </div>
+
             {/* More Menu Button - Mobile Only */}
             <div className="more-menu mobile-only" ref={moreMenuRef}>
               <button 
@@ -284,35 +298,8 @@ const LandingPage = () => {
                   <button className="back-home-btn-mobile" onClick={goToHome}>
                     {t('landing_page.header.back_to_home')}
                   </button>
-                  <div className="dropdown-divider"></div>
-                  <div className="language-selector-mobile">
-                    <select 
-                      value={currentLanguage} 
-                      onChange={(e) => changeLanguage(e.target.value)} 
-                      className="language-select-mobile-new"
-                      disabled={isLanguageChanging}
-                    >
-                      <option value="ar">العربية</option>
-                      <option value="en">English</option>
-                      <option value="ku">کوردی</option>
-                    </select>
-                  </div>
                 </div>
               )}
-            </div>
-
-            {/* Language Selector - Desktop Only */}
-            <div className="language-selector desktop-only">
-              <select 
-                value={currentLanguage} 
-                onChange={(e) => changeLanguage(e.target.value)} 
-                className="language-select-new"
-                disabled={isLanguageChanging}
-              >
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-                <option value="ku">کوردی</option>
-              </select>
             </div>
             
             <button className="login-btn" onClick={goToLogin}>
@@ -701,6 +688,7 @@ const LandingPage = () => {
                 <li><button onClick={() => scrollToSection('doctor-services')}>{t('landing_page.header.nav.doctor_services')}</button></li>
                 <li><button onClick={() => scrollToSection('how-to-use')}>{t('landing_page.header.nav.how_to_use')}</button></li>
                 <li><button onClick={() => navigate('/privacy')}>سياسة الخصوصية</button></li>
+                <li><button onClick={() => navigate('/terms')}>شروط الاستخدام</button></li>
               </ul>
             </div>
             <div className="footer-section">
