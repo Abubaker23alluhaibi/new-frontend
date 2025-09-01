@@ -500,6 +500,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
   const [activeTab, setActiveTab] = useState('basic');
   const [uploading, setUploading] = useState(false);
   const [viewingPdf, setViewingPdf] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
   const medicalReportsFileInputRef = useRef(null);
   const examinationsFileInputRef = useRef(null);
 
@@ -537,6 +538,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
 
   // دالة لفتح PDF في modal
   const openPdfViewer = (fileUrl, fileName) => {
+    setPdfLoading(true);
     setViewingPdf({ url: fileUrl, name: fileName });
   };
 
@@ -922,22 +924,40 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
               <button onClick={closePdfViewer} className="btn-close">×</button>
             </div>
             <div className="pdf-viewer-body">
+              {pdfLoading && (
+                <div className="pdf-loading">
+                  <div className="loading-spinner"></div>
+                  <p>جاري تحميل الملف...</p>
+                </div>
+              )}
               <iframe
-                src={viewingPdf.url}
+                src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(viewingPdf.url)}`}
                 width="100%"
                 height="100%"
                 style={{ border: 'none' }}
                 title={viewingPdf.name}
+                onLoad={() => setPdfLoading(false)}
+                onError={() => setPdfLoading(false)}
               />
             </div>
             <div className="pdf-viewer-footer">
-              <a 
-                href={viewingPdf.url} 
-                download={viewingPdf.name}
-                className="btn-download"
-              >
-                ⬇️ تحميل الملف
-              </a>
+              <div className="footer-left">
+                <a 
+                  href={viewingPdf.url} 
+                  download={viewingPdf.name}
+                  className="btn-download"
+                >
+                  ⬇️ تحميل الملف
+                </a>
+                <a 
+                  href={viewingPdf.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-open-new"
+                >
+                  🔗 فتح في نافذة جديدة
+                </a>
+              </div>
               <button onClick={closePdfViewer} className="btn-cancel">
                 إغلاق
               </button>
