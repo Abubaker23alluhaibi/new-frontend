@@ -238,9 +238,37 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
   const medicalReportsFileInputRef = useRef(null);
   const examinationsFileInputRef = useRef(null);
 
+  // تشخيص بيانات المريض
+  console.log('🔍 PatientDetails - patient:', patient);
+  console.log('🔍 PatientDetails - patient._id:', patient?._id);
+
+  // التحقق من وجود المريض
+  if (!patient) {
+    return (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <div className="error-message">
+            <h3>خطأ</h3>
+            <p>لا يوجد مريض محدد</p>
+            <button onClick={onClose} className="btn-close">
+              إغلاق
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const handleFileUpload = async (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    // التحقق من وجود المريض ومعرفه
+    if (!patient || !patient._id) {
+      console.error('❌ لا يوجد مريض محدد أو معرف المريض مفقود');
+      toast.error(t('patient_management.error_no_patient_selected'));
+      return;
+    }
 
     const formData = new FormData();
     formData.append('file', file);
@@ -249,6 +277,7 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
 
     setUploading(true);
     try {
+      console.log('🔍 رفع ملف للمريض:', patient._id, 'النوع:', type);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${type}`, {
         method: 'POST',
         body: formData,
@@ -273,7 +302,15 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
   const handleDeleteFile = async (fileId, type) => {
     if (!window.confirm(t('patient_management.confirm_delete_file'))) return;
 
+    // التحقق من وجود المريض ومعرفه
+    if (!patient || !patient._id) {
+      console.error('❌ لا يوجد مريض محدد أو معرف المريض مفقود');
+      toast.error(t('patient_management.error_no_patient_selected'));
+      return;
+    }
+
     try {
+      console.log('🔍 حذف ملف للمريض:', patient._id, 'النوع:', type, 'معرف الملف:', fileId);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${type}/${fileId}`, {
         method: 'DELETE',
         credentials: 'include'
@@ -743,12 +780,14 @@ const PatientManagementPage = () => {
   // جلب تفاصيل مريض واحد
   const fetchPatientDetails = async (patientId) => {
     try {
+      console.log('🔍 fetchPatientDetails - patientId:', patientId);
       const token = getAuthToken();
       if (!token) {
         console.error('❌ لا يوجد token في fetchPatientDetails');
         return null;
       }
 
+      console.log('🔍 fetchPatientDetails - making request to:', `${process.env.REACT_APP_API_URL}/doctors/me/patients/${patientId}`);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients/${patientId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -756,10 +795,14 @@ const PatientManagementPage = () => {
         credentials: 'include'
       });
 
+      console.log('🔍 fetchPatientDetails - response status:', response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 fetchPatientDetails - response data:', data);
         return data.patient;
       } else {
+        const errorData = await response.json();
+        console.error('🔍 fetchPatientDetails - error response:', errorData);
         throw new Error('Failed to fetch patient details');
       }
     } catch (error) {
@@ -771,9 +814,12 @@ const PatientManagementPage = () => {
   // فتح تفاصيل المريض
   const openPatientDetails = async (patientId) => {
     try {
+      console.log('🔍 openPatientDetails - patientId:', patientId);
       const patient = await fetchPatientDetails(patientId);
+      console.log('🔍 openPatientDetails - fetched patient:', patient);
       if (patient) {
         setSelectedPatient(patient);
+        console.log('🔍 openPatientDetails - setSelectedPatient called');
       } else {
         toast.error(t('patient_management.error_loading_patient_details'));
       }
