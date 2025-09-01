@@ -675,7 +675,7 @@ const PatientManagementPage = () => {
         return;
       }
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/patients/${patientId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients/${patientId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -697,9 +697,90 @@ const PatientManagementPage = () => {
   };
 
   // تحديث بيانات المريض
-  const updatePatient = (updatedPatient) => {
-    setPatients(prev => prev.map(p => p._id === updatedPatient._id ? updatedPatient : p));
-    setSelectedPatient(updatedPatient);
+  const updatePatient = async (patientId, updatedData) => {
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        console.error('❌ لا يوجد token في updatePatient');
+        return;
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients/${patientId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedData),
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success(t('patient_management.update_patient_success'));
+        
+        // تحديث قائمة المرضى
+        setPatients(prev => prev.map(p => p._id === patientId ? data.patient : p));
+        
+        // تحديث المريض المحدد إذا كان هو نفسه
+        if (selectedPatient && selectedPatient._id === patientId) {
+          setSelectedPatient(data.patient);
+        }
+        
+        // إعادة جلب الإحصائيات
+        fetchPatientStats();
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update patient');
+      }
+    } catch (error) {
+      console.error('Error updating patient:', error);
+      toast.error(t('patient_management.error_updating_patient'));
+      throw error;
+    }
+  };
+
+  // جلب تفاصيل مريض واحد
+  const fetchPatientDetails = async (patientId) => {
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        console.error('❌ لا يوجد token في fetchPatientDetails');
+        return null;
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients/${patientId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.patient;
+      } else {
+        throw new Error('Failed to fetch patient details');
+      }
+    } catch (error) {
+      console.error('Error fetching patient details:', error);
+      return null;
+    }
+  };
+
+  // فتح تفاصيل المريض
+  const openPatientDetails = async (patientId) => {
+    try {
+      const patient = await fetchPatientDetails(patientId);
+      if (patient) {
+        setSelectedPatient(patient);
+      } else {
+        toast.error(t('patient_management.error_loading_patient_details'));
+      }
+    } catch (error) {
+      console.error('Error opening patient details:', error);
+      toast.error(t('patient_management.error_loading_patient_details'));
+    }
   };
 
   useEffect(() => {
@@ -777,10 +858,16 @@ const PatientManagementPage = () => {
                   </div>
                   <div className="patient-actions">
                     <button
-                      onClick={() => setSelectedPatient(patient)}
+                      onClick={() => openPatientDetails(patient._id)}
                       className="btn-view"
                     >
                       {t('patient_management.view_patient')}
+                    </button>
+                    <button
+                      onClick={() => setSelectedPatient(patient)}
+                      className="btn-edit"
+                    >
+                      {t('patient_management.edit_patient')}
                     </button>
                     <button
                       onClick={() => deletePatient(patient._id)}
