@@ -186,6 +186,10 @@ export const AuthProvider = ({ children }) => {
       if (res.ok) {
         // حفظ بيانات المستخدم في localStorage
         const userData = loginType === 'doctor' ? data.doctor : data.user;
+        // إضافة الـ token إلى بيانات المستخدم
+        if (data.token) {
+          userData.token = data.token;
+        }
         setUser(userData);
         setProfile(userData);
         

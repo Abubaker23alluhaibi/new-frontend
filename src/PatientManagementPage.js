@@ -479,9 +479,28 @@ const PatientManagementPage = () => {
   const [loading, setLoading] = useState(true);
   const [todayAppointments, setTodayAppointments] = useState([]);
 
+  // دالة مساعدة للحصول على التوكن
+  const getAuthToken = () => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        return userData.token || userData.accessToken;
+      } catch (error) {
+        console.error('❌ خطأ في قراءة التوكن:', error);
+      }
+    }
+    return null;
+  };
+
   // جلب المرضى
   const fetchPatients = useCallback(async () => {
     try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('لا يوجد توكن مصادقة صحيح');
+      }
+
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '10',
@@ -489,6 +508,9 @@ const PatientManagementPage = () => {
       });
 
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients?${params}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         credentials: 'include'
       });
 
@@ -510,7 +532,15 @@ const PatientManagementPage = () => {
   // جلب إحصائيات المرضى
   const fetchPatientStats = useCallback(async () => {
     try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('لا يوجد توكن مصادقة صحيح');
+      }
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients/stats`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         credentials: 'include'
       });
 
@@ -526,8 +556,16 @@ const PatientManagementPage = () => {
   // جلب مواعيد اليوم
   const fetchTodayAppointments = useCallback(async () => {
     try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('لا يوجد توكن مصادقة صحيح');
+      }
+
       const today = new Date().toISOString().split('T')[0];
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/1?date=${today}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         credentials: 'include'
       });
 
@@ -543,10 +581,16 @@ const PatientManagementPage = () => {
   // إضافة مريض جديد
   const addPatient = async (patientData) => {
     try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('لا يوجد توكن مصادقة صحيح');
+      }
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(patientData),
         credentials: 'include'
@@ -572,8 +616,16 @@ const PatientManagementPage = () => {
     if (!window.confirm(t('patient_management.delete_patient_confirm'))) return;
 
     try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('لا يوجد توكن مصادقة صحيح');
+      }
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/patients/${patientId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         credentials: 'include'
       });
 
