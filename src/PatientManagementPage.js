@@ -231,7 +231,7 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
 };
 
 // مكون تفاصيل المريض مع رفع الملفات
-const PatientDetails = ({ patient, onClose, onUpdate }) => {
+const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSelectedPatient }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('basic');
@@ -328,8 +328,12 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
       });
 
       if (response.ok) {
-        const updatedPatient = await response.json();
-        onUpdate(updatedPatient);
+        await response.json(); // تجاهل النتيجة
+        // إعادة تحميل بيانات المريض المحدثة
+        const updatedPatient = await fetchPatientDetails(patient._id);
+        if (updatedPatient) {
+          setSelectedPatient(updatedPatient);
+        }
         toast.success(t('patient_management.file_uploaded_successfully'));
       } else {
         throw new Error('Upload failed');
@@ -370,8 +374,12 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
       });
 
       if (response.ok) {
-        const updatedPatient = await response.json();
-        onUpdate(updatedPatient);
+        await response.json(); // تجاهل النتيجة
+        // إعادة تحميل بيانات المريض المحدثة
+        const updatedPatient = await fetchPatientDetails(patient._id);
+        if (updatedPatient) {
+          setSelectedPatient(updatedPatient);
+        }
         toast.success(t('patient_management.file_deleted_successfully'));
       } else {
         throw new Error('Delete failed');
@@ -696,7 +704,8 @@ const PatientManagementPage = () => {
       }
 
       const today = new Date().toISOString().split('T')[0];
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/1?date=${today}`, {
+      const doctorId = user?._id || JSON.parse(localStorage.getItem('user') || '{}')._id;
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/${doctorId}?date=${today}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -710,7 +719,7 @@ const PatientManagementPage = () => {
     } catch (error) {
       console.error('Error fetching today appointments:', error);
     }
-  }, [getAuthToken]);
+  }, [getAuthToken, user]);
 
   // إضافة مريض جديد
   const addPatient = async (patientData) => {
@@ -1026,6 +1035,8 @@ const PatientManagementPage = () => {
           patient={selectedPatient}
           onClose={() => setSelectedPatient(null)}
           onUpdate={updatePatient}
+          fetchPatientDetails={fetchPatientDetails}
+          setSelectedPatient={setSelectedPatient}
         />
       )}
     </div>
