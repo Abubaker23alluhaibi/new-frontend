@@ -214,7 +214,8 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
 
         <div className="form-actions">
           <SecureButton
-            permission="MANAGE_PATIENTS"
+            elementType="medical_notes"
+            doctorId={patient?.doctorId}
             type="submit"
             disabled={loading}
             className="btn-primary"
@@ -235,7 +236,8 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('basic');
   const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef(null);
+  const medicalReportsFileInputRef = useRef(null);
+  const examinationsFileInputRef = useRef(null);
 
   const handleFileUpload = async (e, type) => {
     const file = e.target.files[0];
@@ -248,7 +250,7 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
 
     setUploading(true);
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/patients/${patient._id}/${type}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${type}`, {
         method: 'POST',
         body: formData,
         credentials: 'include'
@@ -273,7 +275,7 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
     if (!window.confirm(t('patient_management.confirm_delete_file'))) return;
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/patients/${patient._id}/${type}/${fileId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${type}/${fileId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -367,15 +369,16 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
               <div className="upload-section">
                 <h4>{t('patient_management.upload_medical_report')}</h4>
                 <input
-                  ref={fileInputRef}
+                  ref={medicalReportsFileInputRef}
                   type="file"
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                   onChange={(e) => handleFileUpload(e, 'medical-reports')}
                   style={{ display: 'none' }}
                 />
                 <SecureButton
-                  permission="MANAGE_PATIENTS"
-                  onClick={() => fileInputRef.current?.click()}
+                  elementType="medical_notes"
+                  doctorId={patient.doctorId}
+                  onClick={() => medicalReportsFileInputRef.current?.click()}
                   disabled={uploading}
                   className="btn-upload"
                 >
@@ -397,9 +400,11 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
                           {t('patient_management.view_file')}
                         </a>
                         <SecureButton
-                          permission="MANAGE_PATIENTS"
+                          elementType="medical_notes"
+                          doctorId={patient.doctorId}
                           onClick={() => handleDeleteFile(report._id, 'medical-reports')}
                           className="btn-delete"
+                          variant="danger"
                         >
                           {t('patient_management.delete')}
                         </SecureButton>
@@ -418,15 +423,16 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
               <div className="upload-section">
                 <h4>{t('patient_management.upload_examination')}</h4>
                 <input
-                  ref={fileInputRef}
+                  ref={examinationsFileInputRef}
                   type="file"
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                   onChange={(e) => handleFileUpload(e, 'examinations')}
                   style={{ display: 'none' }}
                 />
                 <SecureButton
-                  permission="MANAGE_PATIENTS"
-                  onClick={() => fileInputRef.current?.click()}
+                  elementType="medical_notes"
+                  doctorId={patient.doctorId}
+                  onClick={() => examinationsFileInputRef.current?.click()}
                   disabled={uploading}
                   className="btn-upload"
                 >
@@ -448,9 +454,11 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
                           {t('patient_management.view_file')}
                         </a>
                         <SecureButton
-                          permission="MANAGE_PATIENTS"
+                          elementType="medical_notes"
+                          doctorId={patient.doctorId}
                           onClick={() => handleDeleteFile(examination._id, 'examinations')}
                           className="btn-delete"
+                          variant="danger"
                         >
                           {t('patient_management.delete')}
                         </SecureButton>
