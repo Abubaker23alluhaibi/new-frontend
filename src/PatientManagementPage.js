@@ -773,13 +773,36 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                   patient.medicalReports.map((report, index) => (
                     <div key={index} className="file-item">
                       <div className="file-info">
-                        <h5>{report.title}</h5>
+                        <h5>
+                          {report.fileType === 'application/pdf' || report.title.includes('.pdf') ? '📄' : '📎'} 
+                          {report.title}
+                        </h5>
                         <p>{report.description}</p>
                         <small>{new Date(report.uploadDate).toLocaleDateString('ar-EG')}</small>
                       </div>
                       <div className="file-actions">
-                        <a href={report.fileUrl} target="_blank" rel="noopener noreferrer" className="btn-view">
-                          {t('patient_management.view_file')}
+                        <a 
+                          href={report.fileUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="btn-view"
+                          onClick={(e) => {
+                            // إذا كان الملف PDF، أضف معاملات Cloudinary للعرض
+                            if (report.fileType === 'application/pdf' || report.fileUrl.includes('.pdf')) {
+                              e.preventDefault();
+                              const pdfUrl = report.fileUrl.replace('/upload/', '/upload/fl_attachment/');
+                              window.open(pdfUrl, '_blank');
+                            }
+                          }}
+                        >
+                          👁️ {t('patient_management.view_file')}
+                        </a>
+                        <a 
+                          href={report.fileUrl} 
+                          download={report.title}
+                          className="btn-download"
+                        >
+                          ⬇️ تحميل
                         </a>
                         <button
                           onClick={() => handleDeleteFile(report._id, 'medical-reports')}
@@ -822,13 +845,36 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                   patient.examinations.map((examination, index) => (
                     <div key={index} className="file-item">
                       <div className="file-info">
-                        <h5>{examination.title}</h5>
+                        <h5>
+                          {examination.fileType === 'application/pdf' || examination.title.includes('.pdf') ? '📄' : '📎'} 
+                          {examination.title}
+                        </h5>
                         <p>{examination.description}</p>
                         <small>{new Date(examination.uploadDate).toLocaleDateString('ar-EG')}</small>
                       </div>
                       <div className="file-actions">
-                        <a href={examination.fileUrl} target="_blank" rel="noopener noreferrer" className="btn-view">
-                          {t('patient_management.view_file')}
+                        <a 
+                          href={examination.fileUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="btn-view"
+                          onClick={(e) => {
+                            // إذا كان الملف PDF، أضف معاملات Cloudinary للعرض
+                            if (examination.fileType === 'application/pdf' || examination.fileUrl.includes('.pdf')) {
+                              e.preventDefault();
+                              const pdfUrl = examination.fileUrl.replace('/upload/', '/upload/fl_attachment/');
+                              window.open(pdfUrl, '_blank');
+                            }
+                          }}
+                        >
+                          👁️ {t('patient_management.view_file')}
+                        </a>
+                        <a 
+                          href={examination.fileUrl} 
+                          download={examination.title}
+                          className="btn-download"
+                        >
+                          ⬇️ تحميل
                         </a>
                         <button
                           onClick={() => handleDeleteFile(examination._id, 'examinations')}
