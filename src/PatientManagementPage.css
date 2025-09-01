@@ -700,3 +700,10 @@
     justify-content: center;
   }
 }
+
+
+
+/* Full width info items */
+.info-item.full-width {
+  grid-column: 1 / -1;
+}

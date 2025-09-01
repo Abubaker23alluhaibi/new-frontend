@@ -15,6 +15,10 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
     phone: '',
     gender: '',
     address: '',
+    bloodType: 'غير محدد',
+    chiefComplaint: '',
+    chronicDiseases: '',
+    otherConditions: '',
     emergencyContact: {
       name: '',
       phone: '',
@@ -55,6 +59,10 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
         phone: '',
         gender: '',
         address: '',
+        bloodType: 'غير محدد',
+        chiefComplaint: '',
+        chronicDiseases: '',
+        otherConditions: '',
         emergencyContact: { name: '', phone: '', relationship: '' },
         notes: ''
       });
@@ -171,6 +179,56 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
           />
         </div>
 
+        <div className="form-row">
+          <div className="form-group">
+            <label>زمرة الدم</label>
+            <select
+              value={formData.bloodType}
+              onChange={(e) => setFormData({...formData, bloodType: e.target.value})}
+            >
+              <option value="غير محدد">غير محدد</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>ما يشكو منه المريض</label>
+          <textarea
+            value={formData.chiefComplaint}
+            onChange={(e) => setFormData({...formData, chiefComplaint: e.target.value})}
+            placeholder="وصف الشكوى الرئيسية للمريض..."
+            rows="3"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>الأمراض المزمنة</label>
+          <textarea
+            value={formData.chronicDiseases}
+            onChange={(e) => setFormData({...formData, chronicDiseases: e.target.value})}
+            placeholder="اكتب الأمراض المزمنة التي يعاني منها المريض..."
+            rows="3"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>أمراض أخرى</label>
+          <textarea
+            value={formData.otherConditions}
+            onChange={(e) => setFormData({...formData, otherConditions: e.target.value})}
+            placeholder="اكتب أي أمراض أخرى أو حالات طبية..."
+            rows="3"
+          />
+        </div>
+
         <div className="form-group">
           <label>{t('patient_management.emergency_contact')}</label>
           <div className="emergency-contact-fields">
@@ -226,6 +284,211 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
           </button>
         </div>
       </form>
+    </div>
+  );
+};
+
+// مكون تعديل المريض
+const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
+  const [formData, setFormData] = useState({
+    name: patient.name || '',
+    age: patient.age || '',
+    phone: patient.phone || '',
+    gender: patient.gender || '',
+    address: patient.address || '',
+    bloodType: patient.bloodType || 'غير محدد',
+    chiefComplaint: patient.chiefComplaint || '',
+    chronicDiseases: patient.chronicDiseases || '',
+    otherConditions: patient.otherConditions || '',
+    emergencyContact: {
+      name: patient.emergencyContact?.name || '',
+      phone: patient.emergencyContact?.phone || '',
+      relationship: patient.emergencyContact?.relationship || ''
+    },
+    notes: patient.notes || ''
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await onUpdate(patient._id, formData);
+      onCancel();
+    } catch (error) {
+      console.error('Error updating patient:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content edit-patient-modal">
+        <div className="modal-header">
+          <h2>تعديل بيانات المريض</h2>
+          <button onClick={onCancel} className="btn-close">×</button>
+        </div>
+        
+        <form onSubmit={handleSubmit}>
+          <div className="form-row">
+            <div className="form-group">
+              <label>اسم المريض *</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>العمر *</label>
+              <input
+                type="number"
+                min="1"
+                max="120"
+                value={formData.age}
+                onChange={(e) => setFormData({...formData, age: e.target.value})}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>رقم الهاتف *</label>
+              <input
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>الجنس *</label>
+              <select
+                value={formData.gender}
+                onChange={(e) => setFormData({...formData, gender: e.target.value})}
+                required
+              >
+                <option value="">اختر الجنس</option>
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>العنوان</label>
+            <input
+              type="text"
+              value={formData.address}
+              onChange={(e) => setFormData({...formData, address: e.target.value})}
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>زمرة الدم</label>
+              <select
+                value={formData.bloodType}
+                onChange={(e) => setFormData({...formData, bloodType: e.target.value})}
+              >
+                <option value="غير محدد">غير محدد</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>ما يشكو منه المريض</label>
+            <textarea
+              value={formData.chiefComplaint}
+              onChange={(e) => setFormData({...formData, chiefComplaint: e.target.value})}
+              placeholder="وصف الشكوى الرئيسية للمريض..."
+              rows="3"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>الأمراض المزمنة</label>
+            <textarea
+              value={formData.chronicDiseases}
+              onChange={(e) => setFormData({...formData, chronicDiseases: e.target.value})}
+              placeholder="اكتب الأمراض المزمنة التي يعاني منها المريض..."
+              rows="3"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>أمراض أخرى</label>
+            <textarea
+              value={formData.otherConditions}
+              onChange={(e) => setFormData({...formData, otherConditions: e.target.value})}
+              placeholder="اكتب أي أمراض أخرى أو حالات طبية..."
+              rows="3"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>جهة الاتصال في الطوارئ</label>
+            <div className="emergency-contact-fields">
+              <input
+                type="text"
+                placeholder="اسم جهة الاتصال"
+                value={formData.emergencyContact.name}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  emergencyContact: {...formData.emergencyContact, name: e.target.value}
+                })}
+              />
+              <input
+                type="tel"
+                placeholder="رقم الهاتف"
+                value={formData.emergencyContact.phone}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  emergencyContact: {...formData.emergencyContact, phone: e.target.value}
+                })}
+              />
+              <input
+                type="text"
+                placeholder="العلاقة"
+                value={formData.emergencyContact.relationship}
+                onChange={(e) => setFormData({
+                  ...formData,
+                  emergencyContact: {...formData.emergencyContact, relationship: e.target.value}
+                })}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>ملاحظات</label>
+            <textarea
+              value={formData.notes}
+              onChange={(e) => setFormData({...formData, notes: e.target.value})}
+              rows="3"
+            />
+          </div>
+
+          <div className="form-actions">
+            <button type="button" onClick={onCancel} className="btn-cancel">
+              إلغاء
+            </button>
+            <button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
@@ -445,6 +708,30 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                     <span>{patient.address}</span>
                   </div>
                 )}
+                {patient.bloodType && patient.bloodType !== 'غير محدد' && (
+                  <div className="info-item">
+                    <label>زمرة الدم:</label>
+                    <span>{patient.bloodType}</span>
+                  </div>
+                )}
+                {patient.chiefComplaint && (
+                  <div className="info-item full-width">
+                    <label>ما يشكو منه المريض:</label>
+                    <span>{patient.chiefComplaint}</span>
+                  </div>
+                )}
+                {patient.chronicDiseases && (
+                  <div className="info-item full-width">
+                    <label>الأمراض المزمنة:</label>
+                    <span>{patient.chronicDiseases}</span>
+                  </div>
+                )}
+                {patient.otherConditions && (
+                  <div className="info-item full-width">
+                    <label>أمراض أخرى:</label>
+                    <span>{patient.otherConditions}</span>
+                  </div>
+                )}
                 {patient.emergencyContact?.name && (
                   <div className="info-item">
                     <label>{t('patient_management.emergency_contact')}:</label>
@@ -573,6 +860,7 @@ const PatientManagementPage = () => {
   const [patientStats, setPatientStats] = useState({});
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [editingPatient, setEditingPatient] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({});
@@ -891,6 +1179,23 @@ const PatientManagementPage = () => {
     }
   };
 
+  const openEditPatient = async (patientId) => {
+    try {
+      console.log('🔍 openEditPatient - patientId:', patientId);
+      const patient = await fetchPatientDetails(patientId);
+      console.log('🔍 openEditPatient - fetched patient:', patient);
+      if (patient) {
+        setEditingPatient(patient);
+        console.log('🔍 openEditPatient - setEditingPatient called');
+      } else {
+        toast.error(t('patient_management.error_loading_patient_details'));
+      }
+    } catch (error) {
+      console.error('Error opening edit patient:', error);
+      toast.error(t('patient_management.error_loading_patient_details'));
+    }
+  };
+
   useEffect(() => {
     fetchPatients();
     fetchPatientStats();
@@ -972,7 +1277,7 @@ const PatientManagementPage = () => {
                       {t('patient_management.view_patient')}
                     </button>
                     <button
-                      onClick={() => setSelectedPatient(patient)}
+                      onClick={() => openEditPatient(patient._id)}
                       className="btn-edit"
                     >
                       {t('patient_management.edit_patient')}
@@ -1037,6 +1342,15 @@ const PatientManagementPage = () => {
           onUpdate={updatePatient}
           fetchPatientDetails={fetchPatientDetails}
           setSelectedPatient={setSelectedPatient}
+        />
+      )}
+
+      {/* تعديل المريض */}
+      {editingPatient && (
+        <EditPatientForm
+          patient={editingPatient}
+          onUpdate={updatePatient}
+          onCancel={() => setEditingPatient(null)}
         />
       )}
     </div>
