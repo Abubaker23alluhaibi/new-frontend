@@ -214,8 +214,7 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
 
         <div className="form-actions">
           <SecureButton
-            elementType="medical_notes"
-            doctorId={patient?.doctorId}
+            permission="MANAGE_PATIENTS"
             type="submit"
             disabled={loading}
             className="btn-primary"
