@@ -233,10 +233,43 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
 // مكون تفاصيل المريض مع رفع الملفات
 const PatientDetails = ({ patient, onClose, onUpdate }) => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('basic');
   const [uploading, setUploading] = useState(false);
   const medicalReportsFileInputRef = useRef(null);
   const examinationsFileInputRef = useRef(null);
+
+  // دالة مساعدة للحصول على التوكن
+  const getAuthToken = useCallback(() => {
+    // أولاً: جرب الحصول على الـ token من AuthContext
+    if (user && user.token) {
+      return user.token;
+    }
+    
+    // ثانياً: جرب الحصول على الـ token من localStorage
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        return userData.token || userData.accessToken;
+      } catch (error) {
+        console.error('❌ خطأ في قراءة التوكن:', error);
+      }
+    }
+    
+    // ثالثاً: جرب الحصول على الـ token من localStorage (currentUser)
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+      try {
+        const currentUserData = JSON.parse(currentUser);
+        return currentUserData.token || currentUserData.accessToken;
+      } catch (error) {
+        console.error('❌ خطأ في قراءة التوكن من currentUser:', error);
+      }
+    }
+    
+    return null;
+  }, [user]);
 
   // تشخيص بيانات المريض
   console.log('🔍 PatientDetails - patient:', patient);
@@ -277,9 +310,19 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
 
     setUploading(true);
     try {
+      const token = getAuthToken();
+      if (!token) {
+        console.error('❌ لا يوجد token في handleFileUpload');
+        toast.error('يرجى تسجيل الدخول مرة أخرى');
+        return;
+      }
+
       console.log('🔍 رفع ملف للمريض:', patient._id, 'النوع:', type);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${type}`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData,
         credentials: 'include'
       });
@@ -310,9 +353,19 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
     }
 
     try {
+      const token = getAuthToken();
+      if (!token) {
+        console.error('❌ لا يوجد token في handleDeleteFile');
+        toast.error('يرجى تسجيل الدخول مرة أخرى');
+        return;
+      }
+
       console.log('🔍 حذف ملف للمريض:', patient._id, 'النوع:', type, 'معرف الملف:', fileId);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${type}/${fileId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         credentials: 'include'
       });
 
