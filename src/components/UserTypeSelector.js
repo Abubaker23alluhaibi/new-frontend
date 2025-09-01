@@ -147,6 +147,9 @@ const UserTypeSelector = () => {
       const data = await response.json();
 
       if (response.ok) {
+        console.log('🔍 UserTypeSelector - profile:', profile);
+        console.log('🔍 UserTypeSelector - profile.token:', profile.token);
+        
         // حفظ نوع المستخدم الحالي والصلاحيات
         const userData = {
           ...profile,
@@ -155,7 +158,22 @@ const UserTypeSelector = () => {
           employeeInfo: data.employeeInfo || null
         };
 
+        // التأكد من نقل الـ token الأصلي
+        if (profile.token) {
+          userData.token = profile.token;
+          console.log('🔍 UserTypeSelector - token transferred:', profile.token);
+        } else {
+          console.log('❌ UserTypeSelector - no token in profile');
+        }
+
         localStorage.setItem('currentUser', JSON.stringify(userData));
+        
+        // أيضاً تحديث بيانات المستخدم الأساسية في localStorage
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('profile', JSON.stringify(userData));
+        
+        console.log('🔍 UserTypeSelector - final userData:', userData);
+        console.log('🔍 UserTypeSelector - final userData.token:', userData.token);
         
         // تحديث AuthContext مباشرة
         setCurrentUserType(selectedType);

@@ -489,7 +489,7 @@ const PatientManagementPage = () => {
       return user.token;
     }
     
-    // ثانياً: جرب الحصول على الـ token من localStorage
+    // ثانياً: جرب الحصول على الـ token من localStorage (user)
     const savedUser = localStorage.getItem('user');
     console.log('🔍 getAuthToken - savedUser:', savedUser);
     
@@ -501,13 +501,36 @@ const PatientManagementPage = () => {
         console.log('🔍 getAuthToken - accessToken:', userData.accessToken);
         
         const token = userData.token || userData.accessToken;
-        console.log('🔍 getAuthToken - final token:', token);
-        return token;
+        if (token) {
+          console.log('🔍 getAuthToken - final token from user:', token);
+          return token;
+        }
       } catch (error) {
-        console.error('❌ خطأ في قراءة التوكن:', error);
+        console.error('❌ خطأ في قراءة التوكن من user:', error);
       }
     }
-    console.log('❌ لا يوجد مستخدم محفوظ في localStorage أو AuthContext');
+    
+    // ثالثاً: جرب الحصول على الـ token من localStorage (currentUser)
+    const currentUser = localStorage.getItem('currentUser');
+    console.log('🔍 getAuthToken - currentUser:', currentUser);
+    
+    if (currentUser) {
+      try {
+        const currentUserData = JSON.parse(currentUser);
+        console.log('🔍 getAuthToken - currentUserData:', currentUserData);
+        console.log('🔍 getAuthToken - currentUserData.token:', currentUserData.token);
+        
+        const token = currentUserData.token || currentUserData.accessToken;
+        if (token) {
+          console.log('🔍 getAuthToken - final token from currentUser:', token);
+          return token;
+        }
+      } catch (error) {
+        console.error('❌ خطأ في قراءة التوكن من currentUser:', error);
+      }
+    }
+    
+    console.log('❌ لا يوجد token في أي مكان');
     return null;
   }, [user]);
 
@@ -606,8 +629,13 @@ const PatientManagementPage = () => {
       if (!token) {
         console.error('❌ لا يوجد token - user:', user);
         console.error('❌ لا يوجد token - localStorage user:', localStorage.getItem('user'));
-        toast.error('يرجى تسجيل الدخول مرة أخرى');
-        navigate('/login');
+        console.error('❌ لا يوجد token - localStorage currentUser:', localStorage.getItem('currentUser'));
+        
+        // محاولة إعادة تحميل الصفحة أولاً
+        toast.error('مشكلة في المصادقة، جاري إعادة التحميل...');
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
         return;
       }
 
