@@ -213,14 +213,13 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
         </div>
 
         <div className="form-actions">
-          <SecureButton
-            permission="MANAGE_PATIENTS"
+          <button
             type="submit"
             disabled={loading}
             className="btn-primary"
           >
             {loading ? t('patient_management.loading') : t('patient_management.add')}
-          </SecureButton>
+          </button>
           <button type="button" onClick={onCancel} className="btn-secondary">
             {t('patient_management.cancel')}
           </button>
@@ -374,15 +373,13 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
                   onChange={(e) => handleFileUpload(e, 'medical-reports')}
                   style={{ display: 'none' }}
                 />
-                <SecureButton
-                  elementType="medical_notes"
-                  doctorId={patient.doctorId}
+                <button
                   onClick={() => medicalReportsFileInputRef.current?.click()}
                   disabled={uploading}
                   className="btn-upload"
                 >
                   {uploading ? t('patient_management.uploading') : t('patient_management.choose_file')}
-                </SecureButton>
+                </button>
               </div>
 
               <div className="files-list">
@@ -398,15 +395,12 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
                         <a href={report.fileUrl} target="_blank" rel="noopener noreferrer" className="btn-view">
                           {t('patient_management.view_file')}
                         </a>
-                        <SecureButton
-                          elementType="medical_notes"
-                          doctorId={patient.doctorId}
+                        <button
                           onClick={() => handleDeleteFile(report._id, 'medical-reports')}
                           className="btn-delete"
-                          variant="danger"
                         >
                           {t('patient_management.delete')}
-                        </SecureButton>
+                        </button>
                       </div>
                     </div>
                   ))
@@ -428,15 +422,13 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
                   onChange={(e) => handleFileUpload(e, 'examinations')}
                   style={{ display: 'none' }}
                 />
-                <SecureButton
-                  elementType="medical_notes"
-                  doctorId={patient.doctorId}
+                <button
                   onClick={() => examinationsFileInputRef.current?.click()}
                   disabled={uploading}
                   className="btn-upload"
                 >
                   {uploading ? t('patient_management.uploading') : t('patient_management.choose_file')}
-                </SecureButton>
+                </button>
               </div>
 
               <div className="files-list">
@@ -452,15 +444,12 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
                         <a href={examination.fileUrl} target="_blank" rel="noopener noreferrer" className="btn-view">
                           {t('patient_management.view_file')}
                         </a>
-                        <SecureButton
-                          elementType="medical_notes"
-                          doctorId={patient.doctorId}
+                        <button
                           onClick={() => handleDeleteFile(examination._id, 'examinations')}
                           className="btn-delete"
-                          variant="danger"
                         >
                           {t('patient_management.delete')}
-                        </SecureButton>
+                        </button>
                       </div>
                     </div>
                   ))
@@ -656,13 +645,12 @@ const PatientManagementPage = () => {
               className="search-input"
             />
           </div>
-          <SecureButton
-            permission="MANAGE_PATIENTS"
+          <button
             onClick={() => setShowAddForm(true)}
             className="btn-add-patient"
           >
             + {t('patient_management.add_patient')}
-          </SecureButton>
+          </button>
         </div>
 
         {/* قائمة المرضى */}
@@ -688,13 +676,12 @@ const PatientManagementPage = () => {
                     >
                       {t('patient_management.view_patient')}
                     </button>
-                    <SecureButton
-                      permission="MANAGE_PATIENTS"
+                    <button
                       onClick={() => deletePatient(patient._id)}
                       className="btn-delete"
                     >
                       {t('patient_management.delete_patient')}
-                    </SecureButton>
+                    </button>
                   </div>
                 </div>
               ))}
