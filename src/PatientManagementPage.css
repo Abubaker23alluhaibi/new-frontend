@@ -729,3 +729,25 @@
   background: #229954;
   transform: translateY(-1px);
 }
+
+/* PDF button */
+.btn-pdf {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-pdf:hover {
+  background: #c0392b;
+  transform: translateY(-1px);
+}
