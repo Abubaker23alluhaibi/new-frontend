@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { SecureButton, SecureSection } from './components/SecureElement';
+import { SecureButton } from './components/SecureElement';
 import './PatientManagementPage.css';
 
 // مكون إضافة مريض جديد
