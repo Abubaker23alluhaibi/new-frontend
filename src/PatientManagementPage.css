@@ -751,3 +751,115 @@
   background: #c0392b;
   transform: translateY(-1px);
 }
+
+/* PDF Viewer Modal */
+.pdf-viewer-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.pdf-viewer-content {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  height: 90%;
+  max-width: 1200px;
+  max-height: 800px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.pdf-viewer-header {
+  background: #2c3e50;
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 12px 12px 0 0;
+}
+
+.pdf-viewer-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.pdf-viewer-header .btn-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.pdf-viewer-header .btn-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.pdf-viewer-body {
+  flex: 1;
+  padding: 0;
+  overflow: hidden;
+}
+
+.pdf-viewer-footer {
+  background: #f8f9fa;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 0 0 12px 12px;
+  border-top: 1px solid #e9ecef;
+}
+
+.pdf-viewer-footer .btn-cancel {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.pdf-viewer-footer .btn-cancel:hover {
+  background: #5a6268;
+}
+
+/* Responsive PDF Viewer */
+@media (max-width: 768px) {
+  .pdf-viewer-content {
+    width: 95%;
+    height: 95%;
+  }
+  
+  .pdf-viewer-header h3 {
+    font-size: 16px;
+  }
+  
+  .pdf-viewer-footer {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

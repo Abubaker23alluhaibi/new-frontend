@@ -499,6 +499,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('basic');
   const [uploading, setUploading] = useState(false);
+  const [viewingPdf, setViewingPdf] = useState(null);
   const medicalReportsFileInputRef = useRef(null);
   const examinationsFileInputRef = useRef(null);
 
@@ -533,6 +534,16 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
     
     return null;
   }, [user]);
+
+  // دالة لفتح PDF في modal
+  const openPdfViewer = (fileUrl, fileName) => {
+    setViewingPdf({ url: fileUrl, name: fileName });
+  };
+
+  // دالة لإغلاق PDF viewer
+  const closePdfViewer = () => {
+    setViewingPdf(null);
+  };
 
   // تشخيص بيانات المريض
   console.log('🔍 PatientDetails - patient:', patient);
@@ -781,14 +792,18 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                         <small>{new Date(report.uploadDate).toLocaleDateString('ar-EG')}</small>
                       </div>
                       <div className="file-actions">
-                        <a 
-                          href={report.fileUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
+                        <button 
+                          onClick={() => {
+                            if (report.fileType === 'application/pdf' || report.title.includes('.pdf')) {
+                              openPdfViewer(report.fileUrl, report.title);
+                            } else {
+                              window.open(report.fileUrl, '_blank');
+                            }
+                          }}
                           className="btn-view"
                         >
                           👁️ {t('patient_management.view_file')}
-                        </a>
+                        </button>
                         <a 
                           href={report.fileUrl} 
                           download={report.title}
@@ -797,14 +812,12 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                           ⬇️ تحميل
                         </a>
                         {(report.fileType === 'application/pdf' || report.title.includes('.pdf')) && (
-                          <a 
-                            href={report.fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <button 
+                            onClick={() => openPdfViewer(report.fileUrl, report.title)}
                             className="btn-pdf"
                           >
                             📄 فتح PDF
-                          </a>
+                          </button>
                         )}
                         <button
                           onClick={() => handleDeleteFile(report._id, 'medical-reports')}
@@ -855,14 +868,18 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                         <small>{new Date(examination.uploadDate).toLocaleDateString('ar-EG')}</small>
                       </div>
                       <div className="file-actions">
-                        <a 
-                          href={examination.fileUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
+                        <button 
+                          onClick={() => {
+                            if (examination.fileType === 'application/pdf' || examination.title.includes('.pdf')) {
+                              openPdfViewer(examination.fileUrl, examination.title);
+                            } else {
+                              window.open(examination.fileUrl, '_blank');
+                            }
+                          }}
                           className="btn-view"
                         >
                           👁️ {t('patient_management.view_file')}
-                        </a>
+                        </button>
                         <a 
                           href={examination.fileUrl} 
                           download={examination.title}
@@ -871,14 +888,12 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                           ⬇️ تحميل
                         </a>
                         {(examination.fileType === 'application/pdf' || examination.title.includes('.pdf')) && (
-                          <a 
-                            href={examination.fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <button 
+                            onClick={() => openPdfViewer(examination.fileUrl, examination.title)}
                             className="btn-pdf"
                           >
                             📄 فتح PDF
-                          </a>
+                          </button>
                         )}
                         <button
                           onClick={() => handleDeleteFile(examination._id, 'examinations')}
@@ -897,6 +912,39 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
           )}
         </div>
       </div>
+
+      {/* PDF Viewer Modal */}
+      {viewingPdf && (
+        <div className="pdf-viewer-modal">
+          <div className="pdf-viewer-content">
+            <div className="pdf-viewer-header">
+              <h3>📄 {viewingPdf.name}</h3>
+              <button onClick={closePdfViewer} className="btn-close">×</button>
+            </div>
+            <div className="pdf-viewer-body">
+              <iframe
+                src={viewingPdf.url}
+                width="100%"
+                height="100%"
+                style={{ border: 'none' }}
+                title={viewingPdf.name}
+              />
+            </div>
+            <div className="pdf-viewer-footer">
+              <a 
+                href={viewingPdf.url} 
+                download={viewingPdf.name}
+                className="btn-download"
+              >
+                ⬇️ تحميل الملف
+              </a>
+              <button onClick={closePdfViewer} className="btn-cancel">
+                إغلاق
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
