@@ -11,6 +11,7 @@ import WorkTimesEditor from './WorkTimesEditor';
 import AppointmentDurationEditor from './AppointmentDurationEditor';
 import AdvertisementSlider from './components/AdvertisementSlider';
 import { SecureButton, SecureSection } from './components/SecureIcon';
+import { PatientManagement } from './PatientManagement';
 
 function getToday() {
   const d = new Date();
@@ -56,6 +57,9 @@ function DoctorDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+
+  // حالات إدارة المرضى
+  const [showPatientManagement, setShowPatientManagement] = useState(false);
 
   // مراقبة حجم النافذة
   useEffect(() => {
@@ -526,6 +530,16 @@ function DoctorDashboard() {
                 style={{background: '#9c27b0', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
               >
                 <span role="img" aria-label="إدارة الموظفين">👥</span> إدارة الموظفين
+              </SecureButton>
+              <SecureButton 
+                permission="MANAGE_PATIENTS"
+                onClick={()=>{
+                  setShowPatientManagement(true); 
+                  setShowSidebar(false);
+                }} 
+                style={{background: '#2196f3', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
+              >
+                <span role="img" aria-label="إدارة المرضى">🏥</span> إدارة المرضى
               </SecureButton>
               <SecureButton 
                 permission="MANAGE_SPECIAL_APPOINTMENTS"
@@ -1613,6 +1627,15 @@ function DoctorDashboard() {
           </div>
         </div>
       )}
+
+      {/* مودال إدارة المرضى */}
+      {showPatientManagement && (
+        <PatientManagement
+          doctorId={profile._id}
+          onClose={() => setShowPatientManagement(false)}
+        />
+      )}
+
       {/* الإعلانات المتحركة */}
       {(() => {
         console.log('🎬 DoctorDashboard: قبل عرض AdvertisementSlider');
