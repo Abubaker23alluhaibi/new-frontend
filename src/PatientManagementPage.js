@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 import './PatientManagementPage.css';
 
@@ -469,6 +470,7 @@ const PatientDetails = ({ patient, onClose, onUpdate }) => {
 const PatientManagementPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [patients, setPatients] = useState([]);
   const [patientStats, setPatientStats] = useState({});
   const [showAddForm, setShowAddForm] = useState(false);
@@ -480,25 +482,42 @@ const PatientManagementPage = () => {
   const [todayAppointments, setTodayAppointments] = useState([]);
 
   // دالة مساعدة للحصول على التوكن
-  const getAuthToken = () => {
+  const getAuthToken = useCallback(() => {
+    // أولاً: جرب الحصول على الـ token من AuthContext
+    if (user && user.token) {
+      console.log('🔍 getAuthToken - token from AuthContext:', user.token);
+      return user.token;
+    }
+    
+    // ثانياً: جرب الحصول على الـ token من localStorage
     const savedUser = localStorage.getItem('user');
+    console.log('🔍 getAuthToken - savedUser:', savedUser);
+    
     if (savedUser) {
       try {
         const userData = JSON.parse(savedUser);
-        return userData.token || userData.accessToken;
+        console.log('🔍 getAuthToken - userData:', userData);
+        console.log('🔍 getAuthToken - token:', userData.token);
+        console.log('🔍 getAuthToken - accessToken:', userData.accessToken);
+        
+        const token = userData.token || userData.accessToken;
+        console.log('🔍 getAuthToken - final token:', token);
+        return token;
       } catch (error) {
         console.error('❌ خطأ في قراءة التوكن:', error);
       }
     }
+    console.log('❌ لا يوجد مستخدم محفوظ في localStorage أو AuthContext');
     return null;
-  };
+  }, [user]);
 
   // جلب المرضى
   const fetchPatients = useCallback(async () => {
     try {
       const token = getAuthToken();
       if (!token) {
-        throw new Error('لا يوجد توكن مصادقة صحيح');
+        console.error('❌ لا يوجد token في fetchPatients');
+        return;
       }
 
       const params = new URLSearchParams({
@@ -527,14 +546,15 @@ const PatientManagementPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, searchQuery, t]);
+  }, [page, searchQuery, t, getAuthToken]);
 
   // جلب إحصائيات المرضى
   const fetchPatientStats = useCallback(async () => {
     try {
       const token = getAuthToken();
       if (!token) {
-        throw new Error('لا يوجد توكن مصادقة صحيح');
+        console.error('❌ لا يوجد token في fetchPatientStats');
+        return;
       }
 
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients/stats`, {
@@ -551,14 +571,15 @@ const PatientManagementPage = () => {
     } catch (error) {
       console.error('Error fetching patient stats:', error);
     }
-  }, []);
+  }, [getAuthToken]);
 
   // جلب مواعيد اليوم
   const fetchTodayAppointments = useCallback(async () => {
     try {
       const token = getAuthToken();
       if (!token) {
-        throw new Error('لا يوجد توكن مصادقة صحيح');
+        console.error('❌ لا يوجد token في fetchTodayAppointments');
+        return;
       }
 
       const today = new Date().toISOString().split('T')[0];
@@ -576,14 +597,18 @@ const PatientManagementPage = () => {
     } catch (error) {
       console.error('Error fetching today appointments:', error);
     }
-  }, []);
+  }, [getAuthToken]);
 
   // إضافة مريض جديد
   const addPatient = async (patientData) => {
     try {
       const token = getAuthToken();
       if (!token) {
-        throw new Error('لا يوجد توكن مصادقة صحيح');
+        console.error('❌ لا يوجد token - user:', user);
+        console.error('❌ لا يوجد token - localStorage user:', localStorage.getItem('user'));
+        toast.error('يرجى تسجيل الدخول مرة أخرى');
+        navigate('/login');
+        return;
       }
 
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients`, {
@@ -618,7 +643,8 @@ const PatientManagementPage = () => {
     try {
       const token = getAuthToken();
       if (!token) {
-        throw new Error('لا يوجد توكن مصادقة صحيح');
+        console.error('❌ لا يوجد token في deletePatient');
+        return;
       }
 
       const response = await fetch(`${process.env.REACT_APP_API_URL}/patients/${patientId}`, {

@@ -186,15 +186,24 @@ export const AuthProvider = ({ children }) => {
       if (res.ok) {
         // حفظ بيانات المستخدم في localStorage
         const userData = loginType === 'doctor' ? data.doctor : data.user;
+        console.log('🔍 signIn - data:', data);
+        console.log('🔍 signIn - userData before token:', userData);
+        
         // إضافة الـ token إلى بيانات المستخدم
         if (data.token) {
           userData.token = data.token;
+          console.log('🔍 signIn - token added:', data.token);
+        } else {
+          console.log('❌ signIn - no token in response');
         }
+        
+        console.log('🔍 signIn - userData after token:', userData);
         setUser(userData);
         setProfile(userData);
         
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('profile', JSON.stringify(userData));
+        console.log('🔍 signIn - saved to localStorage:', JSON.stringify(userData));
 
         return { data, error: null };
       } else {
