@@ -1028,6 +1028,27 @@
     "error_loading_patients": "خطأ في جلب المرضى",
     "error_adding_patient": "خطأ في إضافة المريض",
     "error_deleting_patient": "خطأ في حذف المريض",
-    "please_fill_required_fields": "يرجى ملء الحقول المطلوبة"
+    "please_fill_required_fields": "يرجى ملء الحقول المطلوبة",
+    "back_to_dashboard": "العودة للوحة التحكم",
+    "add_directly": "إضافة مباشرة",
+    "add_from_today_appointments": "إضافة من مواعيد اليوم",
+    "select_appointment": "اختر الموعد",
+    "choose_appointment": "اختر موعد من القائمة",
+    "upload_medical_report": "رفع تقرير طبي",
+    "upload_examination": "رفع فحص طبي",
+    "choose_file": "اختر ملف",
+    "uploading": "جاري الرفع...",
+    "file_uploaded_successfully": "تم رفع الملف بنجاح",
+    "error_uploading_file": "خطأ في رفع الملف",
+    "confirm_delete_file": "هل أنت متأكد من حذف هذا الملف؟",
+    "file_deleted_successfully": "تم حذف الملف بنجاح",
+    "error_deleting_file": "خطأ في حذف الملف",
+    "no_medical_reports": "لا توجد تقارير طبية",
+    "no_examinations": "لا توجد فحوصات",
+    "emergency_contact_name": "اسم جهة الاتصال",
+    "emergency_contact_phone": "رقم هاتف جهة الاتصال",
+    "emergency_contact_relationship": "صلة القرابة",
+    "choose_gender": "اختر الجنس",
+    "age": "العمر"
   }
 }

@@ -24,6 +24,7 @@ import DoctorAnalyticsPage from './DoctorAnalyticsPage';
 import BookingsForOthersStats from './BookingsForOthersStats';
 import EmployeeManager from './components/EmployeeManager';
 import UserTypeSelector from './components/UserTypeSelector';
+import PatientManagementPage from './PatientManagementPage';
 
 import LandingPage from './LandingPage';
 import DashboardPreview from './DashboardPreview';
@@ -242,6 +243,11 @@ function App() {
           <Route path="/employee-manager" element={
             <PermissionProtectedRoute requiredPermission="MANAGE_EMPLOYEES">
               <EmployeeManager />
+            </PermissionProtectedRoute>
+          } />
+          <Route path="/patient-management" element={
+            <PermissionProtectedRoute requiredPermission="MANAGE_PATIENTS">
+              <PatientManagementPage />
             </PermissionProtectedRoute>
           } />
 
