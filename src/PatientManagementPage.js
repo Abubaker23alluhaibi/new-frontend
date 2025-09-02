@@ -572,8 +572,8 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         throw new Error('No authentication token');
       }
 
-      // استخدام الـ endpoint الآمن الجديد
-      const secureUrl = `${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(fileUrl)}`;
+      // استخدام الـ endpoint الآمن الجديد مع التوكن في الـ query parameter
+      const secureUrl = `${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(fileUrl)}?token=${encodeURIComponent(token)}`;
       return secureUrl;
     } catch (error) {
       console.error('Error getting PDF with auth:', error);
@@ -838,7 +838,8 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                             if (report.fileType === 'application/pdf' || report.title.includes('.pdf')) {
                               openPdfViewer(report.fileUrl, report.title);
                             } else {
-                              window.open(`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(report.fileUrl)}`, '_blank');
+                              const token = getAuthToken();
+                              window.open(`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(report.fileUrl)}?token=${encodeURIComponent(token || '')}`, '_blank');
                             }
                           }}
                           className="btn-view"
@@ -846,7 +847,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                           👁️ {t('patient_management.view_file')}
                         </button>
                         <a 
-                          href={`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(report.fileUrl)}`}
+                          href={`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(report.fileUrl)}?token=${encodeURIComponent(getAuthToken() || '')}`}
                           download={report.title}
                           className="btn-download"
                         >
@@ -914,7 +915,8 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                             if (examination.fileType === 'application/pdf' || examination.title.includes('.pdf')) {
                               openPdfViewer(examination.fileUrl, examination.title);
                             } else {
-                              window.open(`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(examination.fileUrl)}`, '_blank');
+                              const token = getAuthToken();
+                              window.open(`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(examination.fileUrl)}?token=${encodeURIComponent(token || '')}`, '_blank');
                             }
                           }}
                           className="btn-view"
@@ -922,7 +924,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                           👁️ {t('patient_management.view_file')}
                         </button>
                         <a 
-                          href={`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(examination.fileUrl)}`}
+                          href={`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(examination.fileUrl)}?token=${encodeURIComponent(getAuthToken() || '')}`}
                           download={examination.title}
                           className="btn-download"
                         >
