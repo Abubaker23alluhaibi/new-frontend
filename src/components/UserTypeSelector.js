@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
 import './UserTypeSelector.css';
@@ -13,13 +13,7 @@ const UserTypeSelector = () => {
   const [error, setError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
 
-  useEffect(() => {
-    if (profile?._id) {
-      checkDoctorEmployees();
-    }
-  }, [profile?._id]);
-
-  const checkDoctorEmployees = async () => {
+  const checkDoctorEmployees = useCallback(async () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctor-has-employees/${profile._id}`);
       const data = await response.json();
@@ -36,7 +30,8 @@ const UserTypeSelector = () => {
           MANAGE_EMPLOYEES: true,
           MANAGE_SPECIAL_APPOINTMENTS: true,
           MANAGE_APPOINTMENT_DURATION: true,
-          VIEW_BOOKINGS_STATS: true
+          VIEW_BOOKINGS_STATS: true,
+          MANAGE_PATIENTS: true
         };
         
         // حفظ البيانات في localStorage
@@ -57,6 +52,17 @@ const UserTypeSelector = () => {
       }
       
       // إذا كان لديه موظفين، جلب قائمة الموظفين
+      const fetchEmployees = async () => {
+        try {
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/employees/${profile._id}`);
+          const data = await response.json();
+          setEmployees(data);
+        } catch (error) {
+          console.error('خطأ في جلب الموظفين:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
       fetchEmployees();
     } catch (error) {
       console.error('خطأ في التحقق من وجود موظفين:', error);
@@ -71,7 +77,8 @@ const UserTypeSelector = () => {
         MANAGE_EMPLOYEES: true,
         MANAGE_SPECIAL_APPOINTMENTS: true,
         MANAGE_APPOINTMENT_DURATION: true,
-        VIEW_BOOKINGS_STATS: true
+        VIEW_BOOKINGS_STATS: true,
+        MANAGE_PATIENTS: true
       };
       
       const userData = {
@@ -86,19 +93,15 @@ const UserTypeSelector = () => {
       
       navigate('/doctor-dashboard');
     }
-  };
+  }, [profile, navigate, setCurrentUserType, setCurrentPermissions]);
 
-  const fetchEmployees = async () => {
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/employees/${profile._id}`);
-      const data = await response.json();
-      setEmployees(data);
-    } catch (error) {
-      console.error('خطأ في جلب الموظفين:', error);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (profile?._id) {
+      checkDoctorEmployees();
     }
-  };
+  }, [profile?._id, checkDoctorEmployees]);
+
+
 
   const handleTypeSelection = (type) => {
     setSelectedType(type);

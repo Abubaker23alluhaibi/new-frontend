@@ -511,23 +511,37 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       return user.token;
     }
     
-    // ثانياً: جرب الحصول على الـ token من localStorage
+    // ثانياً: جرب الحصول على الـ token من localStorage (user)
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
       try {
         const userData = JSON.parse(savedUser);
-        return userData.token || userData.accessToken;
+        const token = userData.token || userData.accessToken;
+        if (token) return token;
       } catch (error) {
-        console.error('❌ خطأ في قراءة التوكن:', error);
+        console.error('❌ خطأ في قراءة التوكن من user:', error);
       }
     }
     
-    // ثالثاً: جرب الحصول على الـ token من localStorage (currentUser)
+    // ثالثاً: جرب الحصول على الـ token من localStorage (profile)
+    const savedProfile = localStorage.getItem('profile');
+    if (savedProfile) {
+      try {
+        const profileData = JSON.parse(savedProfile);
+        const token = profileData.token || profileData.accessToken;
+        if (token) return token;
+      } catch (error) {
+        console.error('❌ خطأ في قراءة التوكن من profile:', error);
+      }
+    }
+    
+    // رابعاً: جرب الحصول على الـ token من localStorage (currentUser)
     const currentUser = localStorage.getItem('currentUser');
     if (currentUser) {
       try {
         const currentUserData = JSON.parse(currentUser);
-        return currentUserData.token || currentUserData.accessToken;
+        const token = currentUserData.token || currentUserData.accessToken;
+        if (token) return token;
       } catch (error) {
         console.error('❌ خطأ في قراءة التوكن من currentUser:', error);
       }
@@ -1034,6 +1048,26 @@ const PatientManagementPage = () => {
       }
     }
     
+    // رابعاً: جرب الحصول على الـ token من localStorage (profile)
+    const savedProfile = localStorage.getItem('profile');
+    console.log('🔍 getAuthToken - savedProfile:', savedProfile);
+    
+    if (savedProfile) {
+      try {
+        const profileData = JSON.parse(savedProfile);
+        console.log('🔍 getAuthToken - profileData:', profileData);
+        console.log('🔍 getAuthToken - profileData.token:', profileData.token);
+        
+        const token = profileData.token || profileData.accessToken;
+        if (token) {
+          console.log('🔍 getAuthToken - final token from profile:', token);
+          return token;
+        }
+      } catch (error) {
+        console.error('❌ خطأ في قراءة التوكن من profile:', error);
+      }
+    }
+    
     console.log('❌ لا يوجد token في أي مكان');
     return null;
   }, [user]);
@@ -1047,25 +1081,38 @@ const PatientManagementPage = () => {
         return;
       }
 
+      console.log('🔍 fetchPatients - token found:', token.substring(0, 20) + '...');
+      console.log('🔍 fetchPatients - API URL:', process.env.REACT_APP_API_URL);
+
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '10',
         search: searchQuery
       });
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients?${params}`, {
+      const url = `${process.env.REACT_APP_API_URL}/doctors/me/patients?${params}`;
+      console.log('🔍 fetchPatients - full URL:', url);
+
+      const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
         credentials: 'include'
       });
 
+      console.log('🔍 fetchPatients - response status:', response.status);
+      console.log('🔍 fetchPatients - response headers:', response.headers);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 fetchPatients - response data:', data);
         setPatients(data.patients || []);
         setPagination(data.pagination || {});
       } else {
-        throw new Error('Failed to fetch patients');
+        const errorText = await response.text();
+        console.error('❌ fetchPatients - error response:', errorText);
+        throw new Error(`Failed to fetch patients: ${response.status} ${errorText}`);
       }
     } catch (error) {
       console.error('Error fetching patients:', error);
@@ -1084,16 +1131,27 @@ const PatientManagementPage = () => {
         return;
       }
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients/stats`, {
+      console.log('🔍 fetchPatientStats - token found:', token.substring(0, 20) + '...');
+      const url = `${process.env.REACT_APP_API_URL}/doctors/me/patients/stats`;
+      console.log('🔍 fetchPatientStats - URL:', url);
+
+      const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
         credentials: 'include'
       });
 
+      console.log('🔍 fetchPatientStats - response status:', response.status);
+
       if (response.ok) {
         const stats = await response.json();
+        console.log('🔍 fetchPatientStats - stats:', stats);
         setPatientStats(stats);
+      } else {
+        const errorText = await response.text();
+        console.error('❌ fetchPatientStats - error response:', errorText);
       }
     } catch (error) {
       console.error('Error fetching patient stats:', error);
