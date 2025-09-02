@@ -991,12 +991,29 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                     ⬇️ تحميل الملف
                   </a>
                 </div>
+                
+                {/* PDF Viewer */}
+                <div className="pdf-iframe-container">
+                  <iframe
+                    src={viewingPdf.url}
+                    width="100%"
+                    height="600px"
+                    style={{ border: 'none', borderRadius: '8px' }}
+                    title={viewingPdf.name}
+                    onLoad={() => setPdfLoading(false)}
+                    onError={() => {
+                      setPdfLoading(false);
+                      console.error('Error loading PDF in iframe');
+                    }}
+                  />
+                </div>
+                
                 <div className="pdf-preview">
                   <p className="pdf-info">
                     📄 <strong>{viewingPdf.name}</strong>
                   </p>
                   <p className="pdf-instructions">
-                    لفتح ملف PDF، اضغط على "فتح في المتصفح" أو "تحميل الملف"
+                    إذا لم يظهر الملف أعلاه، استخدم الأزرار أدناه
                   </p>
                   <div className="pdf-alternatives">
                     <h4>خيارات أخرى:</h4>
