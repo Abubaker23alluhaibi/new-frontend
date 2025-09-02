@@ -23,7 +23,8 @@ const EmployeeManager = () => {
       MANAGE_EMPLOYEES: false,
       MANAGE_SPECIAL_APPOINTMENTS: false,
       MANAGE_APPOINTMENT_DURATION: false,
-      VIEW_BOOKINGS_STATS: false
+      VIEW_BOOKINGS_STATS: false,
+      VIEW_PRIVATE_COMMENTS: false
     }
   });
 
@@ -97,7 +98,8 @@ const EmployeeManager = () => {
             MANAGE_EMPLOYEES: false,
             MANAGE_SPECIAL_APPOINTMENTS: false,
             MANAGE_APPOINTMENT_DURATION: false,
-            VIEW_BOOKINGS_STATS: false
+            VIEW_BOOKINGS_STATS: false,
+            VIEW_PRIVATE_COMMENTS: false
           }
         });
         fetchEmployees();
@@ -407,6 +409,32 @@ const EmployeeManager = () => {
                 <small>رمز مكون من 6 أحرف وأرقام</small>
               </div>
               
+              <div className="form-group">
+                <label>الصلاحيات</label>
+                <div className="permissions-grid">
+                  {Object.entries(formData.permissions).map(([permission, value]) => (
+                    <div key={permission} className="permission-item">
+                      <label className="permission-label">
+                        <input
+                          type="checkbox"
+                          checked={value}
+                          onChange={e => {
+                            setFormData({
+                              ...formData,
+                              permissions: {
+                                ...formData.permissions,
+                                [permission]: e.target.checked
+                              }
+                            });
+                          }}
+                        />
+                        <span className="permission-text">{getPermissionLabel(permission)}</span>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
               <div className="form-actions">
                 <button type="submit" className="btn-submit">إضافة الموظف</button>
                 <button type="button" className="btn-cancel" onClick={() => setShowAddModal(false)}>
@@ -544,6 +572,7 @@ const getPermissionLabel = (permission) => {
     MANAGE_WORK_TIMES: 'إدارة أوقات العمل',
     VIEW_ANALYTICS: 'عرض الإحصائيات',
     VIEW_PROFILE: 'عرض الملف الشخصي',
+    VIEW_PRIVATE_COMMENTS: 'عرض التعليقات الخاصة',
     MANAGE_EMPLOYEES: 'إدارة الموظفين',
     MANAGE_SPECIAL_APPOINTMENTS: 'إدارة المواعيد الخاصة',
     MANAGE_APPOINTMENT_DURATION: 'إدارة مدة المواعيد',
