@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import StarRating from './components/StarRating';
 
 const DoctorCard = ({ doctor }) => {
   const navigate = useNavigate();
@@ -225,6 +226,29 @@ const DoctorCard = ({ doctor }) => {
             <span>
               {Array.isArray(specialties) && specialties[doctor.specialty] ? specialties[doctor.specialty] : doctor.specialty}
             </span>
+          </div>
+          
+          {/* عرض التقييم */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: isMobile() ? '0.2rem' : '0.4rem',
+            marginBottom: isMobile() ? 2 : 3
+          }}>
+            <StarRating 
+              rating={doctor.averageRating || 0}
+              size="small"
+              showText={false}
+            />
+            {doctor.totalRatings > 0 && (
+              <span style={{
+                fontSize: isMobile() ? 8 : 10,
+                color: '#666',
+                fontWeight: '500'
+              }}>
+                ({doctor.totalRatings})
+              </span>
+            )}
           </div>
         </div>
       </div>

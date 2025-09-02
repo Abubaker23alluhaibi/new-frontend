@@ -5,6 +5,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ar } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
+import StarRating from './components/StarRating';
 import './DoctorDetails.css';
 
 function DoctorDetails() {
@@ -42,6 +43,13 @@ function DoctorDetails() {
   const [migratingImage, setMigratingImage] = useState(false);
   const [showAppRedirect, setShowAppRedirect] = useState(false);
   const [currentPage, setCurrentPage] = useState('info');
+  
+  // حالات التقييمات
+  const [ratings, setRatings] = useState([]);
+  const [userRating, setUserRating] = useState(null);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [ratingComment, setRatingComment] = useState('');
+  const [ratingLoading, setRatingLoading] = useState(false);
 
   const checkAppInstalled = useCallback(() => {
     const deepLink = `tabibiq://doctor/${id}`;
@@ -88,7 +96,7 @@ function DoctorDetails() {
       });
     }
     checkAppInstalled();
-  }, [id]);
+  }, [id, checkAppInstalled]);
 
   const getImageUrl = (doctor) => {
     const img = doctor.image || doctor.profileImage;
@@ -125,7 +133,89 @@ function DoctorDetails() {
         setError(t('error_fetching_doctor_data'));
         setLoading(false);
       });
+  }, [id, t]);
+
+  const fetchRatings = useCallback(async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/ratings/doctor/${id}`);
+      const data = await response.json();
+      if (response.ok) {
+        setRatings(data.ratings || []);
+      }
+    } catch (err) {
+      console.error('Error fetching ratings:', err);
+    }
   }, [id]);
+
+  const fetchUserRating = useCallback(async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/ratings/doctor/${id}?userId=${user._id}`);
+      const data = await response.json();
+      if (response.ok && data.ratings.length > 0) {
+        setUserRating(data.ratings[0]);
+      }
+    } catch (err) {
+      console.error('Error fetching user rating:', err);
+    }
+  }, [id, user._id]);
+
+  // جلب التقييمات
+  useEffect(() => {
+    if (id) {
+      fetchRatings();
+      if (user?._id) {
+        fetchUserRating();
+      }
+    }
+  }, [id, user?._id, fetchRatings, fetchUserRating]);
+
+  const handleRatingSubmit = async (rating) => {
+    if (!user?._id) {
+      alert('يجب تسجيل الدخول لتقييم الطبيب');
+      return;
+    }
+
+    setRatingLoading(true);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/ratings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user._id,
+          doctorId: id,
+          rating: rating,
+          comment: ratingComment
+        })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setUserRating(data.rating);
+        setShowRatingModal(false);
+        setRatingComment('');
+        // تحديث بيانات الطبيب
+        fetch(`${process.env.REACT_APP_API_URL}/doctors`)
+          .then(res => res.json())
+          .then(doctorsData => {
+            const updatedDoctor = doctorsData.find(d => d._id === id);
+            if (updatedDoctor) {
+              setDoctor(updatedDoctor);
+            }
+          });
+        // إعادة جلب التقييمات
+        fetchRatings();
+      } else {
+        alert(data.error || 'حدث خطأ أثناء إرسال التقييم');
+      }
+    } catch (err) {
+      console.error('Error submitting rating:', err);
+      alert('حدث خطأ في الاتصال بالخادم');
+    } finally {
+      setRatingLoading(false);
+    }
+  };
 
   const migrateImageToCloudinary = async () => {
     if (!doctor) return;
@@ -439,6 +529,34 @@ function DoctorDetails() {
                 <span role="img" aria-label="area">📍</span> 
                 <span>{doctor.area}</span>
               </div>
+              
+              {/* عرض التقييم */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                marginTop: '0.5rem',
+                padding: '0.5rem',
+                background: 'rgba(10, 143, 130, 0.05)',
+                borderRadius: '8px',
+                border: '1px solid rgba(10, 143, 130, 0.1)'
+              }}>
+                <StarRating 
+                  rating={doctor.averageRating || 0}
+                  size="medium"
+                  showText={true}
+                />
+                {doctor.totalRatings > 0 && (
+                  <span style={{
+                    fontSize: '12px',
+                    color: '#666',
+                    fontWeight: '500'
+                  }}>
+                    ({doctor.totalRatings} {t('rating.total_ratings')})
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           
@@ -492,6 +610,13 @@ function DoctorDetails() {
               حجز موعد
             </button>
             <button
+              onClick={() => setCurrentPage('ratings')}
+              className="btn-secondary"
+            >
+              <span>⭐</span>
+              {t('rating.reviews')}
+            </button>
+            <button
               onClick={() => setShowBookingForOtherModal(true)}
               className="btn-secondary"
             >
@@ -507,6 +632,237 @@ function DoctorDetails() {
                 فتح الخريطة
               </button>
             )}
+          </div>
+        </>
+      )}
+
+      {/* صفحة التقييمات */}
+      {currentPage === 'ratings' && (
+        <>
+          {/* رأس صفحة التقييمات */}
+          <div className="doctor-header">
+            <div className="doctor-header-content">
+              <img 
+                src={getImageUrl(doctor)} 
+                alt={doctor.name} 
+                className="doctor-avatar"
+              />
+              <div className="doctor-info">
+                <div className="doctor-name">{doctor.name}</div>
+                <div className="doctor-specialty">
+                  {specialties[doctor.specialty] || doctor.specialty}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* قسم التقييمات */}
+          <div className="doctor-info-section">
+            {/* إحصائيات التقييم */}
+            <div style={{
+              background: '#fff',
+              borderRadius: 12,
+              padding: '1.5rem',
+              marginBottom: '1.5rem',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+              border: '1px solid #e0f7fa'
+            }}>
+              <h3 style={{color: '#0A8F82', marginBottom: '1rem', textAlign: 'center'}}>
+                ⭐ {t('rating.average_rating')}
+              </h3>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '1rem',
+                marginBottom: '1rem'
+              }}>
+                <StarRating 
+                  rating={doctor.averageRating || 0}
+                  size="large"
+                  showText={true}
+                />
+              </div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-around',
+                textAlign: 'center'
+              }}>
+                <div>
+                  <div style={{fontSize: '1.5rem', fontWeight: '800', color: '#0A8F82'}}>
+                    {doctor.totalRatings || 0}
+                  </div>
+                  <div style={{fontSize: '14px', color: '#666'}}>
+                    {t('rating.total_ratings')}
+                  </div>
+                </div>
+                <div>
+                  <div style={{fontSize: '1.5rem', fontWeight: '800', color: '#0A8F82'}}>
+                    {doctor.averageRating?.toFixed(1) || '0.0'}
+                  </div>
+                  <div style={{fontSize: '14px', color: '#666'}}>
+                    {t('rating.average_rating')}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* زر التقييم */}
+            {user?._id && (
+              <div style={{
+                background: '#fff',
+                borderRadius: 12,
+                padding: '1.5rem',
+                marginBottom: '1.5rem',
+                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                border: '1px solid #e0f7fa',
+                textAlign: 'center'
+              }}>
+                <h3 style={{color: '#0A8F82', marginBottom: '1rem'}}>
+                  {userRating ? t('rating.your_rating') : t('rating.rate_this_doctor')}
+                </h3>
+                
+                {userRating ? (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}>
+                    <StarRating 
+                      rating={userRating.rating}
+                      size="large"
+                      showText={true}
+                    />
+                    {userRating.comment && (
+                      <div style={{
+                        background: 'rgba(10, 143, 130, 0.05)',
+                        padding: '0.8rem',
+                        borderRadius: '8px',
+                        border: '1px solid rgba(10, 143, 130, 0.1)',
+                        marginTop: '0.5rem',
+                        fontSize: '14px',
+                        color: '#333',
+                        maxWidth: '400px'
+                      }}>
+                        "{userRating.comment}"
+                      </div>
+                    )}
+                    <button
+                      onClick={() => setShowRatingModal(true)}
+                      style={{
+                        background: '#0A8F82',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '0.5rem 1rem',
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        marginTop: '0.5rem'
+                      }}
+                    >
+                      {t('rating.update_rating')}
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowRatingModal(true)}
+                    style={{
+                      background: '#0A8F82',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '12px',
+                      padding: '1rem 2rem',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 8px rgba(10, 143, 130, 0.3)'
+                    }}
+                  >
+                    ⭐ {t('rating.rate_this_doctor')}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* قائمة التقييمات */}
+            <div style={{
+              background: '#fff',
+              borderRadius: 12,
+              padding: '1.5rem',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+              border: '1px solid #e0f7fa'
+            }}>
+              <h3 style={{color: '#0A8F82', marginBottom: '1rem'}}>
+                📝 {t('rating.reviews')}
+              </h3>
+              
+              {ratings.length === 0 ? (
+                <div style={{
+                  textAlign: 'center',
+                  padding: '2rem',
+                  color: '#666'
+                }}>
+                  <div style={{fontSize: '2rem', marginBottom: '0.5rem'}}>⭐</div>
+                  {t('rating.no_ratings_yet')}
+                </div>
+              ) : (
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1rem'
+                }}>
+                  {ratings.map((rating, index) => (
+                    <div key={rating._id} style={{
+                      background: 'rgba(10, 143, 130, 0.05)',
+                      borderRadius: '8px',
+                      padding: '1rem',
+                      border: '1px solid rgba(10, 143, 130, 0.1)'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '0.5rem'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem'
+                        }}>
+                          <span style={{
+                            fontWeight: '600',
+                            color: '#0A8F82'
+                          }}>
+                            {rating.userId?.first_name || 'مستخدم'}
+                          </span>
+                          <StarRating 
+                            rating={rating.rating}
+                            size="small"
+                            showText={false}
+                          />
+                        </div>
+                        <span style={{
+                          fontSize: '12px',
+                          color: '#666'
+                        }}>
+                          {new Date(rating.createdAt).toLocaleDateString('ar-EG')}
+                        </span>
+                      </div>
+                      {rating.comment && (
+                        <div style={{
+                          fontSize: '14px',
+                          color: '#333',
+                          lineHeight: '1.5'
+                        }}>
+                          {rating.comment}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}
@@ -957,6 +1313,127 @@ function DoctorDetails() {
                   {t('cancel')}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* نافذة التقييم */}
+      {showRatingModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 3000
+        }}>
+          <div style={{
+            background: '#fff',
+            borderRadius: 16,
+            padding: '2rem',
+            maxWidth: '500px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
+          }}>
+            <h3 style={{
+              color: '#0A8F82',
+              marginBottom: '1.5rem',
+              textAlign: 'center',
+              fontSize: '1.5rem'
+            }}>
+              ⭐ {t('rating.rate_this_doctor')}
+            </h3>
+            
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginBottom: '1.5rem'
+            }}>
+              <StarRating 
+                rating={0}
+                onRatingChange={handleRatingSubmit}
+                interactive={!ratingLoading}
+                size="large"
+                showText={true}
+              />
+            </div>
+            
+            {ratingLoading && (
+              <div style={{
+                textAlign: 'center',
+                marginBottom: '1rem',
+                color: '#0A8F82',
+                fontWeight: '600'
+              }}>
+                {t('rating.submitting')}...
+              </div>
+            )}
+            
+            <div style={{marginBottom: '1.5rem'}}>
+              <label style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontWeight: '600',
+                color: '#0A8F82'
+              }}>
+                {t('rating.write_review')} (اختياري)
+              </label>
+              <textarea
+                value={ratingComment}
+                onChange={(e) => setRatingComment(e.target.value)}
+                placeholder={t('rating.review_placeholder')}
+                style={{
+                  width: '100%',
+                  minHeight: '100px',
+                  padding: '0.8rem',
+                  border: '2px solid #e0f7fa',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  resize: 'vertical',
+                  fontFamily: 'inherit'
+                }}
+                maxLength={500}
+              />
+              <div style={{
+                fontSize: '12px',
+                color: '#666',
+                textAlign: 'right',
+                marginTop: '0.3rem'
+              }}>
+                {ratingComment.length}/500
+              </div>
+            </div>
+            
+            <div style={{
+              display: 'flex',
+              gap: '1rem',
+              justifyContent: 'center'
+            }}>
+              <button
+                onClick={() => {
+                  setShowRatingModal(false);
+                  setRatingComment('');
+                }}
+                style={{
+                  background: '#f44336',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '0.8rem 1.5rem',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                {t('cancel')}
+              </button>
             </div>
           </div>
         </div>

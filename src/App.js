@@ -7,6 +7,7 @@ import Login from './Login';
 import UserSignUp from './UserSignUp';
 import DoctorSignUp from './DoctorSignUp';
 import UserHome from './UserHome';
+import TopRatedDoctors from './TopRatedDoctors';
 import DoctorDashboard from './DoctorDashboard';
 import DoctorDetails from './DoctorDetails';
 import MyAppointments from './MyAppointments';
@@ -174,6 +175,11 @@ function App() {
           <Route path="/home" element={
             <ProtectedRoute requiredUserType="user">
               <UserHome />
+            </ProtectedRoute>
+          } />
+          <Route path="/top-rated-doctors" element={
+            <ProtectedRoute requiredUserType="user">
+              <TopRatedDoctors />
             </ProtectedRoute>
           } />
           <Route path="/doctor-dashboard" element={
