@@ -1251,6 +1251,7 @@ function DoctorDashboard() {
                           ✅ حاضر
                         </button>
                       )}
+
                       <button 
                         onClick={() => handleDeleteAppointment(appointment._id)}
                         style={{
