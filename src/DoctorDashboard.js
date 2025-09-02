@@ -381,6 +381,32 @@ function DoctorDashboard() {
     }
   };
 
+  // دالة حذف الموعد
+  const handleDeleteAppointment = async (appointmentId) => {
+    if (!window.confirm('هل أنت متأكد من حذف هذا الموعد؟')) return;
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/appointments/${appointmentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${profile?.token}`
+        }
+      });
+
+      if (response.ok) {
+        // إعادة تحميل جميع المواعيد
+        fetchAllAppointments();
+        toast.success('تم حذف الموعد بنجاح');
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.error || 'خطأ في حذف الموعد');
+      }
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+      toast.error('خطأ في حذف الموعد');
+    }
+  };
+
   return (
     <div style={{
       background: '#ffffff',
@@ -1187,7 +1213,7 @@ function DoctorDashboard() {
                           textAlign:'center',
                           display:'inline-block'
                         }}>
-                          ✅ {t('present')}
+                          ✅ حاضر
                         </div>
                       ) : (
                         <div style={{
@@ -1200,7 +1226,7 @@ function DoctorDashboard() {
                           textAlign:'center',
                           display:'inline-block'
                         }}>
-                          ❌ {t('absent')}
+                          ❌ لم يحضر
                         </div>
                       )}
                     </div>
@@ -1211,7 +1237,7 @@ function DoctorDashboard() {
                         <button 
                           onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
                           style={{
-                            background:'#4caf50',
+                            background:'#0A8F82',
                             color:'#fff',
                             border:'none',
                             borderRadius:8,
@@ -1222,30 +1248,13 @@ function DoctorDashboard() {
                             transition:'all 0.3s ease'
                           }}
                         >
-                          ✅ {t('mark_present')}
+                          ✅ حاضر
                         </button>
                       )}
-                      <SecureButton 
-                        permission="VIEW_APPOINTMENTS"
-                        onClick={() => navigate('/doctor-appointments')}
-                        style={{
-                          background:'#0A8F82',
-                          color:'#fff',
-                          border:'none',
-                          borderRadius:8,
-                          padding:'0.4rem 0.8rem',
-                          fontWeight:600,
-                          cursor:'pointer',
-                          fontSize:'0.8rem',
-                          transition:'all 0.3s ease'
-                        }}
-                      >
-                        {t('manage')}
-                      </SecureButton>
                       <button 
-                        onClick={() => openNoteModal(appointment.patientPhone || appointment.userId?.phone || appointment.notes)}
+                        onClick={() => handleDeleteAppointment(appointment._id)}
                         style={{
-                          background:'#0A8F82',
+                          background:'#e53935',
                           color:'#fff',
                           border:'none',
                           borderRadius:8,
@@ -1256,7 +1265,7 @@ function DoctorDashboard() {
                           transition:'all 0.3s ease'
                         }}
                       >
-                        ملاحظة
+                        🗑️ إلغاء الموعد
                       </button>
                     </div>
                   </div>
