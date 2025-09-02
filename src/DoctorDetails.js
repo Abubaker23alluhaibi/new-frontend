@@ -797,6 +797,20 @@ function DoctorDetails() {
                 📝 {t('rating.reviews')}
               </h3>
               
+              {/* رسالة توضيحية */}
+              <div style={{
+                background: 'rgba(10, 143, 130, 0.1)',
+                border: '1px solid rgba(10, 143, 130, 0.2)',
+                borderRadius: '8px',
+                padding: '0.8rem',
+                marginBottom: '1rem',
+                fontSize: '14px',
+                color: '#0A8F82',
+                textAlign: 'center'
+              }}>
+                💬 {t('rating.comments_private')}
+              </div>
+              
               {ratings.length === 0 ? (
                 <div style={{
                   textAlign: 'center',
@@ -849,15 +863,7 @@ function DoctorDetails() {
                           {new Date(rating.createdAt).toLocaleDateString('ar-EG')}
                         </span>
                       </div>
-                      {rating.comment && (
-                        <div style={{
-                          fontSize: '14px',
-                          color: '#333',
-                          lineHeight: '1.5'
-                        }}>
-                          {rating.comment}
-                        </div>
-                      )}
+                      {/* التعليقات مخفية من العرض العام - تظهر للطبيب فقط */}
                     </div>
                   ))}
                 </div>

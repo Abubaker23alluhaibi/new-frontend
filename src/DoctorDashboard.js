@@ -561,6 +561,17 @@ function DoctorDashboard() {
               >
                 <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="#0A8F82" strokeWidth="2"/><path d="M4 20c0-2.21 3.58-4 8-4s8 1.79 8 4" stroke="#0A8F82" strokeWidth="2"/></svg> {t('my_profile')}
               </SecureButton>
+              <SecureButton 
+                permission="VIEW_PROFILE"
+                onClick={()=>{
+                  console.log('💬 تم الضغط على التعليقات');
+                  navigate('/doctor-comments'); 
+                  setShowSidebar(false);
+                }} 
+                style={{background: '#fff', color: '#0A8F82', border: '2px solid #0A8F82', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
+              >
+                <span role="img" aria-label="تعليقات">💬</span> {t('rating.private_comments')}
+              </SecureButton>
               <button onClick={()=>{
                 signOut(); 
                 setShowSidebar(false);

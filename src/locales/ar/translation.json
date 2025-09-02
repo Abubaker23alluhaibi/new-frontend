@@ -39,7 +39,12 @@
     "no_ratings_yet": "لا توجد تقييمات بعد",
     "be_first_to_rate": "كن أول من يقيم هذا الطبيب",
     "reviews": "التقييمات",
-    "update_rating": "تحديث التقييم"
+    "update_rating": "تحديث التقييم",
+    "comments_private": "التعليقات تصل للطبيب فقط ولا تظهر للعامة",
+    "private_comments": "التعليقات الخاصة",
+    "comments": "التعليقات",
+    "no_comments_yet": "لا توجد تعليقات بعد",
+    "no_comments_message": "لم تتلق أي تعليقات من المرضى بعد"
   },
   "booking": {
     "book_for_other_person": "الحجز لشخص آخر",

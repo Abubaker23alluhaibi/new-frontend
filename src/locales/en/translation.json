@@ -30,7 +30,12 @@
     "no_ratings_yet": "No ratings yet",
     "be_first_to_rate": "Be the first to rate this doctor",
     "reviews": "Reviews",
-    "update_rating": "Update Rating"
+    "update_rating": "Update Rating",
+    "comments_private": "Comments are sent to the doctor only and are not shown publicly",
+    "private_comments": "Private Comments",
+    "comments": "Comments",
+    "no_comments_yet": "No comments yet",
+    "no_comments_message": "You haven't received any comments from patients yet"
   },
   "booking": {
     "book_for_other_person": "Book for Another Person",

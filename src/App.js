@@ -8,6 +8,7 @@ import UserSignUp from './UserSignUp';
 import DoctorSignUp from './DoctorSignUp';
 import UserHome from './UserHome';
 import TopRatedDoctors from './TopRatedDoctors';
+import DoctorComments from './DoctorComments';
 import DoctorDashboard from './DoctorDashboard';
 import DoctorDetails from './DoctorDetails';
 import MyAppointments from './MyAppointments';
@@ -181,6 +182,11 @@ function App() {
             <ProtectedRoute requiredUserType="user">
               <TopRatedDoctors />
             </ProtectedRoute>
+          } />
+          <Route path="/doctor-comments" element={
+            <PermissionProtectedRoute requiredPermission="VIEW_PROFILE">
+              <DoctorComments />
+            </PermissionProtectedRoute>
           } />
           <Route path="/doctor-dashboard" element={
             <PermissionProtectedRoute requiredPermission="VIEW_APPOINTMENTS">
