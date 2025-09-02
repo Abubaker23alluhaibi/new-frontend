@@ -618,44 +618,19 @@ function DoctorDashboard() {
         <div style={{maxWidth:700, margin:'1.5rem auto', padding:'0 1rem'}}>
           <div style={{
             display:'grid', 
-            gridTemplateColumns: isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fit, minmax(120px, 1fr))', 
+            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(2, 1fr)', 
             gap: isMobile ? '0.5rem' : '0.8rem', 
             marginBottom:'2rem'
           }}>
-            <div style={{
-              background:'#fff', 
-              borderRadius: isMobile ? 6 : 8, 
-              boxShadow:'0 2px 8px rgba(0,0,0,0.08)', 
-              padding: isMobile ? '0.5rem' : '0.8rem', 
-              textAlign:'center', 
-              border: '1px solid #f0f0f0'
-            }}>
-              <div style={{fontSize: isMobile ? '1rem' : '1.2rem', marginBottom:'0.3rem'}}>📅</div>
-              <div style={{
-                fontSize: isMobile ? '1.2rem' : '1.5rem', 
-                fontWeight:900, 
-                color:'#0A8F82', 
-                marginBottom:'0.2rem', 
-                direction:'ltr', 
-                textAlign:'center', 
-                unicodeBidi:'bidi-override'
-              }}>{totalAppointments}</div>
-              <div style={{fontSize: isMobile ? '8px' : '0.9rem', fontWeight:600, color:'#666'}}>{t('total_appointments')}</div>
-            </div>
             <div style={{background:'#fff', borderRadius:8, boxShadow:'0 2px 8px rgba(0,0,0,0.08)', padding:'0.8rem', textAlign:'center', border: '1px solid #f0f0f0'}}>
               <div style={{fontSize:'1.2rem', marginBottom:'0.3rem'}}>🎯</div>
               <div style={{fontSize:'1.5rem', fontWeight:900, color:'#0A8F82', marginBottom:'0.2rem', direction:'ltr', textAlign:'center', unicodeBidi:'bidi-override'}}>{todayCount}</div>
               <div style={{fontSize:'0.9rem', fontWeight:600, color:'#666'}}>{t('today_appointments')}</div>
             </div>
             <div style={{background:'#fff', borderRadius:8, boxShadow:'0 2px 8px rgba(0,0,0,0.08)', padding:'0.8rem', textAlign:'center', border: '1px solid #f0f0f0'}}>
-              <div style={{fontSize:'1.2rem', marginBottom:'0.3rem'}}>⏰</div>
-              <div style={{fontSize:'1.5rem', fontWeight:900, color:'#0A8F82', marginBottom:'0.2rem', direction:'ltr', textAlign:'center', unicodeBidi:'bidi-override'}}>{upcomingAppointments.length}</div>
-              <div style={{fontSize:'0.9rem', fontWeight:600, color:'#666'}}>{t('upcoming_appointments')}</div>
-            </div>
-            <div style={{background:'#fff', borderRadius:8, boxShadow:'0 2px 8px rgba(0,0,0,0.08)', padding:'0.8rem', textAlign:'center', border: '1px solid #f0f0f0'}}>
-              <div style={{fontSize:'1.2rem', marginBottom:'0.3rem'}}>📊</div>
-              <div style={{fontSize:'1.5rem', fontWeight:900, color:'#0A8F82', marginBottom:'0.2rem', direction:'ltr', textAlign:'center', unicodeBidi:'bidi-override'}}>{notifCount}</div>
-              <div style={{fontSize:'0.9rem', fontWeight:600, color:'#666'}}>{t('new_notifications')}</div>
+              <div style={{fontSize:'1.2rem', marginBottom:'0.3rem'}}>✅</div>
+              <div style={{fontSize:'1.5rem', fontWeight:900, color:'#0A8F82', marginBottom:'0.2rem', direction:'ltr', textAlign:'center', unicodeBidi:'bidi-override'}}>{todayAppointments.filter(apt => apt.attendance === 'present').length}</div>
+              <div style={{fontSize:'0.9rem', fontWeight:600, color:'#666'}}>حضور اليوم</div>
             </div>
           </div>
         </div>
