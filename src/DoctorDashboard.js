@@ -709,10 +709,10 @@ function DoctorDashboard() {
       navigate('/doctor-analytics');
     }}
                 style={{
-                  background:'#0A8F82',
-                  color:'#fff',
-                  border:'none',
-                  borderRadius:'50%',
+                  background:'#0A8F82 !important',
+                  color:'#fff !important',
+                  border:'none !important',
+                  borderRadius:'50% !important',
                   width: isMobile ? 60 : 80,
                   height: isMobile ? 60 : 80,
                   cursor:'pointer',
@@ -723,7 +723,10 @@ function DoctorDashboard() {
                   justifyContent:'center',
                   gap:4,
                   boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-                  marginBottom: isMobile ? 8 : 12
+                  marginBottom: isMobile ? 8 : 12,
+                  padding: '0 !important',
+                  fontSize: '0 !important',
+                  fontWeight: 'normal !important'
                 }}
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
@@ -755,10 +758,10 @@ function DoctorDashboard() {
                   navigate('/patient-management');
                 }}
                 style={{
-                  background:'#0A8F82',
-                  color:'#fff',
-                  border:'none',
-                  borderRadius:'50%',
+                  background:'#0A8F82 !important',
+                  color:'#fff !important',
+                  border:'none !important',
+                  borderRadius:'50% !important',
                   width: isMobile ? 60 : 80,
                   height: isMobile ? 60 : 80,
                   cursor:'pointer',
@@ -769,7 +772,10 @@ function DoctorDashboard() {
                   justifyContent:'center',
                   gap:4,
                   boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-                  marginBottom: isMobile ? 8 : 12
+                  marginBottom: isMobile ? 8 : 12,
+                  padding: '0 !important',
+                  fontSize: '0 !important',
+                  fontWeight: 'normal !important'
                 }}
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>🏥</div>
@@ -785,10 +791,10 @@ function DoctorDashboard() {
                   navigate('/employee-manager');
                 }}
                 style={{
-                  background:'#0A8F82',
-                  color:'#fff',
-                  border:'none',
-                  borderRadius:'50%',
+                  background:'#0A8F82 !important',
+                  color:'#fff !important',
+                  border:'none !important',
+                  borderRadius:'50% !important',
                   width: isMobile ? 60 : 80,
                   height: isMobile ? 60 : 80,
                   cursor:'pointer',
@@ -799,7 +805,10 @@ function DoctorDashboard() {
                   justifyContent:'center',
                   gap:4,
                   boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-                  marginBottom: isMobile ? 8 : 12
+                  marginBottom: isMobile ? 8 : 12,
+                  padding: '0 !important',
+                  fontSize: '0 !important',
+                  fontWeight: 'normal !important'
                 }}
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>👥</div>
@@ -815,10 +824,10 @@ function DoctorDashboard() {
                   navigate('/bookings-for-others-stats');
                 }}
                 style={{
-                  background:'#0A8F82',
-                  color:'#fff',
-                  border:'none',
-                  borderRadius:'50%',
+                  background:'#0A8F82 !important',
+                  color:'#fff !important',
+                  border:'none !important',
+                  borderRadius:'50% !important',
                   width: isMobile ? 60 : 80,
                   height: isMobile ? 60 : 80,
                   cursor:'pointer',
@@ -829,7 +838,10 @@ function DoctorDashboard() {
                   justifyContent:'center',
                   gap:4,
                   boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-                  marginBottom: isMobile ? 8 : 12
+                  marginBottom: isMobile ? 8 : 12,
+                  padding: '0 !important',
+                  fontSize: '0 !important',
+                  fontWeight: 'normal !important'
                 }}
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
