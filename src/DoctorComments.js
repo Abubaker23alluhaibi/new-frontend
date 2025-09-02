@@ -28,10 +28,8 @@ function DoctorComments() {
 
   const fetchPrivateRatings = async () => {
     try {
-      const token = localStorage.getItem('token');
-      console.log('🔍 Frontend Debug - user._id:', user._id);
-      console.log('🔍 Frontend Debug - token exists:', !!token);
-      console.log('🔍 Frontend Debug - API URL:', `${process.env.REACT_APP_API_URL}/ratings/doctor/${user._id}/private`);
+      // الحصول على الـ token من user object أو localStorage
+      const token = user?.token || localStorage.getItem('token');
       
       const response = await fetch(`${process.env.REACT_APP_API_URL}/ratings/doctor/${user._id}/private`, {
         headers: {
@@ -39,9 +37,6 @@ function DoctorComments() {
         }
       });
       const data = await response.json();
-      
-      console.log('🔍 Frontend Debug - Response status:', response.status);
-      console.log('🔍 Frontend Debug - Response data:', data);
       
       if (response.ok) {
         setRatings(data.ratings || []);
@@ -56,7 +51,8 @@ function DoctorComments() {
 
   const fetchNotifications = async () => {
     try {
-      const token = localStorage.getItem('token');
+      // الحصول على الـ token من user object
+      const token = user?.token || localStorage.getItem('token');
       const response = await fetch(`${process.env.REACT_APP_API_URL}/notifications/doctor/${user._id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -74,7 +70,8 @@ function DoctorComments() {
 
   const markNotificationAsRead = async (notificationId) => {
     try {
-      const token = localStorage.getItem('token');
+      // الحصول على الـ token من user object
+      const token = user?.token || localStorage.getItem('token');
       await fetch(`${process.env.REACT_APP_API_URL}/notifications/${notificationId}/read`, {
         method: 'PUT',
         headers: {

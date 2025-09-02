@@ -85,6 +85,15 @@ export const AuthProvider = ({ children }) => {
       try {
         const userData = JSON.parse(savedUser);
         console.log('✅ AuthContext: تم استرجاع بيانات المستخدم:', userData.user_type);
+        
+        // التأكد من وجود الـ token في userData
+        if (!userData.token) {
+          const savedToken = localStorage.getItem('token');
+          if (savedToken) {
+            userData.token = savedToken;
+          }
+        }
+        
         setUser(userData);
       } catch (error) {
         console.error('❌ AuthContext: خطأ في تحليل بيانات المستخدم:', error);
@@ -96,6 +105,15 @@ export const AuthProvider = ({ children }) => {
       try {
         const profileData = JSON.parse(savedProfile);
         console.log('✅ AuthContext: تم استرجاع بيانات الملف الشخصي');
+        
+        // التأكد من وجود الـ token في profileData
+        if (!profileData.token) {
+          const savedToken = localStorage.getItem('token');
+          if (savedToken) {
+            profileData.token = savedToken;
+          }
+        }
+        
         setProfile(profileData);
       } catch (error) {
         console.error('❌ AuthContext: خطأ في تحليل بيانات الملف الشخصي:', error);
@@ -186,24 +204,21 @@ export const AuthProvider = ({ children }) => {
       if (res.ok) {
         // حفظ بيانات المستخدم في localStorage
         const userData = loginType === 'doctor' ? data.doctor : data.user;
-        console.log('🔍 signIn - data:', data);
-        console.log('🔍 signIn - userData before token:', userData);
         
         // إضافة الـ token إلى بيانات المستخدم
         if (data.token) {
           userData.token = data.token;
-          console.log('🔍 signIn - token added:', data.token);
-        } else {
-          console.log('❌ signIn - no token in response');
         }
         
-        console.log('🔍 signIn - userData after token:', userData);
         setUser(userData);
         setProfile(userData);
         
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('profile', JSON.stringify(userData));
-        console.log('🔍 signIn - saved to localStorage:', JSON.stringify(userData));
+        // حفظ الـ token بشكل منفصل للوصول السريع
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
 
         return { data, error: null };
       } else {
@@ -220,6 +235,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('user');
       localStorage.removeItem('profile');
       localStorage.removeItem('currentUser');
+      localStorage.removeItem('token');
       
       setUser(null);
       setProfile(null);
