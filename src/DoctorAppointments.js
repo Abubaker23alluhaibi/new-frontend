@@ -11,7 +11,7 @@ function DoctorAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showPastAppointments] = useState(false);
+  const [showPastAppointments, setShowPastAppointments] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all'); // all, today, upcoming, past
   const [sortBy, setSortBy] = useState('date'); // date, time, name
@@ -408,6 +408,20 @@ function DoctorAppointments() {
               style={{background:'#4caf50', color:'#fff', border:'none', borderRadius:8, padding:'0.7rem 1.5rem', fontWeight:700, cursor:'pointer'}}
             >
               🏠 {t('back_to_home')}
+            </button>
+            <button 
+              onClick={() => setShowPastAppointments(!showPastAppointments)}
+              style={{
+                background: showPastAppointments ? '#ff9800' : '#9c27b0',
+                color:'#fff', 
+                border:'none', 
+                borderRadius:8, 
+                padding:'0.7rem 1.5rem', 
+                fontWeight:700, 
+                cursor:'pointer'
+              }}
+            >
+              {showPastAppointments ? '📅 إخفاء المواعيد السابقة' : '📅 إظهار المواعيد السابقة'}
             </button>
             <button 
               onClick={() => window.print()}
