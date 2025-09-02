@@ -910,6 +910,124 @@
   background: #5a6268;
 }
 
+/* PDF Viewer Options */
+.pdf-viewer-options {
+  padding: 40px;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.pdf-viewer-buttons {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-open-browser {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(52, 152, 219, 0.3);
+}
+
+.btn-open-browser:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.btn-download-pdf {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(39, 174, 96, 0.3);
+}
+
+.btn-download-pdf:hover {
+  background: #229954;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+}
+
+.pdf-preview {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.pdf-info {
+  font-size: 18px;
+  color: #2c3e50;
+  margin-bottom: 16px;
+}
+
+.pdf-instructions {
+  font-size: 16px;
+  color: #7f8c8d;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.pdf-alternatives {
+  text-align: right;
+}
+
+.pdf-alternatives h4 {
+  color: #2c3e50;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.pdf-alternatives ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pdf-alternatives li {
+  color: #7f8c8d;
+  margin-bottom: 8px;
+  padding-right: 20px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.pdf-alternatives li:before {
+  content: "✓";
+  position: absolute;
+  right: 0;
+  color: #27ae60;
+  font-weight: bold;
+}
+
 /* Responsive PDF Viewer */
 @media (max-width: 768px) {
   .pdf-viewer-content {
@@ -924,5 +1042,24 @@
   .pdf-viewer-footer {
     flex-direction: column;
     gap: 12px;
+  }
+  
+  .pdf-viewer-options {
+    padding: 20px;
+  }
+  
+  .pdf-viewer-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .btn-open-browser,
+  .btn-download-pdf {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+  
+  .pdf-preview {
+    padding: 20px;
   }
 }

@@ -551,9 +551,34 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
   }, [user]);
 
   // دالة لفتح PDF في modal
-  const openPdfViewer = (fileUrl, fileName) => {
+  const openPdfViewer = async (fileUrl, fileName) => {
     setPdfLoading(true);
-    setViewingPdf({ url: fileUrl, name: fileName });
+    try {
+      const secureUrl = await getPdfWithAuth(fileUrl);
+      setViewingPdf({ url: secureUrl, name: fileName });
+    } catch (error) {
+      console.error('Error opening PDF:', error);
+      setViewingPdf({ url: fileUrl, name: fileName });
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
+  // دالة لتحميل PDF مع التوكن
+  const getPdfWithAuth = async (fileUrl) => {
+    try {
+      const token = getAuthToken();
+      if (!token) {
+        throw new Error('No authentication token');
+      }
+
+      // استخدام الـ endpoint الآمن الجديد
+      const secureUrl = `${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(fileUrl)}`;
+      return secureUrl;
+    } catch (error) {
+      console.error('Error getting PDF with auth:', error);
+      return fileUrl; // العودة للرابط الأصلي في حالة الخطأ
+    }
   };
 
   // دالة لإغلاق PDF viewer
@@ -813,7 +838,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                             if (report.fileType === 'application/pdf' || report.title.includes('.pdf')) {
                               openPdfViewer(report.fileUrl, report.title);
                             } else {
-                              window.open(report.fileUrl, '_blank');
+                              window.open(`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(report.fileUrl)}`, '_blank');
                             }
                           }}
                           className="btn-view"
@@ -821,7 +846,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                           👁️ {t('patient_management.view_file')}
                         </button>
                         <a 
-                          href={report.fileUrl} 
+                          href={`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(report.fileUrl)}`}
                           download={report.title}
                           className="btn-download"
                         >
@@ -889,7 +914,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                             if (examination.fileType === 'application/pdf' || examination.title.includes('.pdf')) {
                               openPdfViewer(examination.fileUrl, examination.title);
                             } else {
-                              window.open(examination.fileUrl, '_blank');
+                              window.open(`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(examination.fileUrl)}`, '_blank');
                             }
                           }}
                           className="btn-view"
@@ -897,7 +922,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                           👁️ {t('patient_management.view_file')}
                         </button>
                         <a 
-                          href={examination.fileUrl} 
+                          href={`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(examination.fileUrl)}`}
                           download={examination.title}
                           className="btn-download"
                         >
@@ -944,15 +969,43 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                   <p>جاري تحميل الملف...</p>
                 </div>
               )}
-              <iframe
-                src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(viewingPdf.url)}`}
-                width="100%"
-                height="100%"
-                style={{ border: 'none' }}
-                title={viewingPdf.name}
-                onLoad={() => setPdfLoading(false)}
-                onError={() => setPdfLoading(false)}
-              />
+              <div className="pdf-viewer-options">
+                <div className="pdf-viewer-buttons">
+                  <a 
+                    href={viewingPdf.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="btn-open-browser"
+                    onClick={() => setPdfLoading(false)}
+                  >
+                    🌐 فتح في المتصفح
+                  </a>
+                  <a 
+                    href={viewingPdf.url} 
+                    download={viewingPdf.name}
+                    className="btn-download-pdf"
+                    onClick={() => setPdfLoading(false)}
+                  >
+                    ⬇️ تحميل الملف
+                  </a>
+                </div>
+                <div className="pdf-preview">
+                  <p className="pdf-info">
+                    📄 <strong>{viewingPdf.name}</strong>
+                  </p>
+                  <p className="pdf-instructions">
+                    لفتح ملف PDF، اضغط على "فتح في المتصفح" أو "تحميل الملف"
+                  </p>
+                  <div className="pdf-alternatives">
+                    <h4>خيارات أخرى:</h4>
+                    <ul>
+                      <li>اضغط على "فتح في المتصفح" لعرض الملف في نافذة جديدة</li>
+                      <li>اضغط على "تحميل الملف" لحفظ الملف على جهازك</li>
+                      <li>اضغط على "فتح في نافذة جديدة" في الأسفل</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="pdf-viewer-footer">
               <div className="footer-left">
