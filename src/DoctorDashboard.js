@@ -511,6 +511,18 @@ function DoctorDashboard() {
 
 
               <SecureButton 
+                permission="MANAGE_SPECIAL_APPOINTMENTS"
+                onClick={()=>{
+                  setShowSpecialAppointments(true); 
+                  setShowSidebar(false);
+                  // إعادة تحميل المواعيد عند فتح المواعيد الخاصة
+                  fetchAllAppointments();
+                }} 
+                style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
+              >
+                <span role="img" aria-label="الحجز للآخرين">⭐</span> الحجز للآخرين
+              </SecureButton>
+              <SecureButton 
                 permission="VIEW_PROFILE"
                 onClick={()=>{
                   console.log('🔍 تم الضغط على الملف الشخصي');
@@ -795,12 +807,12 @@ function DoctorDashboard() {
               <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة الموظفين</div>
             </div>
 
-            {/* زر إدارة الحجز للمستخدم الآخر */}
+            {/* زر إدارة المستخدمين الآخرين */}
             <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
               <SecureButton 
-                permission="MANAGE_SPECIAL_APPOINTMENTS"
+                permission="VIEW_BOOKINGS_STATS"
                 onClick={() => {
-                  setShowSpecialAppointments(true);
+                  navigate('/bookings-for-others-stats');
                 }}
                 style={{
                   background:'#0A8F82',
@@ -820,9 +832,9 @@ function DoctorDashboard() {
                   marginBottom: isMobile ? 8 : 12
                 }}
               >
-                <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>⭐</div>
+                <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
               </SecureButton>
-              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>الحجز للآخرين</div>
+              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة المستخدمين الآخرين</div>
             </div>
           </div>
         </div>
