@@ -509,18 +509,7 @@ function DoctorDashboard() {
               </SecureButton>
 
 
-              <SecureButton 
-                permission="MANAGE_SPECIAL_APPOINTMENTS"
-                onClick={()=>{
-                  setShowSpecialAppointments(true); 
-                  setShowSidebar(false);
-                  // إعادة تحميل المواعيد عند فتح المواعيد الخاصة
-                  fetchAllAppointments();
-                }} 
-                style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
-              >
-                <span role="img" aria-label={t('doctor_dashboard.appointments_for_others')}>👥</span> {t('doctor_dashboard.appointments_for_others')}
-              </SecureButton>
+
               <SecureButton 
                 permission="VIEW_PROFILE"
                 onClick={()=>{
@@ -642,87 +631,93 @@ function DoctorDashboard() {
               textAlign:'center'
             }}>
             {/* زر التقويم */}
-            <button style={{
-              background:'#0A8F82',
-              color:'#fff',
-              border:'none',
-              borderRadius:'50%',
-              width: isMobile ? 60 : 80,
-              height: isMobile ? 60 : 80,
-              cursor:'pointer',
-              transition:'all 0.3s ease',
-              display:'flex',
-              flexDirection:'column',
-              alignItems:'center',
-              justifyContent:'center',
-              gap:4,
-              boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-              marginBottom: isMobile ? 8 : 12
-            }} onClick={()=>{
-          setShowCalendarModal(true);
-          // إعادة تحميل المواعيد عند فتح التقويم
-          fetchAllAppointments();
-        }}>
-              <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📅</div>
-            </button>
-                            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.calendar')}</div>
+            <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
+              <button style={{
+                background:'#0A8F82',
+                color:'#fff',
+                border:'none',
+                borderRadius:'50%',
+                width: isMobile ? 60 : 80,
+                height: isMobile ? 60 : 80,
+                cursor:'pointer',
+                transition:'all 0.3s ease',
+                display:'flex',
+                flexDirection:'column',
+                alignItems:'center',
+                justifyContent:'center',
+                gap:4,
+                boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
+                marginBottom: isMobile ? 8 : 12
+              }} onClick={()=>{
+            setShowCalendarModal(true);
+            // إعادة تحميل المواعيد عند فتح التقويم
+            fetchAllAppointments();
+          }}>
+                <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📅</div>
+              </button>
+              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.calendar')}</div>
+            </div>
             
             {/* زر كل المواعيد */}
-            <button 
-              onClick={() => {
-                navigate('/doctor-appointments');
-                // إعادة تحميل المواعيد عند فتح جميع المواعيد
-                fetchAllAppointments();
-              }}
-              style={{
-                background:'#0A8F82',
-                color:'#fff',
-                border:'none',
-                borderRadius:'50%',
-                width: isMobile ? 60 : 80,
-                height: isMobile ? 60 : 80,
-                cursor:'pointer',
-                transition:'all 0.3s ease',
-                display:'flex',
-                flexDirection:'column',
-                alignItems:'center',
-                justifyContent:'center',
-                gap:4,
-                boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-                marginBottom: isMobile ? 8 : 12
-              }}
-            >
-              <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📋</div>
-            </button>
-                            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.all_appointments')}</div>
+            <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
+              <button 
+                onClick={() => {
+                  navigate('/doctor-appointments');
+                  // إعادة تحميل المواعيد عند فتح جميع المواعيد
+                  fetchAllAppointments();
+                }}
+                style={{
+                  background:'#0A8F82',
+                  color:'#fff',
+                  border:'none',
+                  borderRadius:'50%',
+                  width: isMobile ? 60 : 80,
+                  height: isMobile ? 60 : 80,
+                  cursor:'pointer',
+                  transition:'all 0.3s ease',
+                  display:'flex',
+                  flexDirection:'column',
+                  alignItems:'center',
+                  justifyContent:'center',
+                  gap:4,
+                  boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
+                  marginBottom: isMobile ? 8 : 12
+                }}
+              >
+                <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📋</div>
+              </button>
+              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.all_appointments')}</div>
+            </div>
 
             {/* زر تحليل المواعيد */}
-            <SecureButton 
-              permission="VIEW_ANALYTICS"
-              onClick={() => {
-    navigate('/doctor-analytics');
-  }}
-              style={{
-                background:'#0A8F82',
-                color:'#fff',
-                border:'none',
-                borderRadius:'50%',
-                width: isMobile ? 60 : 80,
-                height: isMobile ? 60 : 80,
-                cursor:'pointer',
-                transition:'all 0.3s ease',
-                display:'flex',
-                flexDirection:'column',
-                alignItems:'center',
-                justifyContent:'center',
-                gap:4,
-                boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-                marginBottom: isMobile ? 8 : 12
-              }}
-            >
-              <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
-            </SecureButton>
-                            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.appointment_analysis')}</div>
+            <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
+              <SecureButton 
+                permission="VIEW_ANALYTICS"
+                onClick={() => {
+      navigate('/doctor-analytics');
+    }}
+                style={{
+                  background:'#0A8F82',
+                  color:'#fff',
+                  border:'none',
+                  borderRadius:'50%',
+                  width: isMobile ? 60 : 80,
+                  height: isMobile ? 60 : 80,
+                  cursor:'pointer',
+                  transition:'all 0.3s ease',
+                  display:'flex',
+                  flexDirection:'column',
+                  alignItems:'center',
+                  justifyContent:'center',
+                  gap:4,
+                  boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
+                  marginBottom: isMobile ? 8 : 12
+                }}
+              >
+                <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
+              </SecureButton>
+              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.appointment_analysis')}</div>
+            </div>
 
 
 
@@ -741,63 +736,94 @@ function DoctorDashboard() {
             textAlign:'center'
           }}>
             {/* زر إدارة المرضى */}
-            <SecureButton 
-              permission="MANAGE_PATIENTS"
-              onClick={() => {
-                navigate('/patient-management');
-              }}
-              style={{
-                background:'#0A8F82',
-                color:'#fff',
-                border:'none',
-                borderRadius:'50%',
-                width: isMobile ? 60 : 80,
-                height: isMobile ? 60 : 80,
-                cursor:'pointer',
-                transition:'all 0.3s ease',
-                display:'flex',
-                flexDirection:'column',
-                alignItems:'center',
-                justifyContent:'center',
-                gap:4,
-                boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-                marginBottom: isMobile ? 8 : 12
-              }}
-            >
-              <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>🏥</div>
-            </SecureButton>
-            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة المرضى</div>
+            <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
+              <SecureButton 
+                permission="MANAGE_PATIENTS"
+                onClick={() => {
+                  navigate('/patient-management');
+                }}
+                style={{
+                  background:'#0A8F82',
+                  color:'#fff',
+                  border:'none',
+                  borderRadius:'50%',
+                  width: isMobile ? 60 : 80,
+                  height: isMobile ? 60 : 80,
+                  cursor:'pointer',
+                  transition:'all 0.3s ease',
+                  display:'flex',
+                  flexDirection:'column',
+                  alignItems:'center',
+                  justifyContent:'center',
+                  gap:4,
+                  boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
+                  marginBottom: isMobile ? 8 : 12
+                }}
+              >
+                <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>🏥</div>
+              </SecureButton>
+              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة المرضى</div>
+            </div>
 
             {/* زر إدارة الموظفين */}
-            <SecureButton 
-              permission="MANAGE_EMPLOYEES"
-              onClick={() => {
-                navigate('/employee-manager');
-              }}
-              style={{
-                background:'#0A8F82',
-                color:'#fff',
-                border:'none',
-                borderRadius:'50%',
-                width: isMobile ? 60 : 80,
-                height: isMobile ? 60 : 80,
-                cursor:'pointer',
-                transition:'all 0.3s ease',
-                display:'flex',
-                flexDirection:'column',
-                alignItems:'center',
-                justifyContent:'center',
-                gap:4,
-                boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-                marginBottom: isMobile ? 8 : 12
-              }}
-            >
-              <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>👥</div>
-            </SecureButton>
-            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة الموظفين</div>
+            <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
+              <SecureButton 
+                permission="MANAGE_EMPLOYEES"
+                onClick={() => {
+                  navigate('/employee-manager');
+                }}
+                style={{
+                  background:'#0A8F82',
+                  color:'#fff',
+                  border:'none',
+                  borderRadius:'50%',
+                  width: isMobile ? 60 : 80,
+                  height: isMobile ? 60 : 80,
+                  cursor:'pointer',
+                  transition:'all 0.3s ease',
+                  display:'flex',
+                  flexDirection:'column',
+                  alignItems:'center',
+                  justifyContent:'center',
+                  gap:4,
+                  boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
+                  marginBottom: isMobile ? 8 : 12
+                }}
+              >
+                <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>👥</div>
+              </SecureButton>
+              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة الموظفين</div>
+            </div>
 
-            {/* زر فارغ للتوازن */}
-            <div></div>
+            {/* زر إدارة الحجز للمستخدم الآخر */}
+            <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
+              <SecureButton 
+                permission="MANAGE_SPECIAL_APPOINTMENTS"
+                onClick={() => {
+                  setShowSpecialAppointments(true);
+                }}
+                style={{
+                  background:'#0A8F82',
+                  color:'#fff',
+                  border:'none',
+                  borderRadius:'50%',
+                  width: isMobile ? 60 : 80,
+                  height: isMobile ? 60 : 80,
+                  cursor:'pointer',
+                  transition:'all 0.3s ease',
+                  display:'flex',
+                  flexDirection:'column',
+                  alignItems:'center',
+                  justifyContent:'center',
+                  gap:4,
+                  boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
+                  marginBottom: isMobile ? 8 : 12
+                }}
+              >
+                <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>⭐</div>
+              </SecureButton>
+              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>الحجز للآخرين</div>
+            </div>
           </div>
         </div>
 
