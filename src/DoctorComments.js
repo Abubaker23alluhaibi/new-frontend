@@ -19,8 +19,10 @@ function DoctorComments() {
 
   useEffect(() => {
     if (user?._id) {
-      fetchPrivateRatings();
-      fetchNotifications();
+      Promise.all([fetchPrivateRatings(), fetchNotifications()])
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
   }, [user?._id]);
 
