@@ -703,16 +703,15 @@ function DoctorDashboard() {
 
             {/* زر تحليل المواعيد */}
             <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-              <SecureButton 
-                permission="VIEW_ANALYTICS"
+              <button 
                 onClick={() => {
       navigate('/doctor-analytics');
     }}
                 style={{
-                  background:'#0A8F82 !important',
-                  color:'#fff !important',
-                  border:'none !important',
-                  borderRadius:'50% !important',
+                  background:'#0A8F82',
+                  color:'#fff',
+                  border:'none',
+                  borderRadius:'50%',
                   width: isMobile ? 60 : 80,
                   height: isMobile ? 60 : 80,
                   cursor:'pointer',
@@ -724,13 +723,13 @@ function DoctorDashboard() {
                   gap:4,
                   boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
                   marginBottom: isMobile ? 8 : 12,
-                  padding: '0 !important',
-                  fontSize: '0 !important',
-                  fontWeight: 'normal !important'
+                  padding: 0,
+                  fontSize: 'inherit',
+                  fontWeight: 'normal'
                 }}
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
-              </SecureButton>
+              </button>
               <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.appointment_analysis')}</div>
             </div>
 
@@ -752,16 +751,15 @@ function DoctorDashboard() {
           }}>
             {/* زر إدارة المرضى */}
             <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-              <SecureButton 
-                permission="MANAGE_PATIENTS"
+              <button 
                 onClick={() => {
                   navigate('/patient-management');
                 }}
                 style={{
-                  background:'#0A8F82 !important',
-                  color:'#fff !important',
-                  border:'none !important',
-                  borderRadius:'50% !important',
+                  background:'#0A8F82',
+                  color:'#fff',
+                  border:'none',
+                  borderRadius:'50%',
                   width: isMobile ? 60 : 80,
                   height: isMobile ? 60 : 80,
                   cursor:'pointer',
@@ -773,28 +771,27 @@ function DoctorDashboard() {
                   gap:4,
                   boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
                   marginBottom: isMobile ? 8 : 12,
-                  padding: '0 !important',
-                  fontSize: '0 !important',
-                  fontWeight: 'normal !important'
+                  padding: 0,
+                  fontSize: 'inherit',
+                  fontWeight: 'normal'
                 }}
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>🏥</div>
-              </SecureButton>
+              </button>
               <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة المرضى</div>
             </div>
 
             {/* زر إدارة الموظفين */}
             <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-              <SecureButton 
-                permission="MANAGE_EMPLOYEES"
+              <button 
                 onClick={() => {
                   navigate('/employee-manager');
                 }}
                 style={{
-                  background:'#0A8F82 !important',
-                  color:'#fff !important',
-                  border:'none !important',
-                  borderRadius:'50% !important',
+                  background:'#0A8F82',
+                  color:'#fff',
+                  border:'none',
+                  borderRadius:'50%',
                   width: isMobile ? 60 : 80,
                   height: isMobile ? 60 : 80,
                   cursor:'pointer',
@@ -806,28 +803,27 @@ function DoctorDashboard() {
                   gap:4,
                   boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
                   marginBottom: isMobile ? 8 : 12,
-                  padding: '0 !important',
-                  fontSize: '0 !important',
-                  fontWeight: 'normal !important'
+                  padding: 0,
+                  fontSize: 'inherit',
+                  fontWeight: 'normal'
                 }}
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>👥</div>
-              </SecureButton>
+              </button>
               <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة الموظفين</div>
             </div>
 
             {/* زر إدارة المستخدمين الآخرين */}
             <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-              <SecureButton 
-                permission="VIEW_BOOKINGS_STATS"
+              <button 
                 onClick={() => {
                   navigate('/bookings-for-others-stats');
                 }}
                 style={{
-                  background:'#0A8F82 !important',
-                  color:'#fff !important',
-                  border:'none !important',
-                  borderRadius:'50% !important',
+                  background:'#0A8F82',
+                  color:'#fff',
+                  border:'none',
+                  borderRadius:'50%',
                   width: isMobile ? 60 : 80,
                   height: isMobile ? 60 : 80,
                   cursor:'pointer',
@@ -839,13 +835,13 @@ function DoctorDashboard() {
                   gap:4,
                   boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
                   marginBottom: isMobile ? 8 : 12,
-                  padding: '0 !important',
-                  fontSize: '0 !important',
-                  fontWeight: 'normal !important'
+                  padding: 0,
+                  fontSize: 'inherit',
+                  fontWeight: 'normal'
                 }}
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
-              </SecureButton>
+              </button>
               <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة المستخدمين الآخرين</div>
             </div>
           </div>
