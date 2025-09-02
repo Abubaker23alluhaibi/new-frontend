@@ -29,12 +29,19 @@ function DoctorComments() {
   const fetchPrivateRatings = async () => {
     try {
       const token = localStorage.getItem('token');
+      console.log('🔍 Frontend Debug - user._id:', user._id);
+      console.log('🔍 Frontend Debug - token exists:', !!token);
+      console.log('🔍 Frontend Debug - API URL:', `${process.env.REACT_APP_API_URL}/ratings/doctor/${user._id}/private`);
+      
       const response = await fetch(`${process.env.REACT_APP_API_URL}/ratings/doctor/${user._id}/private`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       const data = await response.json();
+      
+      console.log('🔍 Frontend Debug - Response status:', response.status);
+      console.log('🔍 Frontend Debug - Response data:', data);
       
       if (response.ok) {
         setRatings(data.ratings || []);

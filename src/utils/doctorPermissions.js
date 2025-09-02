@@ -24,6 +24,7 @@ export const DOCTOR_PERMISSIONS = {
     VIEW_ADMIN_PANEL: true,            // الوصول للوحة الإدارة
     MANAGE_ACCOUNT_SECURITY: true,     // إدارة أمان الحساب
     EXPORT_PATIENT_DATA: true,         // تصدير بيانات المرضى
+    VIEW_PRIVATE_COMMENTS: true,       // عرض التعليقات الخاصة
   }
 };
 
@@ -76,7 +77,8 @@ export const shouldHideSensitiveElement = (elementType, accessLevel) => {
     'account_security': ['secretary', 'other_doctor', 'regular_user'],
     'patient_history': ['other_doctor', 'regular_user'],
     'special_appointments': ['other_doctor', 'regular_user'],
-    'export_data': ['secretary', 'other_doctor', 'regular_user']
+    'export_data': ['secretary', 'other_doctor', 'regular_user'],
+    'private_comments': ['secretary', 'other_doctor', 'regular_user']
   };
   
   return sensitiveElements[elementType]?.includes(accessLevel) || false;
@@ -93,11 +95,31 @@ export const getVisibleElements = (accessLevel) => {
     'advertisements'
   ];
   
+  const doctorOnlyElements = [
+    'private_comments',
+    'financial_data',
+    'medical_notes',
+    'admin_panel',
+    'account_security',
+    'patient_history',
+    'special_appointments',
+    'export_data'
+  ];
+  
   if (accessLevel === 'owner') {
-    return [...baseElements, 'all_features'];
+    return [...baseElements, ...doctorOnlyElements, 'all_features'];
   } else if (accessLevel === 'secretary') {
     return baseElements;
   } else {
     return ['view_only'];
   }
+};
+
+// دالة خاصة للتحقق من صلاحية التعليقات الخاصة
+export const canViewPrivateComments = (userType, accessLevel) => {
+  // الدكتور فقط يمكنه رؤية التعليقات الخاصة
+  if (userType === 'doctor' && accessLevel === 'owner') {
+    return true;
+  }
+  return false;
 };

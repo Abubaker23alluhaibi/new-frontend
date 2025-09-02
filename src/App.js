@@ -184,7 +184,7 @@ function App() {
             </ProtectedRoute>
           } />
           <Route path="/doctor-comments" element={
-            <PermissionProtectedRoute requiredPermission="VIEW_PROFILE">
+            <PermissionProtectedRoute requiredPermission="VIEW_PRIVATE_COMMENTS">
               <DoctorComments />
             </PermissionProtectedRoute>
           } />
