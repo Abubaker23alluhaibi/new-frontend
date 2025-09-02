@@ -992,20 +992,35 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                   </a>
                 </div>
                 
-                {/* PDF Viewer */}
+                {/* PDF Viewer - Fallback to direct link */}
                 <div className="pdf-iframe-container">
-                  <iframe
-                    src={viewingPdf.url}
-                    width="100%"
-                    height="600px"
-                    style={{ border: 'none', borderRadius: '8px' }}
-                    title={viewingPdf.name}
-                    onLoad={() => setPdfLoading(false)}
-                    onError={() => {
-                      setPdfLoading(false);
-                      console.error('Error loading PDF in iframe');
-                    }}
-                  />
+                  <div className="pdf-fallback">
+                    <p className="pdf-fallback-text">
+                      📄 <strong>{viewingPdf.name}</strong>
+                    </p>
+                    <p className="pdf-fallback-instruction">
+                      اضغط على الأزرار أدناه لفتح أو تحميل الملف
+                    </p>
+                    <div className="pdf-fallback-buttons">
+                      <a 
+                        href={viewingPdf.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="btn-open-browser"
+                        onClick={() => setPdfLoading(false)}
+                      >
+                        🌐 فتح في نافذة جديدة
+                      </a>
+                      <a 
+                        href={viewingPdf.url} 
+                        download={viewingPdf.name}
+                        className="btn-download-pdf"
+                        onClick={() => setPdfLoading(false)}
+                      >
+                        ⬇️ تحميل الملف
+                      </a>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="pdf-preview">
