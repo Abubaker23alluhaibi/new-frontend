@@ -507,38 +507,8 @@ function DoctorDashboard() {
               >
                 <span role="img" aria-label={t('doctor_dashboard.edit_appointment_duration')}>⏱️</span> {t('doctor_dashboard.edit_appointment_duration')}
               </SecureButton>
-              <SecureButton 
-                permission="VIEW_BOOKINGS_STATS"
-                onClick={()=>{
-                  navigate('/bookings-for-others-stats'); 
-                  setShowSidebar(false);
-                  // إعادة تحميل المواعيد عند فتح صفحة إحصائيات الحجز للآخرين
-                  fetchAllAppointments();
-                }} 
-                style={{background: '#ff9800', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
-              >
-                <span role="img" aria-label="إحصائيات الحجز للآخرين">📊</span> {t('bookings_for_others_stats')}
-              </SecureButton>
-              <SecureButton 
-                permission="MANAGE_EMPLOYEES"
-                onClick={()=>{
-                  navigate('/employee-manager'); 
-                  setShowSidebar(false);
-                }} 
-                style={{background: '#9c27b0', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
-              >
-                <span role="img" aria-label="إدارة الموظفين">👥</span> إدارة الموظفين
-              </SecureButton>
-              <SecureButton 
-                permission="MANAGE_PATIENTS"
-                onClick={()=>{
-                  navigate('/patient-management'); 
-                  setShowSidebar(false);
-                }} 
-                style={{background: '#2196f3', color: '#fff', border: 'none', borderRadius: 12, padding: '0.7rem 1.2rem', fontWeight: 700, fontSize: 16, cursor: 'pointer', display:'flex', alignItems:'center', gap:8, transition:'all 0.3s ease'}}
-              >
-                <span role="img" aria-label="إدارة المرضى">🏥</span> إدارة المرضى
-              </SecureButton>
+
+
               <SecureButton 
                 permission="MANAGE_SPECIAL_APPOINTMENTS"
                 onClick={()=>{
@@ -667,7 +637,7 @@ function DoctorDashboard() {
         <div style={{maxWidth:700, margin:'1.5rem auto', padding:'0 1rem'}}>
                       <div style={{
               display:'grid', 
-              gridTemplateColumns: isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fit, minmax(140px, 1fr))', 
+              gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(auto-fit, minmax(140px, 1fr))', 
               gap: isMobile ? '0.5rem' : '1rem',
               textAlign:'center'
             }}>
@@ -758,11 +728,23 @@ function DoctorDashboard() {
 
 
 
-            {/* زر الملف الشخصي */}
+
+          </div>
+        </div>
+
+        {/* صف ثاني للأزرار الجديدة */}
+        <div style={{maxWidth:700, margin:'1.5rem auto', padding:'0 1rem'}}>
+          <div style={{
+            display:'grid', 
+            gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(auto-fit, minmax(140px, 1fr))', 
+            gap: isMobile ? '0.5rem' : '1rem',
+            textAlign:'center'
+          }}>
+            {/* زر إدارة المرضى */}
             <SecureButton 
-              permission="VIEW_PROFILE"
+              permission="MANAGE_PATIENTS"
               onClick={() => {
-                navigate('/doctor-profile');
+                navigate('/patient-management');
               }}
               style={{
                 background:'#0A8F82',
@@ -782,9 +764,40 @@ function DoctorDashboard() {
                 marginBottom: isMobile ? 8 : 12
               }}
             >
-              <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>👤</div>
+              <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>🏥</div>
             </SecureButton>
-                            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.profile')}</div>
+            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة المرضى</div>
+
+            {/* زر إدارة الموظفين */}
+            <SecureButton 
+              permission="MANAGE_EMPLOYEES"
+              onClick={() => {
+                navigate('/employee-manager');
+              }}
+              style={{
+                background:'#0A8F82',
+                color:'#fff',
+                border:'none',
+                borderRadius:'50%',
+                width: isMobile ? 60 : 80,
+                height: isMobile ? 60 : 80,
+                cursor:'pointer',
+                transition:'all 0.3s ease',
+                display:'flex',
+                flexDirection:'column',
+                alignItems:'center',
+                justifyContent:'center',
+                gap:4,
+                boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
+                marginBottom: isMobile ? 8 : 12
+              }}
+            >
+              <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>👥</div>
+            </SecureButton>
+            <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة الموظفين</div>
+
+            {/* زر فارغ للتوازن */}
+            <div></div>
           </div>
         </div>
 
