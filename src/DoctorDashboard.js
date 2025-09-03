@@ -186,58 +186,58 @@ function DoctorDashboard() {
         // جلب الإشعارات
         await fetchNotifications();
         
-        // إعداد الخدمات مرة واحدة فقط
+        // إعداد الخدمات مرة واحدة فقط - الإشعارات الفورية معطلة مؤقتاً
         if (!servicesInitialized && isComponentMounted) {
           try {
-            // إعداد الإشعارات الفورية
-            const notificationService = (await import('./utils/notificationService')).default;
-            await notificationService.requestPermission();
-            await notificationService.setupServiceWorker();
+            // إعداد الإشعارات الفورية - معطل مؤقتاً
+            // const notificationService = (await import('./utils/notificationService')).default;
+            // await notificationService.requestPermission();
+            // await notificationService.setupServiceWorker();
             
-            // إعداد WebSocket
-            const socketService = (await import('./utils/socketService')).default;
-            if (!socketService.getConnectionStatus().isConnected) {
-              socketService.connect();
-            }
-            socketService.joinDoctorRoom(profile._id);
+            // إعداد WebSocket - معطل مؤقتاً
+            // const socketService = (await import('./utils/socketService')).default;
+            // if (!socketService.getConnectionStatus().isConnected) {
+            //   socketService.connect();
+            // }
+            // socketService.joinDoctorRoom(profile._id);
             
-            // الاستماع لإشعارات المواعيد الجديدة
-            if (!socketService._newAppointmentListener) {
-              socketService.onNewAppointment((data) => {
-                if (!isComponentMounted) return;
-                
-                // إرسال إشعار فوري
-                notificationService.sendNewAppointmentNotification(
-                  data.patientName,
-                  data.bookerName,
-                  data.date,
-                  data.time,
-                  data.reason,
-                  data.patientAge,
-                  data.isBookingForOther
-                );
-                
-                // تحديث قائمة الإشعارات
-                const updateNotifications = async () => {
-                  if (!isComponentMounted) return;
-                  
-                  try {
-                    const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?doctorId=${profile._id}`);
-                    const data = await res.json();
-                    
-                    if (isComponentMounted && Array.isArray(data)) {
-                      setNotifications(data);
-                      setNotifCount(data.filter(n => !n.read).length);
-                    }
-                  } catch (error) {
-                    console.error('خطأ في تحديث الإشعارات:', error);
-                  }
-                };
-                
-                updateNotifications();
-              });
-              socketService._newAppointmentListener = true;
-            }
+            // الاستماع لإشعارات المواعيد الجديدة - معطل مؤقتاً
+            // if (!socketService._newAppointmentListener) {
+            //   socketService.onNewAppointment((data) => {
+            //     if (!isComponentMounted) return;
+            //     
+            //     // إرسال إشعار فوري
+            //     notificationService.sendNewAppointmentNotification(
+            //       data.patientName,
+            //       data.bookerName,
+            //       data.date,
+            //       data.time,
+            //       data.reason,
+            //       data.patientAge,
+            //       data.isBookingForOther
+            //     );
+            //     
+            //     // تحديث قائمة الإشعارات
+            //     const updateNotifications = async () => {
+            //       if (!isComponentMounted) return;
+            //       
+            //       try {
+            //         const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?doctorId=${profile._id}`);
+            //         const data = await res.json();
+            //         
+            //         if (isComponentMounted && Array.isArray(data)) {
+            //           setNotifications(data);
+            //           setNotifCount(data.filter(n => !n.read).length);
+            //         }
+            //       } catch (error) {
+            //         console.error('خطأ في تحديث الإشعارات:', error);
+            //       }
+            //     };
+            //     
+            //     updateNotifications();
+            //   });
+            //   socketService._newAppointmentListener = true;
+            // }
             
             servicesInitialized = true;
           } catch (error) {

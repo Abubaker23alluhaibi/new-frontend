@@ -196,94 +196,94 @@ function UserHome() {
         setNotifications(data);
         setNotifCount(data.filter(n => !n.read).length);
         
-        // إعداد الخدمات مرة واحدة فقط
+        // إعداد الخدمات مرة واحدة فقط - الإشعارات الفورية معطلة مؤقتاً
         if (!servicesInitialized && isComponentMounted) {
           try {
-            // إعداد الإشعارات الفورية
-            const notificationService = (await import('./utils/notificationService')).default;
-            if (notificationService.permission !== 'granted') {
-              await notificationService.requestPermission();
-            }
-            if (!notificationService.registration) {
-              await notificationService.setupServiceWorker();
-            }
+            // إعداد الإشعارات الفورية - معطل مؤقتاً
+            // const notificationService = (await import('./utils/notificationService')).default;
+            // if (notificationService.permission !== 'granted') {
+            //   await notificationService.requestPermission();
+            // }
+            // if (!notificationService.registration) {
+            //   await notificationService.setupServiceWorker();
+            // }
             
-            // إعداد WebSocket
-            const socketService = (await import('./utils/socketService')).default;
-            if (!socketService.getConnectionStatus().isConnected) {
-              socketService.connect();
-            }
-            socketService.joinUserRoom(user._id);
+            // إعداد WebSocket - معطل مؤقتاً
+            // const socketService = (await import('./utils/socketService')).default;
+            // if (!socketService.getConnectionStatus().isConnected) {
+            //   socketService.connect();
+            // }
+            // socketService.joinUserRoom(user._id);
         
-            // الاستماع لإشعارات إلغاء الموعد
-            if (!socketService._appointmentCancelledListener) {
-              socketService.onAppointmentCancelled((data) => {
-                if (!isComponentMounted) return;
-                
-                // إرسال إشعار فوري
-                notificationService.sendAppointmentCancellationNotification(
-                  data.doctorName,
-                  data.date,
-                  data.time
-                );
-                
-                // تحديث قائمة الإشعارات
-                const updateNotifications = async () => {
-                  if (!isComponentMounted) return;
-                  
-                  try {
-                    const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?userId=${user._id}`);
-                    const data = await res.json();
-                    
-                    if (isComponentMounted && Array.isArray(data)) {
-                      setNotifications(data);
-                      setNotifCount(data.filter(n => !n.read).length);
-                    }
-                  } catch (error) {
-                    console.error('خطأ في تحديث الإشعارات:', error);
-                  }
-                };
-                
-                updateNotifications();
-              });
-              socketService._appointmentCancelledListener = true;
-            }
+            // الاستماع لإشعارات إلغاء الموعد - معطل مؤقتاً
+            // if (!socketService._appointmentCancelledListener) {
+            //   socketService.onAppointmentCancelled((data) => {
+            //     if (!isComponentMounted) return;
+            //     
+            //     // إرسال إشعار فوري
+            //     notificationService.sendAppointmentCancellationNotification(
+            //       data.doctorName,
+            //       data.date,
+            //       data.time
+            //     );
+            //     
+            //     // تحديث قائمة الإشعارات
+            //     const updateNotifications = async () => {
+            //       if (!isComponentMounted) return;
+            //       
+            //       try {
+            //         const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?userId=${user._id}`);
+            //         const data = await res.json();
+            //         
+            //         if (isComponentMounted && Array.isArray(data)) {
+            //           setNotifications(data);
+            //           setNotifCount(data.filter(n => !n.read).length);
+            //         }
+            //       } catch (error) {
+            //         console.error('خطأ في تحديث الإشعارات:', error);
+            //       }
+            //     };
+            //     
+            //     updateNotifications();
+            //   });
+            //   socketService._appointmentCancelledListener = true;
+            // }
 
-            // الاستماع لإشعارات المواعيد الخاصة
-            if (!socketService._specialAppointmentListener) {
-              socketService.onSpecialAppointment((data) => {
-                if (!isComponentMounted) return;
-                
-                // إرسال إشعار فوري
-                notificationService.sendSpecialAppointmentNotification(
-                  data.doctorName,
-                  data.date,
-                  data.time,
-                  data.reason,
-                  data.notes
-                );
-                
-                // تحديث قائمة الإشعارات
-                const updateNotifications = async () => {
-                  if (!isComponentMounted) return;
-                  
-                  try {
-                    const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?userId=${user._id}`);
-                    const data = await res.json();
-                    
-                    if (isComponentMounted && Array.isArray(data)) {
-                      setNotifications(data);
-                      setNotifCount(data.filter(n => !n.read).length);
-                    }
-                  } catch (error) {
-                    console.error('خطأ في تحديث الإشعارات:', error);
-                  }
-                };
-                
-                updateNotifications();
-              });
-              socketService._specialAppointmentListener = true;
-            }
+            // الاستماع لإشعارات المواعيد الخاصة - معطل مؤقتاً
+            // if (!socketService._specialAppointmentListener) {
+            //   socketService.onSpecialAppointment((data) => {
+            //     if (!isComponentMounted) return;
+            //     
+            //     // إرسال إشعار فوري
+            //     notificationService.sendSpecialAppointmentNotification(
+            //       data.doctorName,
+            //       data.date,
+            //       data.time,
+            //       data.reason,
+            //       data.notes
+            //     );
+            //     
+            //     // تحديث قائمة الإشعارات
+            //     const updateNotifications = async () => {
+            //       if (!isComponentMounted) return;
+            //       
+            //       try {
+            //         const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?userId=${user._id}`);
+            //         const data = await res.json();
+            //         
+            //         if (isComponentMounted && Array.isArray(data)) {
+            //           setNotifications(data);
+            //           setNotifCount(data.filter(n => !n.read).length);
+            //         }
+            //       } catch (error) {
+            //         console.error('خطأ في تحديث الإشعارات:', error);
+            //       }
+            //     };
+            //     
+            //     updateNotifications();
+            //   });
+            //   socketService._specialAppointmentListener = true;
+            // }
             
             servicesInitialized = true;
           } catch (error) {

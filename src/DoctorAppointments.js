@@ -115,24 +115,24 @@ function DoctorAppointments() {
         const appointment = appointments.find(apt => apt._id === appointmentId);
         setAppointments(appointments.filter(apt => apt._id !== appointmentId));
         
-        // إرسال إشعار فوري للمريض
-        if (appointment) {
-          try {
-            // استيراد خدمة الإشعارات
-            const notificationService = (await import('../utils/notificationService')).default;
-            
-            // إرسال إشعار فوري
-            await notificationService.sendAppointmentCancellationNotification(
-              appointment.doctorName || 'الدكتور',
-              appointment.date,
-              appointment.time
-            );
-            
-            console.log('✅ تم إرسال إشعار إلغاء الموعد فوراً');
-          } catch (notificationError) {
-            console.error('❌ خطأ في إرسال الإشعار الفوري:', notificationError);
-          }
-        }
+        // إرسال إشعار فوري للمريض - معطل مؤقتاً
+        // if (appointment) {
+        //   try {
+        //     // استيراد خدمة الإشعارات
+        //     const notificationService = (await import('../utils/notificationService')).default;
+        //     
+        //     // إرسال إشعار فوري
+        //     await notificationService.sendAppointmentCancellationNotification(
+        //       appointment.doctorName || 'الدكتور',
+        //       appointment.date,
+        //       appointment.time
+        //     );
+        //     
+        //     console.log('✅ تم إرسال إشعار إلغاء الموعد فوراً');
+        //   } catch (notificationError) {
+        //     console.error('❌ خطأ في إرسال الإشعار الفوري:', notificationError);
+        //   }
+        // }
         
         alert(t('appointment_cancelled_success'));
       } else {
