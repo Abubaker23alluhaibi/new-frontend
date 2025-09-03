@@ -174,57 +174,75 @@ function DoctorDashboard() {
   useEffect(() => {
     if (!profile?._id) return;
     
+    let isComponentMounted = true;
+    let servicesInitialized = false;
+    
     console.log('🔄 DoctorDashboard: useEffect - جلب الإشعارات وإعداد WebSocket');
     
     const setupNotifications = async () => {
+      if (!isComponentMounted) return;
+      
       try {
         // جلب الإشعارات
         await fetchNotifications();
         
-        // إعداد الإشعارات الفورية
-        const notificationService = (await import('./utils/notificationService')).default;
-        await notificationService.requestPermission();
-        await notificationService.setupServiceWorker();
-        
-        // إعداد WebSocket
-        const socketService = (await import('./utils/socketService')).default;
-        if (!socketService.getConnectionStatus().isConnected) {
-          socketService.connect();
-        }
-        socketService.joinDoctorRoom(profile._id);
-        
-        // الاستماع لإشعارات المواعيد الجديدة
-        if (!socketService._newAppointmentListener) {
-          socketService.onNewAppointment((data) => {
-            // إرسال إشعار فوري
-            notificationService.sendNewAppointmentNotification(
-              data.patientName,
-              data.bookerName,
-              data.date,
-              data.time,
-              data.reason,
-              data.patientAge,
-              data.isBookingForOther
-            );
+        // إعداد الخدمات مرة واحدة فقط
+        if (!servicesInitialized && isComponentMounted) {
+          try {
+            // إعداد الإشعارات الفورية
+            const notificationService = (await import('./utils/notificationService')).default;
+            await notificationService.requestPermission();
+            await notificationService.setupServiceWorker();
             
-            // تحديث قائمة الإشعارات
-            const updateNotifications = async () => {
-              try {
-                const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?doctorId=${profile._id}`);
-                const data = await res.json();
+            // إعداد WebSocket
+            const socketService = (await import('./utils/socketService')).default;
+            if (!socketService.getConnectionStatus().isConnected) {
+              socketService.connect();
+            }
+            socketService.joinDoctorRoom(profile._id);
+            
+            // الاستماع لإشعارات المواعيد الجديدة
+            if (!socketService._newAppointmentListener) {
+              socketService.onNewAppointment((data) => {
+                if (!isComponentMounted) return;
                 
-                if (Array.isArray(data)) {
-                  setNotifications(data);
-                  setNotifCount(data.filter(n => !n.read).length);
-                }
-              } catch (error) {
-                console.error('خطأ في تحديث الإشعارات:', error);
-              }
-            };
+                // إرسال إشعار فوري
+                notificationService.sendNewAppointmentNotification(
+                  data.patientName,
+                  data.bookerName,
+                  data.date,
+                  data.time,
+                  data.reason,
+                  data.patientAge,
+                  data.isBookingForOther
+                );
+                
+                // تحديث قائمة الإشعارات
+                const updateNotifications = async () => {
+                  if (!isComponentMounted) return;
+                  
+                  try {
+                    const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?doctorId=${profile._id}`);
+                    const data = await res.json();
+                    
+                    if (isComponentMounted && Array.isArray(data)) {
+                      setNotifications(data);
+                      setNotifCount(data.filter(n => !n.read).length);
+                    }
+                  } catch (error) {
+                    console.error('خطأ في تحديث الإشعارات:', error);
+                  }
+                };
+                
+                updateNotifications();
+              });
+              socketService._newAppointmentListener = true;
+            }
             
-            updateNotifications();
-          });
-          socketService._newAppointmentListener = true;
+            servicesInitialized = true;
+          } catch (error) {
+            console.error('خطأ في إعداد الخدمات:', error);
+          }
         }
         
       } catch (error) {
@@ -236,10 +254,13 @@ function DoctorDashboard() {
     
     // تنظيف عند إلغاء المكون
     return () => {
+      isComponentMounted = false;
       const socketService = require('./utils/socketService').default;
-      socketService.disconnect();
+      if (socketService.getConnectionStatus().isConnected) {
+        socketService.disconnect();
+      }
     };
-  }, [profile?._id, fetchNotifications]);
+  }, [profile?._id]);
 
   // تعليم كل الإشعارات كمقروءة عند فتح نافذة الإشعارات
   useEffect(() => {
@@ -263,12 +284,19 @@ function DoctorDashboard() {
 
   // تحديث تلقائي كل 3 دقائق
   useEffect(() => {
+    let isComponentMounted = true;
+    
     const interval = setInterval(() => {
-      refreshData();
+      if (isComponentMounted) {
+        refreshData();
+      }
     }, 180000); // 3 دقائق
     
-    return () => clearInterval(interval);
-  }, [refreshData]);
+    return () => {
+      isComponentMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   // تحديث عند تغيير اللغة
   useEffect(() => {

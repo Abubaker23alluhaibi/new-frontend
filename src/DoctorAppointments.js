@@ -83,13 +83,27 @@ function DoctorAppointments() {
       return;
     }
 
-    fetchDoctorAppointments();
+    let isComponentMounted = true;
+    
+    const fetchData = async () => {
+      if (!isComponentMounted) return;
+      await fetchDoctorAppointments();
+    };
+    
+    fetchData();
     
     // تحديث البيانات كل 30 ثانية
-    const interval = setInterval(fetchDoctorAppointments, 30000);
+    const interval = setInterval(() => {
+      if (isComponentMounted) {
+        fetchData();
+      }
+    }, 30000);
     
-    return () => clearInterval(interval);
-  }, [profile, fetchDoctorAppointments, t]);
+    return () => {
+      isComponentMounted = false;
+      clearInterval(interval);
+    };
+  }, [profile?._id, t]);
 
 
 
