@@ -13,15 +13,24 @@ class SocketService {
   // الاتصال بالخادم
   connect() {
     if (this.socket && this.isConnected) {
-      return;
+      console.log('🔌 WebSocket متصل بالفعل');
+      return this.socket;
+    }
+
+    if (this.socket && !this.isConnected) {
+      console.log('🔄 إعادة الاتصال بـ WebSocket...');
+      this.socket.connect();
+      return this.socket;
     }
 
     const serverUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    console.log('🔌 إنشاء اتصال WebSocket جديد...');
     
     this.socket = io(serverUrl, {
       transports: ['websocket', 'polling'],
       timeout: 20000,
-      forceNew: true
+      forceNew: false, // تغيير من true إلى false لتجنب إنشاء اتصالات متعددة
+      autoConnect: true
     });
 
     // معالجة الاتصال
@@ -117,6 +126,7 @@ class SocketService {
     if (this.socket) {
       this.socket.disconnect();
       this.isConnected = false;
+      this._appointmentCancelledListener = false;
       console.log('🔌 تم قطع الاتصال بـ WebSocket');
     }
   }

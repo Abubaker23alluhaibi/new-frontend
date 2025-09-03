@@ -192,28 +192,51 @@ function UserHome() {
         setNotifications(data);
         setNotifCount(data.filter(n => !n.read).length);
         
-        // إعداد الإشعارات الفورية
+        // إعداد الإشعارات الفورية (فقط إذا لم تكن مُعدة بالفعل)
         const notificationService = (await import('./utils/notificationService')).default;
-        await notificationService.requestPermission();
-        await notificationService.setupServiceWorker();
+        if (notificationService.permission !== 'granted') {
+          await notificationService.requestPermission();
+        }
+        if (!notificationService.registration) {
+          await notificationService.setupServiceWorker();
+        }
         
-        // إعداد WebSocket
+        // إعداد WebSocket (فقط إذا لم يكن متصلاً بالفعل)
         const socketService = (await import('./utils/socketService')).default;
-        socketService.connect();
+        if (!socketService.getConnectionStatus().isConnected) {
+          socketService.connect();
+        }
         socketService.joinUserRoom(user._id);
         
-        // الاستماع لإشعارات إلغاء الموعد
-        socketService.onAppointmentCancelled((data) => {
-          // إرسال إشعار فوري
-          notificationService.sendAppointmentCancellationNotification(
-            data.doctorName,
-            data.date,
-            data.time
-          );
-          
-          // تحديث قائمة الإشعارات
-          fetchNotifications();
-        });
+        // الاستماع لإشعارات إلغاء الموعد (فقط إذا لم يكن مُعد بالفعل)
+        if (!socketService._appointmentCancelledListener) {
+          socketService.onAppointmentCancelled((data) => {
+            // إرسال إشعار فوري
+            notificationService.sendAppointmentCancellationNotification(
+              data.doctorName,
+              data.date,
+              data.time
+            );
+            
+            // تحديث قائمة الإشعارات بدون إعادة إعداد الخدمات
+            const updateNotifications = async () => {
+              try {
+                const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?userId=${user._id}`);
+                const data = await res.json();
+                
+                if (Array.isArray(data)) {
+                  setNotifications(data);
+                  setNotifCount(data.filter(n => !n.read).length);
+                }
+              } catch (error) {
+                console.error('خطأ في تحديث الإشعارات:', error);
+              }
+            };
+            
+            updateNotifications();
+          });
+          socketService._appointmentCancelledListener = true;
+        }
         
       } catch (error) {
         console.error('خطأ في جلب الإشعارات:', error);
@@ -225,8 +248,13 @@ function UserHome() {
     // تحديث الإشعارات كل 30 ثانية
     const interval = setInterval(fetchNotifications, 30000);
     
-    return () => clearInterval(interval);
-  }, [user?._id, showNotif]);
+    return () => {
+      clearInterval(interval);
+      // قطع الاتصال بـ WebSocket عند إلغاء المكون
+      const socketService = require('./utils/socketService').default;
+      socketService.disconnect();
+    };
+  }, [user?._id]);
 
   // تعليم كل الإشعارات كمقروءة عند فتح نافذة الإشعارات
   useEffect(() => {
