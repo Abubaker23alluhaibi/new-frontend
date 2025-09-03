@@ -283,8 +283,9 @@ function UserHome() {
     return () => {
       clearInterval(interval);
       // قطع الاتصال بـ WebSocket عند إلغاء المكون
-      const socketService = require('./utils/socketService').default;
-      socketService.disconnect();
+      import('./utils/socketService').then(module => {
+        module.default.disconnect();
+      });
     };
   }, [user?._id]);
 
