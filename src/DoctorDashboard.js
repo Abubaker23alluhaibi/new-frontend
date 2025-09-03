@@ -883,7 +883,7 @@ function DoctorDashboard() {
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>🏥</div>
               </button>
-              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('patient_management')}</div>
+              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('patient_management_title')}</div>
             </div>
 
             {/* زر إدارة الموظفين */}
@@ -915,7 +915,7 @@ function DoctorDashboard() {
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>👥</div>
               </button>
-              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('employee_management')}</div>
+              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('employee_management_title')}</div>
             </div>
 
             {/* زر إدارة الحجز لمستخدم آخر */}
