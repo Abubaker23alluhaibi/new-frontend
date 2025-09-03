@@ -1046,19 +1046,6 @@ function DoctorDashboard() {
                             }}>
                               ✅ {t('present')}
                             </div>
-                          ) : appointment.attendance === 'absent' ? (
-                            <div style={{
-                              background:'#f44336',
-                              color:'#fff',
-                              padding:'0.3rem 0.6rem',
-                              borderRadius:6,
-                              fontSize:'0.75rem',
-                              fontWeight:600,
-                              textAlign:'center',
-                              display:'inline-block'
-                            }}>
-                              ❌ {t('absent')}
-                            </div>
                           ) : (
                             <div style={{
                               background:'#ff9800',
@@ -1072,6 +1059,28 @@ function DoctorDashboard() {
                             }}>
                               ⏳ {t('waiting')}
                             </div>
+                          )}
+                        </div>
+
+                        {/* أزرار التحكم في نتائج البحث */}
+                        <div style={{display:'flex', gap:'0.5rem', justifyContent:'flex-end', flexWrap:'wrap'}}>
+                          {(!appointment.attendance || appointment.attendance === 'not_set') && (
+                            <button 
+                              onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
+                              style={{
+                                background:'#0A8F82',
+                                color:'#fff',
+                                border:'none',
+                                borderRadius:8,
+                                padding:'0.4rem 0.8rem',
+                                fontWeight:600,
+                                cursor:'pointer',
+                                fontSize:'0.8rem',
+                                transition:'all 0.3s ease'
+                              }}
+                            >
+                              ✅ حاضر
+                            </button>
                           )}
                         </div>
                       </div>
@@ -1187,8 +1196,8 @@ function DoctorDashboard() {
                     )}
                     
                     {/* حالة الحضور */}
-                    <div style={{marginBottom:'0.8rem'}}>
-                      {appointment.attendance === 'present' ? (
+                    {appointment.attendance === 'present' && (
+                      <div style={{marginBottom:'0.8rem'}}>
                         <div style={{
                           background:'#4caf50',
                           color:'#fff',
@@ -1201,21 +1210,8 @@ function DoctorDashboard() {
                         }}>
                           ✅ حاضر
                         </div>
-                      ) : (
-                        <div style={{
-                          background:'#f44336',
-                          color:'#fff',
-                          padding:'0.3rem 0.6rem',
-                          borderRadius:6,
-                          fontSize:'0.75rem',
-                          fontWeight:600,
-                          textAlign:'center',
-                          display:'inline-block'
-                        }}>
-                          ❌ لم يحضر
-                        </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
 
                     {/* أزرار التحكم */}
                     <div style={{display:'flex', gap:'0.5rem', justifyContent:'flex-end', flexWrap:'wrap'}}>
@@ -1238,22 +1234,7 @@ function DoctorDashboard() {
                         </button>
                       )}
 
-                      <button 
-                        onClick={() => handleDeleteAppointment(appointment._id)}
-                        style={{
-                          background:'#e53935',
-                          color:'#fff',
-                          border:'none',
-                          borderRadius:8,
-                          padding:'0.4rem 0.8rem',
-                          fontWeight:600,
-                          cursor:'pointer',
-                          fontSize:'0.8rem',
-                          transition:'all 0.3s ease'
-                        }}
-                      >
-                        🗑️ إلغاء الموعد
-                      </button>
+
                     </div>
                   </div>
                 ))}

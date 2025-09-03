@@ -877,26 +877,7 @@ function DoctorAppointments() {
                       ⭐ {t('add_to_special_appointments')}
                     </button>
                     
-                    {status !== 'past' && (
-                      <button 
-                        onClick={() => {
-                          setSelectedAppointmentId(appointment._id);
-                          setShowConfirm(true);
-                        }}
-                        style={{
-                          background:'#e53935',
-                          color:'#fff',
-                          border:'none',
-                          borderRadius:8,
-                          padding:'0.5rem 1rem',
-                          fontWeight:700,
-                          cursor:'pointer',
-                          fontSize:'0.9rem'
-                        }}
-                      >
-                        {t('cancel_appointment')}
-                      </button>
-                    )}
+
                     {status === 'past' && (
                       <button 
                         onClick={() => navigate('/doctor-dashboard')}
