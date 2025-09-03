@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import StarRating from './components/StarRating';
+import { getTranslatedSpecialty } from './utils/specialtyTranslation';
 
 const DoctorCard = ({ doctor }) => {
   const navigate = useNavigate();
@@ -66,20 +67,18 @@ const DoctorCard = ({ doctor }) => {
   // استخدام specialty_categories الجديدة للترجمة المتعددة اللغات
   const specialtyCategories = t('specialty_categories', { returnObjects: true }) || [];
   
-  // إنشاء خريطة للتخصصات من specialty_categories
-  const specialtiesMap = {};
-  if (Array.isArray(specialtyCategories)) {
-    specialtyCategories.forEach(category => {
-      if (category.specialties && Array.isArray(category.specialties)) {
-        category.specialties.forEach(specialty => {
-          specialtiesMap[specialty] = specialty; // التخصص يظهر كما هو مترجم
-        });
-      }
-    });
-  }
-  
   // الاحتفاظ بـ specialties القديمة كـ fallback
   const specialties = t('specialties', { returnObjects: true }) || [];
+  
+  // دالة لترجمة التخصص
+  const translateSpecialty = (specialty) => {
+    return getTranslatedSpecialty(
+      specialty, 
+      specialtyCategories, 
+      specialties, 
+      i18n.language
+    );
+  };
   
   // التأكد من أن المصفوفات صحيحة
   if (!Array.isArray(provinces)) {
@@ -240,7 +239,7 @@ const DoctorCard = ({ doctor }) => {
             <span style={{fontWeight:700}}>{doctor.category}</span>
             {doctor.category && doctor.specialty && <span style={{margin: '0 4px', color:'#888'}}>|</span>}
             <span>
-              {specialtiesMap[doctor.specialty] || (Array.isArray(specialties) && specialties[doctor.specialty]) || doctor.specialty}
+              {translateSpecialty(doctor.specialty)}
             </span>
           </div>
           
