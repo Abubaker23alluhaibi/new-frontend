@@ -481,35 +481,20 @@ function UserHome() {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
+      background: '#ffffff',
       minHeight: '100vh',
       position: 'relative'
     }}>
-      {/* خلفية إضافية للعمق */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'radial-gradient(circle at 20% 80%, rgba(0, 188, 212, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0, 150, 136, 0.1) 0%, transparent 50%)',
-        pointerEvents: 'none'
-      }} />
       {/* الشريط العلوي العصري */}
       <div style={{
-        background: '#0A8F82',
-        boxShadow: '0 4px 20px rgba(10, 143, 130, 0.3)',
-        borderBottomLeftRadius: 18, 
-        borderBottomRightRadius: 18,
-        padding: isMobile() ? '0.7rem 1rem' : '0.7rem 1.2rem', 
+        background: '#2ECC71',
+        padding: isMobile() ? '1rem' : '1.2rem', 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'space-between', 
         flexWrap: 'wrap', 
         position: 'relative', 
-        minHeight: 64,
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.2)'
+        minHeight: 60
       }}>
         {/* شعار مع أيقونة */}
         <div 
@@ -518,18 +503,11 @@ function UserHome() {
             display:'flex', 
             alignItems:'center', 
             gap:8, 
-            cursor: 'pointer',
-            transition: 'all 0.3s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.05)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
+            cursor: 'pointer'
           }}
         >
-          <img src="/logo192.png" alt="Logo" style={{width: isMobile() ? 38 : 44, height: isMobile() ? 38 : 44, borderRadius: '50%', background: '#fff', border: '4px solid #fff', boxShadow: '0 4px 16px #00bcd455', objectFit: 'cover', marginRight: 4}} />
-          <span style={{color:'#ffffff', fontWeight:900, fontSize: isMobile() ? 20 : 24, letterSpacing:1, marginRight:4}}>{t('app_name')}</span>
+          <img src="/logo192.png" alt="Logo" style={{width: isMobile() ? 32 : 36, height: isMobile() ? 32 : 36, borderRadius: '50%', background: '#fff', objectFit: 'cover'}} />
+          <span style={{color:'#ffffff', fontWeight:700, fontSize: isMobile() ? 18 : 20}}>{t('app_name')}</span>
         </div>
         {/* عناصر الزاوية: الهامبرغر والإشعارات */}
         <div style={{display:'flex', alignItems:'center', gap:8, flexDirection: isRTL ? 'row-reverse' : 'row'}}>
@@ -543,42 +521,39 @@ function UserHome() {
               background: 'rgba(255, 255, 255, 0.2)', 
               border: 'none', 
               borderRadius: '50%', 
-              width: isMobile() ? 28 : 32, 
-              height: isMobile() ? 28 : 32, 
+              width: isMobile() ? 32 : 36, 
+              height: isMobile() ? 32 : 36, 
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center', 
-              fontSize: isMobile() ? 14 : 16, 
-              cursor: 'pointer', 
-              boxShadow: '0 2px 8px rgba(255, 255, 255, 0.2)',
-              transition: 'all 0.3s ease'
+              cursor: 'pointer'
             }} onClick={()=>setShowNotif(!showNotif)}>
-              <svg width={isMobile() ? 16 : 18} height={isMobile() ? 16 : 18} fill="none" viewBox="0 0 24 24">
+              <svg width={20} height={20} fill="none" viewBox="0 0 24 24">
                 <path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z" stroke="#ffffff" strokeWidth="2"/>
               </svg>
             </button>
-            {notifCount > 0 && <span style={{position:'absolute', top:-2, right:-2, background:'#e53935', color:'#fff', borderRadius:'50%', fontSize: isMobile() ? 8 : 10, minWidth: isMobile() ? 14 : 16, height: isMobile() ? 14 : 16, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700}}>{notifCount}</span>}
+            {notifCount > 0 && <span style={{position:'absolute', top:-2, right:-2, background:'#E74C3C', color:'#fff', borderRadius:'50%', fontSize: 10, minWidth: 18, height: 18, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700}}>{notifCount}</span>}
           </div>
         </div>
       </div> {/* نهاية الشريط العلوي */}
       {/* القائمة الجانبية (Drawer) */}
       {drawerOpen && (
-        <div onClick={()=>setDrawerOpen(false)} style={{position:'fixed', top:0, left:isRTL ? 'unset' : 0, right:isRTL ? 0 : 'unset', width:'100vw', height:'100vh', background:'rgba(0,0,0,0.25)', zIndex:2000, display:'flex', justifyContent:isRTL ? 'flex-end' : 'flex-start'}}>
-          <div onClick={e=>e.stopPropagation()} style={{width:260, height:'100%', background:'#fff', boxShadow:'0 2px 16px #00bcd422', padding:'2rem 1.2rem', display:'flex', flexDirection:'column', gap:18, direction:isRTL ? 'rtl' : 'ltr'}}>
-            <button onClick={()=>setDrawerOpen(false)} style={{background:'none', border:'none', color:'#e53935', fontSize:26, fontWeight:900, alignSelf:isRTL ? 'flex-start' : 'flex-end', cursor:'pointer', marginBottom:8}}>&times;</button>
-            <button onClick={() => navigate('/')} style={{background:'linear-gradient(90deg,#00bcd4 0%,#009688 100%)', color:'#fff', border:'none', borderRadius:12, padding:'0.7rem 1.1rem', fontWeight:800, fontSize:15, cursor:'pointer', boxShadow:'0 2px 8px #00bcd422', display:'flex', alignItems:'center', gap:6}}><span style={{fontSize:18}}>🏠</span>{t('back_to_home')}</button>
-            <button onClick={() => {navigate('/top-rated-doctors'); setDrawerOpen(false);}} style={{background:'linear-gradient(90deg,#00bcd4 0%,#009688 100%)', color:'#fff', border:'none', borderRadius:12, padding:'0.7rem 1.1rem', fontWeight:800, fontSize:15, cursor:'pointer', boxShadow:'0 2px 8px #00bcd422', display:'flex', alignItems:'center', gap:6}}><span style={{fontSize:18}}>⭐</span>{t('rating.top_rated_doctors')}</button>
-            <button onClick={() => {setShowContactModal(true); setDrawerOpen(false);}} style={{background:'linear-gradient(90deg,#00bcd4 0%,#7c4dff 100%)', color:'#fff', border:'none', borderRadius:12, padding:'0.7rem 1.1rem', fontWeight:800, fontSize:15, cursor:'pointer', boxShadow:'0 2px 8px #7c4dff22', display:'flex', alignItems:'center', gap:6}}><span style={{fontSize:18}}>📞</span>{t('contact_us')}</button>
-            <button onClick={()=>{setShowFavorites(!showFavorites); setDrawerOpen(false);}} style={{background: showFavorites ? '#00bcd4' : 'rgba(0, 188, 212, 0.1)', border:'none', borderRadius:12, padding:'0.7rem 1.1rem', fontWeight:600, fontSize:15, cursor:'pointer', color: showFavorites ? '#fff' : '#009688', boxShadow:'0 2px 8px rgba(0, 188, 212, 0.2)', display:'flex', alignItems:'center', gap:6}}><span role="img" aria-label="favorites">❤️</span>{t('favorites')}</button>
-            <button onClick={()=>{navigate('/profile'); setDrawerOpen(false);}} style={{background:'rgba(0, 188, 212, 0.1)', border:'none', borderRadius:12, padding:'0.7rem 1.1rem', fontWeight:600, fontSize:15, cursor:'pointer', color:'#009688', boxShadow:'0 2px 8px rgba(0, 188, 212, 0.2)', display:'flex', alignItems:'center', gap:6}}><svg width={20} height={20} fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="#009688" strokeWidth="2"/><path d="M4 20c0-2.21 3.58-4 8-4s8 1.79 8 4" stroke="#009688" strokeWidth="2"/></svg>{t('my_profile')}</button>
-            <button onClick={handleLogout} style={{background:'linear-gradient(135deg, #00bcd4 0%, #009688 100%)', color:'#fff', border:'none', borderRadius:8, padding:'0.7rem 1.1rem', fontWeight:600, fontSize:15, cursor:'pointer', boxShadow:'0 2px 8px rgba(0, 188, 212, 0.3)'}}>{t('logout')}</button>
-            <div style={{marginTop:12}}>
-              <label style={{fontWeight:700, color:'#009688', marginBottom:4, display:'block'}}>{t('change_language')}</label>
+        <div onClick={()=>setDrawerOpen(false)} style={{position:'fixed', top:0, left:isRTL ? 'unset' : 0, right:isRTL ? 0 : 'unset', width:'100vw', height:'100vh', background:'rgba(0,0,0,0.3)', zIndex:2000, display:'flex', justifyContent:isRTL ? 'flex-end' : 'flex-start'}}>
+          <div onClick={e=>e.stopPropagation()} style={{width:280, height:'100%', background:'#fff', boxShadow:'0 4px 20px rgba(0,0,0,0.1)', padding:'2rem 1.5rem', display:'flex', flexDirection:'column', gap:16, direction:isRTL ? 'rtl' : 'ltr'}}>
+            <button onClick={()=>setDrawerOpen(false)} style={{background:'none', border:'none', color:'#2ECC71', fontSize:24, fontWeight:700, alignSelf:isRTL ? 'flex-start' : 'flex-end', cursor:'pointer', marginBottom:8}}>&times;</button>
+            <button onClick={() => navigate('/')} style={{background:'#2ECC71', color:'#fff', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', display:'flex', alignItems:'center', gap:8}}><span style={{fontSize:18}}>🏠</span>{t('back_to_home')}</button>
+            <button onClick={() => {navigate('/top-rated-doctors'); setDrawerOpen(false);}} style={{background:'#2ECC71', color:'#fff', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', display:'flex', alignItems:'center', gap:8}}><span style={{fontSize:18}}>⭐</span>{t('rating.top_rated_doctors')}</button>
+            <button onClick={() => {setShowContactModal(true); setDrawerOpen(false);}} style={{background:'#27AE60', color:'#fff', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', display:'flex', alignItems:'center', gap:8}}><span style={{fontSize:18}}>📞</span>{t('contact_us')}</button>
+            <button onClick={()=>{setShowFavorites(!showFavorites); setDrawerOpen(false);}} style={{background: showFavorites ? '#2ECC71' : '#f8f9fa', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', color: showFavorites ? '#fff' : '#2ECC71', display:'flex', alignItems:'center', gap:8}}><span role="img" aria-label="favorites">❤️</span>{t('favorites')}</button>
+            <button onClick={()=>{navigate('/profile'); setDrawerOpen(false);}} style={{background:'#f8f9fa', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', color:'#2ECC71', display:'flex', alignItems:'center', gap:8}}><svg width={20} height={20} fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="#2ECC71" strokeWidth="2"/><path d="M4 20c0-2.21 3.58-4 8-4s8 1.79 8 4" stroke="#2ECC71" strokeWidth="2"/></svg>{t('my_profile')}</button>
+            <button onClick={handleLogout} style={{background:'#E74C3C', color:'#fff', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', marginTop:'auto'}}>{t('logout')}</button>
+            <div style={{marginTop:16}}>
+              <label style={{fontWeight:600, color:'#2ECC71', marginBottom:8, display:'block'}}>{t('change_language')}</label>
               <select value={i18n.language || 'ar'} onChange={(e) => {
                 const newLang = e.target.value;
                 i18n.changeLanguage(newLang);
                 localStorage.setItem('selectedLanguage', newLang);
-              }} style={{background:'rgba(0, 188, 212, 0.1)', color:'#009688', border:'none', borderRadius:8, padding:'0.3rem 0.8rem', fontWeight:700, fontSize:15, cursor:'pointer', boxShadow:'0 2px 8px rgba(0, 188, 212, 0.2)'}}>
+              }} style={{background:'#f8f9fa', color:'#2ECC71', border:'1px solid #e9ecef', borderRadius:8, padding:'0.5rem', fontWeight:600, fontSize:14, cursor:'pointer', width:'100%'}}>
                 <option value="ar">العربية</option>
                 <option value="en">English</option>
                 <option value="ku">کوردی</option>
@@ -593,19 +568,19 @@ function UserHome() {
       </div>
 
       {/* زر المراكز الصحية أسفل الشريط العلوي */}
-      <div style={{width:'100%', display:'flex', justifyContent:isMobile() ? 'center' : 'flex-end', margin:'1.2rem 0 1.5rem 0'}}>
+      <div style={{width:'100%', display:'flex', justifyContent:isMobile() ? 'center' : 'flex-end', margin:'1.2rem 0 1.5rem 0', padding:'0 1rem'}}>
         <button 
           onClick={()=>alert('سيتم إضافته قريبًا')}
           style={{
-            background: 'rgba(255, 107, 53, 0.1)', 
-            border: 'none', 
+            background: '#f8f9fa', 
+            border: '2px solid #2ECC71', 
             borderRadius: 12, 
             padding: isMobile() ? '0.7rem 1.2rem' : '0.8rem 1.7rem', 
-            fontWeight: 700, 
+            fontWeight: 600, 
             fontSize: isMobile() ? 15 : 17, 
             cursor: 'pointer', 
-            color: '#ff6b35',
-            boxShadow: '0 2px 8px rgba(255, 107, 53, 0.2)',
+            color: '#2ECC71',
+            boxShadow: '0 2px 8px rgba(46, 204, 113, 0.1)',
             transition: 'all 0.3s ease',
             display:'flex', alignItems:'center', gap:8
           }}
@@ -622,20 +597,21 @@ function UserHome() {
           right: isMobile() ? 10 : 20, 
           left: isMobile() ? 10 : 'auto',
           background:'#fff', 
-          borderRadius:12, 
-          boxShadow:'0 2px 16px #7c4dff22', 
+          borderRadius:16, 
+          boxShadow:'0 4px 20px rgba(46, 204, 113, 0.15)', 
           padding: isMobile() ? '1rem' : '1.2rem 1.5rem', 
           zIndex:1000, 
           minWidth: isMobile() ? 'auto' : 300, 
           maxWidth: isMobile() ? 'none' : 400, 
           maxHeight: isMobile() ? '60vh' : '70vh', 
-          overflowY:'auto'
+          overflowY:'auto',
+          border: '1px solid #e9ecef'
         }}>
-          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12}}>
-            <h4 style={{margin:'0', color:'#7c4dff', display:'flex', alignItems:'center', gap:'0.5rem'}}>
+          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16}}>
+            <h4 style={{margin:'0', color:'#2ECC71', display:'flex', alignItems:'center', gap:'0.5rem', fontWeight:700}}>
               🔔 {t('notifications')} ({notifCount})
             </h4>
-            <button onClick={()=>setShowNotif(false)} style={{background:'none', border:'none', color:'#e53935', fontSize:22, fontWeight:900, cursor:'pointer', marginRight:2, marginTop:-2}}>&times;</button>
+            <button onClick={()=>setShowNotif(false)} style={{background:'none', border:'none', color:'#E74C3C', fontSize:20, fontWeight:700, cursor:'pointer', marginRight:2, marginTop:-2}}>&times;</button>
           </div>
           {notifications.length === 0 ? (
             <div style={{color:'#888', textAlign:'center', padding:'2rem'}}>
@@ -755,35 +731,34 @@ function UserHome() {
       <div style={{
         maxWidth: 650, 
         margin: '1.5rem auto 0', 
-        background: 'rgba(255, 255, 255, 0.95)', 
-        borderRadius: 20, 
-        boxShadow: '0 4px 20px rgba(0, 188, 212, 0.1)', 
+        background: '#ffffff', 
+        borderRadius: 16, 
+        boxShadow: '0 2px 12px rgba(46, 204, 113, 0.1)', 
         padding: isMobile() ? '1.5rem 1rem' : '2rem 1.5rem',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(0, 188, 212, 0.1)'
+        border: '1px solid #e9ecef'
       }}>
-        <div style={{fontWeight: 900, fontSize: isMobile() ? 18 : 22, marginBottom: 14, color: '#009688', letterSpacing: 0.5}}>{t('quick_search_doctor')}</div>
-        <div style={{display:'flex', gap:12, flexWrap:'wrap', marginBottom:10}}>
+        <div style={{fontWeight: 700, fontSize: isMobile() ? 18 : 20, marginBottom: 16, color: '#2ECC71'}}>{t('quick_search_doctor')}</div>
+        <div style={{display:'flex', gap:12, flexWrap:'wrap', marginBottom:16}}>
           {/* اختيار المحافظة */}
           <div style={{position:'relative', flex:1, minWidth:150}}>
-            <span style={{position:'absolute', right:12, top:13, color:'#009688', fontSize: 18}} role="img" aria-label="province">🏛️</span>
-            <select value={province} onChange={e=>setProvince(e.target.value)} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1.5px solid rgba(0, 188, 212, 0.3)', fontSize:16, background: 'rgba(255, 255, 255, 0.9)'}}>
+            <span style={{position:'absolute', right:12, top:13, color:'#2ECC71', fontSize: 18}} role="img" aria-label="province">🏛️</span>
+            <select value={province} onChange={e=>setProvince(e.target.value)} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1px solid #e9ecef', fontSize:16, background: '#ffffff', color:'#2ECC71'}}>
               <option value="">{t('choose_province')}</option>
               {provinces.map(p=><option key={p} value={p}>{p}</option>)}
             </select>
           </div>
           {/* قائمة التخصصات العامة */}
           <div style={{position:'relative', flex:1, minWidth:150}}>
-            <span style={{position:'absolute', right:12, top:13, color:'#009688', fontSize: 18}} role="img" aria-label="category">📚</span>
-            <select value={selectedCategory} onChange={e=>{setSelectedCategory(e.target.value); setSelectedSpecialty("");}} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1.5px solid rgba(0, 188, 212, 0.3)', fontSize:16, background: 'rgba(255, 255, 255, 0.9)'}}>
+            <span style={{position:'absolute', right:12, top:13, color:'#2ECC71', fontSize: 18}} role="img" aria-label="category">📚</span>
+            <select value={selectedCategory} onChange={e=>{setSelectedCategory(e.target.value); setSelectedSpecialty("");}} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1px solid #e9ecef', fontSize:16, background: '#ffffff', color:'#2ECC71'}}>
               <option value="">{t('choose_specialty')}</option>
               {allCategories.map(cat=><option key={cat} value={cat}>{cat}</option>)}
             </select>
           </div>
           {/* قائمة التخصصات الفرعية */}
           <div style={{position:'relative', flex:1, minWidth:150}}>
-            <span style={{position:'absolute', right:12, top:13, color:'#009688', fontSize: 18}} role="img" aria-label="specialty">🩺</span>
-            <select value={selectedSpecialty} onChange={e=>setSelectedSpecialty(e.target.value)} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1.5px solid rgba(0, 188, 212, 0.3)', fontSize:16, background: 'rgba(255, 255, 255, 0.9)'}}>
+            <span style={{position:'absolute', right:12, top:13, color:'#2ECC71', fontSize: 18}} role="img" aria-label="specialty">🩺</span>
+            <select value={selectedSpecialty} onChange={e=>setSelectedSpecialty(e.target.value)} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1px solid #e9ecef', fontSize:16, background: '#ffffff', color:'#2ECC71'}}>
               <option value="">{t('choose_subspecialty')}</option>
               {(selectedCategory
                 ? specialtiesGrouped.find(cat => cat.category === selectedCategory)?.specialties || []
@@ -793,19 +768,19 @@ function UserHome() {
           </div>
         </div>
         {/* حقل البحث السريع في سطر منفصل */}
-        <div style={{position:'relative', maxWidth:400, margin:'0 auto 10px auto'}}>
-          <span style={{position:'absolute', right:12, top:13, color:'#009688', fontSize: 18}} role="img" aria-label="search">🔍</span>
-          <input value={searchValue} onChange={e=>setSearchValue(e.target.value)} placeholder={t('search_doctor_or_specialty')} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1.5px solid rgba(0, 188, 212, 0.3)', fontSize:16, background: 'rgba(255, 255, 255, 0.9)'}} />
+        <div style={{position:'relative', maxWidth:400, margin:'0 auto'}}>
+          <span style={{position:'absolute', right:12, top:13, color:'#2ECC71', fontSize: 18}} role="img" aria-label="search">🔍</span>
+          <input value={searchValue} onChange={e=>setSearchValue(e.target.value)} placeholder={t('search_doctor_or_specialty')} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1px solid #e9ecef', fontSize:16, background: '#ffffff', color:'#2ECC71'}} />
           {/* نتائج البحث السريع */}
           {searchValue && (
-            <div style={{position: 'absolute', top: '110%', left: 0, right: 0, background: '#fff', borderRadius: 10, boxShadow: '0 4px 20px #00bcd422', zIndex: 100, maxHeight: 180, overflowY: 'auto', border: '1.5px solid #b2dfdb'}}>
+            <div style={{position: 'absolute', top: '110%', left: 0, right: 0, background: '#fff', borderRadius: 12, boxShadow: '0 4px 20px rgba(46, 204, 113, 0.1)', zIndex: 100, maxHeight: 180, overflowY: 'auto', border: '1px solid #e9ecef'}}>
               {[
                 ...allCategories.filter(cat => cat.includes(searchValue)),
                 ...allSubSpecialties.filter(s => s.includes(searchValue))
               ].slice(0,10).map(result => (
                 <div
                   key={result}
-                  style={{padding:'0.6rem 1rem', cursor:'pointer', borderBottom:'1px solid #e0f7fa'}}
+                  style={{padding:'0.8rem 1rem', cursor:'pointer', borderBottom:'1px solid #f8f9fa', color:'#2ECC71'}}
                   onClick={() => handleSearchSelect(result)}
                 >
                   {result}
@@ -815,7 +790,7 @@ function UserHome() {
                 ...allCategories.filter(cat => cat.includes(searchValue)),
                 ...allSubSpecialties.filter(s => s.includes(searchValue))
               ].length === 0) && (
-                <div style={{padding:'0.6rem 1rem', color:'#888'}}>لا توجد نتائج</div>
+                <div style={{padding:'0.8rem 1rem', color:'#6c757d'}}>لا توجد نتائج</div>
               )}
             </div>
           )}
@@ -825,78 +800,74 @@ function UserHome() {
       {/* أيقونات الخدمات السريعة */}
       <div style={{
         maxWidth: 650,
-        margin: '1rem auto 0',
+        margin: '1.5rem auto 0',
         padding: '0 1rem',
         display: 'flex',
         justifyContent: 'center',
-        gap: isMobile() ? '1rem' : '1.5rem'
+        gap: isMobile() ? '1.5rem' : '2rem'
       }}>
         {/* أيقونة تذكير الدواء */}
         <button 
           onClick={() => navigate('/medicine-reminder')}
           style={{
-            background: 'rgba(255, 255, 255, 0.9)',
-            border: 'none',
+            background: '#ffffff',
+            border: '2px solid #2ECC71',
             borderRadius: '50%',
-            width: isMobile() ? 50 : 60,
-            height: isMobile() ? 50 : 60,
+            width: isMobile() ? 60 : 70,
+            height: isMobile() ? 60 : 70,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            boxShadow: '0 4px 16px rgba(0, 188, 212, 0.2)',
-            transition: 'all 0.3s ease',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(0, 188, 212, 0.1)'
+            boxShadow: '0 4px 12px rgba(46, 204, 113, 0.2)',
+            transition: 'all 0.3s ease'
           }}
           onMouseEnter={(e) => {
             if (!isMobile()) {
               e.target.style.transform = 'translateY(-2px) scale(1.05)';
-              e.target.style.boxShadow = '0 6px 20px rgba(0, 188, 212, 0.3)';
+              e.target.style.boxShadow = '0 6px 16px rgba(46, 204, 113, 0.3)';
             }
           }}
           onMouseLeave={(e) => {
             if (!isMobile()) {
               e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.boxShadow = '0 4px 16px rgba(0, 188, 212, 0.2)';
+              e.target.style.boxShadow = '0 4px 12px rgba(46, 204, 113, 0.2)';
             }
           }}
         >
-          <span style={{fontSize: isMobile() ? 20 : 24}} role="img" aria-label="medicine">💊</span>
+          <span style={{fontSize: isMobile() ? 24 : 28, color: '#2ECC71'}} role="img" aria-label="medicine">💊</span>
         </button>
         
         {/* أيقونة المواعيد */}
         <button 
           onClick={() => navigate('/my-appointments')}
           style={{
-            background: 'rgba(255, 255, 255, 0.9)',
-            border: 'none',
+            background: '#ffffff',
+            border: '2px solid #2ECC71',
             borderRadius: '50%',
-            width: isMobile() ? 50 : 60,
-            height: isMobile() ? 50 : 60,
+            width: isMobile() ? 60 : 70,
+            height: isMobile() ? 60 : 70,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            boxShadow: '0 4px 16px rgba(0, 188, 212, 0.2)',
-            transition: 'all 0.3s ease',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(0, 188, 212, 0.1)'
+            boxShadow: '0 4px 12px rgba(46, 204, 113, 0.2)',
+            transition: 'all 0.3s ease'
           }}
           onMouseEnter={(e) => {
             if (!isMobile()) {
               e.target.style.transform = 'translateY(-2px) scale(1.05)';
-              e.target.style.boxShadow = '0 6px 20px rgba(0, 188, 212, 0.3)';
+              e.target.style.boxShadow = '0 6px 16px rgba(46, 204, 113, 0.3)';
             }
           }}
           onMouseLeave={(e) => {
             if (!isMobile()) {
               e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.boxShadow = '0 4px 16px rgba(0, 188, 212, 0.2)';
+              e.target.style.boxShadow = '0 4px 12px rgba(46, 204, 113, 0.2)';
             }
           }}
         >
-          <span style={{fontSize: isMobile() ? 20 : 24}} role="img" aria-label="appointments">📅</span>
+          <span style={{fontSize: isMobile() ? 24 : 28, color: '#2ECC71'}} role="img" aria-label="appointments">📅</span>
         </button>
       </div>
 
@@ -922,20 +893,19 @@ function UserHome() {
       {/* أطباء مقترحون */}
       <div style={{
         maxWidth: isMobile() ? 500 : 700, 
-        margin: isMobile() ? '1rem auto' : '1.5rem auto', 
+        margin: isMobile() ? '1.5rem auto' : '2rem auto', 
         padding: '0 1rem'
       }}>
         <div style={{
-          background: 'linear-gradient(135deg, #ff9800 0%, #ffb74d 100%)',
+          background: '#2ECC71',
           color: '#fff',
-          padding: isMobile() ? '0.6rem 1rem' : '0.8rem 1.2rem',
+          padding: isMobile() ? '0.8rem 1rem' : '1rem 1.2rem',
           borderRadius: 12,
-          fontWeight: 800, 
+          fontWeight: 700, 
           fontSize: isMobile() ? 16 : 18, 
-          marginBottom: isMobile() ? 8 : 12,
+          marginBottom: isMobile() ? 12 : 16,
           textAlign: 'center',
-          boxShadow: '0 4px 16px rgba(255, 152, 0, 0.3)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
+          boxShadow: '0 4px 12px rgba(46, 204, 113, 0.2)'
         }}>
           ⭐ {t('featured_doctors')}
         </div>
@@ -1021,19 +991,19 @@ function UserHome() {
           onClick={() => setShowQuickSearch(true)}
           style={{
             background: '#fff',
-            border: '2px solid #00bcd4',
+            border: '2px solid #2ECC71',
             borderRadius: '50%',
-            width: 54,
-            height: 54,
+            width: 60,
+            height: 60,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 2px 8px #00bcd422',
+            boxShadow: '0 4px 12px rgba(46, 204, 113, 0.2)',
             cursor: 'pointer',
-            fontWeight: 900,
-            fontSize: 26,
-            color: '#00bcd4',
-            transition: 'all 0.2s',
+            fontWeight: 700,
+            fontSize: 24,
+            color: '#2ECC71',
+            transition: 'all 0.3s',
             margin: '0 auto'
           }}
           title="بحث سريع"
