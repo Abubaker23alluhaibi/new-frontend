@@ -857,6 +857,31 @@ function DoctorAppointments() {
                        </button>
                      )}
                     
+                    {/* زر إلغاء الموعد - يظهر فقط للمواعيد التي لم يتم تسجيل حضورها والمواعيد القادمة */}
+                    {(!appointment.attendance || appointment.attendance === 'not_set') && status !== 'past' && (
+                      <button 
+                        onClick={() => {
+                          setSelectedAppointmentId(appointment._id);
+                          setShowConfirm(true);
+                        }}
+                        style={{
+                          background:'#e53935',
+                          color:'#fff',
+                          border:'none',
+                          borderRadius:8,
+                          padding:'0.5rem 1rem',
+                          fontWeight:700,
+                          cursor:'pointer',
+                          fontSize:'0.9rem',
+                          display:'flex',
+                          alignItems:'center',
+                          gap:'0.3rem'
+                        }}
+                      >
+                        ❌ {t('cancel_appointment')}
+                      </button>
+                    )}
+                    
                     {/* زر إضافة للمواعيد الخاصة */}
                     <button 
                       onClick={() => addToSpecialAppointments(appointment)}

@@ -237,6 +237,38 @@ function UserHome() {
           });
           socketService._appointmentCancelledListener = true;
         }
+
+        // الاستماع لإشعارات المواعيد الخاصة (فقط إذا لم يكن مُعد بالفعل)
+        if (!socketService._specialAppointmentListener) {
+          socketService.onSpecialAppointment((data) => {
+            // إرسال إشعار فوري
+            notificationService.sendSpecialAppointmentNotification(
+              data.doctorName,
+              data.date,
+              data.time,
+              data.reason,
+              data.notes
+            );
+            
+            // تحديث قائمة الإشعارات بدون إعادة إعداد الخدمات
+            const updateNotifications = async () => {
+              try {
+                const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?userId=${user._id}`);
+                const data = await res.json();
+                
+                if (Array.isArray(data)) {
+                  setNotifications(data);
+                  setNotifCount(data.filter(n => !n.read).length);
+                }
+              } catch (error) {
+                console.error('خطأ في تحديث الإشعارات:', error);
+              }
+            };
+            
+            updateNotifications();
+          });
+          socketService._specialAppointmentListener = true;
+        }
         
       } catch (error) {
         console.error('خطأ في جلب الإشعارات:', error);

@@ -127,6 +127,8 @@ class SocketService {
       this.socket.disconnect();
       this.isConnected = false;
       this._appointmentCancelledListener = false;
+      this._newAppointmentListener = false;
+      this._specialAppointmentListener = false;
       console.log('🔌 تم قطع الاتصال بـ WebSocket');
     }
   }
