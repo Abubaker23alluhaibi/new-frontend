@@ -11,23 +11,27 @@ const AdvertisementSlider = ({ target = 'both' }) => {
   // const { t } = useTranslation(); // غير مستخدم حالياً
 
   useEffect(() => {
-    console.log('🔄 AdvertisementSlider useEffect: تم تشغيل useEffect مع:', { target, advertisementsLength: advertisements.length });
+    console.log('🔄 AdvertisementSlider useEffect: تم تشغيل useEffect مع:', { target });
     console.log('🔄 AdvertisementSlider: سيتم جلب الإعلانات للهدف:', target);
     fetchAdvertisements();
-    
-    // إعداد التمرير التلقائي
-    intervalRef.current = setInterval(() => {
-      setCurrentIndex(prevIndex => 
-        prevIndex === advertisements.length - 1 ? 0 : prevIndex + 1
-      );
-    }, 5000); // تغيير كل 5 ثواني
+  }, [target]);
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [target, advertisements.length]);
+  // useEffect منفصل للتمرير التلقائي
+  useEffect(() => {
+    if (advertisements.length > 1) {
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex(prevIndex => 
+          prevIndex === advertisements.length - 1 ? 0 : prevIndex + 1
+        );
+      }, 5000); // تغيير كل 5 ثواني
+
+      return () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+      };
+    }
+  }, [advertisements.length]);
 
   const fetchAdvertisements = async () => {
     try {

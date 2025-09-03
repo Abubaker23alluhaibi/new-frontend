@@ -274,7 +274,7 @@ function DoctorDashboard() {
   useEffect(() => {
     console.log('🔄 DoctorDashboard: useEffect - جلب المواعيد');
     fetchAllAppointments();
-  }, [fetchAllAppointments]);
+  }, [profile?._id]);
 
   // تنظيف نتائج البحث عند تغيير المواعيد
   useEffect(() => {
