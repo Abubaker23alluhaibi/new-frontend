@@ -316,55 +316,89 @@ function UserHome() {
 
   // دالة تعريب التاريخ والوقت للإشعارات - إصلاح مشكلة اللغة
   function formatDateTime(dateString) {
-    // إصلاح مشكلة المنطقة الزمنية - معالجة التاريخ بشكل صحيح
-    let date;
-    if (typeof dateString === 'string' && dateString.includes('-')) {
-      // إذا كان التاريخ بصيغة YYYY-MM-DD، قم بإنشاء تاريخ محلي
-      const [year, month, day] = dateString.split('-').map(Number);
-      date = new Date(year, month - 1, day); // month - 1 لأن getMonth() يبدأ من 0
-    } else {
-      date = new Date(dateString);
+    // التحقق من صحة التاريخ
+    if (!dateString) {
+      return 'تاريخ غير صحيح';
     }
     
-    // الحصول على اللغة الحالية
-    const currentLang = i18n.language || 'ar';
-    
+    let date;
     try {
-      // محاولة الحصول على الشهور من ملف الترجمة
-      const months = t('months', { returnObjects: true });
+      if (typeof dateString === 'string' && dateString.includes('-')) {
+        // إذا كان التاريخ بصيغة YYYY-MM-DD، قم بإنشاء تاريخ محلي
+        const [year, month, day] = dateString.split('-').map(Number);
+        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+          return 'تاريخ غير صحيح';
+        }
+        date = new Date(year, month - 1, day); // month - 1 لأن getMonth() يبدأ من 0
+      } else {
+        date = new Date(dateString);
+      }
       
-      if (Array.isArray(months)) {
-        const monthIndex = date.getMonth();
-        if (monthIndex >= 0 && monthIndex < months.length) {
-          const day = date.getDate();
-          const month = months[monthIndex];
-          const year = date.getFullYear();
-          const hour = String(date.getHours()).padStart(2, '0');
-          const min = String(date.getMinutes()).padStart(2, '0');
-          
-          // تنسيق مختلف حسب اللغة
-          if (currentLang === 'ku') {
-            return `${day} ${month} ${year}، ${hour}:${min}`;
-          } else {
-            return `${day} ${month} ${year}، ${hour}:${min}`;
+      // التحقق من صحة التاريخ المنشأ
+      if (isNaN(date.getTime())) {
+        return 'تاريخ غير صحيح';
+      }
+      
+      // الحصول على اللغة الحالية
+      const currentLang = i18n.language || 'ar';
+      
+      try {
+        // محاولة الحصول على الشهور من ملف الترجمة
+        const months = t('months', { returnObjects: true });
+        
+        if (Array.isArray(months)) {
+          const monthIndex = date.getMonth();
+          if (monthIndex >= 0 && monthIndex < months.length) {
+            const day = date.getDate();
+            const month = months[monthIndex];
+            const year = date.getFullYear();
+            const hour = String(date.getHours()).padStart(2, '0');
+            const min = String(date.getMinutes()).padStart(2, '0');
+            
+            // تنسيق مختلف حسب اللغة
+            if (currentLang === 'ku') {
+              return `${day} ${month} ${year}، ${hour}:${min}`;
+            } else {
+              return `${day} ${month} ${year}، ${hour}:${min}`;
+            }
           }
         }
+      } catch (error) {
+        console.log('Error in formatDateTime:', error);
       }
+      
+      // استخدام التنسيق الافتراضي إذا فشل الحصول من الترجمة
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      const hour = String(date.getHours()).padStart(2, '0');
+      const min = String(date.getMinutes()).padStart(2, '0');
+      return `${day}/${month}/${year}، ${hour}:${min}`;
+      
     } catch (error) {
       console.log('Error in formatDateTime:', error);
+      return 'تاريخ غير صحيح';
     }
-    
-    // استخدام التنسيق الافتراضي إذا فشل الحصول من الترجمة
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-    const hour = String(date.getHours()).padStart(2, '0');
-    const min = String(date.getMinutes()).padStart(2, '0');
-    return `${day}/${month}/${year}، ${hour}:${min}`;
   }
 
   function renderNewAppointmentNotification(message, t) {
-    // مثال: "تم حجز موعد جديد من قبل عثمان f;v في 2025-07-26 الساعة 08:00"
+    // معالجة النصوص باللغة الكردية
+    if (i18n.language === 'ku') {
+      // مثال: "چاوپێکەوتنی نوێ لەلایەن ali abbas للمريض 784642110 (عمر: 19) لە 2025-09-03 کاتژمێر 09:15 تۆمارکرا"
+      const match = message.match(/لەلایەن (.+) للمريض (.+) \(عمر: (\d+)\) لە ([0-9\-]+) کاتژمێر ([0-9:]+)/);
+      if (match) {
+        const [, name, phone, age, date, time] = match;
+        return t('notification_new_appointment', { 
+          name: name.trim(), 
+          date: date, 
+          time: time,
+          phone: phone,
+          age: age
+        });
+      }
+    }
+    
+    // معالجة النصوص باللغة العربية
     const match = message.match(/من قبل (.+) في ([0-9\-]+) الساعة ([0-9:]+)/);
     if (match) {
       const [, name, date, time] = match;

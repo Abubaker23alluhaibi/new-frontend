@@ -181,12 +181,12 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
 
         <div className="form-row">
           <div className="form-group">
-            <label>زمرة الدم</label>
+            <label>{t('patient_management.blood_type')}</label>
             <select
               value={formData.bloodType}
               onChange={(e) => setFormData({...formData, bloodType: e.target.value})}
             >
-              <option value="غير محدد">غير محدد</option>
+              <option value={t('patient_management.blood_type_undefined')}>{t('patient_management.blood_type_undefined')}</option>
               <option value="A+">A+</option>
               <option value="A-">A-</option>
               <option value="B+">B+</option>
@@ -200,31 +200,31 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
         </div>
 
         <div className="form-group">
-          <label>ما يشكو منه المريض</label>
+          <label>{t('patient_management.chief_complaint')}</label>
           <textarea
             value={formData.chiefComplaint}
             onChange={(e) => setFormData({...formData, chiefComplaint: e.target.value})}
-            placeholder="وصف الشكوى الرئيسية للمريض..."
+            placeholder={t('patient_management.chief_complaint_placeholder')}
             rows="3"
           />
         </div>
 
         <div className="form-group">
-          <label>الأمراض المزمنة</label>
+          <label>{t('patient_management.chronic_diseases')}</label>
           <textarea
             value={formData.chronicDiseases}
             onChange={(e) => setFormData({...formData, chronicDiseases: e.target.value})}
-            placeholder="اكتب الأمراض المزمنة التي يعاني منها المريض..."
+            placeholder="اكتب {t('patient_management.chronic_diseases')} التي يعاني منها المريض..."
             rows="3"
           />
         </div>
 
         <div className="form-group">
-          <label>أمراض أخرى</label>
+          <label>{t('patient_management.other_conditions')}</label>
           <textarea
             value={formData.otherConditions}
             onChange={(e) => setFormData({...formData, otherConditions: e.target.value})}
-            placeholder="اكتب أي أمراض أخرى أو حالات طبية..."
+            placeholder="اكتب أي {t('patient_management.other_conditions')} أو حالات طبية..."
             rows="3"
           />
         </div>
@@ -290,6 +290,7 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
 
 // مكون تعديل المريض
 const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: patient.name || '',
     age: patient.age || '',
@@ -326,14 +327,14 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
     <div className="modal-overlay">
       <div className="modal-content edit-patient-modal">
         <div className="modal-header">
-          <h2>تعديل بيانات المريض</h2>
+          <h2>{t('patient_management.edit_patient_data')}</h2>
           <button onClick={onCancel} className="btn-close">×</button>
         </div>
         
         <form onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group">
-              <label>اسم المريض *</label>
+              <label>{t('patient_management.patient_name_label')} *</label>
               <input
                 type="text"
                 value={formData.name}
@@ -342,7 +343,7 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
               />
             </div>
             <div className="form-group">
-              <label>العمر *</label>
+              <label>{t('patient_management.age_label')} *</label>
               <input
                 type="number"
                 min="1"
@@ -356,7 +357,7 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
 
           <div className="form-row">
             <div className="form-group">
-              <label>رقم الهاتف *</label>
+              <label>{t('patient_management.phone_label')} *</label>
               <input
                 type="tel"
                 value={formData.phone}
@@ -365,13 +366,13 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
               />
             </div>
             <div className="form-group">
-              <label>الجنس *</label>
+              <label>{t('patient_management.gender_label')} *</label>
               <select
                 value={formData.gender}
                 onChange={(e) => setFormData({...formData, gender: e.target.value})}
                 required
               >
-                <option value="">اختر الجنس</option>
+                <option value="">{t('patient_management.select_gender')}</option>
                 <option value="male">ذكر</option>
                 <option value="female">أنثى</option>
               </select>
@@ -379,7 +380,7 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
           </div>
 
           <div className="form-group">
-            <label>العنوان</label>
+            <label>{t('patient_management.address_label')}</label>
             <input
               type="text"
               value={formData.address}
@@ -389,12 +390,12 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
 
           <div className="form-row">
             <div className="form-group">
-              <label>زمرة الدم</label>
+              <label>{t('patient_management.blood_type')}</label>
               <select
                 value={formData.bloodType}
                 onChange={(e) => setFormData({...formData, bloodType: e.target.value})}
               >
-                <option value="غير محدد">غير محدد</option>
+                <option value={t('patient_management.blood_type_undefined')}>{t('patient_management.blood_type_undefined')}</option>
                 <option value="A+">A+</option>
                 <option value="A-">A-</option>
                 <option value="B+">B+</option>
@@ -408,31 +409,31 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
           </div>
 
           <div className="form-group">
-            <label>ما يشكو منه المريض</label>
+            <label>{t('patient_management.chief_complaint')}</label>
             <textarea
               value={formData.chiefComplaint}
               onChange={(e) => setFormData({...formData, chiefComplaint: e.target.value})}
-              placeholder="وصف الشكوى الرئيسية للمريض..."
+              placeholder={t('patient_management.chief_complaint_placeholder')}
               rows="3"
             />
           </div>
 
           <div className="form-group">
-            <label>الأمراض المزمنة</label>
+            <label>{t('patient_management.chronic_diseases')}</label>
             <textarea
               value={formData.chronicDiseases}
               onChange={(e) => setFormData({...formData, chronicDiseases: e.target.value})}
-              placeholder="اكتب الأمراض المزمنة التي يعاني منها المريض..."
+              placeholder="اكتب {t('patient_management.chronic_diseases')} التي يعاني منها المريض..."
               rows="3"
             />
           </div>
 
           <div className="form-group">
-            <label>أمراض أخرى</label>
+            <label>{t('patient_management.other_conditions')}</label>
             <textarea
               value={formData.otherConditions}
               onChange={(e) => setFormData({...formData, otherConditions: e.target.value})}
-              placeholder="اكتب أي أمراض أخرى أو حالات طبية..."
+              placeholder="اكتب أي {t('patient_management.other_conditions')} أو حالات طبية..."
               rows="3"
             />
           </div>
@@ -451,7 +452,7 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
               />
               <input
                 type="tel"
-                placeholder="رقم الهاتف"
+                placeholder={t('patient_management.emergency_contact_phone_placeholder')}
                 value={formData.emergencyContact.phone}
                 onChange={(e) => setFormData({
                   ...formData,
@@ -460,7 +461,7 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
               />
               <input
                 type="text"
-                placeholder="العلاقة"
+                placeholder={t('patient_management.emergency_contact_relationship_placeholder')}
                 value={formData.emergencyContact.relationship}
                 onChange={(e) => setFormData({
                   ...formData,
@@ -471,7 +472,7 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
           </div>
 
           <div className="form-group">
-            <label>ملاحظات</label>
+            <label>{t('patient_management.notes')}</label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({...formData, notes: e.target.value})}
@@ -481,10 +482,10 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
 
           <div className="form-actions">
             <button type="button" onClick={onCancel} className="btn-cancel">
-              إلغاء
+              {t('patient_management.cancel')}
             </button>
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+              {loading ? t('patient_management.saving') : t('patient_management.save_changes')}
             </button>
           </div>
         </form>
@@ -679,7 +680,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         return;
       }
 
-      console.log('🔍 حذف ملف للمريض:', patient._id, 'النوع:', type, 'معرف الملف:', fileId);
+      console.log('🔍 Deleting file for patient:', patient._id, 'Type:', type, 'File ID:', fileId);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${type}/${fileId}`, {
         method: 'DELETE',
         headers: {
@@ -762,25 +763,25 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                 )}
                 {patient.bloodType && patient.bloodType !== 'غير محدد' && (
                   <div className="info-item">
-                    <label>زمرة الدم:</label>
+                    <label>{t('patient_management.blood_type')}:</label>
                     <span>{patient.bloodType}</span>
                   </div>
                 )}
                 {patient.chiefComplaint && (
                   <div className="info-item full-width">
-                    <label>ما يشكو منه المريض:</label>
+                    <label>{t('patient_management.chief_complaint')}:</label>
                     <span>{patient.chiefComplaint}</span>
                   </div>
                 )}
                 {patient.chronicDiseases && (
                   <div className="info-item full-width">
-                    <label>الأمراض المزمنة:</label>
+                    <label>{t('patient_management.chronic_diseases')}:</label>
                     <span>{patient.chronicDiseases}</span>
                   </div>
                 )}
                 {patient.otherConditions && (
                   <div className="info-item full-width">
-                    <label>أمراض أخرى:</label>
+                    <label>{t('patient_management.other_conditions')}:</label>
                     <span>{patient.otherConditions}</span>
                   </div>
                 )}
@@ -1033,8 +1034,8 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                   <div className="pdf-alternatives">
                     <h4>خيارات أخرى:</h4>
                     <ul>
-                      <li>اضغط على "فتح في المتصفح" لعرض الملف في نافذة جديدة</li>
-                      <li>اضغط على "تحميل الملف" لحفظ الملف على جهازك</li>
+                      <li>{t('patient_management.file_view_instructions')[0]}</li>
+                      <li>{t('patient_management.file_view_instructions')[1]}</li>
                       <li>اضغط على "فتح في نافذة جديدة" في الأسفل</li>
                     </ul>
                   </div>

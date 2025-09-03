@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../AuthContext';
+import { useTranslation } from 'react-i18next';
 import './EmployeeManager.css';
 
 const EmployeeManager = () => {
   const { profile } = useAuth();
+  const { t } = useTranslation();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -32,14 +34,7 @@ const EmployeeManager = () => {
   const [doctorAccessCode, setDoctorAccessCode] = useState('');
   const [doctorCodeError, setDoctorCodeError] = useState('');
 
-  // جلب قائمة الموظفين
-  useEffect(() => {
-    if (profile?._id) {
-      fetchEmployees();
-    }
-  }, [profile?._id]);
-
-  const fetchEmployees = async () => {
+  const fetchEmployees = useCallback(async () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/employees/${profile._id}`);
       const data = await response.json();
@@ -49,7 +44,14 @@ const EmployeeManager = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile._id]);
+
+  // جلب قائمة الموظفين
+  useEffect(() => {
+    if (profile?._id) {
+      fetchEmployees();
+    }
+  }, [profile?._id, fetchEmployees]);
 
   // إنشاء رمز دخول عشوائي
   const generateAccessCode = () => {
@@ -66,7 +68,7 @@ const EmployeeManager = () => {
     e.preventDefault();
     
     if (!formData.accessCode) {
-      alert('يرجى إدخال رمز الدخول للموظف');
+      alert(t('employee_management.messages.enter_access_code'));
       return;
     }
 
@@ -82,7 +84,7 @@ const EmployeeManager = () => {
       });
       
       if (response.ok) {
-        alert(`تم إضافة الموظف بنجاح!\nرمز الدخول: ${formData.accessCode}\nيرجى إعطاء هذا الرمز للموظف`);
+        alert(`${t('employee_management.messages.employee_added_success')}\n${t('employee_management.access_code')} ${formData.accessCode}\n${t('employee_management.messages.access_code_info')}`);
         setShowAddModal(false);
         setFormData({
           name: '',
@@ -105,11 +107,11 @@ const EmployeeManager = () => {
         fetchEmployees();
       } else {
         const error = await response.json();
-        alert(error.message || 'خطأ في إضافة الموظف');
+        alert(error.message || t('employee_management.messages.add_employee_error'));
       }
     } catch (error) {
       console.error('خطأ في إضافة الموظف:', error);
-      alert('خطأ في الاتصال بالخادم');
+      alert(t('employee_management.messages.connection_error'));
     }
   };
 
@@ -162,7 +164,7 @@ const EmployeeManager = () => {
 
   // حذف موظف
   const handleDeleteEmployee = async (employeeId) => {
-    if (!window.confirm('هل أنت متأكد من حذف هذا الموظف؟')) return;
+    if (!window.confirm(t('employee_management.messages.confirm_delete'))) return;
     
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/employees/${employeeId}`, {
@@ -179,7 +181,7 @@ const EmployeeManager = () => {
 
   // إعادة إنشاء رمز دخول
   const handleRegenerateCode = async (employeeId) => {
-    if (!window.confirm('هل تريد إعادة إنشاء رمز الدخول؟')) return;
+    if (!window.confirm(t('employee_management.messages.confirm_regenerate'))) return;
     
     const newCode = generateAccessCode();
     try {
@@ -190,7 +192,7 @@ const EmployeeManager = () => {
       });
       
       if (response.ok) {
-        alert(`تم إعادة إنشاء رمز الدخول!\nالرمز الجديد: ${newCode}\nيرجى إعطاء هذا الرمز للموظف`);
+        alert(`${t('employee_management.messages.code_regenerated')}\n${t('employee_management.access_code')} ${newCode}\n${t('employee_management.messages.new_code_info')}`);
         fetchEmployees();
       }
     } catch (error) {
@@ -203,7 +205,7 @@ const EmployeeManager = () => {
     e.preventDefault();
     
     if (!doctorAccessCode || doctorAccessCode.length !== 6) {
-      setDoctorCodeError('يجب إدخال رمز مكون من 6 أحرف');
+      setDoctorCodeError(t('employee_management.messages.code_length_error'));
       return;
     }
     
@@ -218,17 +220,17 @@ const EmployeeManager = () => {
       });
       
       if (response.ok) {
-        alert('تم إعداد رمز دخول للدكتور بنجاح!');
+        alert(t('employee_management.messages.doctor_code_setup_success'));
         setShowDoctorCodeModal(false);
         setDoctorAccessCode('');
         setDoctorCodeError('');
       } else {
         const data = await response.json();
-        setDoctorCodeError(data.error || 'حدث خطأ في إعداد الرمز');
+        setDoctorCodeError(data.error || t('employee_management.messages.setup_error'));
       }
     } catch (error) {
       console.error('خطأ في إعداد رمز الدكتور:', error);
-      setDoctorCodeError('حدث خطأ في الاتصال بالخادم');
+      setDoctorCodeError(t('employee_management.messages.setup_connection_error'));
     }
   };
 
@@ -236,7 +238,7 @@ const EmployeeManager = () => {
     return (
       <div className="employee-manager-loading">
         <div className="loading-spinner"></div>
-        <p>جاري تحميل بيانات الموظفين...</p>
+        <p>{t('employee_management.loading_employees')}</p>
       </div>
     );
   }
@@ -244,19 +246,19 @@ const EmployeeManager = () => {
   return (
     <div className="employee-manager">
       <div className="employee-manager-header">
-        <h2>👥 إدارة الموظفين</h2>
+        <h2>👥 {t('employee_management.title')}</h2>
         <div className="header-buttons">
           <button 
             className="btn-setup-doctor-code"
             onClick={() => setShowDoctorCodeModal(true)}
           >
-            🔐 إعداد رمز دخول للدكتور
+            🔐 {t('employee_management.setup_doctor_code')}
           </button>
           <button 
             className="btn-add-employee"
             onClick={() => setShowAddModal(true)}
           >
-            + إضافة موظف جديد
+            + {t('employee_management.add_new_employee')}
           </button>
         </div>
       </div>
@@ -265,8 +267,8 @@ const EmployeeManager = () => {
         <div className="info-card">
           <div className="info-icon">🔐</div>
           <div className="info-content">
-            <h3>مهم!</h3>
-            <p>تأكد من إعطاء رمز الدخول للموظف بشكل آمن. لا تشارك الرمز مع أي شخص آخر.</p>
+            <h3>{t('employee_management.important_note')}</h3>
+            <p>{t('employee_management.security_warning')}</p>
           </div>
         </div>
       </div>
@@ -275,13 +277,13 @@ const EmployeeManager = () => {
         {employees.length === 0 ? (
           <div className="no-employees">
             <div className="no-employees-icon">👥</div>
-            <h3>لا يوجد موظفين</h3>
-            <p>قم بإضافة موظفين لإدارة العيادة معك</p>
+            <h3>{t('employee_management.no_employees')}</h3>
+            <p>{t('employee_management.no_employees_message')}</p>
             <button 
               className="btn-add-first-employee"
               onClick={() => setShowAddModal(true)}
             >
-              إضافة أول موظف
+              {t('employee_management.add_first_employee')}
             </button>
           </div>
         ) : (
@@ -295,12 +297,12 @@ const EmployeeManager = () => {
                   <h3>{employee.name}</h3>
                   <div className="employee-type">
                     <span className={`type-badge ${employee.employeeType}`}>
-                      {getEmployeeTypeLabel(employee.employeeType)}
+                      {getEmployeeTypeLabel(employee.employeeType, t)}
                     </span>
                   </div>
                   <div className="employee-status">
                     <span className={`status-badge ${employee.isActive ? 'active' : 'inactive'}`}>
-                      {employee.isActive ? 'نشط' : 'غير نشط'}
+                      {employee.isActive ? t('employee_management.active') : t('employee_management.inactive')}
                     </span>
                   </div>
                 </div>
@@ -308,13 +310,13 @@ const EmployeeManager = () => {
               
               <div className="employee-access">
                 <div className="access-code-section">
-                  <label>رمز الدخول:</label>
+                  <label>{t('employee_management.access_code')}</label>
                   <div className="access-code-display">
                     <span className="access-code">{employee.accessCode}</span>
                     <button
                       className="btn-regenerate-code"
                       onClick={() => handleRegenerateCode(employee._id)}
-                      title="إعادة إنشاء الرمز"
+                      title={t('employee_management.regenerate_code')}
                     >
                       🔄
                     </button>
@@ -330,21 +332,21 @@ const EmployeeManager = () => {
                     setShowEditModal(true);
                   }}
                 >
-                  تعديل الصلاحيات
+                  {t('employee_management.edit_permissions')}
                 </button>
                 
                 <button
                   className={`btn-toggle ${employee.isActive ? 'deactivate' : 'activate'}`}
                   onClick={() => handleToggleEmployee(employee._id, !employee.isActive)}
                 >
-                  {employee.isActive ? 'إلغاء التفعيل' : 'تفعيل'}
+                  {employee.isActive ? t('employee_management.deactivate') : t('employee_management.activate')}
                 </button>
                 
                 <button
                   className="btn-delete"
                   onClick={() => handleDeleteEmployee(employee._id)}
                 >
-                  حذف
+                  {t('employee_management.delete')}
                 </button>
               </div>
             </div>
@@ -357,44 +359,44 @@ const EmployeeManager = () => {
         <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>إضافة موظف جديد</h3>
+              <h3>{t('employee_management.add_employee_modal.title')}</h3>
               <button className="modal-close" onClick={() => setShowAddModal(false)}>×</button>
             </div>
             
             <form onSubmit={handleAddEmployee} className="employee-form">
               <div className="form-group">
-                <label>اسم الموظف *</label>
+                <label>{t('employee_management.add_employee_modal.employee_name')} *</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={e => setFormData({...formData, name: e.target.value})}
                   required
-                  placeholder="أدخل اسم الموظف"
+                  placeholder={t('employee_management.add_employee_modal.employee_name_placeholder')}
                 />
               </div>
               
               <div className="form-group">
-                <label>نوع الموظف *</label>
+                <label>{t('employee_management.add_employee_modal.employee_type')} *</label>
                 <select
                   value={formData.employeeType}
                   onChange={e => setFormData({...formData, employeeType: e.target.value})}
                   required
                 >
-                  <option value="secretary">سكرتير</option>
-                  <option value="assistant">مساعد</option>
-                  <option value="employee">موظف</option>
+                  <option value="secretary">{t('employee_management.employee_types.secretary')}</option>
+                  <option value="assistant">{t('employee_management.employee_types.assistant')}</option>
+                  <option value="employee">{t('employee_management.employee_types.employee')}</option>
                 </select>
               </div>
               
               <div className="form-group">
-                <label>رمز الدخول *</label>
+                <label>{t('employee_management.add_employee_modal.access_code')} *</label>
                 <div className="access-code-input">
                   <input
                     type="text"
                     value={formData.accessCode}
                     onChange={e => setFormData({...formData, accessCode: e.target.value.toUpperCase()})}
                     required
-                    placeholder="أدخل رمز الدخول"
+                    placeholder={t('employee_management.add_employee_modal.access_code_placeholder')}
                     maxLength={6}
                     style={{textTransform: 'uppercase'}}
                   />
@@ -403,14 +405,14 @@ const EmployeeManager = () => {
                     className="btn-generate-code"
                     onClick={() => setFormData({...formData, accessCode: generateAccessCode()})}
                   >
-                    إنشاء رمز
+                    {t('employee_management.add_employee_modal.generate_code')}
                   </button>
                 </div>
-                <small>رمز مكون من 6 أحرف وأرقام</small>
+                <small>{t('employee_management.add_employee_modal.access_code_help')}</small>
               </div>
               
               <div className="form-group">
-                <label>الصلاحيات</label>
+                <label>{t('employee_management.add_employee_modal.permissions')}</label>
                 <div className="permissions-grid">
                   {Object.entries(formData.permissions).map(([permission, value]) => (
                     <div key={permission} className="permission-item">
@@ -428,7 +430,7 @@ const EmployeeManager = () => {
                             });
                           }}
                         />
-                        <span className="permission-text">{getPermissionLabel(permission)}</span>
+                        <span className="permission-text">{getPermissionLabel(permission, t)}</span>
                       </label>
                     </div>
                   ))}
@@ -436,9 +438,9 @@ const EmployeeManager = () => {
               </div>
               
               <div className="form-actions">
-                <button type="submit" className="btn-submit">إضافة الموظف</button>
+                <button type="submit" className="btn-submit">{t('employee_management.add_employee_modal.add_employee')}</button>
                 <button type="button" className="btn-cancel" onClick={() => setShowAddModal(false)}>
-                  إلغاء
+                  {t('employee_management.add_employee_modal.cancel')}
                 </button>
               </div>
             </form>
@@ -451,7 +453,7 @@ const EmployeeManager = () => {
         <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
           <div className="modal-content permissions-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>تعديل صلاحيات {selectedEmployee.name}</h3>
+              <h3>{t('employee_management.edit_permissions_modal.title')} {selectedEmployee.name}</h3>
               <button className="modal-close" onClick={() => setShowEditModal(false)}>×</button>
             </div>
             
@@ -477,7 +479,7 @@ const EmployeeManager = () => {
                       }}
                     />
                     <span className="permission-text">
-                      {getPermissionLabel(permission)}
+                      {getPermissionLabel(permission, t)}
                     </span>
                   </label>
                 </div>
@@ -486,7 +488,7 @@ const EmployeeManager = () => {
             
             <div className="modal-footer">
               <button className="btn-cancel" onClick={() => setShowEditModal(false)}>
-                إغلاق
+                {t('employee_management.edit_permissions_modal.close')}
               </button>
             </div>
           </div>
@@ -498,7 +500,7 @@ const EmployeeManager = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h3>🔐 إعداد رمز دخول للدكتور</h3>
+              <h3>🔐 {t('employee_management.setup_doctor_code_modal.title')}</h3>
               <button 
                 className="modal-close"
                 onClick={() => {
@@ -513,7 +515,7 @@ const EmployeeManager = () => {
             
             <form onSubmit={handleSetupDoctorCode}>
               <div className="form-group">
-                <label>رمز الدخول (6 أحرف):</label>
+                <label>{t('employee_management.setup_doctor_code_modal.access_code_label')}</label>
                 <input
                   type="text"
                   value={doctorAccessCode}
@@ -522,7 +524,7 @@ const EmployeeManager = () => {
                     setDoctorCodeError('');
                   }}
                   maxLength={6}
-                  placeholder="مثال: ABC123"
+                  placeholder={t('employee_management.setup_doctor_code_modal.access_code_placeholder')}
                   className={doctorCodeError ? 'error' : ''}
                   style={{textTransform: 'uppercase'}}
                 />
@@ -532,7 +534,7 @@ const EmployeeManager = () => {
               </div>
               
               <div className="form-actions">
-                <button type="submit" className="btn-submit">إعداد الرمز</button>
+                <button type="submit" className="btn-submit">{t('employee_management.setup_doctor_code_modal.setup_code')}</button>
                 <button 
                   type="button" 
                   className="btn-cancel"
@@ -542,7 +544,7 @@ const EmployeeManager = () => {
                     setDoctorCodeError('');
                   }}
                 >
-                  إلغاء
+                  {t('employee_management.setup_doctor_code_modal.cancel')}
                 </button>
               </div>
             </form>
@@ -554,29 +556,29 @@ const EmployeeManager = () => {
 };
 
 // دالة لترجمة نوع الموظف
-const getEmployeeTypeLabel = (type) => {
+const getEmployeeTypeLabel = (type, t) => {
   const labels = {
-    secretary: 'سكرتير',
-    assistant: 'مساعد',
-    employee: 'موظف'
+    secretary: t('employee_management.employee_types.secretary'),
+    assistant: t('employee_management.employee_types.assistant'),
+    employee: t('employee_management.employee_types.employee')
   };
   return labels[type] || type;
 };
 
 // دالة لترجمة أسماء الصلاحيات
-const getPermissionLabel = (permission) => {
+const getPermissionLabel = (permission, t) => {
   const labels = {
-    VIEW_APPOINTMENTS: 'عرض المواعيد',
-    MANAGE_APPOINTMENTS: 'إدارة المواعيد',
-    VIEW_CALENDAR: 'عرض التقويم',
-    MANAGE_WORK_TIMES: 'إدارة أوقات العمل',
-    VIEW_ANALYTICS: 'عرض الإحصائيات',
-    VIEW_PROFILE: 'عرض الملف الشخصي',
-    VIEW_PRIVATE_COMMENTS: 'عرض التعليقات الخاصة',
-    MANAGE_EMPLOYEES: 'إدارة الموظفين',
-    MANAGE_SPECIAL_APPOINTMENTS: 'إدارة المواعيد الخاصة',
-    MANAGE_APPOINTMENT_DURATION: 'إدارة مدة المواعيد',
-    VIEW_BOOKINGS_STATS: 'عرض إحصائيات الحجز'
+    VIEW_APPOINTMENTS: t('employee_management.permissions.VIEW_APPOINTMENTS'),
+    MANAGE_APPOINTMENTS: t('employee_management.permissions.MANAGE_APPOINTMENTS'),
+    VIEW_CALENDAR: t('employee_management.permissions.VIEW_CALENDAR'),
+    MANAGE_WORK_TIMES: t('employee_management.permissions.MANAGE_WORK_TIMES'),
+    VIEW_ANALYTICS: t('employee_management.permissions.VIEW_ANALYTICS'),
+    VIEW_PROFILE: t('employee_management.permissions.VIEW_PROFILE'),
+    VIEW_PRIVATE_COMMENTS: t('employee_management.permissions.VIEW_PRIVATE_COMMENTS'),
+    MANAGE_EMPLOYEES: t('employee_management.permissions.MANAGE_EMPLOYEES'),
+    MANAGE_SPECIAL_APPOINTMENTS: t('employee_management.permissions.MANAGE_SPECIAL_APPOINTMENTS'),
+    MANAGE_APPOINTMENT_DURATION: t('employee_management.permissions.MANAGE_APPOINTMENT_DURATION'),
+    VIEW_BOOKINGS_STATS: t('employee_management.permissions.VIEW_BOOKINGS_STATS')
   };
   return labels[permission] || permission;
 };

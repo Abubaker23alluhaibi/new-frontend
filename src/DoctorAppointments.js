@@ -467,7 +467,7 @@ function DoctorAppointments() {
                 cursor:'pointer'
               }}
             >
-              {showPastAppointments ? '📅 إخفاء المواعيد السابقة' : '📅 إظهار المواعيد السابقة'}
+              {showPastAppointments ? `📅 ${t('hide_past_appointments')}` : `📅 ${t('show_past_appointments')}`}
             </button>
             <button 
               onClick={() => window.print()}
@@ -545,10 +545,10 @@ function DoctorAppointments() {
               margin:'0 auto'
             }}
           >
-            🕐 تسجيل الغياب التلقائي لليوم
+            🕐 {t('auto_absence_today')}
           </button>
           <div style={{fontSize:'0.8rem', color:'#666', marginTop:'0.5rem'}}>
-            يسجل غياب جميع المواعيد غير المؤكدة اليوم
+            {t('auto_absence_description')}
           </div>
         </div>
         

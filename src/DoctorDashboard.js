@@ -641,7 +641,7 @@ function DoctorDashboard() {
             <div style={{background:'#fff', borderRadius:8, boxShadow:'0 2px 8px rgba(0,0,0,0.08)', padding:'0.8rem', textAlign:'center', border: '1px solid #f0f0f0'}}>
               <div style={{fontSize:'1.2rem', marginBottom:'0.3rem'}}>✅</div>
               <div style={{fontSize:'1.5rem', fontWeight:900, color:'#0A8F82', marginBottom:'0.2rem', direction:'ltr', textAlign:'center', unicodeBidi:'bidi-override'}}>{todayAppointments.filter(apt => apt.attendance === 'present').length}</div>
-              <div style={{fontSize:'0.9rem', fontWeight:600, color:'#666'}}>حضور اليوم</div>
+              <div style={{fontSize:'0.9rem', fontWeight:600, color:'#666'}}>{t('today_attendance')}</div>
             </div>
           </div>
         </div>
@@ -790,7 +790,7 @@ function DoctorDashboard() {
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>🏥</div>
               </button>
-              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة المرضى</div>
+              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('patient_management')}</div>
             </div>
 
             {/* زر إدارة الموظفين */}
@@ -822,10 +822,10 @@ function DoctorDashboard() {
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>👥</div>
               </button>
-              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة الموظفين</div>
+              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('employee_management')}</div>
             </div>
 
-            {/* زر إدارة المستخدمين الآخرين */}
+            {/* زر إدارة الحجز لمستخدم آخر */}
             <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
               <button 
                 onClick={() => {
@@ -854,7 +854,7 @@ function DoctorDashboard() {
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
               </button>
-              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة المستخدمين الآخرين</div>
+              <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة الحجز لمستخدم آخر</div>
             </div>
           </div>
         </div>
@@ -1079,7 +1079,7 @@ function DoctorDashboard() {
                                 transition:'all 0.3s ease'
                               }}
                             >
-                              ✅ حاضر
+                              ✅ {t('present')}
                             </button>
                           )}
                         </div>
@@ -1269,7 +1269,7 @@ function DoctorDashboard() {
               <div style={{color:'#888', fontSize: window.innerWidth < 500 ? 14 : 15}}>{t('no_notifications')}</div>
             ) : notifications.map(n => (
               <div key={n._id} style={{background:'#f7fafd', borderRadius:8, padding: window.innerWidth < 500 ? '0.5rem 0.7rem' : '0.7rem 1rem', marginBottom:7, color:'#444', fontWeight:600, fontSize: window.innerWidth < 500 ? 13 : 15}}>
-                {n.type === 'new_appointment' ? renderNewAppointmentNotification(n.message, t) : n.message}
+                {n.type === 'new_appointment' ? renderNewAppointmentNotification(n.message, t, i18n) : n.message}
                 <div style={{fontSize: window.innerWidth < 500 ? 11 : 12, color:'#888', marginTop:4}}>{formatKurdishDateTime(n.createdAt)}</div>
               </div>
             ))}
@@ -2470,26 +2470,60 @@ export default DoctorDashboard;
 
 // دالة تعريب التاريخ والوقت للإشعارات - إصلاح مشكلة المنطقة الزمنية
 function formatKurdishDateTime(dateString) {
-  // إصلاح مشكلة المنطقة الزمنية - معالجة التاريخ بشكل صحيح
-  let date;
-  if (typeof dateString === 'string' && dateString.includes('-')) {
-    // إذا كان التاريخ بصيغة YYYY-MM-DD، قم بإنشاء تاريخ محلي
-    const [year, month, day] = dateString.split('-').map(Number);
-    date = new Date(year, month - 1, day); // month - 1 لأن getMonth() يبدأ من 0
-  } else {
-    date = new Date(dateString);
+  // التحقق من صحة التاريخ
+  if (!dateString) {
+    return 'تاريخ غير صحيح';
   }
   
-  const day = date.getDate();
-  const year = date.getFullYear();
-  const hour = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const sec = String(date.getSeconds()).padStart(2, '0');
-  return `${day}/${date.getMonth()+1}/${year} ${hour}:${min}:${sec}`;
+  let date;
+  try {
+    if (typeof dateString === 'string' && dateString.includes('-')) {
+      // إذا كان التاريخ بصيغة YYYY-MM-DD، قم بإنشاء تاريخ محلي
+      const [year, month, day] = dateString.split('-').map(Number);
+      if (isNaN(year) || isNaN(month) || isNaN(day)) {
+        return 'تاريخ غير صحيح';
+      }
+      date = new Date(year, month - 1, day); // month - 1 لأن getMonth() يبدأ من 0
+    } else {
+      date = new Date(dateString);
+    }
+    
+    // التحقق من صحة التاريخ المنشأ
+    if (isNaN(date.getTime())) {
+      return 'تاريخ غير صحيح';
+    }
+    
+    const day = date.getDate();
+    const year = date.getFullYear();
+    const hour = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    const sec = String(date.getSeconds()).padStart(2, '0');
+    return `${day}/${date.getMonth()+1}/${year} ${hour}:${min}:${sec}`;
+    
+  } catch (error) {
+    console.log('Error in formatKurdishDateTime:', error);
+    return 'تاريخ غير صحيح';
+  }
 }
 
-function renderNewAppointmentNotification(message, t) {
-  // مثال: "تم حجز موعد جديد من قبل عثمان f;v في 2025-07-26 الساعة 08:00"
+function renderNewAppointmentNotification(message, t, i18n) {
+  // معالجة النصوص باللغة الكردية
+  if (i18n.language === 'ku') {
+    // مثال: "چاوپێکەوتنی نوێ لەلایەن ali abbas للمريض 784642110 (عمر: 19) لە 2025-09-03 کاتژمێر 09:15 تۆمارکرا"
+    const match = message.match(/لەلایەن (.+) للمريض (.+) \(عمر: (\d+)\) لە ([0-9\-]+) کاتژمێر ([0-9:]+)/);
+    if (match) {
+      const [, name, phone, age, date, time] = match;
+      return t('notification_new_appointment', { 
+        name: name.trim(), 
+        date: date, 
+        time: time,
+        phone: phone,
+        age: age
+      });
+    }
+  }
+  
+  // معالجة النصوص باللغة العربية
   const match = message.match(/من قبل (.+) في ([0-9-]+) الساعة ([0-9:]+)/);
   if (match) {
     const [, name, date, time] = match;
