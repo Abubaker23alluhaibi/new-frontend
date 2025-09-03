@@ -63,22 +63,19 @@ function DoctorAppointments() {
         });
         
         const uniqueAppointments = Array.from(uniqueMap.values());
-        
-        
-        
         setAppointments(uniqueAppointments);
       } else {
-        setError(t('fetch_appointments_fail'));
+        setError('فشل في جلب المواعيد');
       }
     } catch (err) {
-      setError(t('fetch_appointments_error'));
+      setError('خطأ في جلب المواعيد');
     }
     setLoading(false);
-  }, [profile._id, t]);
+  }, [profile._id]);
 
   useEffect(() => {
     if (!profile?._id) {
-      setError(t('login_required'));
+      setError('يجب تسجيل الدخول');
       setLoading(false);
       return;
     }
@@ -103,7 +100,7 @@ function DoctorAppointments() {
       isComponentMounted = false;
       clearInterval(interval);
     };
-  }, [profile?._id, t]);
+  }, [profile?._id, fetchDoctorAppointments]);
 
 
 

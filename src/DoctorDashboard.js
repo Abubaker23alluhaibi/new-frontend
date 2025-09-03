@@ -168,7 +168,7 @@ function DoctorDashboard() {
     // إعادة جلب البيانات
     fetchAllAppointments();
     fetchNotifications();
-  }, [fetchAllAppointments, fetchNotifications]);
+  }, [profile?._id]);
 
   // جلب إشعارات الدكتور وإعداد WebSocket
   useEffect(() => {
