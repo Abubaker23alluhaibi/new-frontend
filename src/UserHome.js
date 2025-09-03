@@ -177,17 +177,55 @@ function UserHome() {
   // جلب إشعارات المستخدم
   useEffect(() => {
     if (!user?._id) return;
-    fetch(`${process.env.REACT_APP_API_URL}/notifications?userId=${user._id}`)
-      .then(res => res.json())
-      .then(data => {
+    
+    const fetchNotifications = async () => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?userId=${user._id}`);
+        const data = await res.json();
+        
         if (!Array.isArray(data)) {
           setNotifications([]);
           setNotifCount(0);
           return;
         }
+        
         setNotifications(data);
         setNotifCount(data.filter(n => !n.read).length);
-      });
+        
+        // إعداد الإشعارات الفورية
+        const notificationService = (await import('./utils/notificationService')).default;
+        await notificationService.requestPermission();
+        await notificationService.setupServiceWorker();
+        
+        // إعداد WebSocket
+        const socketService = (await import('./utils/socketService')).default;
+        socketService.connect();
+        socketService.joinUserRoom(user._id);
+        
+        // الاستماع لإشعارات إلغاء الموعد
+        socketService.onAppointmentCancelled((data) => {
+          // إرسال إشعار فوري
+          notificationService.sendAppointmentCancellationNotification(
+            data.doctorName,
+            data.date,
+            data.time
+          );
+          
+          // تحديث قائمة الإشعارات
+          fetchNotifications();
+        });
+        
+      } catch (error) {
+        console.error('خطأ في جلب الإشعارات:', error);
+      }
+    };
+    
+    fetchNotifications();
+    
+    // تحديث الإشعارات كل 30 ثانية
+    const interval = setInterval(fetchNotifications, 30000);
+    
+    return () => clearInterval(interval);
   }, [user?._id, showNotif]);
 
   // تعليم كل الإشعارات كمقروءة عند فتح نافذة الإشعارات
