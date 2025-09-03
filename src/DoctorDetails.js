@@ -24,6 +24,22 @@ function DoctorDetails() {
   const [availableTimes, setAvailableTimes] = useState([]);
   const [bookedTimes, setBookedTimes] = useState([]);
   const { t } = useTranslation();
+  // استخدام specialty_categories الجديدة للترجمة المتعددة اللغات
+  const specialtyCategories = t('specialty_categories', { returnObjects: true }) || [];
+  
+  // إنشاء خريطة للتخصصات من specialty_categories
+  const specialtiesMap = {};
+  if (Array.isArray(specialtyCategories)) {
+    specialtyCategories.forEach(category => {
+      if (category.specialties && Array.isArray(category.specialties)) {
+        category.specialties.forEach(specialty => {
+          specialtiesMap[specialty] = specialty; // التخصص يظهر كما هو مترجم
+        });
+      }
+    });
+  }
+  
+  // الاحتفاظ بـ specialties القديمة كـ fallback
   const specialties = (t('specialties', { returnObjects: true }) && Array.isArray(t('specialties', { returnObjects: true }))) ? t('specialties', { returnObjects: true }) : [];
   const provinces = (t('provinces', { returnObjects: true }) && Array.isArray(t('provinces', { returnObjects: true }))) ? t('provinces', { returnObjects: true }) : [];
   const weekdays = (t('weekdays', { returnObjects: true }) && Array.isArray(t('weekdays', { returnObjects: true }))) ? t('weekdays', { returnObjects: true }) : 
@@ -521,7 +537,7 @@ function DoctorDetails() {
               
               <div className="doctor-name">{doctor.name}</div>
               <div className="doctor-specialty">
-                {specialties[doctor.specialty] || doctor.specialty}
+                {specialtiesMap[doctor.specialty] || (Array.isArray(specialties) && specialties[doctor.specialty]) || doctor.specialty}
               </div>
               <div className="doctor-location">
                 <span role="img" aria-label="governorate">🏛️</span> 
@@ -650,7 +666,7 @@ function DoctorDetails() {
               <div className="doctor-info">
                 <div className="doctor-name">{doctor.name}</div>
                 <div className="doctor-specialty">
-                  {specialties[doctor.specialty] || doctor.specialty}
+                  {specialtiesMap[doctor.specialty] || (Array.isArray(specialties) && specialties[doctor.specialty]) || doctor.specialty}
                 </div>
               </div>
             </div>
@@ -890,7 +906,7 @@ function DoctorDetails() {
               />
               <div className="doctor-name" style={{fontSize: '1.3rem'}}>{doctor.name}</div>
               <div className="doctor-specialty" style={{fontSize: '0.9rem'}}>
-                {specialties[doctor.specialty] || doctor.specialty}
+                {specialtiesMap[doctor.specialty] || (Array.isArray(specialties) && specialties[doctor.specialty]) || doctor.specialty}
               </div>
               <button
                 onClick={() => setCurrentPage('info')}

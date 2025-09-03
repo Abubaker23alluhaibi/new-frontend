@@ -63,6 +63,22 @@ const DoctorCard = ({ doctor }) => {
   }
 
   const provinces = t('provinces', { returnObjects: true }) || [];
+  // استخدام specialty_categories الجديدة للترجمة المتعددة اللغات
+  const specialtyCategories = t('specialty_categories', { returnObjects: true }) || [];
+  
+  // إنشاء خريطة للتخصصات من specialty_categories
+  const specialtiesMap = {};
+  if (Array.isArray(specialtyCategories)) {
+    specialtyCategories.forEach(category => {
+      if (category.specialties && Array.isArray(category.specialties)) {
+        category.specialties.forEach(specialty => {
+          specialtiesMap[specialty] = specialty; // التخصص يظهر كما هو مترجم
+        });
+      }
+    });
+  }
+  
+  // الاحتفاظ بـ specialties القديمة كـ fallback
   const specialties = t('specialties', { returnObjects: true }) || [];
   
   // التأكد من أن المصفوفات صحيحة
@@ -224,7 +240,7 @@ const DoctorCard = ({ doctor }) => {
             <span style={{fontWeight:700}}>{doctor.category}</span>
             {doctor.category && doctor.specialty && <span style={{margin: '0 4px', color:'#888'}}>|</span>}
             <span>
-              {Array.isArray(specialties) && specialties[doctor.specialty] ? specialties[doctor.specialty] : doctor.specialty}
+              {specialtiesMap[doctor.specialty] || (Array.isArray(specialties) && specialties[doctor.specialty]) || doctor.specialty}
             </span>
           </div>
           
