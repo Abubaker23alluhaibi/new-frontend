@@ -488,7 +488,7 @@ function UserHome() {
     }}>
       {/* الشريط العلوي العصري */}
       <div style={{
-        background: '#2ECC71',
+        background: '#0A8F82',
         padding: isMobile() ? '1rem' : '1.2rem', 
         display: 'flex', 
         alignItems: 'center', 
@@ -541,20 +541,20 @@ function UserHome() {
       {drawerOpen && (
         <div onClick={()=>setDrawerOpen(false)} style={{position:'fixed', top:0, left:isRTL ? 'unset' : 0, right:isRTL ? 0 : 'unset', width:'100vw', height:'100vh', background:'rgba(0,0,0,0.3)', zIndex:2000, display:'flex', justifyContent:isRTL ? 'flex-end' : 'flex-start'}}>
           <div onClick={e=>e.stopPropagation()} style={{width:280, height:'100%', background:'#fff', boxShadow:'0 4px 20px rgba(0,0,0,0.1)', padding:'2rem 1.5rem', display:'flex', flexDirection:'column', gap:16, direction:isRTL ? 'rtl' : 'ltr'}}>
-            <button onClick={()=>setDrawerOpen(false)} style={{background:'none', border:'none', color:'#2ECC71', fontSize:24, fontWeight:700, alignSelf:isRTL ? 'flex-start' : 'flex-end', cursor:'pointer', marginBottom:8}}>&times;</button>
-            <button onClick={() => navigate('/')} style={{background:'#2ECC71', color:'#fff', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', display:'flex', alignItems:'center', gap:8}}><span style={{fontSize:18}}>🏠</span>{t('back_to_home')}</button>
-            <button onClick={() => {navigate('/top-rated-doctors'); setDrawerOpen(false);}} style={{background:'#2ECC71', color:'#fff', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', display:'flex', alignItems:'center', gap:8}}><span style={{fontSize:18}}>⭐</span>{t('rating.top_rated_doctors')}</button>
-            <button onClick={() => {setShowContactModal(true); setDrawerOpen(false);}} style={{background:'#27AE60', color:'#fff', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', display:'flex', alignItems:'center', gap:8}}><span style={{fontSize:18}}>📞</span>{t('contact_us')}</button>
-            <button onClick={()=>{setShowFavorites(!showFavorites); setDrawerOpen(false);}} style={{background: showFavorites ? '#2ECC71' : '#f8f9fa', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', color: showFavorites ? '#fff' : '#2ECC71', display:'flex', alignItems:'center', gap:8}}><span role="img" aria-label="favorites">❤️</span>{t('favorites')}</button>
-            <button onClick={()=>{navigate('/profile'); setDrawerOpen(false);}} style={{background:'#f8f9fa', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', color:'#2ECC71', display:'flex', alignItems:'center', gap:8}}><svg width={20} height={20} fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="#2ECC71" strokeWidth="2"/><path d="M4 20c0-2.21 3.58-4 8-4s8 1.79 8 4" stroke="#2ECC71" strokeWidth="2"/></svg>{t('my_profile')}</button>
+            <button onClick={()=>setDrawerOpen(false)} style={{background:'none', border:'none', color:'#0A8F82', fontSize:24, fontWeight:700, alignSelf:isRTL ? 'flex-start' : 'flex-end', cursor:'pointer', marginBottom:8}}>&times;</button>
+            <button onClick={() => navigate('/')} style={{background:'#0A8F82', color:'#fff', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', display:'flex', alignItems:'center', gap:8}}><span style={{fontSize:18}}>🏠</span>{t('back_to_home')}</button>
+            <button onClick={() => {navigate('/top-rated-doctors'); setDrawerOpen(false);}} style={{background:'#0A8F82', color:'#fff', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', display:'flex', alignItems:'center', gap:8}}><span style={{fontSize:18}}>⭐</span>{t('rating.top_rated_doctors')}</button>
+            <button onClick={() => {setShowContactModal(true); setDrawerOpen(false);}} style={{background:'#0A8F82', color:'#fff', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', display:'flex', alignItems:'center', gap:8}}><span style={{fontSize:18}}>📞</span>{t('contact_us')}</button>
+            <button onClick={()=>{setShowFavorites(!showFavorites); setDrawerOpen(false);}} style={{background: showFavorites ? '#0A8F82' : '#f8f9fa', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', color: showFavorites ? '#fff' : '#0A8F82', display:'flex', alignItems:'center', gap:8}}><span role="img" aria-label="favorites">❤️</span>{t('favorites')}</button>
+            <button onClick={()=>{navigate('/profile'); setDrawerOpen(false);}} style={{background:'#f8f9fa', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', color:'#0A8F82', display:'flex', alignItems:'center', gap:8}}><svg width={20} height={20} fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="#0A8F82" strokeWidth="2"/><path d="M4 20c0-2.21 3.58-4 8-4s8 1.79 8 4" stroke="#0A8F82" strokeWidth="2"/></svg>{t('my_profile')}</button>
             <button onClick={handleLogout} style={{background:'#E74C3C', color:'#fff', border:'none', borderRadius:12, padding:'1rem', fontWeight:600, fontSize:16, cursor:'pointer', marginTop:'auto'}}>{t('logout')}</button>
             <div style={{marginTop:16}}>
-              <label style={{fontWeight:600, color:'#2ECC71', marginBottom:8, display:'block'}}>{t('change_language')}</label>
+              <label style={{fontWeight:600, color:'#0A8F82', marginBottom:8, display:'block'}}>{t('change_language')}</label>
               <select value={i18n.language || 'ar'} onChange={(e) => {
                 const newLang = e.target.value;
                 i18n.changeLanguage(newLang);
                 localStorage.setItem('selectedLanguage', newLang);
-              }} style={{background:'#f8f9fa', color:'#2ECC71', border:'1px solid #e9ecef', borderRadius:8, padding:'0.5rem', fontWeight:600, fontSize:14, cursor:'pointer', width:'100%'}}>
+              }} style={{background:'#f8f9fa', color:'#0A8F82', border:'1px solid #e9ecef', borderRadius:8, padding:'0.5rem', fontWeight:600, fontSize:14, cursor:'pointer', width:'100%'}}>
                 <option value="ar">العربية</option>
                 <option value="en">English</option>
                 <option value="ku">کوردی</option>
@@ -574,14 +574,14 @@ function UserHome() {
           onClick={()=>alert('سيتم إضافته قريبًا')}
           style={{
             background: '#f8f9fa', 
-            border: '2px solid #2ECC71', 
+            border: '2px solid #0A8F82', 
             borderRadius: 12, 
             padding: isMobile() ? '0.7rem 1.2rem' : '0.8rem 1.7rem', 
             fontWeight: 600, 
             fontSize: isMobile() ? 15 : 17, 
             cursor: 'pointer', 
-            color: '#2ECC71',
-            boxShadow: '0 2px 8px rgba(46, 204, 113, 0.1)',
+            color: '#0A8F82',
+            boxShadow: '0 2px 8px rgba(10, 143, 130, 0.1)',
             transition: 'all 0.3s ease',
             display:'flex', alignItems:'center', gap:8
           }}
@@ -599,7 +599,7 @@ function UserHome() {
           left: isMobile() ? 10 : 'auto',
           background:'#fff', 
           borderRadius:16, 
-          boxShadow:'0 4px 20px rgba(46, 204, 113, 0.15)', 
+          boxShadow:'0 4px 20px rgba(10, 143, 130, 0.15)', 
           padding: isMobile() ? '1rem' : '1.2rem 1.5rem', 
           zIndex:1000, 
           minWidth: isMobile() ? 'auto' : 300, 
@@ -609,7 +609,7 @@ function UserHome() {
           border: '1px solid #e9ecef'
         }}>
           <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16}}>
-            <h4 style={{margin:'0', color:'#2ECC71', display:'flex', alignItems:'center', gap:'0.5rem', fontWeight:700}}>
+            <h4 style={{margin:'0', color:'#0A8F82', display:'flex', alignItems:'center', gap:'0.5rem', fontWeight:700}}>
               🔔 {t('notifications')} ({notifCount})
             </h4>
             <button onClick={()=>setShowNotif(false)} style={{background:'none', border:'none', color:'#E74C3C', fontSize:20, fontWeight:700, cursor:'pointer', marginRight:2, marginTop:-2}}>&times;</button>
@@ -734,32 +734,32 @@ function UserHome() {
         margin: '1.5rem auto 0', 
         background: '#ffffff', 
         borderRadius: 16, 
-        boxShadow: '0 2px 12px rgba(46, 204, 113, 0.1)', 
+        boxShadow: '0 2px 12px rgba(10, 143, 130, 0.1)', 
         padding: isMobile() ? '1.5rem 1rem' : '2rem 1.5rem',
         border: '1px solid #e9ecef'
       }}>
-        <div style={{fontWeight: 700, fontSize: isMobile() ? 18 : 20, marginBottom: 16, color: '#2ECC71'}}>{t('quick_search_doctor')}</div>
+        <div style={{fontWeight: 700, fontSize: isMobile() ? 18 : 20, marginBottom: 16, color: '#0A8F82'}}>{t('quick_search_doctor')}</div>
         <div style={{display:'flex', gap:12, flexWrap:'wrap', marginBottom:16}}>
           {/* اختيار المحافظة */}
           <div style={{position:'relative', flex:1, minWidth:150}}>
-            <span style={{position:'absolute', right:12, top:13, color:'#2ECC71', fontSize: 18}} role="img" aria-label="province">🏛️</span>
-            <select value={province} onChange={e=>setProvince(e.target.value)} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1px solid #e9ecef', fontSize:16, background: '#ffffff', color:'#2ECC71'}}>
+            <span style={{position:'absolute', right:12, top:13, color:'#0A8F82', fontSize: 18}} role="img" aria-label="province">🏛️</span>
+            <select value={province} onChange={e=>setProvince(e.target.value)} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1px solid #e9ecef', fontSize:16, background: '#ffffff', color:'#0A8F82'}}>
               <option value="">{t('choose_province')}</option>
               {provinces.map(p=><option key={p} value={p}>{p}</option>)}
             </select>
           </div>
           {/* قائمة التخصصات العامة */}
           <div style={{position:'relative', flex:1, minWidth:150}}>
-            <span style={{position:'absolute', right:12, top:13, color:'#2ECC71', fontSize: 18}} role="img" aria-label="category">📚</span>
-            <select value={selectedCategory} onChange={e=>{setSelectedCategory(e.target.value); setSelectedSpecialty("");}} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1px solid #e9ecef', fontSize:16, background: '#ffffff', color:'#2ECC71'}}>
+            <span style={{position:'absolute', right:12, top:13, color:'#0A8F82', fontSize: 18}} role="img" aria-label="category">📚</span>
+            <select value={selectedCategory} onChange={e=>{setSelectedCategory(e.target.value); setSelectedSpecialty("");}} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1px solid #e9ecef', fontSize:16, background: '#ffffff', color:'#0A8F82'}}>
               <option value="">{t('choose_specialty')}</option>
               {allCategories.map(cat=><option key={cat} value={cat}>{cat}</option>)}
             </select>
           </div>
           {/* قائمة التخصصات الفرعية */}
           <div style={{position:'relative', flex:1, minWidth:150}}>
-            <span style={{position:'absolute', right:12, top:13, color:'#2ECC71', fontSize: 18}} role="img" aria-label="specialty">🩺</span>
-            <select value={selectedSpecialty} onChange={e=>setSelectedSpecialty(e.target.value)} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1px solid #e9ecef', fontSize:16, background: '#ffffff', color:'#2ECC71'}}>
+            <span style={{position:'absolute', right:12, top:13, color:'#0A8F82', fontSize: 18}} role="img" aria-label="specialty">🩺</span>
+            <select value={selectedSpecialty} onChange={e=>setSelectedSpecialty(e.target.value)} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1px solid #e9ecef', fontSize:16, background: '#ffffff', color:'#0A8F82'}}>
               <option value="">{t('choose_subspecialty')}</option>
               {(selectedCategory
                 ? specialtiesGrouped.find(cat => cat.category === selectedCategory)?.specialties || []
@@ -770,18 +770,18 @@ function UserHome() {
         </div>
         {/* حقل البحث السريع في سطر منفصل */}
         <div style={{position:'relative', maxWidth:400, margin:'0 auto'}}>
-          <span style={{position:'absolute', right:12, top:13, color:'#2ECC71', fontSize: 18}} role="img" aria-label="search">🔍</span>
-          <input value={searchValue} onChange={e=>setSearchValue(e.target.value)} placeholder={t('search_doctor_or_specialty')} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1px solid #e9ecef', fontSize:16, background: '#ffffff', color:'#2ECC71'}} />
+          <span style={{position:'absolute', right:12, top:13, color:'#0A8F82', fontSize: 18}} role="img" aria-label="search">🔍</span>
+          <input value={searchValue} onChange={e=>setSearchValue(e.target.value)} placeholder={t('search_doctor_or_specialty')} style={{width:'100%', borderRadius:12, padding:'0.8rem 2.2rem 0.8rem 0.8rem', border:'1px solid #e9ecef', fontSize:16, background: '#ffffff', color:'#0A8F82'}} />
           {/* نتائج البحث السريع */}
           {searchValue && (
-            <div style={{position: 'absolute', top: '110%', left: 0, right: 0, background: '#fff', borderRadius: 12, boxShadow: '0 4px 20px rgba(46, 204, 113, 0.1)', zIndex: 100, maxHeight: 180, overflowY: 'auto', border: '1px solid #e9ecef'}}>
+            <div style={{position: 'absolute', top: '110%', left: 0, right: 0, background: '#fff', borderRadius: 12, boxShadow: '0 4px 20px rgba(10, 143, 130, 0.1)', zIndex: 100, maxHeight: 180, overflowY: 'auto', border: '1px solid #e9ecef'}}>
               {[
                 ...allCategories.filter(cat => cat.includes(searchValue)),
                 ...allSubSpecialties.filter(s => s.includes(searchValue))
               ].slice(0,10).map(result => (
                 <div
                   key={result}
-                  style={{padding:'0.8rem 1rem', cursor:'pointer', borderBottom:'1px solid #f8f9fa', color:'#2ECC71'}}
+                  style={{padding:'0.8rem 1rem', cursor:'pointer', borderBottom:'1px solid #f8f9fa', color:'#0A8F82'}}
                   onClick={() => handleSearchSelect(result)}
                 >
                   {result}
@@ -812,7 +812,7 @@ function UserHome() {
           onClick={() => navigate('/medicine-reminder')}
           style={{
             background: '#ffffff',
-            border: '2px solid #2ECC71',
+            border: '2px solid #0A8F82',
             borderRadius: '50%',
             width: isMobile() ? 60 : 70,
             height: isMobile() ? 60 : 70,
@@ -820,23 +820,23 @@ function UserHome() {
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(46, 204, 113, 0.2)',
+            boxShadow: '0 4px 12px rgba(10, 143, 130, 0.2)',
             transition: 'all 0.3s ease'
           }}
           onMouseEnter={(e) => {
             if (!isMobile()) {
               e.target.style.transform = 'translateY(-2px) scale(1.05)';
-              e.target.style.boxShadow = '0 6px 16px rgba(46, 204, 113, 0.3)';
+              e.target.style.boxShadow = '0 6px 16px rgba(10, 143, 130, 0.3)';
             }
           }}
           onMouseLeave={(e) => {
             if (!isMobile()) {
               e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.boxShadow = '0 4px 12px rgba(46, 204, 113, 0.2)';
+              e.target.style.boxShadow = '0 4px 12px rgba(10, 143, 130, 0.2)';
             }
           }}
         >
-          <span style={{fontSize: isMobile() ? 24 : 28, color: '#2ECC71'}} role="img" aria-label="medicine">💊</span>
+          <span style={{fontSize: isMobile() ? 24 : 28, color: '#0A8F82'}} role="img" aria-label="medicine">💊</span>
         </button>
         
         {/* أيقونة المواعيد */}
@@ -844,7 +844,7 @@ function UserHome() {
           onClick={() => navigate('/my-appointments')}
           style={{
             background: '#ffffff',
-            border: '2px solid #2ECC71',
+            border: '2px solid #0A8F82',
             borderRadius: '50%',
             width: isMobile() ? 60 : 70,
             height: isMobile() ? 60 : 70,
@@ -852,23 +852,23 @@ function UserHome() {
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(46, 204, 113, 0.2)',
+            boxShadow: '0 4px 12px rgba(10, 143, 130, 0.2)',
             transition: 'all 0.3s ease'
           }}
           onMouseEnter={(e) => {
             if (!isMobile()) {
               e.target.style.transform = 'translateY(-2px) scale(1.05)';
-              e.target.style.boxShadow = '0 6px 16px rgba(46, 204, 113, 0.3)';
+              e.target.style.boxShadow = '0 6px 16px rgba(10, 143, 130, 0.3)';
             }
           }}
           onMouseLeave={(e) => {
             if (!isMobile()) {
               e.target.style.transform = 'translateY(0) scale(1)';
-              e.target.style.boxShadow = '0 4px 12px rgba(46, 204, 113, 0.2)';
+              e.target.style.boxShadow = '0 4px 12px rgba(10, 143, 130, 0.2)';
             }
           }}
         >
-          <span style={{fontSize: isMobile() ? 24 : 28, color: '#2ECC71'}} role="img" aria-label="appointments">📅</span>
+          <span style={{fontSize: isMobile() ? 24 : 28, color: '#0A8F82'}} role="img" aria-label="appointments">📅</span>
         </button>
       </div>
 
@@ -898,7 +898,7 @@ function UserHome() {
         padding: '0 1rem'
       }}>
         <div style={{
-          background: '#2ECC71',
+          background: '#0A8F82',
           color: '#fff',
           padding: isMobile() ? '0.8rem 1rem' : '1rem 1.2rem',
           borderRadius: 12,
@@ -906,7 +906,7 @@ function UserHome() {
           fontSize: isMobile() ? 16 : 18, 
           marginBottom: isMobile() ? 12 : 16,
           textAlign: 'center',
-          boxShadow: '0 4px 12px rgba(46, 204, 113, 0.2)'
+          boxShadow: '0 4px 12px rgba(10, 143, 130, 0.2)'
         }}>
           ⭐ {t('featured_doctors')}
         </div>
@@ -992,18 +992,18 @@ function UserHome() {
           onClick={() => setShowQuickSearch(true)}
           style={{
             background: '#fff',
-            border: '2px solid #2ECC71',
+            border: '2px solid #0A8F82',
             borderRadius: '50%',
             width: 60,
             height: 60,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(46, 204, 113, 0.2)',
+            boxShadow: '0 4px 12px rgba(10, 143, 130, 0.2)',
             cursor: 'pointer',
             fontWeight: 700,
             fontSize: 24,
-            color: '#2ECC71',
+            color: '#0A8F82',
             transition: 'all 0.3s',
             margin: '0 auto'
           }}
