@@ -1219,7 +1219,7 @@ function DoctorDashboard() {
 
                     {/* أزرار التحكم */}
                     <div style={{display:'flex', gap:'0.5rem', justifyContent:'flex-end', flexWrap:'wrap'}}>
-                      {(!appointment.attendance || appointment.attendance === 'absent') && (
+                      {(!appointment.attendance || appointment.attendance === 'not_set') && (
                         <button 
                           onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
                           style={{

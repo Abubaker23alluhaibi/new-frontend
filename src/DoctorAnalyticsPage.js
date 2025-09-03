@@ -110,7 +110,7 @@ function DoctorAnalyticsPage() {
       // إحصائيات الحضور والغياب
       attendanceStats: {
         present: filteredAppointments.filter(apt => apt.attendance === 'present').length,
-        absent: filteredAppointments.filter(apt => apt.attendance === 'absent' || !apt.attendance).length
+        absent: filteredAppointments.filter(apt => apt.attendance === 'absent').length
       },
       
       // تحليل حسب الأيام

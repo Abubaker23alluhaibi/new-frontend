@@ -701,6 +701,7 @@
   "attendance": "Attendance Status",
   "present": "Present",
   "absent": "Absent",
+  "waiting": "Waiting",
   "mark_present": "Mark Present",
   "mark_absent": "Mark Absent",
   "mark_attended": "Mark as Attended",

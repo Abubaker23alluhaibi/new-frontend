@@ -155,6 +155,31 @@ function DoctorAppointments() {
     }
   };
 
+  // تسجيل الغياب التلقائي لجميع المواعيد غير المؤكدة اليوم
+  const handleMarkAllAbsentEndOfDay = async () => {
+    if (!window.confirm('هل أنت متأكد من تسجيل الغياب لجميع المواعيد غير المؤكدة اليوم؟')) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/appointments/mark-absent-end-of-day`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        alert(`تم تسجيل الغياب لـ ${data.markedCount} موعد`);
+        // إعادة تحميل المواعيد
+        fetchDoctorAppointments();
+      } else {
+        alert('خطأ في تسجيل الغياب التلقائي');
+      }
+    } catch (err) {
+      alert('خطأ في تسجيل الغياب التلقائي');
+    }
+  };
+
   const addToSpecialAppointments = (appointment) => {
     setSelectedAppointmentForSpecial(appointment);
     setShowAddToSpecial(true);
@@ -492,10 +517,41 @@ function DoctorAppointments() {
           <div style={{fontSize:'1.5rem', fontWeight:700, color:'#f44336', marginBottom:'0.5rem'}}>{displayedAppointments.filter(apt => apt.attendance === 'absent').length}</div>
           <div style={{color:'#666'}}>{t('absent_count')}</div>
         </div>
+        <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', textAlign:'center'}}>
+          <div style={{fontSize:'2rem', marginBottom:'0.5rem'}}>⏳</div>
+          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#ff9800', marginBottom:'0.5rem'}}>{displayedAppointments.filter(apt => !apt.attendance || apt.attendance === 'not_set').length}</div>
+          <div style={{color:'#666'}}>{t('waiting')}</div>
+        </div>
       </div>
 
       {/* Search and Filter Tools */}
       <div className="no-print" style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', marginBottom:'2rem'}}>
+        {/* زر تسجيل الغياب التلقائي */}
+        <div style={{marginBottom:'1rem', textAlign:'center'}}>
+          <button 
+            onClick={handleMarkAllAbsentEndOfDay}
+            style={{
+              background:'#f44336',
+              color:'#fff',
+              border:'none',
+              borderRadius:8,
+              padding:'0.8rem 1.5rem',
+              fontWeight:700,
+              cursor:'pointer',
+              fontSize:'1rem',
+              display:'flex',
+              alignItems:'center',
+              gap:'0.5rem',
+              margin:'0 auto'
+            }}
+          >
+            🕐 تسجيل الغياب التلقائي لليوم
+          </button>
+          <div style={{fontSize:'0.8rem', color:'#666', marginTop:'0.5rem'}}>
+            يسجل غياب جميع المواعيد غير المؤكدة اليوم
+          </div>
+        </div>
+        
         <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(250px, 1fr))', gap:'1rem', alignItems:'end'}}>
           {/* Search */}
           <div>
@@ -749,7 +805,7 @@ function DoctorAppointments() {
                          }}>
                            ✅ {t('present')}
                          </div>
-                       ) : (
+                       ) : appointment.attendance === 'absent' ? (
                          <div style={{
                            background:'#f44336',
                            color:'#fff',
@@ -762,12 +818,25 @@ function DoctorAppointments() {
                          }}>
                            ❌ {t('absent')}
                          </div>
+                       ) : (
+                         <div style={{
+                           background:'#ff9800',
+                           color:'#fff',
+                           padding:'0.3rem 0.6rem',
+                           borderRadius:6,
+                           fontSize:'0.75rem',
+                           fontWeight:600,
+                           textAlign:'center',
+                           display:'inline-block'
+                         }}>
+                           ⏳ {t('waiting')}
+                         </div>
                        )}
                      </div>
                   </div>
                   <div className="no-print" style={{display:'flex', gap:'0.5rem', flexWrap:'wrap'}}>
                                          {/* أزرار الحضور - تظهر فقط إذا لم يتم تحديد الحضور بعد */}
-                     {(!appointment.attendance || appointment.attendance === 'absent') && (
+                     {(!appointment.attendance || appointment.attendance === 'not_set') && (
                        <button 
                          onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
                          style={{
