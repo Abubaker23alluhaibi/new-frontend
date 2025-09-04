@@ -51,7 +51,6 @@ function DoctorDetails() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
-  const [showBookingForOtherModal, setShowBookingForOtherModal] = useState(false);
   const [isBookingForOther, setIsBookingForOther] = useState(false);
   const [patientName, setPatientName] = useState('');
   const [patientPhone, setPatientPhone] = useState('');
@@ -594,14 +593,6 @@ function DoctorDetails() {
                   </div>
                 </div>
               )}
-              {doctor.phone && (
-                <div className="info-item">
-                  <span className="info-icon">📞</span>
-                  <div className="info-text">
-                    <strong>رقم الهاتف:</strong> {doctor.phone}
-                  </div>
-                </div>
-              )}
             </div>
             
             {doctor.about && (
@@ -632,7 +623,7 @@ function DoctorDetails() {
               {t('rating.reviews')}
             </button>
             <button
-              onClick={() => setShowBookingForOtherModal(true)}
+              onClick={() => navigate(`/book-for-other/${id}`)}
               className="btn-secondary"
             >
               <span>👥</span>
@@ -1235,109 +1226,6 @@ function DoctorDetails() {
         </div>
       )}
 
-      {/* مودال الحجز لشخص آخر */}
-      {showBookingForOtherModal && (
-        <div onClick={()=>setShowBookingForOtherModal(false)} style={{position:'fixed', top:0, left:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.55)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:10000}}>
-          <div style={{position:'relative', background:'#fff', borderRadius:16, padding:'2rem', maxWidth:'90vw', maxHeight:'80vh', overflow:'auto'}} onClick={e=>e.stopPropagation()}>
-            <button onClick={()=>setShowBookingForOtherModal(false)} style={{position:'absolute', top:10, right:10, background:'#e53935', color:'#fff', border:'none', borderRadius:8, fontSize:22, fontWeight:900, padding:'0.2rem 0.8rem', cursor:'pointer'}}>×</button>
-            <div style={{
-              background: 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)',
-              border: '2px solid #4caf50',
-              borderRadius: 12,
-              padding: '1.5rem',
-              textAlign: 'center',
-              boxShadow: '0 2px 8px #4caf5022'
-            }}>
-              <div style={{fontSize: 20, fontWeight: 700, color: '#2e7d32', marginBottom: 16}}>
-                👥 {t('booking.book_for_other_person')}
-              </div>
-              <div style={{fontSize: 16, color: '#2e7d32', lineHeight: 1.6, marginBottom: 20}}>
-                {t('booking.book_for_other_description')}
-              </div>
-              
-              <div style={{display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px'}}>
-                <div>
-                  <label style={{fontSize: 14, fontWeight: 600, color: '#2e7d32', display: 'block', marginBottom: '4px'}}>
-                    {t('booking.patient_name')} *
-                  </label>
-                  <input
-                    type="text"
-                    value={patientName}
-                    onChange={(e) => setPatientName(e.target.value)}
-                    placeholder={t('booking.enter_patient_name')}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: '2px solid #4caf50',
-                      outline: 'none',
-                      fontSize: '14px'
-                    }}
-                  />
-                </div>
-                
-                <div>
-                  <label style={{fontSize: 14, fontWeight: 600, color: '#2e7d32', display: 'block', marginBottom: '4px'}}>
-                    {t('booking.patient_phone')} *
-                  </label>
-                  <input
-                    type="tel"
-                    value={patientPhone}
-                    onChange={(e) => setPatientPhone(e.target.value)}
-                    placeholder={t('booking.enter_patient_phone')}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: '2px solid #4caf50',
-                      outline: 'none',
-                      fontSize: '14px'
-                    }}
-                  />
-                </div>
-              </div>
-              
-              <div style={{display: 'flex', gap: '10px', justifyContent: 'center'}}>
-                <button
-                  onClick={() => {
-                    setIsBookingForOther(true);
-                    setShowBookingForOtherModal(false);
-                  }}
-                  disabled={!patientName || !patientPhone}
-                  style={{
-                    background: !patientName || !patientPhone ? '#ccc' : 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '8px',
-                    padding: '10px 20px',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    cursor: !patientName || !patientPhone ? 'not-allowed' : 'pointer',
-                    opacity: !patientName || !patientPhone ? 0.6 : 1
-                  }}
-                >
-                  {t('booking.confirm_and_book')}
-                </button>
-                <button
-                  onClick={() => setShowBookingForOtherModal(false)}
-                  style={{
-                    background: '#f44336',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '8px',
-                    padding: '10px 20px',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {t('cancel')}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* نافذة التقييم */}
       {showRatingModal && (

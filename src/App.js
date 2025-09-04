@@ -11,6 +11,7 @@ import TopRatedDoctors from './TopRatedDoctors';
 import DoctorComments from './DoctorComments';
 import DoctorDashboard from './DoctorDashboard';
 import DoctorDetails from './DoctorDetails';
+import BookForOtherPage from './BookForOtherPage';
 import MyAppointments from './MyAppointments';
 import UserProfile from './UserProfile';
 import DoctorProfile from './DoctorProfile';
@@ -194,6 +195,7 @@ function App() {
             </PermissionProtectedRoute>
           } />
           <Route path="/doctor/:id" element={<DoctorDetails />} />
+          <Route path="/book-for-other/:id" element={<BookForOtherPage />} />
           <Route path="/my-appointments" element={
             <ProtectedRoute requiredUserType="user">
               <MyAppointments />
