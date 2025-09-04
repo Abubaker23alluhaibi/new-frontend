@@ -654,16 +654,21 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
 
   // دوال إدارة الأدوية
   const handleAddMedication = () => {
-    setNewPrescription(prev => ({
-      ...prev,
-      medications: [...prev.medications, {
+    console.log('🔍 handleAddMedication - before:', newPrescription.medications.length);
+    setNewPrescription(prev => {
+      const newMedications = [...prev.medications, {
         name: '',
         dosage: '',
         frequency: '',
         duration: '',
         instructions: ''
-      }]
-    }));
+      }];
+      console.log('🔍 handleAddMedication - after:', newMedications.length);
+      return {
+        ...prev,
+        medications: newMedications
+      };
+    });
   };
 
   const handleRemoveMedication = (index) => {
@@ -674,19 +679,37 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
   };
 
   const handleMedicationChange = (index, field, value) => {
-    setNewPrescription(prev => ({
-      ...prev,
-      medications: prev.medications.map((med, i) => 
+    console.log('🔍 handleMedicationChange - index:', index, 'field:', field, 'value:', value);
+    setNewPrescription(prev => {
+      const updatedMedications = prev.medications.map((med, i) => 
         i === index ? { ...med, [field]: value } : med
-      )
-    }));
+      );
+      console.log('🔍 handleMedicationChange - updated medications:', updatedMedications);
+      return {
+        ...prev,
+        medications: updatedMedications
+      };
+    });
   };
 
   const handleSubmitPrescription = async (e) => {
     e.preventDefault();
     
+    console.log('🔍 handleSubmitPrescription - newPrescription:', newPrescription);
+    console.log('🔍 handleSubmitPrescription - medications count:', newPrescription.medications.length);
+    
     if (newPrescription.medications.length === 0) {
       toast.error('يرجى إضافة دواء واحد على الأقل');
+      return;
+    }
+
+    // التحقق من أن جميع الأدوية لها بيانات مطلوبة
+    const hasEmptyMedications = newPrescription.medications.some(med => 
+      !med.name || !med.dosage || !med.frequency || !med.duration
+    );
+    
+    if (hasEmptyMedications) {
+      toast.error('يرجى إدخال جميع البيانات المطلوبة للأدوية');
       return;
     }
 
@@ -694,20 +717,24 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       const token = getAuthToken();
       if (!token) return;
 
+      const requestData = {
+        ...newPrescription,
+        patientId: patient._id,
+        patientName: patient.name,
+        patientPhone: patient.phone,
+        doctorId: user?._id,
+        doctorName: user?.first_name || 'دكتور'
+      };
+      
+      console.log('🔍 handleSubmitPrescription - requestData:', requestData);
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/medications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          ...newPrescription,
-          patientId: patient._id,
-          patientName: patient.name,
-          patientPhone: patient.phone,
-          doctorId: user?._id,
-          doctorName: user?.first_name || 'دكتور'
-        }),
+        body: JSON.stringify(requestData),
         credentials: 'include'
       });
 
