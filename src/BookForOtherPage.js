@@ -40,6 +40,16 @@ function BookForOtherPage() {
     'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
   ];
 
+  // دالة للحصول على رابط الصورة
+  const getImageUrl = (doctor) => {
+    if (!doctor) return '/logo.png';
+    const img = doctor.image || doctor.profileImage;
+    if (!img) return '/logo.png';
+    if (img.startsWith('/uploads/')) return process.env.REACT_APP_API_URL + img;
+    if (img.startsWith('http')) return img;
+    return '/logo.png';
+  };
+
   useEffect(() => {
     // التحقق من تسجيل الدخول
     const savedUser = localStorage.getItem('user');
@@ -306,8 +316,18 @@ function BookForOtherPage() {
         <h1>حجز موعد لشخص آخر</h1>
         {doctor && (
           <div className="doctor-info">
-            <h2>{doctor.name}</h2>
-            <p>{doctor.specialty}</p>
+            <img 
+              src={getImageUrl(doctor)} 
+              alt={doctor.name} 
+              onError={(e) => {
+                e.target.src = '/logo.png';
+              }}
+              className="doctor-avatar"
+            />
+            <div className="doctor-details">
+              <h2>{doctor.name}</h2>
+              <p>{doctor.specialty}</p>
+            </div>
           </div>
         )}
       </div>

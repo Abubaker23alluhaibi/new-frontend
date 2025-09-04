@@ -44,15 +44,32 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin: 20px 0;
   border: 2px solid #4caf50;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
-.doctor-info h2 {
+.doctor-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #4caf50;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.doctor-details {
+  flex: 1;
+}
+
+.doctor-details h2 {
   color: #0A8F82;
   margin: 0 0 10px 0;
   font-size: 1.8rem;
 }
 
-.doctor-info p {
+.doctor-details p {
   color: #666;
   margin: 0;
   font-size: 1.2rem;
@@ -397,5 +414,24 @@
   .back-button {
     position: static;
     margin-bottom: 20px;
+  }
+  
+  .doctor-info {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  
+  .doctor-avatar {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .doctor-details h2 {
+    font-size: 1.5rem;
+  }
+  
+  .doctor-details p {
+    font-size: 1.1rem;
   }
 }
