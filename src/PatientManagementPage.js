@@ -611,20 +611,32 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
   const fetchMedications = useCallback(async () => {
     if (!patient?._id) return;
     
+    console.log('🔍 fetchMedications - patient._id:', patient._id);
+    
     try {
       const token = getAuthToken();
       if (!token) return;
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/medications/patient/${patient._id}`, {
+      const url = `${process.env.REACT_APP_API_URL}/medications/patient/${patient._id}`;
+      console.log('🔍 fetchMedications - URL:', url);
+
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`
         },
         credentials: 'include'
       });
 
+      console.log('🔍 fetchMedications - Response status:', response.status);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('🔍 fetchMedications - Response data:', data);
+        console.log('🔍 fetchMedications - Medications array:', data.medications);
         setMedications(data.medications || []);
+      } else {
+        const errorData = await response.json();
+        console.log('🔍 fetchMedications - Error response:', errorData);
       }
     } catch (error) {
       console.error('Error fetching medications:', error);
@@ -727,6 +739,8 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       };
       
       console.log('🔍 handleSubmitPrescription - requestData:', requestData);
+      console.log('🔍 handleSubmitPrescription - API URL:', process.env.REACT_APP_API_URL);
+      console.log('🔍 handleSubmitPrescription - Full URL:', `${process.env.REACT_APP_API_URL}/medications`);
 
       const response = await fetch(`${process.env.REACT_APP_API_URL}/medications`, {
         method: 'POST',
@@ -738,7 +752,12 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         credentials: 'include'
       });
 
+      console.log('🔍 handleSubmitPrescription - Response status:', response.status);
+      console.log('🔍 handleSubmitPrescription - Response ok:', response.ok);
+
       if (response.ok) {
+        const result = await response.json();
+        console.log('🔍 handleSubmitPrescription - Success result:', result);
         toast.success('تم إضافة الوصفة بنجاح');
         setShowAddMedication(false);
         setNewPrescription({
@@ -756,6 +775,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         fetchMedications();
       } else {
         const data = await response.json();
+        console.log('🔍 handleSubmitPrescription - Error response:', data);
         toast.error(data.error || 'خطأ في إضافة الوصفة');
       }
     } catch (error) {
