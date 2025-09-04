@@ -504,6 +504,12 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
   const [pdfLoading, setPdfLoading] = useState(false);
   const [medications, setMedications] = useState([]);
   const [showAddMedication, setShowAddMedication] = useState(false);
+  const [medicationOptions, setMedicationOptions] = useState({
+    dosages: [],
+    frequencies: [],
+    durations: [],
+    commonMedications: []
+  });
   const [newPrescription, setNewPrescription] = useState({
     medications: [{
       name: '',
@@ -625,12 +631,26 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
     }
   }, [patient?._id, getAuthToken]);
 
+  // جلب خيارات الأدوية
+  const fetchMedicationOptions = useCallback(async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/medications/options`);
+      const data = await response.json();
+      if (response.ok) {
+        setMedicationOptions(data.options);
+      }
+    } catch (error) {
+      console.error('Error fetching medication options:', error);
+    }
+  }, []);
+
   // جلب الأدوية عند فتح تبويب الأدوية
   useEffect(() => {
     if (activeTab === 'medications') {
       fetchMedications();
+      fetchMedicationOptions();
     }
-  }, [activeTab, fetchMedications]);
+  }, [activeTab, fetchMedications, fetchMedicationOptions]);
 
   // دوال إدارة الأدوية
   const handleAddMedication = () => {
@@ -724,6 +744,187 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       month: 'long',
       day: 'numeric'
     });
+  };
+
+  // دالة طباعة الوصفة الطبية
+  const printPrescription = (prescription) => {
+    const printWindow = window.open('', '_blank');
+    const printContent = `
+      <!DOCTYPE html>
+      <html dir="rtl" lang="ar">
+      <head>
+        <meta charset="UTF-8">
+        <title>الوصفة الطبية</title>
+        <style>
+          body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            direction: rtl;
+            text-align: right;
+          }
+          .prescription-header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+          }
+          .prescription-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+          }
+          .prescription-date {
+            font-size: 16px;
+            color: #666;
+          }
+          .patient-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+          }
+          .patient-info h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+          }
+          .diagnosis-section {
+            margin-bottom: 25px;
+          }
+          .diagnosis-section h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 18px;
+          }
+          .medications-section h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+          }
+          .medication-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fff;
+          }
+          .medication-number {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+            margin-left: 10px;
+            font-weight: bold;
+          }
+          .medication-name {
+            font-weight: bold;
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+          }
+          .medication-info {
+            margin-bottom: 8px;
+          }
+          .medication-info span {
+            display: inline-block;
+            margin-left: 15px;
+            padding: 3px 8px;
+            background: #e3f2fd;
+            border-radius: 3px;
+            font-size: 14px;
+          }
+          .medication-instructions {
+            color: #666;
+            font-style: italic;
+            margin-top: 8px;
+          }
+          .notes-section {
+            margin-top: 25px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 5px;
+          }
+          .notes-section h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 18px;
+          }
+          .doctor-signature {
+            margin-top: 40px;
+            text-align: left;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+          }
+          @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="prescription-header">
+          <div class="prescription-title">الوصفة الطبية</div>
+          <div class="prescription-date">${formatDate(prescription.date)}</div>
+        </div>
+        
+        <div class="patient-info">
+          <h3>بيانات المريض</h3>
+          <p><strong>الاسم:</strong> ${prescription.patientName}</p>
+          <p><strong>رقم الهاتف:</strong> ${prescription.patientPhone}</p>
+        </div>
+        
+        ${prescription.diagnosis ? `
+          <div class="diagnosis-section">
+            <h4>التشخيص:</h4>
+            <p>${prescription.diagnosis}</p>
+          </div>
+        ` : ''}
+        
+        <div class="medications-section">
+          <h4>الأدوية:</h4>
+          ${prescription.medications.map((med, index) => `
+            <div class="medication-item">
+              <span class="medication-number">${index + 1}</span>
+              <div class="medication-details">
+                <div class="medication-name">${med.name}</div>
+                <div class="medication-info">
+                  <span class="dosage">الجرعة: ${med.dosage}</span>
+                  <span class="frequency">التكرار: ${med.frequency}</span>
+                  <span class="duration">المدة: ${med.duration}</span>
+                </div>
+                ${med.instructions ? `
+                  <div class="medication-instructions">
+                    <strong>تعليمات:</strong> ${med.instructions}
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        
+        ${prescription.notes ? `
+          <div class="notes-section">
+            <h4>ملاحظات:</h4>
+            <p>${prescription.notes}</p>
+          </div>
+        ` : ''}
+        
+        <div class="doctor-signature">
+          <p><strong>اسم الطبيب:</strong> ${prescription.doctorName}</p>
+          <p><strong>التوقيع:</strong> _________________</p>
+        </div>
+      </body>
+      </html>
+    `;
+    
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
   };
 
   // تشخيص بيانات المريض
@@ -1103,12 +1304,12 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
           {activeTab === 'medications' && (
             <div className="medications-section">
               <div className="medications-header">
-                <h3>💊 الأدوية والوصفات الطبية</h3>
+                <h3>💊 الوصفات الطبية</h3>
                 <button 
                   onClick={() => setShowAddMedication(true)}
                   className="btn-add-prescription"
                 >
-                  + إضافة وصفة جديدة
+                  + وصفة جديدة
                 </button>
               </div>
 
@@ -1118,44 +1319,59 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                     <p>لا توجد وصفات طبية لهذا المريض</p>
                   </div>
                 ) : (
-                  <div className="prescriptions-grid">
+                  <div className="prescriptions-container">
                     {medications.map((prescription, index) => (
                       <div key={prescription._id || index} className="prescription-card">
                         <div className="prescription-header">
-                          <h4>الوصفة #{index + 1}</h4>
-                          <span className="prescription-date">{formatDate(prescription.date)}</span>
+                          <div className="prescription-title">
+                            <h4>الوصفة الطبية #{index + 1}</h4>
+                            <span className="prescription-date">{formatDate(prescription.date)}</span>
+                          </div>
+                          <button 
+                            onClick={() => printPrescription(prescription)}
+                            className="btn-print"
+                          >
+                            🖨️ طباعة
+                          </button>
                         </div>
                         
-                        <div className="prescription-details">
+                        <div className="prescription-content">
                           {prescription.diagnosis && (
-                            <p><strong>التشخيص:</strong> {prescription.diagnosis}</p>
+                            <div className="diagnosis-section">
+                              <h5>التشخيص:</h5>
+                              <p>{prescription.diagnosis}</p>
+                            </div>
+                          )}
+
+                          <div className="medications-section">
+                            <h5>الأدوية:</h5>
+                            {prescription.medications.map((med, medIndex) => (
+                              <div key={medIndex} className="medication-item">
+                                <div className="medication-number">{medIndex + 1}.</div>
+                                <div className="medication-details">
+                                  <div className="medication-name">{med.name}</div>
+                                  <div className="medication-info">
+                                    <span className="dosage">الجرعة: {med.dosage}</span>
+                                    <span className="frequency">التكرار: {med.frequency}</span>
+                                    <span className="duration">المدة: {med.duration}</span>
+                                  </div>
+                                  {med.instructions && (
+                                    <div className="medication-instructions">
+                                      <strong>تعليمات:</strong> {med.instructions}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {prescription.notes && (
+                            <div className="notes-section">
+                              <h5>ملاحظات:</h5>
+                              <p>{prescription.notes}</p>
+                            </div>
                           )}
                         </div>
-
-                        <div className="medications-list">
-                          <h5>الأدوية:</h5>
-                          {prescription.medications.map((med, medIndex) => (
-                            <div key={medIndex} className="medication-item">
-                              <div className="medication-name">{med.name}</div>
-                              <div className="medication-details">
-                                <span>الجرعة: {med.dosage}</span>
-                                <span>التكرار: {med.frequency}</span>
-                                <span>المدة: {med.duration}</span>
-                              </div>
-                              {med.instructions && (
-                                <div className="medication-instructions">
-                                  <strong>التعليمات:</strong> {med.instructions}
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-
-                        {prescription.notes && (
-                          <div className="prescription-notes">
-                            <strong>ملاحظات:</strong> {prescription.notes}
-                          </div>
-                        )}
                       </div>
                     ))}
                   </div>
@@ -1292,35 +1508,41 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
             </div>
 
             <form onSubmit={handleSubmitPrescription} className="prescription-form">
+              <div className="prescription-form-header">
+                <h3>إضافة وصفة طبية جديدة</h3>
+                <p>للمريض: {patient.name}</p>
+              </div>
+
               <div className="form-group">
-                <label>التشخيص</label>
+                <label>التشخيص *</label>
                 <input
                   type="text"
                   value={newPrescription.diagnosis}
                   onChange={(e) => setNewPrescription(prev => ({...prev, diagnosis: e.target.value}))}
-                  placeholder="أدخل التشخيص"
+                  placeholder="أدخل التشخيص الطبي"
+                  required
                 />
               </div>
 
               <div className="medications-section">
                 <div className="section-header">
-                  <h3>الأدوية</h3>
+                  <h4>الأدوية</h4>
                   <button type="button" onClick={handleAddMedication} className="btn-add-medication">
-                    + إضافة دواء
+                    + إضافة دواء آخر
                   </button>
                 </div>
 
                 {newPrescription.medications.map((medication, index) => (
                   <div key={index} className="medication-form">
                     <div className="medication-form-header">
-                      <h4>دواء {index + 1}</h4>
+                      <h5>دواء {index + 1}</h5>
                       {newPrescription.medications.length > 1 && (
                         <button 
                           type="button" 
                           onClick={() => handleRemoveMedication(index)}
                           className="btn-remove-medication"
                         >
-                          حذف
+                          ✕ حذف
                         </button>
                       )}
                     </div>
@@ -1332,42 +1554,57 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                           type="text"
                           value={medication.name}
                           onChange={(e) => handleMedicationChange(index, 'name', e.target.value)}
-                          placeholder="اسم الدواء"
+                          placeholder="مثال: باراسيتامول"
+                          list={`medication-names-${index}`}
                           required
                         />
+                        <datalist id={`medication-names-${index}`}>
+                          {medicationOptions.commonMedications.map((med, medIndex) => (
+                            <option key={medIndex} value={med} />
+                          ))}
+                        </datalist>
                       </div>
 
                       <div className="field-group">
                         <label>الجرعة *</label>
-                        <input
-                          type="text"
+                        <select
                           value={medication.dosage}
                           onChange={(e) => handleMedicationChange(index, 'dosage', e.target.value)}
-                          placeholder="مثال: 500 مجم"
                           required
-                        />
+                        >
+                          <option value="">اختر الجرعة</option>
+                          {medicationOptions.dosages.map((dosage, dosageIndex) => (
+                            <option key={dosageIndex} value={dosage}>{dosage}</option>
+                          ))}
+                        </select>
                       </div>
 
                       <div className="field-group">
                         <label>التكرار *</label>
-                        <input
-                          type="text"
+                        <select
                           value={medication.frequency}
                           onChange={(e) => handleMedicationChange(index, 'frequency', e.target.value)}
-                          placeholder="مثال: 3 مرات يومياً"
                           required
-                        />
+                        >
+                          <option value="">اختر التكرار</option>
+                          {medicationOptions.frequencies.map((frequency, freqIndex) => (
+                            <option key={freqIndex} value={frequency}>{frequency}</option>
+                          ))}
+                        </select>
                       </div>
 
                       <div className="field-group">
                         <label>المدة *</label>
-                        <input
-                          type="text"
+                        <select
                           value={medication.duration}
                           onChange={(e) => handleMedicationChange(index, 'duration', e.target.value)}
-                          placeholder="مثال: 7 أيام"
                           required
-                        />
+                        >
+                          <option value="">اختر المدة</option>
+                          {medicationOptions.durations.map((duration, durIndex) => (
+                            <option key={durIndex} value={duration}>{duration}</option>
+                          ))}
+                        </select>
                       </div>
 
                       <div className="field-group full-width">
@@ -1375,7 +1612,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                         <textarea
                           value={medication.instructions}
                           onChange={(e) => handleMedicationChange(index, 'instructions', e.target.value)}
-                          placeholder="تعليمات خاصة للدواء"
+                          placeholder="مثال: بعد الأكل، قبل النوم، مع الماء..."
                           rows="2"
                         />
                       </div>
@@ -1389,21 +1626,21 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                 <textarea
                   value={newPrescription.notes}
                   onChange={(e) => setNewPrescription(prev => ({...prev, notes: e.target.value}))}
-                  placeholder="ملاحظات إضافية للوصفة"
+                  placeholder="ملاحظات إضافية للوصفة الطبية"
                   rows="3"
                 />
               </div>
 
               <div className="form-actions">
                 <button type="submit" className="btn-save">
-                  حفظ الوصفة
+                  💾 حفظ الوصفة
                 </button>
                 <button 
                   type="button" 
                   onClick={() => setShowAddMedication(false)}
                   className="btn-cancel"
                 >
-                  إلغاء
+                  ❌ إلغاء
                 </button>
               </div>
             </form>
