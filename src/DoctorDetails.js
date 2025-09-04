@@ -13,8 +13,25 @@ function DoctorDetails() {
   const { id } = useParams();
   const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [doctor, setDoctor] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [doctor, setDoctor] = useState(() => {
+    // محاولة استرجاع بيانات الطبيب من localStorage عند إعادة التحميل
+    const savedDoctor = localStorage.getItem('currentDoctor');
+    const savedDoctorId = localStorage.getItem('currentDoctorId');
+    if (savedDoctor && savedDoctorId === id) {
+      try {
+        return JSON.parse(savedDoctor);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(() => {
+    // إذا كانت هناك بيانات محفوظة، لا نعرض شاشة التحميل
+    const savedDoctor = localStorage.getItem('currentDoctor');
+    const savedDoctorId = localStorage.getItem('currentDoctorId');
+    return !(savedDoctor && savedDoctorId === id);
+  });
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
@@ -122,28 +139,51 @@ function DoctorDetails() {
   };
 
   useEffect(() => {
+    // لا نتحقق من المصادقة إلا بعد انتهاء التحميل
     if (authLoading) return;
-    const savedUser = localStorage.getItem('user');
-    const savedProfile = localStorage.getItem('profile');
-    const hasUser = user || profile;
-    const hasSavedData = savedUser || savedProfile;
     
-    if (!hasSavedData && !hasUser) {
-      const currentUrl = window.location.pathname + window.location.search;
-      navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
-      return;
-    }
+    // انتظار قليل للتأكد من تحميل البيانات من localStorage
+    const checkAuth = () => {
+      const savedUser = localStorage.getItem('user');
+      const savedProfile = localStorage.getItem('profile');
+      const hasUser = user || profile;
+      const hasSavedData = savedUser || savedProfile;
+      
+      // إذا لم تكن هناك بيانات محفوظة ولا مستخدم حالي، أعد التوجيه
+      if (!hasSavedData && !hasUser) {
+        const currentUrl = window.location.pathname + window.location.search;
+        navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
+        return;
+      }
+    };
+    
+    // تأخير قصير للتأكد من تحميل البيانات
+    const timeoutId = setTimeout(checkAuth, 100);
+    
+    return () => clearTimeout(timeoutId);
   }, [user, profile, navigate, authLoading]);
 
   useEffect(() => {
+    // حفظ معرف الطبيب في localStorage للاستخدام عند إعادة التحميل
+    if (id) {
+      localStorage.setItem('currentDoctorId', id);
+    }
+    
     fetch(`${process.env.REACT_APP_API_URL}/doctors`)
       .then(res => res.json())
       .then(data => {
         const found = data.find(d => d._id === id);
-        setDoctor(found);
+        if (found) {
+          setDoctor(found);
+          // حفظ بيانات الطبيب في localStorage
+          localStorage.setItem('currentDoctor', JSON.stringify(found));
+        } else {
+          setError('الطبيب غير موجود');
+        }
         setLoading(false);
       })
       .catch(err => {
+        console.error('Error fetching doctor:', err);
         setError(t('error_fetching_doctor_data'));
         setLoading(false);
       });
@@ -182,6 +222,15 @@ function DoctorDetails() {
       }
     }
   }, [id, user?._id, fetchRatings, fetchUserRating]);
+
+  // تنظيف البيانات المحفوظة عند مغادرة الصفحة
+  useEffect(() => {
+    return () => {
+      // تنظيف البيانات المحفوظة عند مغادرة المكون
+      localStorage.removeItem('currentDoctor');
+      localStorage.removeItem('currentDoctorId');
+    };
+  }, []);
 
   const handleRatingSubmit = async (rating) => {
     if (!user?._id) {
@@ -453,9 +502,72 @@ function DoctorDetails() {
     setBooking(false);
   };
 
-  if (authLoading) return <div style={{textAlign:'center', marginTop:40}}>جاري التحقق من حالة تسجيل الدخول...</div>;
-  if (loading) return <div style={{textAlign:'center', marginTop:40}}>جاري التحميل...</div>;
-  if (error || !doctor) return <div style={{textAlign:'center', marginTop:40, color:'#e53935'}}>{error || 'لم يتم العثور على الطبيب'}</div>;
+  // عرض رسالة تحميل فقط إذا لم تكن هناك بيانات محفوظة
+  const hasStoredData = localStorage.getItem('user') || localStorage.getItem('profile');
+  
+  if (authLoading && !hasStoredData) {
+    return (
+      <div style={{
+        textAlign: 'center', 
+        marginTop: 40, 
+        padding: '20px',
+        background: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        margin: '20px'
+      }}>
+        جاري التحقق من حالة تسجيل الدخول...
+      </div>
+    );
+  }
+  
+  if (loading) {
+    return (
+      <div style={{
+        textAlign: 'center', 
+        marginTop: 40, 
+        padding: '20px',
+        background: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        margin: '20px'
+      }}>
+        جاري تحميل بيانات الطبيب...
+      </div>
+    );
+  }
+  
+  if (error || !doctor) {
+    return (
+      <div style={{
+        textAlign: 'center', 
+        marginTop: 40, 
+        color: '#e53935',
+        padding: '20px',
+        background: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        margin: '20px'
+      }}>
+        {error || 'لم يتم العثور على الطبيب'}
+        <br />
+        <button 
+          onClick={() => window.location.reload()} 
+          style={{
+            marginTop: '10px',
+            padding: '8px 16px',
+            background: '#0A8F82',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer'
+          }}
+        >
+          إعادة المحاولة
+        </button>
+      </div>
+    );
+  }
   
   if (doctor && doctor.disabled) {
     return (

@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import DatePicker from 'react-datepicker';
+import { ar } from 'date-fns/locale';
+import 'react-datepicker/dist/react-datepicker.css';
 import './BookForOtherPage.css';
 
 function BookForOtherPage() {
@@ -18,12 +21,21 @@ function BookForOtherPage() {
   const [patientAge, setPatientAge] = useState('');
   const [reason, setReason] = useState('');
   
-  // حالات الحجز
-  const [selectedDate, setSelectedDate] = useState('');
+  // حالات الحجز والتقويم
+  const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
-  const [availableSlots, setAvailableSlots] = useState([]);
+  const [availableTimes, setAvailableTimes] = useState([]);
+  const [bookedTimes, setBookedTimes] = useState([]);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [success, setSuccess] = useState('');
+  
+  // أيام الأسبوع والشهور
+  const weekdays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+  const months = [
+    'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
+    'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
+  ];
 
   useEffect(() => {
     fetchDoctorDetails();
@@ -46,40 +58,151 @@ function BookForOtherPage() {
     }
   };
 
-  const handleDateChange = async (date) => {
-    setSelectedDate(date);
-    setSelectedTime('');
-    
-    if (date && doctor) {
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/appointments/available-slots/${doctor._id}?date=${date}`);
-        const data = await response.json();
-        setAvailableSlots(data.slots || []);
-      } catch (err) {
-        console.error('Error fetching slots:', err);
-        setAvailableSlots([]);
+  const getAvailableDays = () => {
+    if (!doctor?.workTimes || !Array.isArray(doctor.workTimes)) return [];
+    return doctor.workTimes.map(wt => wt.day).filter(Boolean);
+  };
+
+  const generateTimeSlots = (from, to) => {
+    const slots = [];
+    if (typeof from !== 'string' || typeof to !== 'string') return [];
+    try {
+      const start = new Date(`2000-01-01 ${from}`);
+      const end = new Date(`2000-01-01 ${to}`);
+      const duration = doctor?.appointmentDuration ? Number(doctor.appointmentDuration) : 30;
+      while (start < end) {
+        const timeString = start.toTimeString().slice(0, 5);
+        slots.push(timeString);
+        start.setMinutes(start.getMinutes() + duration);
       }
+    } catch (error) {
+      return [];
+    }
+    return slots;
+  };
+
+  const fetchBookedAppointments = async (doctorId, date) => {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/appointments/${doctorId}/${date}`);
+      if (res.ok) {
+        const appointments = await res.json();
+        if (appointments && Array.isArray(appointments)) {
+          const bookedTimeSlots = appointments.map(apt => apt.time);
+          setBookedTimes(bookedTimeSlots);
+        } else {
+          setBookedTimes([]);
+        }
+      }
+    } catch (error) {
+      // Error fetching booked appointments
     }
   };
 
-  const handleBooking = async () => {
+  const isDayAvailable = date => {
+    const weekDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    const dayName = weekDays[date.getDay()];
+    
+    if (!getAvailableDays().includes(dayName)) return false;
+    
+    if (doctor?.vacationDays && Array.isArray(doctor.vacationDays)) {
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      
+      for (const vacation of doctor.vacationDays) {
+        if (vacation) {
+          let vacationDate;
+          if (typeof vacation === 'string') {
+            vacationDate = new Date(vacation);
+          } else if (vacation && typeof vacation === 'object' && vacation.date) {
+            vacationDate = new Date(vacation.date);
+          }
+          
+          if (vacationDate && !isNaN(vacationDate.getTime())) {
+            if (vacationDate.getFullYear() === year && 
+                vacationDate.getMonth() + 1 === month && 
+                vacationDate.getDate() === day) {
+              return false;
+            }
+          }
+        }
+      }
+    }
+    return true;
+  };
+
+  // useEffect للتقويم والأوقات المتاحة
+  useEffect(() => {
+    if (!selectedDate || !doctor?.workTimes) {
+      setAvailableTimes([]);
+      setBookedTimes([]);
+      return;
+    }
+    
+    if (!isDayAvailable(selectedDate)) {
+      setAvailableTimes([]);
+      setBookedTimes([]);
+      return;
+    }
+    
+    const dayName = weekdays[selectedDate.getDay()];
+    const workTime = doctor.workTimes.find(wt => wt.day === dayName);
+    
+    if (workTime && workTime.from && workTime.to) {
+      const slots = generateTimeSlots(workTime.from, workTime.to);
+      setAvailableTimes(slots);
+      
+      // جلب المواعيد المحجوزة
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      const dateString = `${year}-${month}-${day}`;
+      
+      fetchBookedAppointments(doctor._id, dateString);
+    } else {
+      setAvailableTimes([]);
+      setBookedTimes([]);
+    }
+  }, [selectedDate, doctor, generateTimeSlots, isDayAvailable]);
+
+  const handleBooking = async (e) => {
+    e.preventDefault();
+    
     if (!patientName || !patientPhone || !selectedDate || !selectedTime) {
-      alert('يرجى ملء جميع الحقول المطلوبة');
+      setSuccess('يرجى ملء جميع الحقول المطلوبة');
+      return;
+    }
+    
+    if (!patientAge) {
+      setSuccess('يرجى إدخال العمر');
+      return;
+    }
+    
+    const ageNum = parseInt(patientAge);
+    if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
+      setSuccess('يرجى إدخال عمر صحيح');
       return;
     }
 
     setBookingLoading(true);
+    setSuccess('');
+    
+    const year = selectedDate.getFullYear();
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(selectedDate.getDate()).padStart(2, '0');
+    const dateString = `${year}-${month}-${day}`;
     
     try {
       const appointmentData = {
         doctorId: doctor._id,
         patientName,
         patientPhone,
-        patientAge: patientAge || null,
-        reason: reason || null,
-        date: selectedDate,
+        patientAge: parseInt(patientAge),
+        reason: reason || '',
+        date: dateString,
         time: selectedTime,
-        isBookingForOther: true
+        isBookingForOther: true,
+        duration: doctor?.appointmentDuration || 30
       };
 
       const response = await fetch(`${process.env.REACT_APP_API_URL}/appointments`, {
@@ -97,14 +220,15 @@ function BookForOtherPage() {
         }, 2000);
       } else {
         const errorData = await response.json();
-        alert(errorData.message || 'حدث خطأ في الحجز');
+        setSuccess(errorData.message || 'حدث خطأ في الحجز');
       }
     } catch (err) {
-      alert('حدث خطأ في الحجز');
+      setSuccess('حدث خطأ في الحجز');
     } finally {
       setBookingLoading(false);
     }
   };
+
 
   if (loading) {
     return (
@@ -182,14 +306,15 @@ function BookForOtherPage() {
           </div>
 
           <div className="form-group">
-            <label>العمر</label>
+            <label>العمر *</label>
             <input
               type="number"
               value={patientAge}
               onChange={(e) => setPatientAge(e.target.value)}
-              placeholder="أدخل العمر (اختياري)"
-              min="0"
+              placeholder="أدخل العمر"
+              min="1"
               max="120"
+              required
             />
           </div>
 
@@ -207,55 +332,84 @@ function BookForOtherPage() {
         <div className="form-section">
           <h3>اختيار الموعد</h3>
           
-          <div className="form-group">
-            <label>التاريخ *</label>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => handleDateChange(e.target.value)}
-              min={new Date().toISOString().split('T')[0]}
-              required
-            />
+          {/* التقويم */}
+          <div className="calendar-container">
+            <div className="weekdays-bar">
+              {weekdays.map(day => (
+                <div key={day} className="weekday">{day}</div>
+              ))}
+            </div>
+            
+            {selectedDate && (
+              <div className="month-year">
+                {months[selectedDate.getMonth()]} {selectedDate.getFullYear()}
+              </div>
+            )}
+            
+            <div style={{
+              transform: window.innerWidth < 500 ? 'scale(0.9)' : 'scale(1)',
+              transformOrigin: 'top center'
+            }}>
+              <DatePicker
+                selected={selectedDate}
+                onChange={date => setSelectedDate(date)}
+                filterDate={isDayAvailable}
+                placeholderText="اختر يوم متاح..."
+                dateFormat="yyyy-MM-dd"
+                minDate={new Date()}
+                inline
+                locale={ar}
+              />
+            </div>
           </div>
-
-          {selectedDate && (
-            <div className="form-group">
-              <label>الوقت *</label>
-              <div className="time-slots">
-                {availableSlots.length > 0 ? (
-                  availableSlots.map((slot, index) => (
+          
+          {/* الأوقات المتاحة */}
+          {selectedDate && availableTimes.length > 0 && (
+            <div className="time-slots">
+              <div className="time-slots-title">اختر موعد الحجز:</div>
+              <div className="time-grid">
+                {availableTimes.map((time, idx) => {
+                  const isBooked = bookedTimes.includes(time);
+                  return (
                     <button
-                      key={index}
-                      className={`time-slot ${selectedTime === slot ? 'selected' : ''}`}
-                      onClick={() => setSelectedTime(slot)}
+                      key={idx}
+                      type="button"
+                      disabled={isBooked}
+                      onClick={()=>!isBooked && setSelectedTime(time)}
+                      className={`time-slot ${selectedTime === time ? 'selected' : ''} ${isBooked ? 'booked' : ''}`}
                     >
-                      {slot}
+                      {time} {isBooked && '(محجوز)'}
                     </button>
-                  ))
-                ) : (
-                  <p className="no-slots">لا توجد مواعيد متاحة في هذا التاريخ</p>
-                )}
+                  );
+                })}
               </div>
             </div>
           )}
         </div>
 
-        <div className="form-actions">
-          <button
-            onClick={handleBooking}
-            disabled={!patientName || !patientPhone || !selectedDate || !selectedTime || bookingLoading}
-            className="btn-primary"
-          >
-            {bookingLoading ? 'جاري الحجز...' : 'تأكيد الحجز'}
-          </button>
+        <form onSubmit={handleBooking} className="booking-actions">
+          <div className="form-actions">
+            <button
+              type="submit"
+              disabled={!patientName || !patientPhone || !patientAge || !selectedDate || !selectedTime || bookingLoading}
+              className="btn-primary"
+            >
+              {bookingLoading ? 'جاري الحجز...' : 'تأكيد الحجز'}
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => navigate(`/doctor/${id}`)}
+              className="btn-secondary"
+            >
+              إلغاء
+            </button>
+          </div>
           
-          <button
-            onClick={() => navigate(`/doctor/${id}`)}
-            className="btn-secondary"
-          >
-            إلغاء
-          </button>
-        </div>
+          {success && (
+            <div className="success-message">{success}</div>
+          )}
+        </form>
       </div>
     </div>
   );

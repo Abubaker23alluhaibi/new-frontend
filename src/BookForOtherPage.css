@@ -116,11 +116,62 @@
   box-shadow: 0 0 0 3px rgba(10, 143, 130, 0.1);
 }
 
+/* التقويم */
+.calendar-container {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 2px solid #4caf50;
+}
+
+.weekdays-bar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.weekday {
+  padding: 10px 5px;
+  background: #4caf50;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+.month-year {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0A8F82;
+  margin-bottom: 15px;
+}
+
+/* الأوقات المتاحة */
 .time-slots {
+  margin-top: 20px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.time-slots-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0A8F82;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.time-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 10px;
-  margin-top: 10px;
 }
 
 .time-slot {
@@ -136,7 +187,7 @@
   text-align: center;
 }
 
-.time-slot:hover {
+.time-slot:hover:not(:disabled) {
   background: #e8f5e8;
   transform: translateY(-2px);
 }
@@ -148,6 +199,20 @@
   box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
 }
 
+.time-slot.booked {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  border-color: #ddd;
+}
+
+.time-slot:disabled {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  border-color: #ddd;
+}
+
 .no-slots {
   text-align: center;
   color: #f44336;
@@ -156,6 +221,49 @@
   background: #ffebee;
   border-radius: 8px;
   border: 1px solid #ffcdd2;
+}
+
+/* تحسينات إضافية للتقويم */
+.react-datepicker {
+  border: 2px solid #4caf50 !important;
+  border-radius: 12px !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.react-datepicker__header {
+  background: #4caf50 !important;
+  border-bottom: 2px solid #4caf50 !important;
+  border-radius: 10px 10px 0 0 !important;
+}
+
+.react-datepicker__current-month {
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+.react-datepicker__day-name {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.react-datepicker__day {
+  color: #2e7d32 !important;
+  font-weight: 500 !important;
+}
+
+.react-datepicker__day:hover {
+  background: #e8f5e8 !important;
+  color: #0A8F82 !important;
+}
+
+.react-datepicker__day--selected {
+  background: #4caf50 !important;
+  color: white !important;
+}
+
+.react-datepicker__day--disabled {
+  color: #ccc !important;
+  cursor: not-allowed !important;
 }
 
 .form-actions {
