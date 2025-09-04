@@ -29,6 +29,7 @@ function BookForOtherPage() {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [success, setSuccess] = useState('');
+  const [isLoadingAppointments, setIsLoadingAppointments] = useState(false);
   
   // أيام الأسبوع والشهور
   const weekdays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
@@ -63,7 +64,7 @@ function BookForOtherPage() {
     return doctor.workTimes.map(wt => wt.day).filter(Boolean);
   };
 
-  const generateTimeSlots = (from, to) => {
+  const generateTimeSlots = useCallback((from, to) => {
     const slots = [];
     if (typeof from !== 'string' || typeof to !== 'string') return [];
     try {
@@ -79,9 +80,12 @@ function BookForOtherPage() {
       return [];
     }
     return slots;
-  };
+  }, [doctor?.appointmentDuration]);
 
-  const fetchBookedAppointments = async (doctorId, date) => {
+  const fetchBookedAppointments = useCallback(async (doctorId, date) => {
+    if (isLoadingAppointments) return; // منع الطلبات المتكررة
+    
+    setIsLoadingAppointments(true);
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/appointments/${doctorId}/${date}`);
       if (res.ok) {
@@ -94,11 +98,14 @@ function BookForOtherPage() {
         }
       }
     } catch (error) {
-      // Error fetching booked appointments
+      console.error('Error fetching booked appointments:', error);
+      setBookedTimes([]);
+    } finally {
+      setIsLoadingAppointments(false);
     }
-  };
+  }, [isLoadingAppointments]);
 
-  const isDayAvailable = date => {
+  const isDayAvailable = useCallback(date => {
     const weekDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
     const dayName = weekDays[date.getDay()];
     
@@ -129,7 +136,7 @@ function BookForOtherPage() {
       }
     }
     return true;
-  };
+  }, [doctor?.workTimes, doctor?.vacationDays]);
 
   // useEffect للتقويم والأوقات المتاحة
   useEffect(() => {
@@ -152,18 +159,20 @@ function BookForOtherPage() {
       const slots = generateTimeSlots(workTime.from, workTime.to);
       setAvailableTimes(slots);
       
-      // جلب المواعيد المحجوزة
-      const year = selectedDate.getFullYear();
-      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-      const day = String(selectedDate.getDate()).padStart(2, '0');
-      const dateString = `${year}-${month}-${day}`;
-      
-      fetchBookedAppointments(doctor._id, dateString);
+      // جلب المواعيد المحجوزة فقط إذا لم تكن جارية بالفعل
+      if (!isLoadingAppointments) {
+        const year = selectedDate.getFullYear();
+        const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(selectedDate.getDate()).padStart(2, '0');
+        const dateString = `${year}-${month}-${day}`;
+        
+        fetchBookedAppointments(doctor._id, dateString);
+      }
     } else {
       setAvailableTimes([]);
       setBookedTimes([]);
     }
-  }, [selectedDate, doctor, generateTimeSlots, isDayAvailable]);
+  }, [selectedDate, doctor, generateTimeSlots, isDayAvailable, fetchBookedAppointments, isLoadingAppointments]);
 
   const handleBooking = async (e) => {
     e.preventDefault();
