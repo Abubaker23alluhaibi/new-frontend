@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from './AuthContext';
 import DatePicker from 'react-datepicker';
 import { ar } from 'date-fns/locale';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -10,6 +11,7 @@ function BookForOtherPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user, profile } = useAuth();
   
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,8 +41,20 @@ function BookForOtherPage() {
   ];
 
   useEffect(() => {
+    // التحقق من تسجيل الدخول
+    const savedUser = localStorage.getItem('user');
+    const savedProfile = localStorage.getItem('profile');
+    const hasUser = user || profile;
+    const hasSavedData = savedUser || savedProfile;
+    
+    if (!hasSavedData && !hasUser) {
+      const currentUrl = window.location.pathname + window.location.search;
+      navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
+      return;
+    }
+    
     fetchDoctorDetails();
-  }, [id]);
+  }, [id, user, profile, navigate]);
 
   const fetchDoctorDetails = async () => {
     try {
@@ -177,6 +191,12 @@ function BookForOtherPage() {
   const handleBooking = async (e) => {
     e.preventDefault();
     
+    // التحقق من تسجيل الدخول
+    if (!user?._id && !profile?._id) {
+      setSuccess('يجب تسجيل الدخول أولاً');
+      return;
+    }
+    
     if (!patientName || !patientPhone || !selectedDate || !selectedTime) {
       setSuccess('يرجى ملء جميع الحقول المطلوبة');
       return;
@@ -203,7 +223,10 @@ function BookForOtherPage() {
     
     try {
       const appointmentData = {
+        userId: user?._id || profile?._id,
         doctorId: doctor._id,
+        userName: profile?.first_name || user?.first_name || 'مستخدم',
+        doctorName: doctor.name,
         patientName,
         patientPhone,
         patientAge: parseInt(patientAge),
@@ -211,6 +234,7 @@ function BookForOtherPage() {
         date: dateString,
         time: selectedTime,
         isBookingForOther: true,
+        bookerName: profile?.first_name || user?.first_name || 'مستخدم',
         duration: doctor?.appointmentDuration || 30
       };
 
