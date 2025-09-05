@@ -607,18 +607,18 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
     setViewingPdf(null);
   };
 
-  // جلب أدوية المريض
-  const fetchMedications = useCallback(async () => {
+  // جلب وصفات المريض
+  const fetchPrescriptions = useCallback(async () => {
     if (!patient?._id) return;
     
-    console.log('🔍 fetchMedications - patient._id:', patient._id);
+    console.log('🔍 fetchPrescriptions - patient._id:', patient._id);
     
     try {
       const token = getAuthToken();
       if (!token) return;
 
-      const url = `${process.env.REACT_APP_API_URL}/medications/patient/${patient._id}`;
-      console.log('🔍 fetchMedications - URL:', url);
+      const url = `${process.env.REACT_APP_API_URL}/patients/${patient._id}/prescriptions`;
+      console.log('🔍 fetchPrescriptions - URL:', url);
 
       const response = await fetch(url, {
         headers: {
@@ -627,19 +627,19 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         credentials: 'include'
       });
 
-      console.log('🔍 fetchMedications - Response status:', response.status);
+      console.log('🔍 fetchPrescriptions - Response status:', response.status);
 
       if (response.ok) {
         const data = await response.json();
-        console.log('🔍 fetchMedications - Response data:', data);
-        console.log('🔍 fetchMedications - Medications array:', data.medications);
-        setMedications(data.medications || []);
+        console.log('🔍 fetchPrescriptions - Response data:', data);
+        console.log('🔍 fetchPrescriptions - Prescriptions array:', data.prescriptions);
+        setMedications(data.prescriptions || []);
       } else {
         const errorData = await response.json();
-        console.log('🔍 fetchMedications - Error response:', errorData);
+        console.log('🔍 fetchPrescriptions - Error response:', errorData);
       }
     } catch (error) {
-      console.error('Error fetching medications:', error);
+      console.error('Error fetching prescriptions:', error);
     }
   }, [patient?._id, getAuthToken]);
 
@@ -656,13 +656,13 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
     }
   }, []);
 
-  // جلب الأدوية عند فتح تبويب الأدوية
+  // جلب الوصفات عند فتح تبويب الأدوية
   useEffect(() => {
     if (activeTab === 'medications') {
-      fetchMedications();
+      fetchPrescriptions();
       fetchMedicationOptions();
     }
-  }, [activeTab, fetchMedications, fetchMedicationOptions]);
+  }, [activeTab, fetchPrescriptions, fetchMedicationOptions]);
 
   // دوال إدارة الأدوية
   const handleAddMedication = () => {
@@ -742,13 +742,18 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       console.log('🔍 handleSubmitPrescription - API URL:', process.env.REACT_APP_API_URL);
       console.log('🔍 handleSubmitPrescription - Full URL:', `${process.env.REACT_APP_API_URL}/medications`);
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/medications`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/patients/${patient._id}/prescriptions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify({
+          doctorId: user?._id,
+          diagnosis: newPrescription.diagnosis,
+          notes: newPrescription.notes,
+          medications: newPrescription.medications
+        }),
         credentials: 'include'
       });
 
@@ -772,7 +777,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
           notes: '',
           date: new Date().toISOString().split('T')[0]
         });
-        fetchMedications();
+        fetchPrescriptions();
       } else {
         const data = await response.json();
         console.log('🔍 handleSubmitPrescription - Error response:', data);
@@ -820,6 +825,12 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
             font-weight: bold;
             color: #2c3e50;
             margin-bottom: 10px;
+          }
+          .prescription-id {
+            font-size: 14px;
+            color: #007bff;
+            font-weight: bold;
+            margin: 5px 0;
           }
           .prescription-date {
             font-size: 16px;
@@ -913,15 +924,17 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         </style>
       </head>
       <body>
-        <div class="prescription-header">
-          <div class="prescription-title">الوصفة الطبية</div>
-          <div class="prescription-date">${formatDate(prescription.date)}</div>
-        </div>
+                  <div class="prescription-header">
+            <div class="prescription-title">الوصفة الطبية</div>
+            <div class="prescription-id">رقم الوصفة: ${prescription.prescriptionId || 'غير محدد'}</div>
+            <div class="prescription-date">${formatDate(prescription.date)}</div>
+          </div>
         
         <div class="patient-info">
           <h3>بيانات المريض</h3>
-          <p><strong>الاسم:</strong> ${prescription.patientName}</p>
-          <p><strong>رقم الهاتف:</strong> ${prescription.patientPhone}</p>
+          <p><strong>الاسم:</strong> ${patient.name}</p>
+          <p><strong>العمر:</strong> ${patient.age} سنة</p>
+          <p><strong>رقم الهاتف:</strong> ${patient.phone}</p>
         </div>
         
         ${prescription.diagnosis ? `
@@ -1368,10 +1381,10 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
                 ) : (
                   <div className="prescriptions-container">
                     {medications.map((prescription, index) => (
-                      <div key={prescription._id || index} className="prescription-card">
+                      <div key={prescription._id || prescription.prescriptionId || index} className="prescription-card">
                         <div className="prescription-header">
                           <div className="prescription-title">
-                            <h4>الوصفة الطبية #{index + 1}</h4>
+                            <h4>الوصفة الطبية #{prescription.prescriptionId || index + 1}</h4>
                             <span className="prescription-date">{formatDate(prescription.date)}</span>
                           </div>
                           <button 
