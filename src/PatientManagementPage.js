@@ -741,8 +741,10 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       
       console.log('🔍 handleSubmitPrescription - requestData:', requestData);
       console.log('🔍 handleSubmitPrescription - API URL:', process.env.REACT_APP_API_URL);
-      console.log('🔍 handleSubmitPrescription - Full URL:', `${process.env.REACT_APP_API_URL}/medications`);
+      console.log('🔍 handleSubmitPrescription - Full URL:', `${process.env.REACT_APP_API_URL}/patients/${patient._id}/prescriptions`);
 
+      console.log('🔍 handleSubmitPrescription - Making request to NEW API:', `${process.env.REACT_APP_API_URL}/patients/${patient._id}/prescriptions`);
+      
       const response = await fetch(`${process.env.REACT_APP_API_URL}/patients/${patient._id}/prescriptions`, {
         method: 'POST',
         headers: {
