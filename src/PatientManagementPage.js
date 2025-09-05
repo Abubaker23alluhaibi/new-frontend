@@ -634,6 +634,44 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         console.log('🔍 fetchPrescriptions - Response data:', data);
         console.log('🔍 fetchPrescriptions - Prescriptions array:', data.prescriptions);
         console.log('🔍 fetchPrescriptions - First prescription medications:', data.prescriptions[0]?.medications);
+        
+        // فحص تفصيلي للوصفات المسترجعة
+        if (data.prescriptions && data.prescriptions.length > 0) {
+          data.prescriptions.forEach((prescription, index) => {
+            console.log(`🔍 Frontend - Prescription ${index + 1} received:`, {
+              prescriptionId: prescription.prescriptionId,
+              medicationsCount: prescription.medications?.length || 0,
+              medications: prescription.medications?.map((med, medIndex) => ({
+                index: medIndex + 1,
+                name: med.name,
+                dosage: med.dosage,
+                frequency: med.frequency,
+                duration: med.duration
+              }))
+            });
+            
+            // فحص إضافي للأدوية في كل وصفة
+            if (prescription.medications && prescription.medications.length > 0) {
+              console.log(`🔍 Frontend - Prescription ${index + 1} medications validation:`, {
+                totalMedications: prescription.medications.length,
+                validMedications: prescription.medications.filter(med => 
+                  med.name && med.dosage && med.frequency && med.duration
+                ).length
+              });
+              
+              // فحص إضافي للتأكد من أن البيانات المسترجعة صحيحة
+              console.log(`🔍 Frontend - Prescription ${index + 1} medications JSON:`, JSON.stringify(prescription.medications, null, 2));
+              
+              // فحص إضافي للتأكد من أن البيانات المسترجعة صحيحة
+              console.log(`🔍 Frontend - Prescription ${index + 1} final validation:`);
+              console.log(`🔍 - prescription object:`, JSON.stringify(prescription, null, 2));
+              console.log(`🔍 - medications array type:`, typeof prescription.medications);
+              console.log(`🔍 - medications is array:`, Array.isArray(prescription.medications));
+              console.log(`🔍 - medications length:`, prescription.medications.length);
+            }
+          });
+        }
+        
         setMedications(data.prescriptions || []);
       } else {
         const errorData = await response.json();
@@ -664,6 +702,12 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       fetchMedicationOptions();
     }
   }, [activeTab, fetchPrescriptions, fetchMedicationOptions]);
+  
+  // فحص حالة الأدوية عند تغييرها
+  useEffect(() => {
+    console.log('🔍 useEffect - newPrescription.medications changed:', newPrescription.medications);
+    console.log('🔍 useEffect - medications count:', newPrescription.medications.length);
+  }, [newPrescription.medications]);
 
   // دوال إدارة الأدوية
   const handleAddMedication = () => {
@@ -677,6 +721,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         instructions: ''
       }];
       console.log('🔍 handleAddMedication - after:', newMedications.length);
+      console.log('🔍 handleAddMedication - new medications array:', newMedications);
       return {
         ...prev,
         medications: newMedications
@@ -685,10 +730,16 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
   };
 
   const handleRemoveMedication = (index) => {
-    setNewPrescription(prev => ({
-      ...prev,
-      medications: prev.medications.filter((_, i) => i !== index)
-    }));
+    console.log('🔍 handleRemoveMedication - removing index:', index);
+    setNewPrescription(prev => {
+      const newMedications = prev.medications.filter((_, i) => i !== index);
+      console.log('🔍 handleRemoveMedication - after removal:', newMedications.length);
+      console.log('🔍 handleRemoveMedication - remaining medications:', newMedications);
+      return {
+        ...prev,
+        medications: newMedications
+      };
+    });
   };
 
   const handleMedicationChange = (index, field, value) => {
@@ -698,6 +749,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         i === index ? { ...med, [field]: value } : med
       );
       console.log('🔍 handleMedicationChange - updated medications:', updatedMedications);
+      console.log('🔍 handleMedicationChange - medications count after update:', updatedMedications.length);
       return {
         ...prev,
         medications: updatedMedications
@@ -710,6 +762,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
     
     console.log('🔍 handleSubmitPrescription - newPrescription:', newPrescription);
     console.log('🔍 handleSubmitPrescription - medications count:', newPrescription.medications.length);
+    console.log('🔍 handleSubmitPrescription - medications array:', newPrescription.medications);
     
     if (newPrescription.medications.length === 0) {
       toast.error('يرجى إضافة دواء واحد على الأقل');
@@ -725,6 +778,19 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       toast.error('يرجى إدخال جميع البيانات المطلوبة للأدوية');
       return;
     }
+    
+    // فحص إضافي للتأكد من أن جميع الأدوية صحيحة
+    console.log('🔍 handleSubmitPrescription - Final validation check:');
+    newPrescription.medications.forEach((med, index) => {
+      console.log(`🔍 Medication ${index + 1} validation:`, {
+        name: med.name,
+        dosage: med.dosage,
+        frequency: med.frequency,
+        duration: med.duration,
+        instructions: med.instructions,
+        isValid: !!(med.name && med.dosage && med.frequency && med.duration)
+      });
+    });
 
     try {
       const token = getAuthToken();
@@ -747,6 +813,17 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       console.log('🔍 handleSubmitPrescription - medications array being sent:', newPrescription.medications);
       console.log('🔍 handleSubmitPrescription - medications array length:', newPrescription.medications.length);
       
+      // فحص تفصيلي للأدوية قبل الإرسال
+      newPrescription.medications.forEach((med, index) => {
+        console.log(`🔍 Frontend - Medication ${index + 1} before sending:`, {
+          name: med.name,
+          dosage: med.dosage,
+          frequency: med.frequency,
+          duration: med.duration,
+          instructions: med.instructions
+        });
+      });
+      
       const response = await fetch(`${process.env.REACT_APP_API_URL}/patients/${patient._id}/prescriptions`, {
         method: 'POST',
         headers: {
@@ -764,6 +841,38 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
 
       console.log('🔍 handleSubmitPrescription - Response status:', response.status);
       console.log('🔍 handleSubmitPrescription - Response ok:', response.ok);
+      
+      // فحص البيانات المرسلة مرة أخرى
+      console.log('🔍 handleSubmitPrescription - Final data being sent:', {
+        doctorId: user?._id,
+        diagnosis: newPrescription.diagnosis,
+        notes: newPrescription.notes,
+        medications: newPrescription.medications,
+        medicationsCount: newPrescription.medications.length
+      });
+      
+      // فحص إضافي للتأكد من أن البيانات المرسلة صحيحة
+      console.log('🔍 handleSubmitPrescription - Data validation before sending:');
+      console.log('🔍 - medications array type:', typeof newPrescription.medications);
+      console.log('🔍 - medications is array:', Array.isArray(newPrescription.medications));
+      console.log('🔍 - medications length:', newPrescription.medications.length);
+      console.log('🔍 - medications content:', JSON.stringify(newPrescription.medications, null, 2));
+      
+      // فحص إضافي للتأكد من أن البيانات المرسلة صحيحة
+      console.log('🔍 handleSubmitPrescription - Final validation before sending:');
+      console.log('🔍 - request body:', JSON.stringify({
+        doctorId: user?._id,
+        diagnosis: newPrescription.diagnosis,
+        notes: newPrescription.notes,
+        medications: newPrescription.medications
+      }, null, 2));
+      
+      // فحص إضافي للتأكد من أن البيانات المرسلة صحيحة
+      console.log('🔍 handleSubmitPrescription - Final data validation:');
+      console.log('🔍 - newPrescription object:', JSON.stringify(newPrescription, null, 2));
+      console.log('🔍 - medications array type:', typeof newPrescription.medications);
+      console.log('🔍 - medications is array:', Array.isArray(newPrescription.medications));
+      console.log('🔍 - medications length:', newPrescription.medications.length);
 
       if (response.ok) {
         const result = await response.json();
