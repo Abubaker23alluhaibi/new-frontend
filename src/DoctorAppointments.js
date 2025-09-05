@@ -967,20 +967,7 @@ function DoctorAppointments() {
                       }}>
                         ❌ {t('absent')}
                       </div>
-                    ) : (
-                      <div style={{
-                        background:'#ff9800',
-                        color:'#fff',
-                        padding:'0.2rem 0.5rem',
-                        borderRadius:6,
-                        fontSize:'0.7rem',
-                        fontWeight:600,
-                        textAlign:'center',
-                        display:'inline-block'
-                      }}>
-                        ⏳ {t('waiting')}
-                      </div>
-                    )}
+                    ) : null}
                   </div>
                 </div>
                 
@@ -1032,25 +1019,6 @@ function DoctorAppointments() {
                     </button>
                   )}
                   
-                  {/* زر إضافة للمواعيد الخاصة */}
-                  <button 
-                    onClick={() => addToSpecialAppointments(appointment)}
-                    style={{
-                      background:'#ff9800',
-                      color:'#fff',
-                      border:'none',
-                      borderRadius:6,
-                      padding:'0.4rem 0.8rem',
-                      fontWeight:700,
-                      cursor:'pointer',
-                      fontSize:'0.8rem',
-                      display:'flex',
-                      alignItems:'center',
-                      gap:'0.2rem'
-                    }}
-                  >
-                    ⭐ {t('add_to_special_appointments')}
-                  </button>
                 </div>
                 
                 {/* عرض اسم الحاجز إذا كان الحجز لشخص آخر */}
