@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { normalizePhone } from './utils/phoneUtils';
+import { secureLog, clearSensitiveData, secureSetItem, secureGetItem } from './utils/securityUtils';
+import { secureLogin, secureLogout as secureLogoutService, validateToken } from './utils/authService';
 
 const AuthContext = createContext({});
 
@@ -18,7 +20,7 @@ export const AuthProvider = ({ children }) => {
 
   // دالة لتحديث البيانات
   const refreshAuthData = useCallback(() => {
-    console.log('🔄 تحديث بيانات المصادقة...');
+    secureLog('🔄 تحديث بيانات المصادقة...');
     setLastUpdate(Date.now());
     setDataVersion(prev => prev + 1);
     
@@ -42,7 +44,7 @@ export const AuthProvider = ({ children }) => {
         const userData = JSON.parse(savedUser);
         setUser(userData);
       } catch (error) {
-        console.error('❌ خطأ في تحليل بيانات المستخدم:', error);
+        secureLog('❌ خطأ في تحليل بيانات المستخدم:', error);
         localStorage.removeItem('user');
         setUser(null);
       }
@@ -53,7 +55,7 @@ export const AuthProvider = ({ children }) => {
         const profileData = JSON.parse(savedProfile);
         setProfile(profileData);
       } catch (error) {
-        console.error('❌ خطأ في تحليل بيانات الملف الشخصي:', error);
+        secureLog('❌ خطأ في تحليل بيانات الملف الشخصي:', error);
         localStorage.removeItem('profile');
         setProfile(null);
       }
@@ -193,36 +195,22 @@ export const AuthProvider = ({ children }) => {
       // توحيد رقم الهاتف إذا كان المدخل رقم هاتف
       const normalizedEmail = !email.includes('@') ? normalizePhone(email) : email;
       
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: normalizedEmail, password, loginType })
-      });
+      const result = await secureLogin(normalizedEmail, password, loginType);
       
-      const data = await res.json();
-      
-      if (res.ok) {
-        // حفظ بيانات المستخدم في localStorage
-        const userData = loginType === 'doctor' ? data.doctor : data.user;
-        
-        // إضافة الـ token إلى بيانات المستخدم
-        if (data.token) {
-          userData.token = data.token;
-        }
+      if (result.data) {
+        // حفظ بيانات المستخدم في localStorage بشكل آمن
+        const userData = loginType === 'doctor' ? result.data.doctor : result.data.user;
         
         setUser(userData);
         setProfile(userData);
         
-        localStorage.setItem('user', JSON.stringify(userData));
-        localStorage.setItem('profile', JSON.stringify(userData));
-        // حفظ الـ token بشكل منفصل للوصول السريع
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-        }
+        // استخدام التخزين الآمن
+        secureSetItem('user', userData);
+        secureSetItem('profile', userData);
 
-        return { data, error: null };
+        return { data: result.data, error: null };
       } else {
-        return { data: null, error: data.error };
+        return { data: null, error: result.error };
       }
     } catch (error) {
       return { data: null, error: error.message };
@@ -231,18 +219,15 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     try {
-      // حذف البيانات من localStorage
-      localStorage.removeItem('user');
-      localStorage.removeItem('profile');
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('token');
+      // استخدام خدمة تسجيل الخروج الآمنة
+      await secureLogoutService();
       
       setUser(null);
       setProfile(null);
       setCurrentUserType(null);
       setCurrentPermissions({});
     } catch (error) {
-      // Error signing out
+      secureLog('خطأ في تسجيل الخروج:', error);
     }
   };
 

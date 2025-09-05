@@ -7,13 +7,21 @@
 export const sanitizeInput = (input) => {
   if (typeof input !== 'string') return input;
   
-  // إزالة الأحرف الخطرة
+  // إزالة الأحرف الخطرة والـ scripts
   return input
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
+    .replace(/\//g, '&#x2F;')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+\s*=/gi, '')
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+    .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '')
+    .replace(/<link\b[^<]*(?:(?!<\/link>)<[^<]*)*<\/link>/gi, '')
+    .replace(/<meta\b[^<]*(?:(?!<\/meta>)<[^<]*)*<\/meta>/gi, '');
 };
 
 // دالة التحقق من صحة التوكن
@@ -95,15 +103,23 @@ export const validateServerResponse = (data) => {
   return true;
 };
 
-// دالة تشفير بسيط للبيانات (لاستخدام محلي فقط)
+// دالة تشفير محسن للبيانات (لاستخدام محلي فقط)
 export const simpleEncrypt = (data) => {
   if (typeof data !== 'string') return data;
   
-  // تشفير بسيط باستخدام Base64 (لاستخدام محلي فقط)
   try {
-    return btoa(encodeURIComponent(data));
+    // استخدام تشفير أكثر أماناً مع مفتاح محلي
+    const key = 'tabibiq-secure-key-2024';
+    let encrypted = '';
+    
+    for (let i = 0; i < data.length; i++) {
+      const charCode = data.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+      encrypted += String.fromCharCode(charCode);
+    }
+    
+    return btoa(encrypted);
   } catch (error) {
-    console.error('خطأ في التشفير:', error);
+    secureLog('خطأ في التشفير:', error);
     return data;
   }
 };
@@ -113,9 +129,18 @@ export const simpleDecrypt = (encryptedData) => {
   if (typeof encryptedData !== 'string') return encryptedData;
   
   try {
-    return decodeURIComponent(atob(encryptedData));
+    const key = 'tabibiq-secure-key-2024';
+    const decrypted = atob(encryptedData);
+    let result = '';
+    
+    for (let i = 0; i < decrypted.length; i++) {
+      const charCode = decrypted.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+      result += String.fromCharCode(charCode);
+    }
+    
+    return result;
   } catch (error) {
-    console.error('خطأ في فك التشفير:', error);
+    secureLog('خطأ في فك التشفير:', error);
     return encryptedData;
   }
 };
@@ -179,6 +204,17 @@ export const preventClickjacking = () => {
     // إذا كان التطبيق محمول في iframe، إعادة توجيه
     window.top.location = window.self.location;
   }
+  
+  // إضافة event listener لمنع النقر على العناصر المخفية
+  document.addEventListener('click', (e) => {
+    const element = e.target;
+    if (element.style.display === 'none' || 
+        element.style.visibility === 'hidden' || 
+        element.style.opacity === '0') {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  });
 };
 
 // دالة تنظيف النموذج من البيانات الحساسة
@@ -223,7 +259,24 @@ export const secureConsole = () => {
     console.warn = () => {};
     console.error = () => {};
     console.debug = () => {};
+    console.table = () => {};
+    console.group = () => {};
+    console.groupEnd = () => {};
+    console.time = () => {};
+    console.timeEnd = () => {};
   }
+};
+
+// دالة تسجيل آمنة للإنتاج
+export const secureLog = (message, data = null) => {
+  if (process.env.NODE_ENV === 'development') {
+    if (data) {
+      console.log(`[DEV] ${message}`, data);
+    } else {
+      console.log(`[DEV] ${message}`);
+    }
+  }
+  // في الإنتاج، لا يتم تسجيل أي شيء
 };
 
 // دالة تنظيف البيانات عند تسجيل الخروج
@@ -260,5 +313,6 @@ export default {
   sanitizeFormData,
   validatePassword,
   secureConsole,
+  secureLog,
   secureLogout
 };
