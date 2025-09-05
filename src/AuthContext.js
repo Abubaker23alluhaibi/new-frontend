@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { normalizePhone } from './utils/phoneUtils';
-import { secureLog, clearSensitiveData, secureSetItem, secureGetItem } from './utils/securityUtils';
-import { secureLogin, secureLogout as secureLogoutService, validateToken } from './utils/authService';
+import { secureLog, clearSensitiveData } from './utils/securityUtils';
 
 const AuthContext = createContext({});
 
@@ -71,7 +70,7 @@ export const AuthProvider = ({ children }) => {
     const lastUpdateTime = localStorage.getItem('lastAuthUpdate');
     const currentTime = Date.now();
     
-    console.log('📦 AuthContext: البيانات المحفوظة:', { 
+    secureLog('📦 AuthContext: البيانات المحفوظة:', { 
       hasSavedUser: !!savedUser, 
       hasSavedProfile: !!savedProfile,
       lastUpdate: lastUpdateTime
@@ -79,14 +78,14 @@ export const AuthProvider = ({ children }) => {
 
     // التحقق من عمر البيانات
     if (lastUpdateTime && (currentTime - parseInt(lastUpdateTime)) > 300000) { // 5 دقائق
-      console.log('⚠️ بيانات المصادقة قديمة، تحديث...');
+      secureLog('⚠️ بيانات المصادقة قديمة، تحديث...');
       refreshAuthData();
     }
 
     if (savedUser) {
       try {
         const userData = JSON.parse(savedUser);
-        console.log('✅ AuthContext: تم استرجاع بيانات المستخدم:', userData.user_type);
+        secureLog('✅ AuthContext: تم استرجاع بيانات المستخدم:', userData.user_type);
         
         // التأكد من وجود الـ token في userData
         if (!userData.token) {
@@ -98,7 +97,7 @@ export const AuthProvider = ({ children }) => {
         
         setUser(userData);
       } catch (error) {
-        console.error('❌ AuthContext: خطأ في تحليل بيانات المستخدم:', error);
+        secureLog('❌ AuthContext: خطأ في تحليل بيانات المستخدم:', error);
         localStorage.removeItem('user');
       }
     }
@@ -106,7 +105,7 @@ export const AuthProvider = ({ children }) => {
     if (savedProfile) {
       try {
         const profileData = JSON.parse(savedProfile);
-        console.log('✅ AuthContext: تم استرجاع بيانات الملف الشخصي');
+        secureLog('✅ AuthContext: تم استرجاع بيانات الملف الشخصي');
         
         // التأكد من وجود الـ token في profileData
         if (!profileData.token) {
@@ -118,7 +117,7 @@ export const AuthProvider = ({ children }) => {
         
         setProfile(profileData);
       } catch (error) {
-        console.error('❌ AuthContext: خطأ في تحليل بيانات الملف الشخصي:', error);
+        secureLog('❌ AuthContext: خطأ في تحليل بيانات الملف الشخصي:', error);
         localStorage.removeItem('profile');
       }
     }
@@ -131,12 +130,12 @@ export const AuthProvider = ({ children }) => {
         setCurrentUserType(currentUserData.currentUserType);
         setCurrentPermissions(currentUserData.permissions || {});
       } catch (error) {
-        console.error('❌ AuthContext: خطأ في تحليل بيانات المستخدم الحالي:', error);
+        secureLog('❌ AuthContext: خطأ في تحليل بيانات المستخدم الحالي:', error);
         localStorage.removeItem('currentUser');
       }
     }
     
-    console.log('🏁 AuthContext: انتهى التحقق من حالة المستخدم');
+    secureLog('🏁 AuthContext: انتهى التحقق من حالة المستخدم');
     setLoading(false);
 
     // تحديث تلقائي كل 5 دقائق
@@ -146,7 +145,7 @@ export const AuthProvider = ({ children }) => {
 
     // تحديث تلقائي عند أي تغيير في localStorage (مثلاً عند تسجيل دخول الأدمن)
     const handleStorage = () => {
-      console.log('🔄 AuthContext: تم اكتشاف تغيير في localStorage');
+      secureLog('🔄 AuthContext: تم اكتشاف تغيير في localStorage');
       refreshAuthData();
     };
     
@@ -166,7 +165,7 @@ export const AuthProvider = ({ children }) => {
         permissions: currentPermissions
       };
       localStorage.setItem('currentUser', JSON.stringify(currentUserData));
-      console.log('💾 AuthContext: تم حفظ بيانات المستخدم الحالي:', currentUserData);
+      secureLog('💾 AuthContext: تم حفظ بيانات المستخدم الحالي:', currentUserData);
     }
   }, [currentUserType, currentPermissions]);
 
@@ -195,22 +194,36 @@ export const AuthProvider = ({ children }) => {
       // توحيد رقم الهاتف إذا كان المدخل رقم هاتف
       const normalizedEmail = !email.includes('@') ? normalizePhone(email) : email;
       
-      const result = await secureLogin(normalizedEmail, password, loginType);
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: normalizedEmail, password, loginType })
+      });
       
-      if (result.data) {
-        // حفظ بيانات المستخدم في localStorage بشكل آمن
-        const userData = loginType === 'doctor' ? result.data.doctor : result.data.user;
+      const data = await res.json();
+      
+      if (res.ok) {
+        // حفظ بيانات المستخدم في localStorage
+        const userData = loginType === 'doctor' ? data.doctor : data.user;
+        
+        // إضافة الـ token إلى بيانات المستخدم
+        if (data.token) {
+          userData.token = data.token;
+        }
         
         setUser(userData);
         setProfile(userData);
         
-        // استخدام التخزين الآمن
-        secureSetItem('user', userData);
-        secureSetItem('profile', userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('profile', JSON.stringify(userData));
+        // حفظ الـ token بشكل منفصل للوصول السريع
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
 
-        return { data: result.data, error: null };
+        return { data, error: null };
       } else {
-        return { data: null, error: result.error };
+        return { data: null, error: data.error };
       }
     } catch (error) {
       return { data: null, error: error.message };
@@ -219,15 +232,18 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     try {
-      // استخدام خدمة تسجيل الخروج الآمنة
-      await secureLogoutService();
+      // حذف البيانات من localStorage
+      localStorage.removeItem('user');
+      localStorage.removeItem('profile');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('token');
       
       setUser(null);
       setProfile(null);
       setCurrentUserType(null);
       setCurrentPermissions({});
     } catch (error) {
-      secureLog('خطأ في تسجيل الخروج:', error);
+      // Error signing out
     }
   };
 

@@ -19,11 +19,8 @@ export const secureLogin = async (email, password, loginType) => {
     const data = await response.json();
     
     if (response.ok) {
-      // التحقق من وجود التوكن في cookies
-      const token = await getTokenFromCookies();
-      if (token) {
-        return { data: { ...data, token }, error: null };
-      }
+      // إرجاع البيانات مباشرة - التوكن سيتم حفظه في httpOnly cookie
+      return { data, error: null };
     }
     
     return { data: null, error: data.error || 'فشل في تسجيل الدخول' };
@@ -46,6 +43,7 @@ export const getTokenFromCookies = async () => {
     }
     return null;
   } catch (error) {
+    // لا نطبع خطأ هنا لأن هذا يحدث عادة عند عدم وجود توكن
     return null;
   }
 };
@@ -94,9 +92,17 @@ export const validateToken = async () => {
   }
 };
 
+// دالة الحصول على CSRF token
+export const getCSRFToken = () => {
+  const cookies = document.cookie.split(';');
+  const csrfCookie = cookies.find(cookie => cookie.trim().startsWith('csrf-token='));
+  return csrfCookie ? csrfCookie.split('=')[1] : null;
+};
+
 // دالة إرسال طلبات آمنة
 export const secureFetch = async (url, options = {}) => {
   const token = await getTokenFromCookies();
+  const csrfToken = getCSRFToken();
   
   const secureOptions = {
     ...options,
@@ -105,6 +111,7 @@ export const secureFetch = async (url, options = {}) => {
       'X-Requested-With': 'XMLHttpRequest',
       'Content-Type': 'application/json',
       ...(token && { 'Authorization': `Bearer ${token}` }),
+      ...(csrfToken && { 'X-CSRF-Token': csrfToken }),
       ...options.headers
     }
   };
