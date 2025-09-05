@@ -54,6 +54,7 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
   const _appointments = appointments && appointments.length > 0 ? appointments : internalAppointments;
   
   // ترتيب أيام الأسبوع للبدء من السبت (كما هو مطلوب في التقويم العربي/الكردي)
+  // الترتيب: السبت(0), الأحد(1), الاثنين(2), الثلاثاء(3), الأربعاء(4), الخميس(5), الجمعة(6)
   const weekdays = (t('weekdays', { returnObjects: true }) && Array.isArray(t('weekdays', { returnObjects: true }))) ? t('weekdays', { returnObjects: true }) : 
                    (t('weekdays_array', { returnObjects: true }) && Array.isArray(t('weekdays_array', { returnObjects: true }))) ? t('weekdays_array', { returnObjects: true }) : 
                    ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'];
@@ -252,10 +253,12 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
             const lastDay = new Date(_year, _month + 1, 0);
             const daysInMonth = lastDay.getDate();
             
-            // حساب يوم الأسبوع للبداية (0 = الأحد، 1 = الاثنين، إلخ)
-            // تحويل لتبدأ من السبت (0 = السبت، 1 = الأحد، إلخ)
+            // حساب يوم الأسبوع للبداية
+            // JavaScript: 0=الأحد, 1=الاثنين, 2=الثلاثاء, 3=الأربعاء, 4=الخميس, 5=الجمعة, 6=السبت
+            // نريد: 0=السبت, 1=الأحد, 2=الاثنين, 3=الثلاثاء, 4=الأربعاء, 5=الخميس, 6=الجمعة
             let startDay = firstDay.getDay();
-            startDay = (startDay + 1) % 7; // تحويل: الأحد(0) -> الاثنين(1), السبت(6) -> الأحد(0), إلخ
+            // تحويل: الأحد(0)->1, الاثنين(1)->2, ..., السبت(6)->0
+            startDay = startDay === 6 ? 0 : startDay + 1;
             
             const calendarDays = [];
             
