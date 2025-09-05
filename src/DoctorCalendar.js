@@ -253,18 +253,26 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
             const lastDay = new Date(_year, _month + 1, 0);
             const daysInMonth = lastDay.getDate();
             
-            // حساب يوم الأسبوع للبداية - السبت في العمود الأول
+            // حساب يوم الأسبوع للبداية - السبت في العمود الرابع
             // JavaScript: 0=الأحد, 1=الاثنين, 2=الثلاثاء, 3=الأربعاء, 4=الخميس, 5=الجمعة, 6=السبت
-            // نريد: 1=السبت, 2=الأحد, 3=الاثنين, 4=الثلاثاء, 5=الأربعاء, 6=الخميس, 7=الجمعة
+            // نريد: 1=الأحد, 2=الاثنين, 3=الثلاثاء, 4=السبت, 5=الأحد, 6=الاثنين, 7=الثلاثاء
             const jsDay = firstDay.getDay(); // 0-6
             let startDay;
             
             if (jsDay === 0) { // الأحد
-              startDay = 2; // الأحد في العمود الثاني
+              startDay = 1; // الأحد في العمود الأول
+            } else if (jsDay === 1) { // الاثنين
+              startDay = 2; // الاثنين في العمود الثاني
+            } else if (jsDay === 2) { // الثلاثاء
+              startDay = 3; // الثلاثاء في العمود الثالث
+            } else if (jsDay === 3) { // الأربعاء
+              startDay = 4; // الأربعاء في العمود الرابع
+            } else if (jsDay === 4) { // الخميس
+              startDay = 5; // الخميس في العمود الخامس
+            } else if (jsDay === 5) { // الجمعة
+              startDay = 6; // الجمعة في العمود السادس
             } else if (jsDay === 6) { // السبت
-              startDay = 1; // السبت في العمود الأول
-            } else {
-              startDay = jsDay + 2; // باقي الأيام
+              startDay = 4; // السبت في العمود الرابع
             }
             
             const calendarDays = [];
