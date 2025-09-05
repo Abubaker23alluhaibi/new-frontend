@@ -114,40 +114,38 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
     return getAppointmentsForDate(dateStr).length;
   };
 
-  // دالة إلغاء جميع المواعيد للأيام القادمة
-  const cancelAllFutureAppointments = async () => {
-    const today = new Date().toISOString().slice(0, 10);
-    const futureAppointments = _appointments.filter(a => {
-      const appointmentDate = new Date(a.date).toISOString().slice(0, 10);
-      return appointmentDate > today;
-    });
+  // دالة إلغاء مواعيد اليوم المحدد فقط
+  const cancelSelectedDayAppointments = async () => {
+    const selectedDayAppointments = getAppointmentsForDate(_selectedDate);
 
-    if (futureAppointments.length === 0) {
-      alert(t('no_future_appointments') || 'لا توجد مواعيد قادمة');
+    if (selectedDayAppointments.length === 0) {
+      alert(t('no_appointments_selected_day') || 'لا توجد مواعيد في اليوم المحدد');
       return;
     }
 
-    const confirmMessage = t('confirm_cancel_future_appointments', { count: futureAppointments.length }) || 
-                          `هل أنت متأكد من إلغاء جميع المواعيد القادمة (${futureAppointments.length} موعد)؟`;
+    const confirmMessage = t('confirm_cancel_selected_day') || 'هل أنت متأكد من إلغاء جميع مواعيد اليوم المحدد؟';
     
     if (window.confirm(confirmMessage)) {
       try {
-        const profile = JSON.parse(localStorage.getItem('user') || '{}');
-        const doctorId = profile._id || user?._id || 1;
-        
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/cancel-future-appointments/${doctorId}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        // إلغاء كل موعد في اليوم المحدد
+        const cancelPromises = selectedDayAppointments.map(appointment => 
+          fetch(`${process.env.REACT_APP_API_URL}/cancel-appointment/${appointment._id}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+        );
 
-        if (response.ok) {
-          alert(t('future_appointments_cancelled') || 'تم إلغاء جميع المواعيد القادمة بنجاح');
+        const results = await Promise.all(cancelPromises);
+        const successCount = results.filter(response => response.ok).length;
+
+        if (successCount === selectedDayAppointments.length) {
+          alert(t('selected_day_appointments_cancelled') || 'تم إلغاء مواعيد اليوم المحدد بنجاح');
           // إعادة تحميل المواعيد
           window.location.reload();
         } else {
-          throw new Error('Failed to cancel appointments');
+          throw new Error('Some appointments could not be cancelled');
         }
       } catch (error) {
         console.error('خطأ في إلغاء المواعيد:', error);
@@ -193,7 +191,7 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
             📅 {t('my_calendar')}
           </h3>
           <button 
-            onClick={cancelAllFutureAppointments}
+            onClick={cancelSelectedDayAppointments}
             style={{
               background:'#ff4444',
               color:'#fff',
@@ -217,9 +215,9 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
               e.target.style.transform = 'translateY(0)';
               e.target.style.boxShadow = '0 4px 12px rgba(255, 68, 68, 0.3)';
             }}
-            title={t('cancel_future_appointments') || 'إلغاء المواعيد القادمة'}
+            title={t('cancel_selected_day') || 'إلغاء مواعيد اليوم المحدد'}
           >
-            🗑️ {t('cancel_future') || 'إلغاء'}
+            🗑️ {t('cancel_selected_day') || 'إلغاء اليوم'}
           </button>
         </div>
         {/* معلومات الشهر مع أزرار التنقل */}

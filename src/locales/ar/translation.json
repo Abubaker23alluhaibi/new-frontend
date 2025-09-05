@@ -712,6 +712,11 @@
   "back": "رجوع",
   "logout": "تسجيل الخروج",
   "error_fetching_appointments": "خطأ في جلب المواعيد",
+  "cancel_selected_day": "إلغاء مواعيد اليوم المحدد",
+  "confirm_cancel_selected_day": "هل أنت متأكد من إلغاء جميع مواعيد اليوم المحدد؟",
+  "selected_day_appointments_cancelled": "تم إلغاء مواعيد اليوم المحدد بنجاح",
+  "no_appointments_selected_day": "لا توجد مواعيد في اليوم المحدد",
+  "error_cancelling_appointments": "حدث خطأ في إلغاء المواعيد",
   "weekdays_object": {
     "sunday": "الأحد",
     "monday": "الاثنين", 

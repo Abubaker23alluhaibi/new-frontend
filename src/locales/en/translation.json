@@ -633,6 +633,11 @@
   "back": "Back",
   "logout": "Logout",
   "error_fetching_appointments": "Error fetching appointments",
+  "cancel_selected_day": "Cancel Selected Day Appointments",
+  "confirm_cancel_selected_day": "Are you sure you want to cancel all appointments for the selected day?",
+  "selected_day_appointments_cancelled": "Selected day appointments cancelled successfully",
+  "no_appointments_selected_day": "No appointments for the selected day",
+  "error_cancelling_appointments": "Error cancelling appointments",
   "weekdays": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
   "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
   "doctor_dashboard": {
