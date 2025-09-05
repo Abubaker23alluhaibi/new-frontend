@@ -53,15 +53,37 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
   const _month = month !== undefined ? month : internalMonth;
   const _appointments = appointments && appointments.length > 0 ? appointments : internalAppointments;
   
-  // ترتيب أيام الأسبوع للبدء من السبت (كما هو مطلوب في التقويم العربي/الكردي)
+  // ترتيب أيام الأسبوع والشهور حسب اللغة المختارة
   // الترتيب: السبت(0), الأحد(1), الاثنين(2), الثلاثاء(3), الأربعاء(4), الخميس(5), الجمعة(6)
-  const weekdays = (t('weekdays', { returnObjects: true }) && Array.isArray(t('weekdays', { returnObjects: true }))) ? t('weekdays', { returnObjects: true }) : 
-                   (t('weekdays_array', { returnObjects: true }) && Array.isArray(t('weekdays_array', { returnObjects: true }))) ? t('weekdays_array', { returnObjects: true }) : 
-                   ['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'];
-  const months = (t('months', { returnObjects: true }) && Array.isArray(t('months', { returnObjects: true }))) ? t('months', { returnObjects: true }) : [
-    'کانونی دووەم', 'شوبات', 'ئازار', 'نیسان', 'ئایار', 'حوزەیران',
-    'تەمموز', 'ئاب', 'ئەیلوول', 'تشرینی یەکەم', 'تشرینی دووەم', 'کانونی یەکەم'
-  ];
+  
+  // الحصول على أيام الأسبوع حسب اللغة
+  let weekdays;
+  try {
+    const weekdaysFromTranslation = t('weekdays', { returnObjects: true });
+    if (Array.isArray(weekdaysFromTranslation)) {
+      weekdays = weekdaysFromTranslation;
+    } else {
+      const weekdaysArray = t('weekdays_array', { returnObjects: true });
+      weekdays = Array.isArray(weekdaysArray) ? weekdaysArray : ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    }
+  } catch (error) {
+    weekdays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+  }
+  
+  // الحصول على الشهور حسب اللغة
+  let months;
+  try {
+    const monthsFromTranslation = t('months', { returnObjects: true });
+    months = Array.isArray(monthsFromTranslation) ? monthsFromTranslation : [
+      'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
+      'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
+    ];
+  } catch (error) {
+    months = [
+      'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
+      'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
+    ];
+  }
   const _formatDate = formatDate || ((dateString) => {
     const date = new Date(dateString);
     const weekday = weekdays[date.getDay()];
@@ -75,10 +97,69 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
     return aDate === _selectedDate;
   });
 
+  // دوال حساب إحصائيات المواعيد
+  const getAppointmentsForDate = (dateStr) => {
+    return _appointments.filter(a => {
+      const aDate = new Date(a.date).toISOString().slice(0,10);
+      return aDate === dateStr;
+    });
+  };
+
+  const getAttendanceForDate = (dateStr) => {
+    const dayAppointments = getAppointmentsForDate(dateStr);
+    return dayAppointments.filter(a => a.attendance === 'present').length;
+  };
+
+  const getTotalAppointmentsForDate = (dateStr) => {
+    return getAppointmentsForDate(dateStr).length;
+  };
+
+  // دالة إلغاء جميع المواعيد للأيام القادمة
+  const cancelAllFutureAppointments = async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const futureAppointments = _appointments.filter(a => {
+      const appointmentDate = new Date(a.date).toISOString().slice(0, 10);
+      return appointmentDate > today;
+    });
+
+    if (futureAppointments.length === 0) {
+      alert(t('no_future_appointments') || 'لا توجد مواعيد قادمة');
+      return;
+    }
+
+    const confirmMessage = t('confirm_cancel_future_appointments', { count: futureAppointments.length }) || 
+                          `هل أنت متأكد من إلغاء جميع المواعيد القادمة (${futureAppointments.length} موعد)؟`;
+    
+    if (window.confirm(confirmMessage)) {
+      try {
+        const profile = JSON.parse(localStorage.getItem('user') || '{}');
+        const doctorId = profile._id || user?._id || 1;
+        
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/cancel-future-appointments/${doctorId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          alert(t('future_appointments_cancelled') || 'تم إلغاء جميع المواعيد القادمة بنجاح');
+          // إعادة تحميل المواعيد
+          window.location.reload();
+        } else {
+          throw new Error('Failed to cancel appointments');
+        }
+      } catch (error) {
+        console.error('خطأ في إلغاء المواعيد:', error);
+        alert(t('error_cancelling_appointments') || 'حدث خطأ في إلغاء المواعيد');
+      }
+    }
+  };
+
   return (
     <div style={{background:'#fff', minHeight:'100vh', padding:'2rem 0'}}>
       <div style={{maxWidth:450, margin:'0 auto', background:'#fff', borderRadius:20, boxShadow:'0 8px 32px rgba(10, 143, 130, 0.15)', padding:'2.5rem 2rem', textAlign:'center', border: '1px solid #e8f5e8'}}>
-        {/* زر العودة */}
+        {/* زر العودة وزر إلغاء المواعيد القادمة */}
         <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24}}>
           <button 
             onClick={() => navigate('/doctor-dashboard')}
@@ -111,7 +192,35 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
           <h3 style={{color:'#0A8F82', fontWeight:800, fontSize:22, margin:0, flex:1, textAlign:'center'}}>
             📅 {t('my_calendar')}
           </h3>
-          <div style={{width:80}}></div> {/* مساحة فارغة للتوازن */}
+          <button 
+            onClick={cancelAllFutureAppointments}
+            style={{
+              background:'#ff4444',
+              color:'#fff',
+              border:'none',
+              borderRadius:12,
+              padding:'0.8rem 1rem',
+              fontSize:12,
+              fontWeight:700,
+              cursor:'pointer',
+              display:'flex',
+              alignItems:'center',
+              gap:6,
+              transition:'all 0.3s ease',
+              boxShadow:'0 4px 12px rgba(255, 68, 68, 0.3)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 6px 16px rgba(255, 68, 68, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 12px rgba(255, 68, 68, 0.3)';
+            }}
+            title={t('cancel_future_appointments') || 'إلغاء المواعيد القادمة'}
+          >
+            🗑️ {t('cancel_future') || 'إلغاء'}
+          </button>
         </div>
         {/* معلومات الشهر مع أزرار التنقل */}
         <div style={{background:'#0A8F82', color:'#fff', borderRadius:12, padding:'1rem', marginBottom:20, fontWeight:700, fontSize:16, display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 4px 12px rgba(10, 143, 130, 0.3)'}}>
@@ -155,7 +264,7 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
           </button>
           
           <div style={{textAlign: 'center', flex: 1, position: 'relative'}}>
-            {new Date(_year, _month).toLocaleDateString('ku', { month: 'long', year: 'numeric' })}
+            {months[_month]} {_year}
             <button 
               onClick={() => {
                 const today = new Date();
@@ -303,6 +412,10 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
               });
               const isSelected = _selectedDate === dateStr;
               
+              // حساب إحصائيات المواعيد لهذا اليوم
+              const totalAppointments = getTotalAppointmentsForDate(dateStr);
+              const attendanceCount = getAttendanceForDate(dateStr);
+              
               let buttonStyle = {
                 width: 40,
                 height: 40,
@@ -352,50 +465,133 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
               }
               
               return (
-                <button 
-                  key={day} 
-                  onClick={() => _setSelectedDate(dateStr)}
-                  style={buttonStyle}
-                  onMouseEnter={(e) => {
-                    if (!isToday && !isSelected && !hasAppointment) {
-                      e.target.style.background = '#e8f5e8';
-                      e.target.style.color = '#0A8F82';
-                      e.target.style.transform = 'scale(1.05)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isToday && !isSelected && !hasAppointment) {
-                      e.target.style.background = '#f8f9fa';
-                      e.target.style.color = '#666';
-                      e.target.style.transform = 'scale(1)';
-                    }
-                  }}
-                >
-                  {day}
-                </button>
+                <div key={day} style={{position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                  <button 
+                    onClick={() => _setSelectedDate(dateStr)}
+                    style={buttonStyle}
+                    onMouseEnter={(e) => {
+                      if (!isToday && !isSelected && !hasAppointment) {
+                        e.target.style.background = '#e8f5e8';
+                        e.target.style.color = '#0A8F82';
+                        e.target.style.transform = 'scale(1.05)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isToday && !isSelected && !hasAppointment) {
+                        e.target.style.background = '#f8f9fa';
+                        e.target.style.color = '#666';
+                        e.target.style.transform = 'scale(1)';
+                      }
+                    }}
+                  >
+                    {day}
+                  </button>
+                  {/* عرض إحصائيات المواعيد */}
+                  {totalAppointments > 0 && (
+                    <div style={{
+                      position: 'absolute',
+                      top: -8,
+                      right: -8,
+                      background: '#0A8F82',
+                      color: '#fff',
+                      borderRadius: '50%',
+                      width: 16,
+                      height: 16,
+                      fontSize: 10,
+                      fontWeight: 'bold',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                    }}>
+                      {totalAppointments}
+                    </div>
+                  )}
+                  {/* عرض عدد الحضور */}
+                  {attendanceCount > 0 && (
+                    <div style={{
+                      position: 'absolute',
+                      bottom: -8,
+                      right: -8,
+                      background: '#28a745',
+                      color: '#fff',
+                      borderRadius: '50%',
+                      width: 14,
+                      height: 14,
+                      fontSize: 9,
+                      fontWeight: 'bold',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                    }}>
+                      {attendanceCount}
+                    </div>
+                  )}
+                </div>
               );
             });
           })()}
         </div>
-        {/* شرح الألوان */}
-        <div style={{display:'flex', justifyContent:'center', gap:16, marginBottom:20, flexWrap:'wrap'}}>
-          <div style={{display:'flex', alignItems:'center', gap:6, fontSize:12}}>
+        {/* شرح الألوان والإحصائيات */}
+        <div style={{display:'flex', justifyContent:'center', gap:12, marginBottom:20, flexWrap:'wrap'}}>
+          <div style={{display:'flex', alignItems:'center', gap:6, fontSize:11}}>
             <div style={{width:12, height:12, borderRadius:'50%', background:'#0A8F82', boxShadow:'0 1px 3px rgba(10, 143, 130, 0.3)'}}></div>
             <span>{t('calendar_today')}</span>
           </div>
-          <div style={{display:'flex', alignItems:'center', gap:6, fontSize:12}}>
+          <div style={{display:'flex', alignItems:'center', gap:6, fontSize:11}}>
             <div style={{width:12, height:12, borderRadius:'50%', background:'#0A8F82', opacity:0.9, boxShadow:'0 1px 3px rgba(10, 143, 130, 0.3)'}}></div>
             <span>{t('calendar_has_appointments')}</span>
           </div>
-          <div style={{display:'flex', alignItems:'center', gap:6, fontSize:12}}>
+          <div style={{display:'flex', alignItems:'center', gap:6, fontSize:11}}>
             <div style={{width:12, height:12, borderRadius:'50%', background:'#0A8F82', opacity:0.8, boxShadow:'0 1px 3px rgba(10, 143, 130, 0.3)'}}></div>
             <span>{t('calendar_selected')}</span>
+          </div>
+          <div style={{display:'flex', alignItems:'center', gap:6, fontSize:11}}>
+            <div style={{width:16, height:16, borderRadius:'50%', background:'#0A8F82', boxShadow:'0 1px 3px rgba(10, 143, 130, 0.3)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:10, fontWeight:'bold'}}>
+              3
+            </div>
+            <span>{t('total_appointments') || 'إجمالي المواعيد'}</span>
+          </div>
+          <div style={{display:'flex', alignItems:'center', gap:6, fontSize:11}}>
+            <div style={{width:14, height:14, borderRadius:'50%', background:'#28a745', boxShadow:'0 1px 3px rgba(40, 167, 69, 0.3)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:9, fontWeight:'bold'}}>
+              2
+            </div>
+            <span>{t('attendance_count') || 'عدد الحضور'}</span>
           </div>
         </div>
         {/* مواعيد اليوم المحدد */}
         <div style={{background:'#f8f9fa', borderRadius:12, padding:'1.5rem', marginBottom:20, border: '1px solid #e8f5e8'}}>
           <div style={{fontWeight:700, color:'#0A8F82', marginBottom:12, fontSize:16}}>
             📅 {t('appointments_for_date', { date: _formatDate(_selectedDate) })}
+          </div>
+          
+          {/* إحصائيات اليوم المحدد */}
+          <div style={{display:'flex', justifyContent:'center', gap:20, marginBottom:16, flexWrap:'wrap'}}>
+            <div style={{textAlign:'center', background:'#fff', padding:'0.8rem 1rem', borderRadius:8, boxShadow:'0 2px 4px rgba(0,0,0,0.1)', border:'1px solid #e8f5e8'}}>
+              <div style={{fontSize:'1.2rem', fontWeight:700, color:'#0A8F82'}}>
+                {getTotalAppointmentsForDate(_selectedDate)}
+              </div>
+              <div style={{fontSize:'0.8rem', color:'#666'}}>
+                {t('total_appointments') || 'إجمالي المواعيد'}
+              </div>
+            </div>
+            <div style={{textAlign:'center', background:'#fff', padding:'0.8rem 1rem', borderRadius:8, boxShadow:'0 2px 4px rgba(0,0,0,0.1)', border:'1px solid #e8f5e8'}}>
+              <div style={{fontSize:'1.2rem', fontWeight:700, color:'#28a745'}}>
+                {getAttendanceForDate(_selectedDate)}
+              </div>
+              <div style={{fontSize:'0.8rem', color:'#666'}}>
+                {t('attendance_count') || 'عدد الحضور'}
+              </div>
+            </div>
+            <div style={{textAlign:'center', background:'#fff', padding:'0.8rem 1rem', borderRadius:8, boxShadow:'0 2px 4px rgba(0,0,0,0.1)', border:'1px solid #e8f5e8'}}>
+              <div style={{fontSize:'1.2rem', fontWeight:700, color:'#ffc107'}}>
+                {getTotalAppointmentsForDate(_selectedDate) - getAttendanceForDate(_selectedDate)}
+              </div>
+              <div style={{fontSize:'0.8rem', color:'#666'}}>
+                {t('absent_count') || 'الغياب'}
+              </div>
+            </div>
           </div>
           {_dayAppointments.length === 0 ? (
             <div style={{color:'#888', fontStyle:'italic'}}>{t('no_appointments')}</div>
