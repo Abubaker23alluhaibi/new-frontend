@@ -633,6 +633,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         const data = await response.json();
         console.log('🔍 fetchPrescriptions - Response data:', data);
         console.log('🔍 fetchPrescriptions - Prescriptions array:', data.prescriptions);
+        console.log('🔍 fetchPrescriptions - First prescription medications:', data.prescriptions[0]?.medications);
         setMedications(data.prescriptions || []);
       } else {
         const errorData = await response.json();
