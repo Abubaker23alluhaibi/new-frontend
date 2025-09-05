@@ -769,13 +769,22 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       return;
     }
 
-    // التحقق من أن جميع الأدوية لها بيانات مطلوبة
-    const hasEmptyMedications = newPrescription.medications.some(med => 
+    // التحقق من أن جميع الأدوية لها بيانات مطلوبة مع تفاصيل أكثر
+    const invalidMedications = newPrescription.medications.filter((med, index) => 
       !med.name || !med.dosage || !med.frequency || !med.duration
     );
     
-    if (hasEmptyMedications) {
-      toast.error('يرجى إدخال جميع البيانات المطلوبة للأدوية');
+    if (invalidMedications.length > 0) {
+      console.log('🔍 Frontend - Invalid medications found:', invalidMedications);
+      invalidMedications.forEach((med, index) => {
+        console.log(`🔍 Frontend - Invalid medication ${index + 1}:`, {
+          name: med.name || 'MISSING',
+          dosage: med.dosage || 'MISSING',
+          frequency: med.frequency || 'MISSING',
+          duration: med.duration || 'MISSING'
+        });
+      });
+      toast.error(`يرجى إدخال جميع البيانات المطلوبة للأدوية (${invalidMedications.length} دواء غير مكتمل)`);
       return;
     }
     
