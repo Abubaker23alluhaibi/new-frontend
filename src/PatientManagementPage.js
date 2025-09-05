@@ -1020,17 +1020,6 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                   >
                     + {t('patient_management.add_prescription')}
                   </button>
-                  {medications.length > 0 && (
-                    <button
-                      onClick={() => {
-                        // إرسال إشارة للمكون الرئيسي لطباعة الوصفة
-                        window.dispatchEvent(new CustomEvent('printPrescription'));
-                      }}
-                      className="btn-print-prescription"
-                    >
-                      🖨️ {t('patient_management.print_prescription')}
-                    </button>
-                  )}
                 </div>
               </div>
 
@@ -1054,9 +1043,36 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                             <h4>
                               {prescriptionId === 'individual' ? t('patient_management.prescription_medications') : `${t('patient_management.prescription_title')} - ${meds[0].prescriptionId}`}
                             </h4>
-                            <span className="prescription-date">
-                              {new Date(meds[0].createdAt).toLocaleDateString('ar-EG')}
-                            </span>
+                            <div className="prescription-header-actions">
+                              <span className="prescription-date">
+                                {new Date(meds[0].createdAt).toLocaleDateString('ar-EG')}
+                              </span>
+                              <button
+                                onClick={() => {
+                                  // طباعة هذه الوصفة المحددة
+                                  window.dispatchEvent(new CustomEvent('printSpecificPrescription', { 
+                                    detail: { 
+                                      prescriptionId, 
+                                      medications: meds,
+                                      patient: patient,
+                                      doctor: user
+                                    } 
+                                  }));
+                                }}
+                                className="btn-print-prescription-small"
+                                style={{ 
+                                  background: '#27ae60', 
+                                  color: 'white', 
+                                  border: 'none', 
+                                  padding: '4px 8px', 
+                                  borderRadius: '4px', 
+                                  marginLeft: '8px',
+                                  fontSize: '12px'
+                                }}
+                              >
+                                🖨️ {t('patient_management.print_prescription')}
+                              </button>
+                            </div>
                           </div>
                           
                           <div className="medications-in-prescription">
@@ -1749,14 +1765,24 @@ const PatientManagementPage = () => {
       setShowPrintPrescription(true);
     };
 
+    // مستمع لطباعة وصفة محددة
+    const handlePrintSpecificPrescription = (event) => {
+      const { prescriptionId, medications, patient, doctor } = event.detail;
+      setShowPrintPrescription(true);
+      // يمكن إضافة منطق إضافي هنا لطباعة وصفة محددة
+      console.log('Printing specific prescription:', { prescriptionId, medications, patient, doctor });
+    };
+
     window.addEventListener('openAddMedication', handleOpenAddMedication);
     window.addEventListener('openEditMedication', handleOpenEditMedication);
     window.addEventListener('printPrescription', handlePrintPrescription);
+    window.addEventListener('printSpecificPrescription', handlePrintSpecificPrescription);
 
     return () => {
       window.removeEventListener('openAddMedication', handleOpenAddMedication);
       window.removeEventListener('openEditMedication', handleOpenEditMedication);
       window.removeEventListener('printPrescription', handlePrintPrescription);
+      window.removeEventListener('printSpecificPrescription', handlePrintSpecificPrescription);
     };
   }, []);
 
@@ -2322,8 +2348,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
       <html dir="rtl" lang="ar">
       <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>وصفة طبية - ${patient.name}</title>
+        <title>الوصفة الطبية</title>
         <style>
           @page {
             size: A4;
