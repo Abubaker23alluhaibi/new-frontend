@@ -1229,58 +1229,15 @@
   font-weight: 500;
 }
 
-.btn-print {
-  background: #3498db;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.medication-actions {
   display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.btn-print:hover {
-  background: #2980b9;
-  transform: translateY(-1px);
+  gap: 8px;
 }
 
 .prescription-content {
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-.diagnosis-section {
-  background: #f8f9fa;
-  padding: 15px;
-  border-radius: 8px;
-  border-right: 4px solid #e74c3c;
-}
-
-.diagnosis-section h5 {
-  color: #e74c3c;
-  margin: 0 0 10px 0;
-  font-size: 1.1rem;
-  font-weight: bold;
-}
-
-.diagnosis-section p {
-  margin: 0;
-  color: #2c3e50;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-.medications-section h5 {
-  color: #2c3e50;
-  margin: 0 0 15px 0;
-  font-size: 1.1rem;
-  font-weight: bold;
 }
 
 .medication-item {
@@ -1352,31 +1309,9 @@
   border-right: 3px solid #ffc107;
 }
 
-.notes-section {
-  background: #fff3cd;
-  border: 1px solid #ffeaa7;
-  border-radius: 8px;
-  padding: 15px;
-  border-right: 4px solid #ffc107;
-}
-
-.notes-section h5 {
-  color: #856404;
-  margin: 0 0 10px 0;
-  font-size: 1.1rem;
-  font-weight: bold;
-}
-
-.notes-section p {
-  margin: 0;
-  color: #856404;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
 /* أنماط نموذج إضافة الوصفة */
 .prescription-modal {
-  max-width: 900px;
+  max-width: 1000px;
   max-height: 90vh;
   overflow-y: auto;
 }
@@ -1385,24 +1320,21 @@
   padding: 25px;
 }
 
-.prescription-form-header {
-  text-align: center;
-  margin-bottom: 25px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #3498db;
+.prescription-info {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  border: 2px solid #e9ecef;
 }
 
-.prescription-form-header h3 {
+.prescription-info h3 {
   color: #2c3e50;
-  margin: 0 0 5px 0;
-  font-size: 1.5rem;
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
   font-weight: bold;
-}
-
-.prescription-form-header p {
-  color: #6c757d;
-  margin: 0;
-  font-size: 1rem;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
 }
 
 .medications-section .section-header {
@@ -1414,7 +1346,7 @@
   border-bottom: 2px solid #e0e0e0;
 }
 
-.medications-section .section-header h4 {
+.medications-section .section-header h3 {
   color: #2c3e50;
   margin: 0;
   font-size: 1.2rem;
@@ -1488,6 +1420,113 @@
 .btn-remove-medication:hover {
   background: #c0392b;
   transform: translateY(-1px);
+}
+
+/* أنماط الوصفات الطبية المجمعة */
+.prescription-group {
+  background: #ffffff;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.prescription-group:hover {
+  border-color: #3498db;
+  box-shadow: 0 4px 16px rgba(52, 152, 219, 0.15);
+}
+
+.prescription-group-header {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #2980b9;
+}
+
+.prescription-group-header h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.prescription-date {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.medications-in-prescription {
+  padding: 20px;
+}
+
+.medication-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.medication-card:hover {
+  border-color: #3498db;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
+}
+
+.medication-card:last-child {
+  margin-bottom: 0;
+}
+
+.medication-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.medication-title h5 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.medication-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.medication-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #495057;
+  min-width: 80px;
+}
+
+.detail-value {
+  color: #2c3e50;
+  flex: 1;
 }
 
 .medication-fields {
@@ -1584,10 +1623,6 @@
 
 /* تصميم متجاوب للأدوية */
 @media (max-width: 768px) {
-  .prescriptions-grid {
-    grid-template-columns: 1fr;
-  }
-  
   .medications-header {
     flex-direction: column;
     gap: 15px;

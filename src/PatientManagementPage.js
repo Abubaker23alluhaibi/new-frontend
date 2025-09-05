@@ -505,6 +505,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
   const [uploading, setUploading] = useState(false);
   const [viewingPdf, setViewingPdf] = useState(null);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [medications, setMedications] = useState([]);
   const medicalReportsFileInputRef = useRef(null);
   const examinationsFileInputRef = useRef(null);
 
@@ -590,20 +591,71 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
     setViewingPdf(null);
   };
 
+  // جلب أدوية المريض
+  const fetchMedications = useCallback(async () => {
+    if (!patient || !patient._id) return;
+    
+    try {
+      const token = getAuthToken();
+      if (!token) return;
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients/${patient._id}/medications`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMedications(data.medications || []);
+      }
+    } catch (error) {
+      console.error('Error fetching medications:', error);
+    }
+  }, [patient, getAuthToken]);
+
+  // حذف دواء
+  const deleteMedication = async (medicationId) => {
+    if (!window.confirm('هل أنت متأكد من حذف هذا الدواء؟')) return;
+
+    try {
+      const token = getAuthToken();
+      if (!token) return;
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients/${patient._id}/medications/${medicationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        toast.success('تم حذف الدواء بنجاح');
+        fetchMedications();
+      } else {
+        throw new Error('Failed to delete medication');
+      }
+    } catch (error) {
+      console.error('Error deleting medication:', error);
+      toast.error('خطأ في حذف الدواء');
+    }
+  };
+
+  // تحميل الأدوية عند فتح تبويب الأدوية
+  useEffect(() => {
+    if (activeTab === 'medications') {
+      fetchMedications();
+    }
+  }, [activeTab, fetchMedications]);
+
 
 
   
 
 
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ar-IQ', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
 
 
   // تشخيص بيانات المريض
@@ -739,6 +791,12 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
             onClick={() => setActiveTab('basic')}
           >
             {t('patient_management.basic_info')}
+          </button>
+          <button
+            className={activeTab === 'medications' ? 'active' : ''}
+            onClick={() => setActiveTab('medications')}
+          >
+            الأدوية
           </button>
           <button
             className={activeTab === 'medical_reports' ? 'active' : ''}
@@ -974,6 +1032,117 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
             </div>
           )}
 
+          {activeTab === 'medications' && (
+            <div className="medications-section">
+              <div className="medications-header">
+                <h3>أدوية المريض</h3>
+                <button
+                  onClick={() => {
+                    // إرسال إشارة للمكون الرئيسي لفتح نموذج إضافة وصفة طبية
+                    window.dispatchEvent(new CustomEvent('openAddMedication'));
+                  }}
+                  className="btn-add-prescription"
+                >
+                  + إضافة وصفة طبية جديدة
+                </button>
+              </div>
+
+              <div className="prescriptions-list">
+                {medications.length > 0 ? (
+                  <div className="prescriptions-container">
+                    {(() => {
+                      // تجميع الأدوية حسب الوصفة الطبية
+                      const groupedMedications = medications.reduce((groups, medication) => {
+                        const prescriptionId = medication.prescriptionId || 'individual';
+                        if (!groups[prescriptionId]) {
+                          groups[prescriptionId] = [];
+                        }
+                        groups[prescriptionId].push(medication);
+                        return groups;
+                      }, {});
+
+                      return Object.entries(groupedMedications).map(([prescriptionId, meds]) => (
+                        <div key={prescriptionId} className="prescription-group">
+                          <div className="prescription-group-header">
+                            <h4>
+                              {prescriptionId === 'individual' ? 'أدوية منفردة' : `الوصفة الطبية - ${meds[0].prescriptionId}`}
+                            </h4>
+                            <span className="prescription-date">
+                              {new Date(meds[0].createdAt).toLocaleDateString('ar-EG')}
+                            </span>
+                          </div>
+                          
+                          <div className="medications-in-prescription">
+                            {meds.map((medication, index) => (
+                              <div key={medication._id || index} className="medication-card">
+                                <div className="medication-header">
+                                  <div className="medication-title">
+                                    <h5>{medication.name}</h5>
+                                  </div>
+                                  <div className="medication-actions">
+                                    <button
+                                      onClick={() => {
+                                        window.dispatchEvent(new CustomEvent('openEditMedication', { detail: medication }));
+                                      }}
+                                      className="btn-edit"
+                                      style={{ background: '#3498db', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', marginRight: '8px' }}
+                                    >
+                                      تعديل
+                                    </button>
+                                    <button
+                                      onClick={() => deleteMedication(medication._id)}
+                                      className="btn-delete"
+                                      style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px' }}
+                                    >
+                                      حذف
+                                    </button>
+                                  </div>
+                                </div>
+                                
+                                <div className="medication-details">
+                                  <div className="detail-row">
+                                    <span className="detail-label">الجرعة:</span>
+                                    <span className="detail-value">{medication.dosage}</span>
+                                  </div>
+                                  <div className="detail-row">
+                                    <span className="detail-label">التكرار:</span>
+                                    <span className="detail-value">{medication.frequency}</span>
+                                  </div>
+                                  {medication.duration && (
+                                    <div className="detail-row">
+                                      <span className="detail-label">المدة:</span>
+                                      <span className="detail-value">{medication.duration}</span>
+                                    </div>
+                                  )}
+                                  {medication.instructions && (
+                                    <div className="detail-row">
+                                      <span className="detail-label">التعليمات:</span>
+                                      <span className="detail-value">{medication.instructions}</span>
+                                    </div>
+                                  )}
+                                  {medication.notes && (
+                                    <div className="detail-row">
+                                      <span className="detail-label">ملاحظات:</span>
+                                      <span className="detail-value">{medication.notes}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                ) : (
+                  <div className="no-prescriptions">
+                    <p>لا توجد أدوية مسجلة لهذا المريض</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
 
@@ -1107,6 +1276,8 @@ const PatientManagementPage = () => {
   const [pagination, setPagination] = useState({});
   const [loading, setLoading] = useState(true);
   const [todayAppointments, setTodayAppointments] = useState([]);
+  const [showAddMedication, setShowAddMedication] = useState(false);
+  const [editingMedication, setEditingMedication] = useState(null);
 
   // دالة مساعدة للحصول على التوكن
   const getAuthToken = useCallback(() => {
@@ -1481,11 +1652,92 @@ const PatientManagementPage = () => {
     }
   };
 
+  // إضافة وصفة طبية جديدة (عدة أدوية)
+  const addPrescription = async (prescriptionData) => {
+    try {
+      const token = getAuthToken();
+      if (!token) return;
+
+      // إضافة كل دواء منفرداً
+      const promises = prescriptionData.medications.map(medication => 
+        fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients/${selectedPatient._id}/medications`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(medication),
+          credentials: 'include'
+        })
+      );
+
+      const responses = await Promise.all(promises);
+      const allSuccessful = responses.every(response => response.ok);
+
+      if (allSuccessful) {
+        toast.success(`تم إضافة الوصفة الطبية بنجاح (${prescriptionData.medications.length} دواء)`);
+        setShowAddMedication(false);
+      } else {
+        throw new Error('Failed to add some medications');
+      }
+    } catch (error) {
+      console.error('Error adding prescription:', error);
+      toast.error('خطأ في إضافة الوصفة الطبية');
+    }
+  };
+
+  // تحديث دواء
+  const updateMedication = async (medicationId, updatedData) => {
+    try {
+      const token = getAuthToken();
+      if (!token) return;
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors/me/patients/${selectedPatient._id}/medications/${medicationId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedData),
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        toast.success('تم تحديث الدواء بنجاح');
+        setEditingMedication(null);
+      } else {
+        throw new Error('Failed to update medication');
+      }
+    } catch (error) {
+      console.error('Error updating medication:', error);
+      toast.error('خطأ في تحديث الدواء');
+    }
+  };
+
   useEffect(() => {
     fetchPatients();
     fetchPatientStats();
     fetchTodayAppointments();
   }, [fetchPatients, fetchPatientStats, fetchTodayAppointments]);
+
+  // مستمعي الأحداث للأدوية
+  useEffect(() => {
+    const handleOpenAddMedication = () => {
+      setShowAddMedication(true);
+    };
+
+    const handleOpenEditMedication = (event) => {
+      setEditingMedication(event.detail);
+    };
+
+    window.addEventListener('openAddMedication', handleOpenAddMedication);
+    window.addEventListener('openEditMedication', handleOpenEditMedication);
+
+    return () => {
+      window.removeEventListener('openAddMedication', handleOpenAddMedication);
+      window.removeEventListener('openEditMedication', handleOpenEditMedication);
+    };
+  }, []);
 
   return (
     <div className="patient-management-page">
@@ -1638,6 +1890,391 @@ const PatientManagementPage = () => {
           onCancel={() => setEditingPatient(null)}
         />
       )}
+
+      {/* إضافة وصفة طبية جديدة */}
+      {selectedPatient && showAddMedication && (
+        <AddPrescriptionForm
+          onAdd={addPrescription}
+          onCancel={() => setShowAddMedication(false)}
+        />
+      )}
+
+      {/* تعديل دواء */}
+      {selectedPatient && editingMedication && (
+        <EditMedicationForm
+          medication={editingMedication}
+          onUpdate={updateMedication}
+          onCancel={() => setEditingMedication(null)}
+        />
+      )}
+    </div>
+  );
+};
+
+// مكون إضافة وصفة طبية جديدة (عدة أدوية)
+const AddPrescriptionForm = ({ onAdd, onCancel }) => {
+  const [prescriptionData, setPrescriptionData] = useState({
+    diagnosis: '',
+    notes: '',
+    medications: [{
+      name: '',
+      dosage: '',
+      frequency: '',
+      duration: '',
+      instructions: '',
+      notes: ''
+    }]
+  });
+  const [loading, setLoading] = useState(false);
+
+  const addMedication = () => {
+    setPrescriptionData(prev => ({
+      ...prev,
+      medications: [...prev.medications, {
+        name: '',
+        dosage: '',
+        frequency: '',
+        duration: '',
+        instructions: '',
+        notes: ''
+      }]
+    }));
+  };
+
+  const removeMedication = (index) => {
+    if (prescriptionData.medications.length > 1) {
+      setPrescriptionData(prev => ({
+        ...prev,
+        medications: prev.medications.filter((_, i) => i !== index)
+      }));
+    }
+  };
+
+  const updateMedication = (index, field, value) => {
+    setPrescriptionData(prev => ({
+      ...prev,
+      medications: prev.medications.map((med, i) => 
+        i === index ? { ...med, [field]: value } : med
+      )
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // التحقق من وجود تشخيص
+    if (!prescriptionData.diagnosis.trim()) {
+      alert('يرجى إدخال التشخيص');
+      return;
+    }
+
+    // التحقق من وجود دواء واحد على الأقل مع البيانات المطلوبة
+    const validMedications = prescriptionData.medications.filter(med => 
+      med.name.trim() && med.dosage.trim() && med.frequency.trim()
+    );
+
+    if (validMedications.length === 0) {
+      alert('يرجى إدخال دواء واحد على الأقل مع البيانات المطلوبة');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // إنشاء معرف فريد للوصفة
+      const prescriptionId = `prescription_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // إضافة معرف الوصفة لكل دواء
+      const medicationsWithPrescriptionId = validMedications.map(med => ({
+        ...med,
+        prescriptionId
+      }));
+
+      await onAdd({
+        prescriptionId,
+        diagnosis: prescriptionData.diagnosis,
+        notes: prescriptionData.notes,
+        medications: medicationsWithPrescriptionId
+      });
+      
+      // إعادة تعيين النموذج
+      setPrescriptionData({
+        diagnosis: '',
+        notes: '',
+        medications: [{
+          name: '',
+          dosage: '',
+          frequency: '',
+          duration: '',
+          instructions: '',
+          notes: ''
+        }]
+      });
+    } catch (error) {
+      console.error('Error adding prescription:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content prescription-modal">
+        <div className="modal-header">
+          <h2>إضافة وصفة طبية جديدة</h2>
+          <button onClick={onCancel} className="btn-close">×</button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="prescription-form">
+          {/* معلومات الوصفة */}
+          <div className="prescription-info">
+            <h3>معلومات الوصفة</h3>
+            <div className="field-group full-width">
+              <label>التشخيص *</label>
+              <textarea
+                value={prescriptionData.diagnosis}
+                onChange={(e) => setPrescriptionData({...prescriptionData, diagnosis: e.target.value})}
+                required
+                placeholder="أدخل التشخيص"
+                rows="3"
+              />
+            </div>
+            
+            <div className="field-group full-width">
+              <label>ملاحظات الطبيب</label>
+              <textarea
+                value={prescriptionData.notes}
+                onChange={(e) => setPrescriptionData({...prescriptionData, notes: e.target.value})}
+                placeholder="ملاحظات إضافية للوصفة"
+                rows="2"
+              />
+            </div>
+          </div>
+
+          {/* الأدوية */}
+          <div className="medications-section">
+            <div className="section-header">
+              <h3>الأدوية</h3>
+              <button type="button" onClick={addMedication} className="btn-add-medication">
+                + إضافة دواء آخر
+              </button>
+            </div>
+
+            {prescriptionData.medications.map((medication, index) => (
+              <div key={index} className="medication-form">
+                <div className="medication-form-header">
+                  <h5>دواء #{index + 1}</h5>
+                  {prescriptionData.medications.length > 1 && (
+                    <button 
+                      type="button" 
+                      onClick={() => removeMedication(index)} 
+                      className="btn-remove-medication"
+                    >
+                      حذف
+                    </button>
+                  )}
+                </div>
+
+                <div className="medication-fields">
+                  <div className="field-group">
+                    <label>اسم الدواء *</label>
+                    <input
+                      type="text"
+                      value={medication.name}
+                      onChange={(e) => updateMedication(index, 'name', e.target.value)}
+                      required
+                      placeholder="أدخل اسم الدواء"
+                    />
+                  </div>
+                  
+                  <div className="field-group">
+                    <label>الجرعة *</label>
+                    <input
+                      type="text"
+                      value={medication.dosage}
+                      onChange={(e) => updateMedication(index, 'dosage', e.target.value)}
+                      required
+                      placeholder="مثال: 500 مجم"
+                    />
+                  </div>
+                  
+                  <div className="field-group">
+                    <label>التكرار *</label>
+                    <select
+                      value={medication.frequency}
+                      onChange={(e) => updateMedication(index, 'frequency', e.target.value)}
+                      required
+                    >
+                      <option value="">اختر التكرار</option>
+                      <option value="مرة واحدة يومياً">مرة واحدة يومياً</option>
+                      <option value="مرتين يومياً">مرتين يومياً</option>
+                      <option value="ثلاث مرات يومياً">ثلاث مرات يومياً</option>
+                      <option value="أربع مرات يومياً">أربع مرات يومياً</option>
+                      <option value="كل 6 ساعات">كل 6 ساعات</option>
+                      <option value="كل 8 ساعات">كل 8 ساعات</option>
+                      <option value="كل 12 ساعة">كل 12 ساعة</option>
+                      <option value="عند الحاجة">عند الحاجة</option>
+                    </select>
+                  </div>
+                  
+                  <div className="field-group">
+                    <label>المدة</label>
+                    <input
+                      type="text"
+                      value={medication.duration}
+                      onChange={(e) => updateMedication(index, 'duration', e.target.value)}
+                      placeholder="مثال: 7 أيام"
+                    />
+                  </div>
+                  
+                  <div className="field-group full-width">
+                    <label>التعليمات</label>
+                    <textarea
+                      value={medication.instructions}
+                      onChange={(e) => updateMedication(index, 'instructions', e.target.value)}
+                      placeholder="تعليمات خاصة للدواء"
+                      rows="2"
+                    />
+                  </div>
+                  
+                  <div className="field-group full-width">
+                    <label>ملاحظات إضافية</label>
+                    <textarea
+                      value={medication.notes}
+                      onChange={(e) => updateMedication(index, 'notes', e.target.value)}
+                      placeholder="ملاحظات إضافية"
+                      rows="2"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="form-actions">
+            <button type="button" onClick={onCancel} className="btn-cancel">
+              إلغاء
+            </button>
+            <button type="submit" className="btn-save" disabled={loading}>
+              {loading ? 'جاري الحفظ...' : 'حفظ الوصفة الطبية'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// مكون تعديل دواء
+const EditMedicationForm = ({ medication, onUpdate, onCancel }) => {
+  const [formData, setFormData] = useState({
+    name: medication.name || '',
+    dosage: medication.dosage || '',
+    frequency: medication.frequency || '',
+    duration: medication.duration || '',
+    instructions: medication.instructions || '',
+    notes: medication.notes || ''
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await onUpdate(medication._id, formData);
+    } catch (error) {
+      console.error('Error updating medication:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content prescription-modal">
+        <div className="modal-header">
+          <h2>تعديل الدواء</h2>
+          <button onClick={onCancel} className="btn-close">×</button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="prescription-form">
+          <div className="medication-fields">
+            <div className="field-group">
+              <label>اسم الدواء *</label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                required
+              />
+            </div>
+            
+            <div className="field-group">
+              <label>الجرعة *</label>
+              <input
+                type="text"
+                value={formData.dosage}
+                onChange={(e) => setFormData({...formData, dosage: e.target.value})}
+                required
+              />
+            </div>
+            
+            <div className="field-group">
+              <label>التكرار *</label>
+              <select
+                value={formData.frequency}
+                onChange={(e) => setFormData({...formData, frequency: e.target.value})}
+                required
+              >
+                <option value="">اختر التكرار</option>
+                <option value="مرة واحدة يومياً">مرة واحدة يومياً</option>
+                <option value="مرتين يومياً">مرتين يومياً</option>
+                <option value="ثلاث مرات يومياً">ثلاث مرات يومياً</option>
+                <option value="أربع مرات يومياً">أربع مرات يومياً</option>
+                <option value="كل 6 ساعات">كل 6 ساعات</option>
+                <option value="كل 8 ساعات">كل 8 ساعات</option>
+                <option value="كل 12 ساعة">كل 12 ساعة</option>
+                <option value="عند الحاجة">عند الحاجة</option>
+              </select>
+            </div>
+            
+            <div className="field-group">
+              <label>المدة</label>
+              <input
+                type="text"
+                value={formData.duration}
+                onChange={(e) => setFormData({...formData, duration: e.target.value})}
+              />
+            </div>
+            
+            <div className="field-group full-width">
+              <label>التعليمات</label>
+              <textarea
+                value={formData.instructions}
+                onChange={(e) => setFormData({...formData, instructions: e.target.value})}
+                rows="3"
+              />
+            </div>
+            
+            <div className="field-group full-width">
+              <label>ملاحظات إضافية</label>
+              <textarea
+                value={formData.notes}
+                onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                rows="2"
+              />
+            </div>
+          </div>
+
+          <div className="form-actions">
+            <button type="button" onClick={onCancel} className="btn-cancel">
+              إلغاء
+            </button>
+            <button type="submit" className="btn-save" disabled={loading}>
+              {loading ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
