@@ -241,10 +241,6 @@ function DoctorAppointments() {
     }
   };
 
-  const addToSpecialAppointments = (appointment) => {
-    setSelectedAppointmentForSpecial(appointment);
-    setShowAddToSpecial(true);
-  };
 
   const handleAddToSpecial = async (specialAppointmentData) => {
     // تجهيز بيانات الموعد الخاص
@@ -426,7 +422,14 @@ function DoctorAppointments() {
     }
     
     // تصفية حسب الحالة
-    if (filterStatus !== 'all') {
+    if (filterStatus === 'present') {
+      filtered = filtered.filter(apt => apt.attendance === 'present');
+    } else if (filterStatus === 'absent') {
+      filtered = filtered.filter(apt => 
+        apt.attendance === 'absent' || 
+        (isPastAppointment(apt.date) && (!apt.attendance || apt.attendance === 'not_set'))
+      );
+    } else if (filterStatus !== 'all') {
       filtered = filtered.filter(apt => getAppointmentStatus(apt.date) === filterStatus);
     }
     
@@ -604,7 +607,9 @@ function DoctorAppointments() {
                 textAlign: isRTL ? 'right' : 'left'
               }}
             >
-              <option value="all">{t('displayed_appointments')}</option>
+              <option value="all">{t('all_appointments')}</option>
+              <option value="present">{t('present_appointments')}</option>
+              <option value="absent">{t('absent_appointments')}</option>
               <option value="today">{t('today_appointments')}</option>
               <option value="upcoming">{t('upcoming_appointments')}</option>
               <option value="past">{t('past_appointments')}</option>
@@ -688,148 +693,62 @@ function DoctorAppointments() {
         )}
       </div>
 
-      {/* Attendance Sections */}
-      <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(350px, 1fr))', gap:'1rem', marginBottom:'2rem'}}>
-        {/* Present Appointments Section */}
-        <div style={{background:'#fff', borderRadius:12, boxShadow:'0 2px 8px rgba(0,0,0,0.1)', padding:'1rem', border:'1px solid #e8f5e8'}}>
-          <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.8rem'}}>
-            <div style={{fontSize:'1.2rem'}}>✅</div>
-            <h3 style={{color:'#0A8F82', margin:0, fontSize:'1.1rem', fontWeight:700}}>
-              {t('present_appointments')} ({displayedAppointments.filter(apt => apt.attendance === 'present').length})
-            </h3>
-          </div>
-          
-          {displayedAppointments.filter(apt => apt.attendance === 'present').length === 0 ? (
-            <div style={{textAlign:'center', color:'#666', fontStyle:'italic', padding:'1.5rem 0', fontSize:'0.9rem'}}>
-              {t('no_present_appointments')}
-            </div>
-          ) : (
-            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:'0.6rem', maxHeight:'300px', overflowY:'auto'}}>
-              {displayedAppointments.filter(apt => apt.attendance === 'present').map((appointment, index) => (
-                <div key={appointment._id} style={{
-                  background:'#f8f9fa',
-                  borderRadius:8,
-                  padding:'0.8rem',
-                  borderLeft:'3px solid #0A8F82',
-                  border:'1px solid #e8f5e8',
-                  fontSize:'0.85rem'
-                }}>
-                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'0.4rem'}}>
-                    <div style={{flex:1}}>
-                      <h4 style={{color:'#0A8F82', margin:'0 0 0.2rem 0', fontSize:'0.95rem', fontWeight:700}}>
-                        👤 {appointment.isBookingForOther
-                          ? (appointment.patientName || t('patient'))
-                          : (appointment.userName || appointment.userId?.first_name || t('patient'))
-                        }
-                      </h4>
-                      <div style={{color:'#666', fontSize:'0.8rem', marginBottom:'0.2rem'}}>
-                        📅 {formatDate(appointment.date)}
-                      </div>
-                      <div style={{color:'#666', fontSize:'0.8rem'}}>
-                        🕐 {appointment.time}
-                      </div>
-                      {appointment.reason && (
-                        <div style={{color:'#666', fontSize:'0.75rem', marginTop:'0.2rem'}}>
-                          💬 {appointment.reason}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{
-                      background:'#0A8F82',
-                      color:'#fff',
-                      padding:'0.15rem 0.4rem',
-                      borderRadius:8,
-                      fontSize:'0.7rem',
-                      fontWeight:700
-                    }}>
-                      ✅ {t('present')}
-                    </div>
-                  </div>
-                  {appointment.isBookingForOther && (
-                    <div style={{color:'#666', fontSize:'0.75rem', marginTop:'0.3rem'}}>
-                      👥 {t('booking.booker_name')}: {appointment.bookerName || appointment.userName}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Absent Appointments Section */}
-        <div style={{background:'#fff', borderRadius:12, boxShadow:'0 2px 8px rgba(0,0,0,0.1)', padding:'1rem', border:'1px solid #e8f5e8'}}>
-          <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.8rem'}}>
-            <div style={{fontSize:'1.2rem'}}>❌</div>
-            <h3 style={{color:'#0A8F82', margin:0, fontSize:'1.1rem', fontWeight:700}}>
-              {t('absent_appointments')} ({displayedAppointments.filter(apt => 
-                apt.attendance === 'absent' || 
-                (isPastAppointment(apt.date) && (!apt.attendance || apt.attendance === 'not_set'))
-              ).length})
-            </h3>
-          </div>
-          
-          {displayedAppointments.filter(apt => 
-            apt.attendance === 'absent' || 
-            (isPastAppointment(apt.date) && (!apt.attendance || apt.attendance === 'not_set'))
-          ).length === 0 ? (
-            <div style={{textAlign:'center', color:'#666', fontStyle:'italic', padding:'1.5rem 0', fontSize:'0.9rem'}}>
-              {t('no_absent_appointments')}
-            </div>
-          ) : (
-            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:'0.6rem', maxHeight:'300px', overflowY:'auto'}}>
-              {displayedAppointments.filter(apt => 
-                apt.attendance === 'absent' || 
-                (isPastAppointment(apt.date) && (!apt.attendance || apt.attendance === 'not_set'))
-              ).map((appointment, index) => (
-                <div key={appointment._id} style={{
-                  background:'#f8f9fa',
-                  borderRadius:8,
-                  padding:'0.8rem',
-                  borderLeft:'3px solid #0A8F82',
-                  border:'1px solid #e8f5e8',
-                  fontSize:'0.85rem'
-                }}>
-                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'0.4rem'}}>
-                    <div style={{flex:1}}>
-                      <h4 style={{color:'#0A8F82', margin:'0 0 0.2rem 0', fontSize:'0.95rem', fontWeight:700}}>
-                        👤 {appointment.isBookingForOther
-                          ? (appointment.patientName || t('patient'))
-                          : (appointment.userName || appointment.userId?.first_name || t('patient'))
-                        }
-                      </h4>
-                      <div style={{color:'#666', fontSize:'0.8rem', marginBottom:'0.2rem'}}>
-                        📅 {formatDate(appointment.date)}
-                      </div>
-                      <div style={{color:'#666', fontSize:'0.8rem'}}>
-                        🕐 {appointment.time}
-                      </div>
-                      {appointment.reason && (
-                        <div style={{color:'#666', fontSize:'0.75rem', marginTop:'0.2rem'}}>
-                          💬 {appointment.reason}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{
-                      background:'#0A8F82',
-                      color:'#fff',
-                      padding:'0.15rem 0.4rem',
-                      borderRadius:8,
-                      fontSize:'0.7rem',
-                      fontWeight:700
-                    }}>
-                      ❌ {t('absent')}
-                    </div>
-                  </div>
-                  {appointment.isBookingForOther && (
-                    <div style={{color:'#666', fontSize:'0.75rem', marginTop:'0.3rem'}}>
-                      👥 {t('booking.booker_name')}: {appointment.bookerName || appointment.userName}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+      {/* Attendance Filter Buttons */}
+      <div style={{display:'flex', justifyContent:'center', gap:'1rem', marginBottom:'2rem', flexWrap:'wrap'}}>
+        <button 
+          onClick={() => setFilterStatus('all')}
+          style={{
+            background: filterStatus === 'all' ? '#0A8F82' : '#f8f9fa',
+            color: filterStatus === 'all' ? '#fff' : '#0A8F82',
+            border:'2px solid #0A8F82',
+            borderRadius:8,
+            padding:'0.8rem 1.5rem',
+            fontWeight:700,
+            cursor:'pointer',
+            fontSize:'0.9rem',
+            display:'flex',
+            alignItems:'center',
+            gap:'0.5rem'
+          }}
+        >
+          📋 {t('all_appointments')}
+        </button>
+        <button 
+          onClick={() => setFilterStatus('present')}
+          style={{
+            background: filterStatus === 'present' ? '#0A8F82' : '#f8f9fa',
+            color: filterStatus === 'present' ? '#fff' : '#0A8F82',
+            border:'2px solid #0A8F82',
+            borderRadius:8,
+            padding:'0.8rem 1.5rem',
+            fontWeight:700,
+            cursor:'pointer',
+            fontSize:'0.9rem',
+            display:'flex',
+            alignItems:'center',
+            gap:'0.5rem'
+          }}
+        >
+          ✅ {t('present_appointments')}
+        </button>
+        <button 
+          onClick={() => setFilterStatus('absent')}
+          style={{
+            background: filterStatus === 'absent' ? '#0A8F82' : '#f8f9fa',
+            color: filterStatus === 'absent' ? '#fff' : '#0A8F82',
+            border:'2px solid #0A8F82',
+            borderRadius:8,
+            padding:'0.8rem 1.5rem',
+            fontWeight:700,
+            cursor:'pointer',
+            fontSize:'0.9rem',
+            display:'flex',
+            alignItems:'center',
+            gap:'0.5rem'
+          }}
+        >
+          ❌ {t('absent_appointments')}
+        </button>
       </div>
 
       {/* Appointments List */}
