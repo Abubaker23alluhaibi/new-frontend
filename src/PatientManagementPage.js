@@ -767,9 +767,22 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
     toast.info('جاري حفظ الوصفة...');
     
     // التحقق من الصلاحيات
-    if (!user || user.role !== 'doctor') {
-      console.log('🔍 handleSubmitPrescription - User not authorized:', user);
-      toast.error('غير مصرح لك بإضافة وصفات طبية');
+    console.log('🔍 handleSubmitPrescription - User object:', user);
+    console.log('🔍 handleSubmitPrescription - User role:', user?.role);
+    console.log('🔍 handleSubmitPrescription - User type:', user?.type);
+    console.log('🔍 handleSubmitPrescription - User isDoctor:', user?.isDoctor);
+    
+    // التحقق من الصلاحيات - جرب عدة طرق للتحقق من أن المستخدم طبيب
+    const isDoctor = user?.role === 'doctor' || 
+                     user?.type === 'doctor' || 
+                     user?.isDoctor === true ||
+                     user?.userType === 'doctor' ||
+                     (user?.name && user.name.includes('د.')) ||
+                     (user?.name && user.name.includes('دكتور'));
+    
+    if (!user || !isDoctor) {
+      console.log('🔍 handleSubmitPrescription - User not authorized:', { user, isDoctor });
+      toast.error('غير مصرح لك بإضافة وصفات طبية. يرجى التأكد من أنك مسجل دخولك كطبيب');
       setSavingPrescription(false);
       return;
     }
@@ -839,7 +852,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         patientId: patient._id,
         patientName: patient.name,
         patientPhone: patient.phone,
-        doctorId: user?._id,
+        doctorId: user?._id?.toString(),
         doctorName: user?.first_name || 'دكتور'
       };
       
@@ -871,7 +884,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          doctorId: user?._id,
+          doctorId: user?._id?.toString(),
           diagnosis: newPrescription.diagnosis,
           notes: newPrescription.notes,
           medications: newPrescription.medications
@@ -886,7 +899,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       
       // فحص البيانات المرسلة مرة أخرى
       console.log('🔍 handleSubmitPrescription - Final data being sent:', {
-        doctorId: user?._id,
+        doctorId: user?._id?.toString(),
         diagnosis: newPrescription.diagnosis,
         notes: newPrescription.notes,
         medications: newPrescription.medications,
@@ -903,7 +916,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       // فحص إضافي للتأكد من أن البيانات المرسلة صحيحة
       console.log('🔍 handleSubmitPrescription - Final validation before sending:');
       console.log('🔍 - request body:', JSON.stringify({
-        doctorId: user?._id,
+        doctorId: user?._id?.toString(),
         diagnosis: newPrescription.diagnosis,
         notes: newPrescription.notes,
         medications: newPrescription.medications
@@ -915,6 +928,20 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       console.log('🔍 - medications array type:', typeof newPrescription.medications);
       console.log('🔍 - medications is array:', Array.isArray(newPrescription.medications));
       console.log('🔍 - medications length:', newPrescription.medications.length);
+      console.log('🔍 - user._id:', user?._id);
+      console.log('🔍 - user._id.toString():', user?._id?.toString());
+      console.log('🔍 - user object keys:', Object.keys(user || {}));
+      console.log('🔍 - user role check:', user?.role === 'doctor');
+      console.log('🔍 - user type check:', user?.type === 'doctor');
+      console.log('🔍 - user isDoctor check:', user?.isDoctor === true);
+      console.log('🔍 - user name check:', user?.name?.includes('د.') || user?.name?.includes('دكتور'));
+      console.log('🔍 - isDoctor result:', isDoctor);
+      console.log('🔍 - user object full:', JSON.stringify(user, null, 2));
+      console.log('🔍 - user name:', user?.name);
+      console.log('🔍 - user name includes د.:', user?.name?.includes('د.'));
+      console.log('🔍 - user name includes دكتور:', user?.name?.includes('دكتور'));
+      console.log('🔍 - user name includes د.:', user?.name?.includes('د.'));
+      console.log('🔍 - user name includes دكتور:', user?.name?.includes('دكتور'));
 
       if (response.ok) {
         const result = await response.json();
