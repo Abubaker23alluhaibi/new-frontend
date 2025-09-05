@@ -25,6 +25,53 @@ function DoctorAppointments() {
 
   const { t, i18n } = useTranslation();
 
+  // دالة لتسجيل المواعيد السابقة تلقائياً كـ غائب
+  const processPastAppointments = async (appointments) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const appointmentsToUpdate = [];
+    
+    for (const appointment of appointments) {
+      const appointmentDate = new Date(appointment.date);
+      appointmentDate.setHours(0, 0, 0, 0);
+      
+      // إذا كان الموعد سابق ولم يتم تسجيل حضور أو غياب
+      if (appointmentDate < today && (!appointment.attendance || appointment.attendance === 'not_set')) {
+        appointmentsToUpdate.push(appointment._id);
+      }
+    }
+    
+    // تحديث المواعيد السابقة في قاعدة البيانات
+    if (appointmentsToUpdate.length > 0) {
+      try {
+        await Promise.all(appointmentsToUpdate.map(async (appointmentId) => {
+          await fetch(`${process.env.REACT_APP_API_URL}/api/appointments/${appointmentId}/attendance`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ attendance: 'absent' })
+          });
+        }));
+        
+        console.log(`✅ تم تسجيل ${appointmentsToUpdate.length} موعد سابق كـ غائب تلقائياً`);
+      } catch (error) {
+        console.error('❌ خطأ في تسجيل الغياب التلقائي للمواعيد السابقة:', error);
+      }
+    }
+    
+    // تحديث حالة المواعيد في الذاكرة المحلية
+    return appointments.map(appointment => {
+      const appointmentDate = new Date(appointment.date);
+      appointmentDate.setHours(0, 0, 0, 0);
+      
+      if (appointmentDate < today && (!appointment.attendance || appointment.attendance === 'not_set')) {
+        return { ...appointment, attendance: 'absent' };
+      }
+      
+      return appointment;
+    });
+  };
+
   // إضافة معالجة اتجاه اللغة لحل مشكلة النص العربي
   useEffect(() => {
     const currentLang = i18n.language || 'ar';
@@ -63,7 +110,11 @@ function DoctorAppointments() {
         });
         
         const uniqueAppointments = Array.from(uniqueMap.values());
-        setAppointments(uniqueAppointments);
+        
+        // تسجيل المواعيد السابقة تلقائياً كـ غائب
+        const processedAppointments = await processPastAppointments(uniqueAppointments);
+        
+        setAppointments(processedAppointments);
       } else {
         setError('فشل في جلب المواعيد');
       }
@@ -112,7 +163,6 @@ function DoctorAppointments() {
         method: 'DELETE'
       });
       if (res.ok) {
-        const appointment = appointments.find(apt => apt._id === appointmentId);
         setAppointments(appointments.filter(apt => apt._id !== appointmentId));
         
         // إرسال إشعار فوري للمريض - معطل مؤقتاً
@@ -525,12 +575,21 @@ function DoctorAppointments() {
         </div>
         <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', textAlign:'center'}}>
           <div style={{fontSize:'2rem', marginBottom:'0.5rem'}}>❌</div>
-          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#f44336', marginBottom:'0.5rem'}}>{displayedAppointments.filter(apt => apt.attendance === 'absent').length}</div>
+          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#f44336', marginBottom:'0.5rem'}}>
+            {displayedAppointments.filter(apt => 
+              apt.attendance === 'absent' || 
+              (isPastAppointment(apt.date) && (!apt.attendance || apt.attendance === 'not_set'))
+            ).length}
+          </div>
           <div style={{color:'#666'}}>{t('absent_count')}</div>
         </div>
         <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', textAlign:'center'}}>
           <div style={{fontSize:'2rem', marginBottom:'0.5rem'}}>⏳</div>
-          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#ff9800', marginBottom:'0.5rem'}}>{displayedAppointments.filter(apt => !apt.attendance || apt.attendance === 'not_set').length}</div>
+          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#ff9800', marginBottom:'0.5rem'}}>
+            {displayedAppointments.filter(apt => 
+              (!apt.attendance || apt.attendance === 'not_set') && !isPastAppointment(apt.date)
+            ).length}
+          </div>
           <div style={{color:'#666'}}>{t('waiting')}</div>
         </div>
       </div>
@@ -829,6 +888,19 @@ function DoctorAppointments() {
                          }}>
                            ❌ {t('absent')}
                          </div>
+                       ) : status === 'past' ? (
+                         <div style={{
+                           background:'#f44336',
+                           color:'#fff',
+                           padding:'0.3rem 0.6rem',
+                           borderRadius:6,
+                           fontSize:'0.75rem',
+                           fontWeight:600,
+                           textAlign:'center',
+                           display:'inline-block'
+                         }}>
+                           ❌ {t('absent')}
+                         </div>
                        ) : (
                          <div style={{
                            background:'#ff9800',
@@ -846,8 +918,8 @@ function DoctorAppointments() {
                      </div>
                   </div>
                   <div className="no-print" style={{display:'flex', gap:'0.5rem', flexWrap:'wrap'}}>
-                                         {/* أزرار الحضور - تظهر فقط إذا لم يتم تحديد الحضور بعد */}
-                     {(!appointment.attendance || appointment.attendance === 'not_set') && (
+                                         {/* أزرار الحضور - تظهر فقط إذا لم يتم تحديد الحضور بعد والموعد ليس سابقاً */}
+                     {(!appointment.attendance || appointment.attendance === 'not_set') && status !== 'past' && (
                        <button 
                          onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
                          style={{
@@ -867,7 +939,7 @@ function DoctorAppointments() {
                          ✅ {t('mark_present')}
                        </button>
                      )}
-                    
+                     
                     {/* زر إلغاء الموعد - يظهر فقط للمواعيد التي لم يتم تسجيل حضورها والمواعيد القادمة */}
                     {(!appointment.attendance || appointment.attendance === 'not_set') && status !== 'past' && (
                       <button 

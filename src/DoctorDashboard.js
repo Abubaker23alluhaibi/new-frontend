@@ -57,6 +57,61 @@ function DoctorDashboard() {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
+  // دالة لتسجيل المواعيد السابقة تلقائياً كـ غائب
+  const processPastAppointments = async (appointments) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const appointmentsToUpdate = [];
+    
+    for (const appointment of appointments) {
+      const appointmentDate = new Date(appointment.date);
+      appointmentDate.setHours(0, 0, 0, 0);
+      
+      // إذا كان الموعد سابق ولم يتم تسجيل حضور أو غياب
+      if (appointmentDate < today && (!appointment.attendance || appointment.attendance === 'not_set')) {
+        appointmentsToUpdate.push(appointment._id);
+      }
+    }
+    
+    // تحديث المواعيد السابقة في قاعدة البيانات
+    if (appointmentsToUpdate.length > 0) {
+      try {
+        await Promise.all(appointmentsToUpdate.map(async (appointmentId) => {
+          await fetch(`${process.env.REACT_APP_API_URL}/api/appointments/${appointmentId}/attendance`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ attendance: 'absent' })
+          });
+        }));
+        
+        console.log(`✅ تم تسجيل ${appointmentsToUpdate.length} موعد سابق كـ غائب تلقائياً`);
+      } catch (error) {
+        console.error('❌ خطأ في تسجيل الغياب التلقائي للمواعيد السابقة:', error);
+      }
+    }
+    
+    // تحديث حالة المواعيد في الذاكرة المحلية
+    return appointments.map(appointment => {
+      const appointmentDate = new Date(appointment.date);
+      appointmentDate.setHours(0, 0, 0, 0);
+      
+      if (appointmentDate < today && (!appointment.attendance || appointment.attendance === 'not_set')) {
+        return { ...appointment, attendance: 'absent' };
+      }
+      
+      return appointment;
+    });
+  };
+
+  // دالة للتحقق من أن الموعد سابق
+  const isPastAppointment = (dateString) => {
+    const appointmentDate = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return appointmentDate < today;
+  };
+
 
 
   // مراقبة حجم النافذة
@@ -107,7 +162,12 @@ function DoctorDashboard() {
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/${profile._id}?t=${Date.now()}`);
       const data = await res.json();
-      setAppointments(Array.isArray(data) ? data : []);
+      const appointmentsData = Array.isArray(data) ? data : [];
+      
+      // تسجيل المواعيد السابقة تلقائياً كـ غائب
+      const processedAppointments = await processPastAppointments(appointmentsData);
+      
+      setAppointments(processedAppointments);
     } catch (err) {
       console.error('خطأ في جلب المواعيد:', err);
     }
@@ -733,7 +793,12 @@ function DoctorDashboard() {
             </div>
             <div style={{background:'#fff', borderRadius:8, boxShadow:'0 2px 8px rgba(0,0,0,0.08)', padding:'0.8rem', textAlign:'center', border: '1px solid #f0f0f0'}}>
               <div style={{fontSize:'1.2rem', marginBottom:'0.3rem'}}>✅</div>
-              <div style={{fontSize:'1.5rem', fontWeight:900, color:'#0A8F82', marginBottom:'0.2rem', direction:'ltr', textAlign:'center', unicodeBidi:'bidi-override'}}>{todayAppointments.filter(apt => apt.attendance === 'present').length}</div>
+              <div style={{fontSize:'1.5rem', fontWeight:900, color:'#0A8F82', marginBottom:'0.2rem', direction:'ltr', textAlign:'center', unicodeBidi:'bidi-override'}}>
+                {todayAppointments.filter(apt => 
+                  apt.attendance === 'present' || 
+                  (isPastAppointment(apt.date) && (!apt.attendance || apt.attendance === 'not_set'))
+                ).length}
+              </div>
               <div style={{fontSize:'0.9rem', fontWeight:600, color:'#666'}}>{t('today_attendance')}</div>
             </div>
           </div>
@@ -1139,6 +1204,32 @@ function DoctorDashboard() {
                             }}>
                               ✅ {t('present')}
                             </div>
+                          ) : appointment.attendance === 'absent' ? (
+                            <div style={{
+                              background:'#f44336',
+                              color:'#fff',
+                              padding:'0.3rem 0.6rem',
+                              borderRadius:6,
+                              fontSize:'0.75rem',
+                              fontWeight:600,
+                              textAlign:'center',
+                              display:'inline-block'
+                            }}>
+                              ❌ {t('absent')}
+                            </div>
+                          ) : isPastAppointment(appointment.date) ? (
+                            <div style={{
+                              background:'#f44336',
+                              color:'#fff',
+                              padding:'0.3rem 0.6rem',
+                              borderRadius:6,
+                              fontSize:'0.75rem',
+                              fontWeight:600,
+                              textAlign:'center',
+                              display:'inline-block'
+                            }}>
+                              ❌ {t('absent')}
+                            </div>
                           ) : (
                             <div style={{
                               background:'#ff9800',
@@ -1157,7 +1248,7 @@ function DoctorDashboard() {
 
                         {/* أزرار التحكم في نتائج البحث */}
                         <div style={{display:'flex', gap:'0.5rem', justifyContent:'flex-end', flexWrap:'wrap'}}>
-                          {(!appointment.attendance || appointment.attendance === 'not_set') && (
+                          {(!appointment.attendance || appointment.attendance === 'not_set') && !isPastAppointment(appointment.date) && (
                             <button 
                               onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
                               style={{
