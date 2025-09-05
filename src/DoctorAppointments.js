@@ -462,7 +462,8 @@ function DoctorAppointments() {
   };
 
   // تجميع جميع المواعيد المراد عرضها مع إزالة التكرار
-  const allAppointments = showPastAppointments 
+  // إذا كان الفلتر على الحضور أو الغياب، اعرض جميع المواعيد بما في ذلك السابقة
+  const allAppointments = (showPastAppointments || filterStatus === 'present' || filterStatus === 'absent')
     ? [...todayAppointments, ...upcomingAppointments, ...pastAppointments]
     : [...todayAppointments, ...upcomingAppointments];
 
@@ -711,7 +712,7 @@ function DoctorAppointments() {
             gap:'0.5rem'
           }}
         >
-          📋 {t('all_appointments')}
+          {t('all_appointments')}
         </button>
         <button 
           onClick={() => setFilterStatus('present')}
@@ -729,7 +730,7 @@ function DoctorAppointments() {
             gap:'0.5rem'
           }}
         >
-          ✅ {t('present_appointments')}
+          {t('present_appointments')}
         </button>
         <button 
           onClick={() => setFilterStatus('absent')}
@@ -747,7 +748,7 @@ function DoctorAppointments() {
             gap:'0.5rem'
           }}
         >
-          ❌ {t('absent_appointments')}
+          {t('absent_appointments')}
         </button>
       </div>
 
