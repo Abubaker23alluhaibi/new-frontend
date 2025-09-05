@@ -1009,7 +1009,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
           {activeTab === 'medications' && (
             <div className="medications-section">
               <div className="medications-header">
-                <h3>أدوية المريض</h3>
+                <h3>{t('patient_management.medications')}</h3>
                 <div className="medications-actions">
                   <button
                     onClick={() => {
@@ -1018,7 +1018,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                     }}
                     className="btn-add-prescription"
                   >
-                    + إضافة وصفة طبية جديدة
+                    + {t('patient_management.add_prescription')}
                   </button>
                   {medications.length > 0 && (
                     <button
@@ -1028,7 +1028,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                       }}
                       className="btn-print-prescription"
                     >
-                      🖨️ طباعة الوصفة
+                      🖨️ {t('patient_management.print_prescription')}
                     </button>
                   )}
                 </div>
@@ -1052,7 +1052,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                         <div key={prescriptionId} className="prescription-group">
                           <div className="prescription-group-header">
                             <h4>
-                              {prescriptionId === 'individual' ? 'أدوية منفردة' : `الوصفة الطبية - ${meds[0].prescriptionId}`}
+                              {prescriptionId === 'individual' ? t('patient_management.prescription_medications') : `${t('patient_management.prescription_title')} - ${meds[0].prescriptionId}`}
                             </h4>
                             <span className="prescription-date">
                               {new Date(meds[0].createdAt).toLocaleDateString('ar-EG')}
@@ -1074,42 +1074,42 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                                       className="btn-edit"
                                       style={{ background: '#3498db', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', marginRight: '8px' }}
                                     >
-                                      تعديل
+                                      {t('patient_management.edit_medication')}
                                     </button>
                                     <button
                                       onClick={() => deleteMedication(medication._id)}
                                       className="btn-delete"
                                       style={{ background: '#e74c3c', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px' }}
                                     >
-                                      حذف
+                                      {t('patient_management.delete_medication')}
                                     </button>
                                   </div>
                                 </div>
                                 
                                 <div className="medication-details">
                                   <div className="detail-row">
-                                    <span className="detail-label">الجرعة:</span>
+                                    <span className="detail-label">{t('patient_management.medication_dosage')}:</span>
                                     <span className="detail-value">{medication.dosage}</span>
                                   </div>
                                   <div className="detail-row">
-                                    <span className="detail-label">التكرار:</span>
+                                    <span className="detail-label">{t('patient_management.medication_frequency')}:</span>
                                     <span className="detail-value">{medication.frequency}</span>
                                   </div>
                                   {medication.duration && (
                                     <div className="detail-row">
-                                      <span className="detail-label">المدة:</span>
+                                      <span className="detail-label">{t('patient_management.medication_duration')}:</span>
                                       <span className="detail-value">{medication.duration}</span>
                                     </div>
                                   )}
                                   {medication.instructions && (
                                     <div className="detail-row">
-                                      <span className="detail-label">التعليمات:</span>
+                                      <span className="detail-label">{t('patient_management.medication_instructions')}:</span>
                                       <span className="detail-value">{medication.instructions}</span>
                                     </div>
                                   )}
                                   {medication.notes && (
                                     <div className="detail-row">
-                                      <span className="detail-label">ملاحظات:</span>
+                                      <span className="detail-label">{t('patient_management.medication_notes')}:</span>
                                       <span className="detail-value">{medication.notes}</span>
                                     </div>
                                   )}
@@ -1937,6 +1937,7 @@ const PatientManagementPage = () => {
           medications={medications || []}
           doctor={user}
           onClose={() => setShowPrintPrescription(false)}
+          t={t}
         />
       )}
     </div>
@@ -2312,7 +2313,7 @@ const EditMedicationForm = ({ medication, onUpdate, onCancel }) => {
 };
 
 // مكون طباعة الوصفة الطبية
-const PrintPrescriptionModal = ({ patient, medications, doctor, onClose }) => {
+const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) => {
   const printPrescription = () => {
     const printWindow = window.open('', '_blank');
     
@@ -2697,34 +2698,34 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose }) => {
     <div className="modal-overlay">
       <div className="modal-content print-modal">
         <div className="modal-header">
-          <h2>طباعة الوصفة الطبية</h2>
+          <h2>{t('patient_management.print_prescription')}</h2>
           <button onClick={onClose} className="btn-close">×</button>
         </div>
         
         <div className="print-preview">
           <div className="preview-header">
-            <h3>معاينة الوصفة الطبية</h3>
-            <p>سيتم طباعة الوصفة مع جميع الأدوية الموصوفة للمريض</p>
+            <h3>{t('patient_management.prescription_preview')}</h3>
+            <p>{t('patient_management.print_prescription_description')}</p>
           </div>
           
           <div className="preview-info">
             <div className="info-item">
-              <strong>المريض:</strong> {patient.name}
+              <strong>{t('patient_management.patient')}:</strong> {patient.name}
             </div>
             <div className="info-item">
-              <strong>عدد الأدوية:</strong> {medications.length}
+              <strong>{t('patient_management.medication_count')}:</strong> {medications.length}
             </div>
             <div className="info-item">
-              <strong>الطبيب:</strong> د. {doctor.name}
+              <strong>{t('patient_management.doctor')}:</strong> د. {doctor.name}
             </div>
           </div>
           
           <div className="print-actions">
             <button onClick={onClose} className="btn-cancel">
-              إلغاء
+              {t('patient_management.cancel')}
             </button>
             <button onClick={printPrescription} className="btn-print">
-              🖨️ طباعة الوصفة
+              🖨️ {t('patient_management.print_prescription')}
             </button>
           </div>
         </div>
