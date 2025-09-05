@@ -24,7 +24,16 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
     if (!appointments || appointments.length === 0) {
       const fetchAppointments = async () => {
         try {
-          const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/${user?.id || 1}?t=${Date.now()}`);
+          // استخدام نفس الطريقة المستخدمة في DoctorDashboard
+          const profile = JSON.parse(localStorage.getItem('user') || '{}');
+          const doctorId = profile._id || user?._id || 1;
+          
+          const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/${doctorId}?t=${Date.now()}`);
+          
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          
           const data = await res.json();
           setInternalAppointments(Array.isArray(data) ? data : []);
         } catch (error) {
@@ -35,7 +44,7 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
       
       fetchAppointments();
     }
-  }, [appointments, user?.id]);
+  }, [appointments, user?._id]);
 
   // إذا لم يتم تمرير props استخدم القيم الداخلية
   const _selectedDate = selectedDate || internalSelectedDate;
@@ -244,10 +253,9 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
             const daysInMonth = lastDay.getDate();
             
             // حساب يوم الأسبوع للبداية (0 = الأحد، 1 = الاثنين، إلخ)
-            // لكن نريد أن نبدأ من السبت، لذا نضيف 1
+            // تحويل لتبدأ من السبت (0 = السبت، 1 = الأحد، إلخ)
             let startDay = firstDay.getDay();
-            if (startDay === 0) startDay = 7; // الأحد يصبح 7
-            startDay = startDay - 1; // تحويل لتبدأ من السبت (0)
+            startDay = (startDay + 1) % 7; // تحويل: الأحد(0) -> الاثنين(1), السبت(6) -> الأحد(0), إلخ
             
             const calendarDays = [];
             
@@ -273,52 +281,55 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
                 return aDate === dateStr;
               });
               const isSelected = _selectedDate === dateStr;
-            let buttonStyle = {
-              width: 40,
-              height: 40,
-              borderRadius: '50%',
-              border: 'none',
-              fontWeight: 700,
-              fontSize: 14,
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            };
-            if (isToday) {
-              buttonStyle = {
-                ...buttonStyle,
-                background: '#0A8F82',
-                color: '#fff',
-                boxShadow: '0 2px 8px rgba(10, 143, 130, 0.4)',
-                transform: 'scale(1.1)',
-                fontWeight: 'bold'
+              
+              let buttonStyle = {
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               };
-            } else if (isSelected) {
-              buttonStyle = {
-                ...buttonStyle,
-                background: '#0A8F82',
-                color: '#fff',
-                boxShadow: '0 2px 8px rgba(10, 143, 130, 0.4)',
-                opacity: 0.8
-              };
-            } else if (hasAppointment) {
-              buttonStyle = {
-                ...buttonStyle,
-                background: '#0A8F82',
-                color: '#fff',
-                boxShadow: '0 2px 6px rgba(10, 143, 130, 0.3)',
-                opacity: 0.9
-              };
-            } else {
-              buttonStyle = {
-                ...buttonStyle,
-                background: '#f8f9fa',
-                color: '#666',
-                border: '1px solid #e8f5e8'
-              };
-            }
+              
+              if (isToday) {
+                buttonStyle = {
+                  ...buttonStyle,
+                  background: '#0A8F82',
+                  color: '#fff',
+                  boxShadow: '0 2px 8px rgba(10, 143, 130, 0.4)',
+                  transform: 'scale(1.1)',
+                  fontWeight: 'bold'
+                };
+              } else if (isSelected) {
+                buttonStyle = {
+                  ...buttonStyle,
+                  background: '#0A8F82',
+                  color: '#fff',
+                  boxShadow: '0 2px 8px rgba(10, 143, 130, 0.4)',
+                  opacity: 0.8
+                };
+              } else if (hasAppointment) {
+                buttonStyle = {
+                  ...buttonStyle,
+                  background: '#0A8F82',
+                  color: '#fff',
+                  boxShadow: '0 2px 6px rgba(10, 143, 130, 0.3)',
+                  opacity: 0.9
+                };
+              } else {
+                buttonStyle = {
+                  ...buttonStyle,
+                  background: '#f8f9fa',
+                  color: '#666',
+                  border: '1px solid #e8f5e8'
+                };
+              }
+              
               return (
                 <button 
                   key={day} 
