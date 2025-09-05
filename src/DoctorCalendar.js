@@ -47,9 +47,41 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
   return (
     <div style={{background:'#f7fafd', minHeight:'100vh', padding:'2rem 0'}}>
       <div style={{maxWidth:450, margin:'0 auto', background:'#fff', borderRadius:20, boxShadow:'0 8px 32px rgba(0,0,0,0.08)', padding:'2.5rem 2rem', textAlign:'center'}}>
-        <h3 style={{color:'#7c4dff', marginBottom:24, fontWeight:800, fontSize:22}}>
-          📅 {t('my_calendar')}
-        </h3>
+        {/* زر العودة */}
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24}}>
+          <button 
+            onClick={() => navigate('/doctor-dashboard')}
+            style={{
+              background:'linear-gradient(135deg, #7c4dff 0%, #673ab7 100%)',
+              color:'#fff',
+              border:'none',
+              borderRadius:12,
+              padding:'0.8rem 1.5rem',
+              fontSize:14,
+              fontWeight:700,
+              cursor:'pointer',
+              display:'flex',
+              alignItems:'center',
+              gap:8,
+              transition:'all 0.3s ease',
+              boxShadow:'0 4px 12px rgba(124, 77, 255, 0.3)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 6px 16px rgba(124, 77, 255, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 12px rgba(124, 77, 255, 0.3)';
+            }}
+          >
+            ← {t('back')}
+          </button>
+          <h3 style={{color:'#7c4dff', fontWeight:800, fontSize:22, margin:0, flex:1, textAlign:'center'}}>
+            📅 {t('my_calendar')}
+          </h3>
+          <div style={{width:80}}></div> {/* مساحة فارغة للتوازن */}
+        </div>
         {/* معلومات الشهر مع أزرار التنقل */}
         <div style={{background:'linear-gradient(135deg, #7c4dff 0%, #00bcd4 100%)', color:'#fff', borderRadius:12, padding:'1rem', marginBottom:20, fontWeight:700, fontSize:16, display:'flex', alignItems:'center', justifyContent:'space-between'}}>
           <button 

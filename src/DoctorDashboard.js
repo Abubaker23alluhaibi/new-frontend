@@ -3,7 +3,6 @@ import './DoctorDashboard.css';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-import DoctorCalendar from './DoctorCalendar';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { normalizePhone } from './utils/phoneUtils';
@@ -40,8 +39,6 @@ function DoctorDashboard() {
   const [notifCount, setNotifCount] = useState(0);
   // أضف حالة لإظهار المودال
   const [showContactModal, setShowContactModal] = useState(false);
-  // أضف حالة لإظهار نافذة التقويم
-  const [showCalendarModal, setShowCalendarModal] = useState(false);
 
   // 1. أضف حالة state جديدة:
   const [showNoteModal, setShowNoteModal] = useState(false);
@@ -831,9 +828,7 @@ function DoctorDashboard() {
                 boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
                 marginBottom: isMobile ? 8 : 12
               }} onClick={()=>{
-            setShowCalendarModal(true);
-            // إعادة تحميل المواعيد عند فتح التقويم
-            fetchAllAppointments();
+            navigate('/doctor-calendar');
           }}>
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📅</div>
               </button>
@@ -1664,58 +1659,6 @@ function DoctorDashboard() {
                   <span style={{fontSize:window.innerWidth < 500 ? 16 : 22}}>💬</span> {t('whatsapp')}: +964 776 901 2619
                 </button>
               </div>
-            </div>
-          </div>
-        )}
-        {/* نافذة تقويم المواعيد المنبثقة */}
-        {showCalendarModal && (
-          <div style={{
-            position:'fixed',
-            top:0,
-            left:0,
-            width:'100vw',
-            height:'100vh',
-            background:'rgba(0,0,0,0.18)',
-            display:'flex',
-            alignItems:'flex-start',
-            justifyContent:'center',
-            zIndex:3000,
-            overflowY:'auto',
-          }}>
-            <div style={{
-              background:'#fff',
-              borderRadius: window.innerWidth < 500 ? 12 : 20,
-              boxShadow:'0 8px 32px rgba(0,0,0,0.2)',
-              padding: window.innerWidth < 500 ? '1.2rem 0.5rem' : '2.5rem 2rem',
-              minWidth: window.innerWidth < 500 ? '98vw' : 320,
-              maxWidth: window.innerWidth < 500 ? '100vw' : 600,
-              width: window.innerWidth < 500 ? '100vw' : '95vw',
-              position:'relative',
-              maxHeight:'85vh',
-              overflowY:'auto',
-              display:'flex',
-              flexDirection:'column',
-              marginTop: window.innerWidth < 500 ? 24 : 32
-            }}>
-              <button onClick={()=>{
-  setShowCalendarModal(false);
-  // إعادة تحميل المواعيد عند إغلاق نافذة التقويم
-  fetchAllAppointments();
-}} style={{
-                position:'sticky',
-                top:0,
-                left:0,
-                background:'none',
-                border:'none',
-                color:'#e53935',
-                fontSize:22,
-                fontWeight:900,
-                cursor:'pointer',
-                zIndex:10,
-                alignSelf:'flex-start',
-                marginBottom:8
-              }}>&times;</button>
-              <DoctorCalendar appointments={appointments} />
             </div>
           </div>
         )}
