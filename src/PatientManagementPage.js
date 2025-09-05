@@ -498,6 +498,9 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
 const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSelectedPatient }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  
+  console.log('🔍 PatientDetails - Component rendered with patient:', patient);
+  console.log('🔍 PatientDetails - User:', user);
   const [activeTab, setActiveTab] = useState('basic');
   const [uploading, setUploading] = useState(false);
   const [viewingPdf, setViewingPdf] = useState(null);
@@ -522,6 +525,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
     notes: '',
     date: new Date().toISOString().split('T')[0]
   });
+  const [savingPrescription, setSavingPrescription] = useState(false);
   const medicalReportsFileInputRef = useRef(null);
   const examinationsFileInputRef = useRef(null);
 
@@ -759,12 +763,18 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
 
   const handleSubmitPrescription = async (e) => {
     e.preventDefault();
+    console.log('🔍 handleSubmitPrescription - Function called!');
+    toast.info('جاري حفظ الوصفة...');
     
     // التحقق من الصلاحيات
     if (!user || user.role !== 'doctor') {
+      console.log('🔍 handleSubmitPrescription - User not authorized:', user);
       toast.error('غير مصرح لك بإضافة وصفات طبية');
+      setSavingPrescription(false);
       return;
     }
+    
+    console.log('🔍 handleSubmitPrescription - User authorized:', user);
     
     console.log('🔍 handleSubmitPrescription - newPrescription:', newPrescription);
     console.log('🔍 handleSubmitPrescription - medications count:', newPrescription.medications.length);
@@ -772,8 +782,14 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
     
     if (newPrescription.medications.length === 0) {
       toast.error('يرجى إضافة دواء واحد على الأقل');
+      setSavingPrescription(false);
       return;
     }
+
+    // إضافة loading state
+    setSavingPrescription(true);
+    console.log('🔍 handleSubmitPrescription - Starting to save prescription...');
+    toast.info('جاري التحقق من البيانات...');
 
     // التحقق من أن جميع الأدوية لها بيانات مطلوبة مع تفاصيل أكثر
     const invalidMedications = newPrescription.medications.filter((med, index) => 
@@ -791,6 +807,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         });
       });
       toast.error(`يرجى إدخال جميع البيانات المطلوبة للأدوية (${invalidMedications.length} دواء غير مكتمل)`);
+      setSavingPrescription(false);
       return;
     }
     
@@ -809,7 +826,13 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
 
     try {
       const token = getAuthToken();
-      if (!token) return;
+      if (!token) {
+        toast.error('خطأ في المصادقة. يرجى تسجيل الدخول مرة أخرى');
+        setSavingPrescription(false);
+        return;
+      }
+      
+      toast.info('جاري إرسال البيانات...');
 
       const requestData = {
         ...newPrescription,
@@ -839,6 +862,8 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         });
       });
       
+      toast.info('جاري إرسال الطلب...');
+      
       const response = await fetch(`${process.env.REACT_APP_API_URL}/patients/${patient._id}/prescriptions`, {
         method: 'POST',
         headers: {
@@ -853,6 +878,8 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         }),
         credentials: 'include'
       });
+      
+      toast.info('تم استلام الرد من الخادم...');
 
       console.log('🔍 handleSubmitPrescription - Response status:', response.status);
       console.log('🔍 handleSubmitPrescription - Response ok:', response.ok);
@@ -907,6 +934,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
           date: new Date().toISOString().split('T')[0]
         });
         fetchPrescriptions();
+        toast.success('تم تحديث قائمة الوصفات');
       } else {
         const data = await response.json();
         console.log('🔍 handleSubmitPrescription - Error response:', data);
@@ -922,6 +950,8 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
         } else {
           toast.error(data.error || 'خطأ في إضافة الوصفة');
         }
+        
+        console.log('🔍 handleSubmitPrescription - Error details:', data);
       }
     } catch (error) {
       console.error('Error adding prescription:', error);
@@ -934,6 +964,9 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       } else {
         toast.error('خطأ غير متوقع: ' + error.message);
       }
+    } finally {
+      setSavingPrescription(false);
+      console.log('🔍 handleSubmitPrescription - Finished saving prescription');
     }
   };
 
@@ -1283,7 +1316,10 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
           </button>
           <button
             className={activeTab === 'medications' ? 'active' : ''}
-            onClick={() => setActiveTab('medications')}
+            onClick={() => {
+              console.log('🔍 PatientDetails - Medications tab clicked');
+              setActiveTab('medications');
+            }}
           >
             💊 الأدوية والوصفات
           </button>
@@ -1514,7 +1550,10 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
               <div className="medications-header">
                 <h3>💊 الوصفات الطبية</h3>
                 <button 
-                  onClick={() => setShowAddMedication(true)}
+                  onClick={() => {
+                    console.log('🔍 PatientDetails - Add prescription button clicked');
+                    setShowAddMedication(true);
+                  }}
                   className="btn-add-prescription"
                 >
                   + وصفة جديدة
@@ -1705,6 +1744,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       {showAddMedication && (
         <div className="modal-overlay" onClick={() => setShowAddMedication(false)}>
           <div className="modal-content prescription-modal" onClick={e => e.stopPropagation()}>
+            {console.log('🔍 PatientDetails - Prescription modal is showing')}
             <div className="modal-header">
               <h2>إضافة وصفة طبية جديدة</h2>
               <button 
@@ -1715,7 +1755,10 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
               </button>
             </div>
 
-            <form onSubmit={handleSubmitPrescription} className="prescription-form">
+            <form onSubmit={(e) => {
+              console.log('🔍 PatientDetails - Form submit triggered');
+              handleSubmitPrescription(e);
+            }} className="prescription-form">
               <div className="prescription-form-header">
                 <h3>إضافة وصفة طبية جديدة</h3>
                 <p>للمريض: {patient.name}</p>
@@ -1840,13 +1883,21 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
               </div>
 
               <div className="form-actions">
-                <button type="submit" className="btn-save">
-                  💾 حفظ الوصفة
+                <button 
+                  type="submit" 
+                  className="btn-save"
+                  disabled={savingPrescription}
+                  onClick={() => {
+                    console.log('🔍 PatientDetails - Save button clicked');
+                  }}
+                >
+                  {savingPrescription ? '⏳ جاري الحفظ...' : '💾 حفظ الوصفة'}
                 </button>
                 <button 
                   type="button" 
                   onClick={() => setShowAddMedication(false)}
                   className="btn-cancel"
+                  disabled={savingPrescription}
                 >
                   ❌ إلغاء
                 </button>
