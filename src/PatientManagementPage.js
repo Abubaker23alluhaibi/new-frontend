@@ -760,6 +760,12 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
   const handleSubmitPrescription = async (e) => {
     e.preventDefault();
     
+    // التحقق من الصلاحيات
+    if (!user || user.role !== 'doctor') {
+      toast.error('غير مصرح لك بإضافة وصفات طبية');
+      return;
+    }
+    
     console.log('🔍 handleSubmitPrescription - newPrescription:', newPrescription);
     console.log('🔍 handleSubmitPrescription - medications count:', newPrescription.medications.length);
     console.log('🔍 handleSubmitPrescription - medications array:', newPrescription.medications);
@@ -886,7 +892,7 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       if (response.ok) {
         const result = await response.json();
         console.log('🔍 handleSubmitPrescription - Success result:', result);
-        toast.success('تم إضافة الوصفة بنجاح');
+        toast.success(`تم إضافة الوصفة بنجاح (${result.medicationsCount} دواء)`);
         setShowAddMedication(false);
         setNewPrescription({
           medications: [{
@@ -904,11 +910,30 @@ const PatientDetails = ({ patient, onClose, onUpdate, fetchPatientDetails, setSe
       } else {
         const data = await response.json();
         console.log('🔍 handleSubmitPrescription - Error response:', data);
-        toast.error(data.error || 'خطأ في إضافة الوصفة');
+        
+        // معالجة أخطاء مفصلة
+        if (data.invalidMedications && data.invalidMedications.length > 0) {
+          const errorDetails = data.invalidMedications.map(med => 
+            `الدواء ${med.index}: ${med.errors.join(', ')}`
+          ).join('\n');
+          toast.error(`بيانات الأدوية غير صحيحة:\n${errorDetails}`);
+        } else if (data.details) {
+          toast.error(`${data.error}: ${data.details}`);
+        } else {
+          toast.error(data.error || 'خطأ في إضافة الوصفة');
+        }
       }
     } catch (error) {
       console.error('Error adding prescription:', error);
-      toast.error('خطأ في الاتصال بالخادم');
+      
+      // معالجة أخطاء الشبكة والاتصال
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        toast.error('خطأ في الاتصال بالخادم. تحقق من اتصال الإنترنت');
+      } else if (error.name === 'AbortError') {
+        toast.error('تم إلغاء الطلب');
+      } else {
+        toast.error('خطأ غير متوقع: ' + error.message);
+      }
     }
   };
 
