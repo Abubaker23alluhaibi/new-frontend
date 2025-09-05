@@ -275,6 +275,9 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
               startDay = 5; // السبت في العمود الخامس
             }
             
+            // تقليل 1 لأن الأعمدة تبدأ من 0 في الكود
+            startDay = startDay - 1;
+            
             const calendarDays = [];
             
             // إضافة الأيام الفارغة في بداية الشهر
