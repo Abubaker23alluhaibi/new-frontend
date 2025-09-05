@@ -491,35 +491,21 @@ function DoctorAppointments() {
           <h1 style={{color:'#7c4dff', margin:0, fontSize:'2rem', fontWeight:900}}>{t('clinic_appointments')}</h1>
           <div className="no-print" style={{display:'flex', gap:'1rem', flexWrap:'wrap'}}>
             <button 
-              style={{
-                background: '#7c4dff',
-                color: '#fff',
-                border:'none',
-                borderRadius:8,
-                padding:'0.7rem 1.5rem',
-                fontWeight:700,
-                cursor:'pointer'
-              }}
-            >
-              📋 {t('displayed_appointments')}
-            </button>
-
-            <button 
               onClick={() => navigate('/doctor-dashboard')}
-              style={{background:'#00bcd4', color:'#fff', border:'none', borderRadius:8, padding:'0.7rem 1.5rem', fontWeight:700, cursor:'pointer'}}
+              style={{background:'#0A8F82', color:'#fff', border:'none', borderRadius:8, padding:'0.7rem 1.5rem', fontWeight:700, cursor:'pointer'}}
             >
               {t('back_to_dashboard')}
             </button>
             <button 
               onClick={() => navigate('/doctor-dashboard')}
-              style={{background:'#4caf50', color:'#fff', border:'none', borderRadius:8, padding:'0.7rem 1.5rem', fontWeight:700, cursor:'pointer'}}
+              style={{background:'#0A8F82', color:'#fff', border:'none', borderRadius:8, padding:'0.7rem 1.5rem', fontWeight:700, cursor:'pointer'}}
             >
               🏠 {t('back_to_home')}
             </button>
             <button 
               onClick={() => setShowPastAppointments(!showPastAppointments)}
               style={{
-                background: showPastAppointments ? '#ff9800' : '#9c27b0',
+                background: '#0A8F82',
                 color:'#fff', 
                 border:'none', 
                 borderRadius:8, 
@@ -532,7 +518,7 @@ function DoctorAppointments() {
             </button>
             <button 
               onClick={() => window.print()}
-              style={{background:'#009688', color:'#fff', border:'none', borderRadius:8, padding:'0.7rem 1.5rem', fontWeight:700, cursor:'pointer'}}
+              style={{background:'#0A8F82', color:'#fff', border:'none', borderRadius:8, padding:'0.7rem 1.5rem', fontWeight:700, cursor:'pointer'}}
             >
               {t('print_appointments')}
             </button>
@@ -546,53 +532,6 @@ function DoctorAppointments() {
         </p>
       </div>
 
-      {/* Statistics Cards */}
-      <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:'1rem', marginBottom:'2rem'}}>
-        <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', textAlign:'center'}}>
-          <div style={{fontSize:'2rem', marginBottom:'0.5rem'}}>⏰</div>
-          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#4caf50', marginBottom:'0.5rem'}}>{upcomingAppointments.length}</div>
-          <div style={{color:'#666'}}>{t('upcoming_appointments')}</div>
-        </div>
-        <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', textAlign:'center'}}>
-          <div style={{fontSize:'2rem', marginBottom:'0.5rem'}}>🎯</div>
-          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#ff9800', marginBottom:'0.5rem'}}>{todayAppointments.length}</div>
-          <div style={{color:'#666'}}>{t('today_appointments')}</div>
-        </div>
-        <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', textAlign:'center'}}>
-          <div style={{fontSize:'2rem', marginBottom:'0.5rem'}}>📅</div>
-          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#e53935', marginBottom:'0.5rem'}}>{pastAppointments.length}</div>
-          <div style={{color:'#666'}}>{t('past_appointments')}</div>
-        </div>
-        <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', textAlign:'center'}}>
-          <div style={{fontSize:'2rem', marginBottom:'0.5rem'}}>📋</div>
-          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#7c4dff', marginBottom:'0.5rem'}}>{displayedAppointments.length}</div>
-          <div style={{color:'#666'}}>{t('displayed_appointments')}</div>
-        </div>
-        <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', textAlign:'center'}}>
-          <div style={{fontSize:'2rem', marginBottom:'0.5rem'}}>✅</div>
-          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#4caf50', marginBottom:'0.5rem'}}>{displayedAppointments.filter(apt => apt.attendance === 'present').length}</div>
-          <div style={{color:'#666'}}>{t('present_count')}</div>
-        </div>
-        <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', textAlign:'center'}}>
-          <div style={{fontSize:'2rem', marginBottom:'0.5rem'}}>❌</div>
-          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#f44336', marginBottom:'0.5rem'}}>
-            {displayedAppointments.filter(apt => 
-              apt.attendance === 'absent' || 
-              (isPastAppointment(apt.date) && (!apt.attendance || apt.attendance === 'not_set'))
-            ).length}
-          </div>
-          <div style={{color:'#666'}}>{t('absent_count')}</div>
-        </div>
-        <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', textAlign:'center'}}>
-          <div style={{fontSize:'2rem', marginBottom:'0.5rem'}}>⏳</div>
-          <div style={{fontSize:'1.5rem', fontWeight:700, color:'#ff9800', marginBottom:'0.5rem'}}>
-            {displayedAppointments.filter(apt => 
-              (!apt.attendance || apt.attendance === 'not_set') && !isPastAppointment(apt.date)
-            ).length}
-          </div>
-          <div style={{color:'#666'}}>{t('waiting')}</div>
-        </div>
-      </div>
 
       {/* Search and Filter Tools */}
       <div className="no-print" style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1.5rem', marginBottom:'2rem'}}>
@@ -601,7 +540,7 @@ function DoctorAppointments() {
           <button 
             onClick={handleMarkAllAbsentEndOfDay}
             style={{
-              background:'#f44336',
+              background:'#0A8F82',
               color:'#fff',
               border:'none',
               borderRadius:8,
@@ -733,7 +672,7 @@ function DoctorAppointments() {
                 setSortOrder('asc');
               }}
               style={{
-                background:'#e53935',
+                background:'#0A8F82',
                 color:'#fff',
                 border:'none',
                 borderRadius:8,
@@ -747,6 +686,150 @@ function DoctorAppointments() {
             </button>
           </div>
         )}
+      </div>
+
+      {/* Attendance Sections */}
+      <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(350px, 1fr))', gap:'1rem', marginBottom:'2rem'}}>
+        {/* Present Appointments Section */}
+        <div style={{background:'#fff', borderRadius:12, boxShadow:'0 2px 8px rgba(0,0,0,0.1)', padding:'1rem', border:'1px solid #e8f5e8'}}>
+          <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.8rem'}}>
+            <div style={{fontSize:'1.2rem'}}>✅</div>
+            <h3 style={{color:'#0A8F82', margin:0, fontSize:'1.1rem', fontWeight:700}}>
+              {t('present_appointments')} ({displayedAppointments.filter(apt => apt.attendance === 'present').length})
+            </h3>
+          </div>
+          
+          {displayedAppointments.filter(apt => apt.attendance === 'present').length === 0 ? (
+            <div style={{textAlign:'center', color:'#666', fontStyle:'italic', padding:'1.5rem 0', fontSize:'0.9rem'}}>
+              {t('no_present_appointments')}
+            </div>
+          ) : (
+            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:'0.6rem', maxHeight:'300px', overflowY:'auto'}}>
+              {displayedAppointments.filter(apt => apt.attendance === 'present').map((appointment, index) => (
+                <div key={appointment._id} style={{
+                  background:'#f8f9fa',
+                  borderRadius:8,
+                  padding:'0.8rem',
+                  borderLeft:'3px solid #0A8F82',
+                  border:'1px solid #e8f5e8',
+                  fontSize:'0.85rem'
+                }}>
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'0.4rem'}}>
+                    <div style={{flex:1}}>
+                      <h4 style={{color:'#0A8F82', margin:'0 0 0.2rem 0', fontSize:'0.95rem', fontWeight:700}}>
+                        👤 {appointment.isBookingForOther
+                          ? (appointment.patientName || t('patient'))
+                          : (appointment.userName || appointment.userId?.first_name || t('patient'))
+                        }
+                      </h4>
+                      <div style={{color:'#666', fontSize:'0.8rem', marginBottom:'0.2rem'}}>
+                        📅 {formatDate(appointment.date)}
+                      </div>
+                      <div style={{color:'#666', fontSize:'0.8rem'}}>
+                        🕐 {appointment.time}
+                      </div>
+                      {appointment.reason && (
+                        <div style={{color:'#666', fontSize:'0.75rem', marginTop:'0.2rem'}}>
+                          💬 {appointment.reason}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{
+                      background:'#0A8F82',
+                      color:'#fff',
+                      padding:'0.15rem 0.4rem',
+                      borderRadius:8,
+                      fontSize:'0.7rem',
+                      fontWeight:700
+                    }}>
+                      ✅ {t('present')}
+                    </div>
+                  </div>
+                  {appointment.isBookingForOther && (
+                    <div style={{color:'#666', fontSize:'0.75rem', marginTop:'0.3rem'}}>
+                      👥 {t('booking.booker_name')}: {appointment.bookerName || appointment.userName}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Absent Appointments Section */}
+        <div style={{background:'#fff', borderRadius:12, boxShadow:'0 2px 8px rgba(0,0,0,0.1)', padding:'1rem', border:'1px solid #e8f5e8'}}>
+          <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.8rem'}}>
+            <div style={{fontSize:'1.2rem'}}>❌</div>
+            <h3 style={{color:'#0A8F82', margin:0, fontSize:'1.1rem', fontWeight:700}}>
+              {t('absent_appointments')} ({displayedAppointments.filter(apt => 
+                apt.attendance === 'absent' || 
+                (isPastAppointment(apt.date) && (!apt.attendance || apt.attendance === 'not_set'))
+              ).length})
+            </h3>
+          </div>
+          
+          {displayedAppointments.filter(apt => 
+            apt.attendance === 'absent' || 
+            (isPastAppointment(apt.date) && (!apt.attendance || apt.attendance === 'not_set'))
+          ).length === 0 ? (
+            <div style={{textAlign:'center', color:'#666', fontStyle:'italic', padding:'1.5rem 0', fontSize:'0.9rem'}}>
+              {t('no_absent_appointments')}
+            </div>
+          ) : (
+            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:'0.6rem', maxHeight:'300px', overflowY:'auto'}}>
+              {displayedAppointments.filter(apt => 
+                apt.attendance === 'absent' || 
+                (isPastAppointment(apt.date) && (!apt.attendance || apt.attendance === 'not_set'))
+              ).map((appointment, index) => (
+                <div key={appointment._id} style={{
+                  background:'#f8f9fa',
+                  borderRadius:8,
+                  padding:'0.8rem',
+                  borderLeft:'3px solid #0A8F82',
+                  border:'1px solid #e8f5e8',
+                  fontSize:'0.85rem'
+                }}>
+                  <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'0.4rem'}}>
+                    <div style={{flex:1}}>
+                      <h4 style={{color:'#0A8F82', margin:'0 0 0.2rem 0', fontSize:'0.95rem', fontWeight:700}}>
+                        👤 {appointment.isBookingForOther
+                          ? (appointment.patientName || t('patient'))
+                          : (appointment.userName || appointment.userId?.first_name || t('patient'))
+                        }
+                      </h4>
+                      <div style={{color:'#666', fontSize:'0.8rem', marginBottom:'0.2rem'}}>
+                        📅 {formatDate(appointment.date)}
+                      </div>
+                      <div style={{color:'#666', fontSize:'0.8rem'}}>
+                        🕐 {appointment.time}
+                      </div>
+                      {appointment.reason && (
+                        <div style={{color:'#666', fontSize:'0.75rem', marginTop:'0.2rem'}}>
+                          💬 {appointment.reason}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{
+                      background:'#0A8F82',
+                      color:'#fff',
+                      padding:'0.15rem 0.4rem',
+                      borderRadius:8,
+                      fontSize:'0.7rem',
+                      fontWeight:700
+                    }}>
+                      ❌ {t('absent')}
+                    </div>
+                  </div>
+                  {appointment.isBookingForOther && (
+                    <div style={{color:'#666', fontSize:'0.75rem', marginTop:'0.3rem'}}>
+                      👥 {t('booking.booker_name')}: {appointment.bookerName || appointment.userName}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Appointments List */}
@@ -768,15 +851,7 @@ function DoctorAppointments() {
           </button>
         </div>
       ) : (
-        <div style={{display:'flex', flexDirection:'column', gap:'1rem'}}>
-          {displayedAppointments.length > 0 && (
-            <div style={{background:'#fff', borderRadius:16, boxShadow:'0 2px 12px #7c4dff11', padding:'1rem', textAlign:'center'}}>
-              <span style={{color:'#7c4dff', fontWeight:700, fontSize:'1.1rem'}}>
-                📋 {t('displayed_appointments')} {displayedAppointments.length}
-              </span>
-            </div>
-          )}
-          
+        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(300px, 1fr))', gap:'1rem'}}>
           {displayedAppointments.map((appointment, index) => {
             const status = getAppointmentStatus(appointment.date);
             const statusColor = getStatusColor(status);
@@ -786,228 +861,201 @@ function DoctorAppointments() {
             return (
               <div key={appointment._id} style={{
                 background:'#fff',
-                borderRadius:16,
-                boxShadow:'0 2px 12px #7c4dff11',
-                padding:'1.5rem',
-                borderLeft: `4px solid ${statusColor}`,
+                borderRadius:12,
+                boxShadow:'0 2px 8px rgba(0,0,0,0.1)',
+                padding:'1rem',
+                borderLeft: `3px solid ${statusColor}`,
+                border:'1px solid #e8f5e8',
                 opacity: status === 'past' ? 0.8 : 1,
-                position:'relative'
+                position:'relative',
+                fontSize:'0.9rem'
               }}>
                 {/* Appointment Number */}
                 <div style={{
                   position:'absolute',
-                  top:'-10px',
-                  right:'-10px',
-                  background: statusColor,
+                  top:'-8px',
+                  right:'-8px',
+                  background: '#0A8F82',
                   color:'#fff',
                   borderRadius:'50%',
-                  width:'30px',
-                  height:'30px',
+                  width:'24px',
+                  height:'24px',
                   display:'flex',
                   alignItems:'center',
                   justifyContent:'center',
                   fontWeight:700,
-                  fontSize:'0.9rem',
-                  boxShadow:'0 2px 8px rgba(0,0,0,0.2)'
+                  fontSize:'0.8rem',
+                  boxShadow:'0 2px 6px rgba(0,0,0,0.2)'
                 }}>
                   {index + 1}
                 </div>
-                <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'1rem'}}>
-                  <div style={{flex:1}}>
-                    <div style={{display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.5rem'}}>
-                      <span style={{fontSize:'1.2rem'}}>{statusIcon}</span>
-                      <span style={{
-                        background: statusColor,
-                        color:'#fff',
-                        padding:'0.2rem 0.8rem',
-                        borderRadius:12,
-                        fontSize:'0.8rem',
-                        fontWeight:700
-                      }}>
-                        {statusText}
-                      </span>
-                    </div>
-                    <h3 style={{color:'#7c4dff', margin:'0 0 0.5rem 0', fontSize:'1.3rem'}}>
-                      👤 {appointment.isBookingForOther
-                        ? (appointment.patientName || t('patient'))
-                        : (appointment.userName || appointment.userId?.first_name || t('patient'))
-                      }
-                    </h3>
-                    <div style={{color:'#666', marginBottom:'0.5rem', display:'flex', alignItems:'center', gap:'0.5rem'}}>
-                      <span>📅</span>
-                      <span>{formatDate(appointment.date)}</span>
-                      <span style={{background:'#f0f0f0', padding:'0.2rem 0.5rem', borderRadius:4, fontSize:'0.8rem'}}>
-                        {new Date(appointment.date).toLocaleDateString('ar-EG', { weekday: 'short' })}
-                      </span>
-                    </div>
-                    <div style={{color:'#666', marginBottom:'0.5rem', display:'flex', alignItems:'center', gap:'0.5rem'}}>
-                      <span>🕐</span>
-                      <span style={{fontWeight:700, color:'#7c4dff'}}>{appointment.time}</span>
-                    </div>
-                    {appointment.reason && (
-                      <div style={{color:'#666', fontSize:'0.9rem'}}>
-                        💬 {appointment.reason}
-                      </div>
-                    )}
-                    {/* عرض عمر المريض */}
-                    <div style={{color:'#666', fontSize:'0.9rem'}}>
-                      🎂 {t('common.age')}: {appointment.patientAge ? `${appointment.patientAge} ${t('common.years')}` : t('common.not_available')}
-                    </div>
-                    {/* عرض رقم الهاتف */}
-                    {(appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes)) || appointment.userId?.phone) && (
-                      <div style={{color:'#666', fontSize:'0.9rem'}}>
-                        📞 {appointment.patientPhone || (/^\+?\d{10,}$/.test(appointment.notes) ? appointment.notes : appointment.userId?.phone)}
-                      </div>
-                    )}
-                    
-                                         {/* حالة الحضور */}
-                     <div style={{marginTop:'0.8rem'}}>
-                       {appointment.attendance === 'present' ? (
-                         <div style={{
-                           background:'#4caf50',
-                           color:'#fff',
-                           padding:'0.3rem 0.6rem',
-                           borderRadius:6,
-                           fontSize:'0.75rem',
-                           fontWeight:600,
-                           textAlign:'center',
-                           display:'inline-block'
-                         }}>
-                           ✅ {t('present')}
-                         </div>
-                       ) : appointment.attendance === 'absent' ? (
-                         <div style={{
-                           background:'#f44336',
-                           color:'#fff',
-                           padding:'0.3rem 0.6rem',
-                           borderRadius:6,
-                           fontSize:'0.75rem',
-                           fontWeight:600,
-                           textAlign:'center',
-                           display:'inline-block'
-                         }}>
-                           ❌ {t('absent')}
-                         </div>
-                       ) : status === 'past' ? (
-                         <div style={{
-                           background:'#f44336',
-                           color:'#fff',
-                           padding:'0.3rem 0.6rem',
-                           borderRadius:6,
-                           fontSize:'0.75rem',
-                           fontWeight:600,
-                           textAlign:'center',
-                           display:'inline-block'
-                         }}>
-                           ❌ {t('absent')}
-                         </div>
-                       ) : (
-                         <div style={{
-                           background:'#ff9800',
-                           color:'#fff',
-                           padding:'0.3rem 0.6rem',
-                           borderRadius:6,
-                           fontSize:'0.75rem',
-                           fontWeight:600,
-                           textAlign:'center',
-                           display:'inline-block'
-                         }}>
-                           ⏳ {t('waiting')}
-                         </div>
-                       )}
-                     </div>
+                
+                <div style={{marginBottom:'0.8rem'}}>
+                  <div style={{display:'flex', alignItems:'center', gap:'0.4rem', marginBottom:'0.4rem'}}>
+                    <span style={{fontSize:'1rem'}}>{statusIcon}</span>
+                    <span style={{
+                      background: '#0A8F82',
+                      color:'#fff',
+                      padding:'0.15rem 0.6rem',
+                      borderRadius:8,
+                      fontSize:'0.75rem',
+                      fontWeight:700
+                    }}>
+                      {statusText}
+                    </span>
                   </div>
-                  <div className="no-print" style={{display:'flex', gap:'0.5rem', flexWrap:'wrap'}}>
-                                         {/* أزرار الحضور - تظهر فقط إذا لم يتم تحديد الحضور بعد والموعد ليس سابقاً */}
-                     {(!appointment.attendance || appointment.attendance === 'not_set') && status !== 'past' && (
-                       <button 
-                         onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
-                         style={{
-                           background:'#4caf50',
-                           color:'#fff',
-                           border:'none',
-                           borderRadius:8,
-                           padding:'0.5rem 1rem',
-                           fontWeight:700,
-                           cursor:'pointer',
-                           fontSize:'0.9rem',
-                           display:'flex',
-                           alignItems:'center',
-                           gap:'0.3rem'
-                         }}
-                       >
-                         ✅ {t('mark_present')}
-                       </button>
-                     )}
-                     
-                    {/* زر إلغاء الموعد - يظهر فقط للمواعيد التي لم يتم تسجيل حضورها والمواعيد القادمة */}
-                    {(!appointment.attendance || appointment.attendance === 'not_set') && status !== 'past' && (
-                      <button 
-                        onClick={() => {
-                          setSelectedAppointmentId(appointment._id);
-                          setShowConfirm(true);
-                        }}
-                        style={{
-                          background:'#e53935',
-                          color:'#fff',
-                          border:'none',
-                          borderRadius:8,
-                          padding:'0.5rem 1rem',
-                          fontWeight:700,
-                          cursor:'pointer',
-                          fontSize:'0.9rem',
-                          display:'flex',
-                          alignItems:'center',
-                          gap:'0.3rem'
-                        }}
-                      >
-                        ❌ {t('cancel_appointment')}
-                      </button>
-                    )}
-                    
-                    {/* زر إضافة للمواعيد الخاصة */}
-                    <button 
-                      onClick={() => addToSpecialAppointments(appointment)}
-                      style={{
-                        background:'#ff5722',
+                  
+                  <h3 style={{color:'#0A8F82', margin:'0 0 0.4rem 0', fontSize:'1.1rem', fontWeight:700}}>
+                    👤 {appointment.isBookingForOther
+                      ? (appointment.patientName || t('patient'))
+                      : (appointment.userName || appointment.userId?.first_name || t('patient'))
+                    }
+                  </h3>
+                  
+                  <div style={{color:'#666', marginBottom:'0.3rem', fontSize:'0.85rem'}}>
+                    📅 {formatDate(appointment.date)}
+                  </div>
+                  
+                  <div style={{color:'#666', marginBottom:'0.3rem', fontSize:'0.85rem'}}>
+                    🕐 {appointment.time}
+                  </div>
+                  
+                  {appointment.reason && (
+                    <div style={{color:'#666', fontSize:'0.8rem', marginBottom:'0.3rem'}}>
+                      💬 {appointment.reason}
+                    </div>
+                  )}
+                  
+                  {/* حالة الحضور */}
+                  <div style={{marginTop:'0.6rem'}}>
+                    {appointment.attendance === 'present' ? (
+                      <div style={{
+                        background:'#0A8F82',
                         color:'#fff',
-                        border:'none',
-                        borderRadius:8,
-                        padding:'0.5rem 1rem',
-                        fontWeight:700,
-                        cursor:'pointer',
-                        fontSize:'0.9rem',
-                        display:'flex',
-                        alignItems:'center',
-                        gap:'0.3rem'
-                      }}
-                    >
-                      ⭐ {t('add_to_special_appointments')}
-                    </button>
-                    
-
-                    {status === 'past' && (
-                      <button 
-                        onClick={() => navigate('/doctor-dashboard')}
-                        style={{
-                          background:'#7c4dff',
-                          color:'#fff',
-                          border:'none',
-                          borderRadius:8,
-                          padding:'0.5rem 1rem',
-                          fontWeight:700,
-                          cursor:'pointer',
-                          fontSize:'0.9rem'
-                        }}
-                      >
-                        {t('manage_appointments')}
-                      </button>
+                        padding:'0.2rem 0.5rem',
+                        borderRadius:6,
+                        fontSize:'0.7rem',
+                        fontWeight:600,
+                        textAlign:'center',
+                        display:'inline-block'
+                      }}>
+                        ✅ {t('present')}
+                      </div>
+                    ) : appointment.attendance === 'absent' ? (
+                      <div style={{
+                        background:'#f44336',
+                        color:'#fff',
+                        padding:'0.2rem 0.5rem',
+                        borderRadius:6,
+                        fontSize:'0.7rem',
+                        fontWeight:600,
+                        textAlign:'center',
+                        display:'inline-block'
+                      }}>
+                        ❌ {t('absent')}
+                      </div>
+                    ) : status === 'past' ? (
+                      <div style={{
+                        background:'#f44336',
+                        color:'#fff',
+                        padding:'0.2rem 0.5rem',
+                        borderRadius:6,
+                        fontSize:'0.7rem',
+                        fontWeight:600,
+                        textAlign:'center',
+                        display:'inline-block'
+                      }}>
+                        ❌ {t('absent')}
+                      </div>
+                    ) : (
+                      <div style={{
+                        background:'#ff9800',
+                        color:'#fff',
+                        padding:'0.2rem 0.5rem',
+                        borderRadius:6,
+                        fontSize:'0.7rem',
+                        fontWeight:600,
+                        textAlign:'center',
+                        display:'inline-block'
+                      }}>
+                        ⏳ {t('waiting')}
+                      </div>
                     )}
                   </div>
                 </div>
+                
+                <div className="no-print" style={{display:'flex', gap:'0.4rem', flexWrap:'wrap'}}>
+                  {/* أزرار الحضور - تظهر فقط إذا لم يتم تحديد الحضور بعد والموعد ليس سابقاً */}
+                  {(!appointment.attendance || appointment.attendance === 'not_set') && status !== 'past' && (
+                    <button 
+                      onClick={() => handleAttendanceUpdate(appointment._id, 'present')}
+                      style={{
+                        background:'#0A8F82',
+                        color:'#fff',
+                        border:'none',
+                        borderRadius:6,
+                        padding:'0.4rem 0.8rem',
+                        fontWeight:700,
+                        cursor:'pointer',
+                        fontSize:'0.8rem',
+                        display:'flex',
+                        alignItems:'center',
+                        gap:'0.2rem'
+                      }}
+                    >
+                      ✅ {t('mark_present')}
+                    </button>
+                  )}
+                  
+                  {/* زر إلغاء الموعد */}
+                  {(!appointment.attendance || appointment.attendance === 'not_set') && status !== 'past' && (
+                    <button 
+                      onClick={() => {
+                        setSelectedAppointmentId(appointment._id);
+                        setShowConfirm(true);
+                      }}
+                      style={{
+                        background:'#f44336',
+                        color:'#fff',
+                        border:'none',
+                        borderRadius:6,
+                        padding:'0.4rem 0.8rem',
+                        fontWeight:700,
+                        cursor:'pointer',
+                        fontSize:'0.8rem',
+                        display:'flex',
+                        alignItems:'center',
+                        gap:'0.2rem'
+                      }}
+                    >
+                      ❌ {t('cancel_appointment')}
+                    </button>
+                  )}
+                  
+                  {/* زر إضافة للمواعيد الخاصة */}
+                  <button 
+                    onClick={() => addToSpecialAppointments(appointment)}
+                    style={{
+                      background:'#ff9800',
+                      color:'#fff',
+                      border:'none',
+                      borderRadius:6,
+                      padding:'0.4rem 0.8rem',
+                      fontWeight:700,
+                      cursor:'pointer',
+                      fontSize:'0.8rem',
+                      display:'flex',
+                      alignItems:'center',
+                      gap:'0.2rem'
+                    }}
+                  >
+                    ⭐ {t('add_to_special_appointments')}
+                  </button>
+                </div>
+                
                 {/* عرض اسم الحاجز إذا كان الحجز لشخص آخر */}
                 {appointment.isBookingForOther && (
-                  <div style={{color:'#666', fontSize:'0.9rem', marginTop:'0.5rem'}}>
+                  <div style={{color:'#666', fontSize:'0.8rem', marginTop:'0.5rem'}}>
                     👥 {t('booking.booker_name')}: {appointment.bookerName || appointment.userName}
                   </div>
                 )}
