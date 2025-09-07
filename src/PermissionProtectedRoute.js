@@ -97,6 +97,29 @@ const PermissionProtectedRoute = ({
         console.error('❌ خطأ في تحليل بيانات المستخدم الحالي:', error);
       }
     }
+  }
+  
+  // إذا كان الموظف ولديه صلاحيات لكن لا يزال محجوب، تحقق من localStorage
+  if (currentUserType && currentUserType !== 'doctor' && Object.keys(currentPermissions).length > 0) {
+    const savedCurrentUser = localStorage.getItem('currentUser');
+    if (savedCurrentUser) {
+      try {
+        const currentUserData = JSON.parse(savedCurrentUser);
+        if (currentUserData.permissions && currentUserData.permissions[requiredPermission]) {
+          console.log('🔄 تم العثور على صلاحية في localStorage:', {
+            requiredPermission,
+            permissionValue: currentUserData.permissions[requiredPermission]
+          });
+          // إعادة تحميل الصفحة للتأكد من تحديث الصلاحيات
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        }
+      } catch (error) {
+        console.error('❌ خطأ في تحليل بيانات المستخدم الحالي:', error);
+      }
+    }
+  }
     
     return (
       <div style={{
@@ -129,7 +152,7 @@ const PermissionProtectedRoute = ({
 
   // التحقق من الصلاحية المطلوبة
   const permissionValue = currentPermissions[requiredPermission];
-  const hasPermission = permissionValue === true || permissionValue === 'true' || permissionValue === 1;
+  const hasPermission = !!permissionValue && permissionValue !== false && permissionValue !== 'false' && permissionValue !== 0 && permissionValue !== '0';
   
   console.log('🔍 Permission Check Details:', {
     requiredPermission,
@@ -139,6 +162,21 @@ const PermissionProtectedRoute = ({
     permissionType: typeof permissionValue,
     allPermissions: Object.keys(currentPermissions),
     permissionValues: Object.values(currentPermissions)
+  });
+  
+  // تشخيص إضافي للصلاحيات
+  console.log('🔍 Detailed Permission Analysis:', {
+    'requiredPermission': requiredPermission,
+    'permissionExists': requiredPermission in currentPermissions,
+    'permissionValue': permissionValue,
+    'permissionValueType': typeof permissionValue,
+    'isTrue': permissionValue === true,
+    'isStringTrue': permissionValue === 'true',
+    'isOne': permissionValue === 1,
+    'hasPermission': hasPermission,
+    'allPermissionKeys': Object.keys(currentPermissions),
+    'permissionValues': Object.values(currentPermissions),
+    'permissionEntries': Object.entries(currentPermissions)
   });
   
   if (requiredPermission && !hasPermission) {
