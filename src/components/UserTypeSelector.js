@@ -17,6 +17,13 @@ const UserTypeSelector = () => {
 
   const checkDoctorEmployees = useCallback(async () => {
     try {
+      // التأكد من وجود profile قبل المتابعة
+      if (!profile || !profile._id) {
+        console.error('❌ UserTypeSelector - profile or profile._id is undefined in checkDoctorEmployees');
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/doctor-has-employees/${profile._id}`);
       const data = await response.json();
       
@@ -100,6 +107,9 @@ const UserTypeSelector = () => {
   useEffect(() => {
     if (profile?._id) {
       checkDoctorEmployees();
+    } else {
+      console.log('⏳ UserTypeSelector - waiting for profile to load...');
+      setLoading(false);
     }
   }, [profile?._id, checkDoctorEmployees]);
 
@@ -116,6 +126,13 @@ const UserTypeSelector = () => {
     
     if (!selectedType || !accessCode) {
       setError(t('user_type_selector.access_code_section.error_required'));
+      return;
+    }
+
+    // التأكد من وجود profile قبل المتابعة
+    if (!profile) {
+      console.error('❌ UserTypeSelector - profile is undefined in handleAccessCodeSubmit');
+      setError('خطأ في بيانات المستخدم. يرجى إعادة تسجيل الدخول.');
       return;
     }
 
@@ -185,6 +202,13 @@ const UserTypeSelector = () => {
           finalPermissions: finalPermissions
         });
         
+        // التأكد من وجود profile قبل استخدامه
+        if (!profile) {
+          console.error('❌ UserTypeSelector - profile is undefined');
+          setError('خطأ في بيانات المستخدم. يرجى إعادة تسجيل الدخول.');
+          return;
+        }
+
         // حفظ نوع المستخدم الحالي والصلاحيات
         const userData = {
           ...profile,
