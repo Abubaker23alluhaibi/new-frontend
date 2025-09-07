@@ -263,9 +263,15 @@ function BookForOtherPage() {
 
       if (response.ok) {
         setBookingSuccess(true);
-        setTimeout(() => {
+        // إظهار رسالة تأكيد قبل الانتقال
+        const shouldNavigate = window.confirm('تم الحجز بنجاح! هل تريد الانتقال إلى صفحة الطبيب؟');
+        if (shouldNavigate) {
           navigate(`/doctor/${id}`);
-        }, 2000);
+        }
+        // إخفاء رسالة النجاح بعد 3 ثوانٍ
+        setTimeout(() => {
+          setBookingSuccess(false);
+        }, 3000);
       } else {
         const errorData = await response.json();
         setSuccess(errorData.message || 'حدث خطأ في الحجز');

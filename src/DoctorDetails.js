@@ -105,16 +105,22 @@ function DoctorDetails() {
   }, [id]);
 
   const openApp = () => {
-    const deepLink = `tabibiq://doctor/${id}`;
-    window.location.href = deepLink;
+    const shouldOpen = window.confirm('هل تريد فتح التطبيق؟');
+    if (shouldOpen) {
+      const deepLink = `tabibiq://doctor/${id}`;
+      window.location.href = deepLink;
+    }
   };
 
   const openAppStore = () => {
-    const userAgent = navigator.userAgent.toLowerCase();
-    if (/iphone|ipad|ipod/.test(userAgent)) {
-      window.location.href = 'https://apps.apple.com/app/tabibiq/id123456789';
-    } else if (/android/.test(userAgent)) {
-      window.location.href = 'https://play.google.com/store/apps/details?id=com.tabibiq.app';
+    const shouldOpen = window.confirm('هل تريد الانتقال إلى متجر التطبيقات لتحميل التطبيق؟');
+    if (shouldOpen) {
+      const userAgent = navigator.userAgent.toLowerCase();
+      if (/iphone|ipad|ipod/.test(userAgent)) {
+        window.location.href = 'https://apps.apple.com/app/tabibiq/id123456789';
+      } else if (/android/.test(userAgent)) {
+        window.location.href = 'https://play.google.com/store/apps/details?id=com.tabibiq.app';
+      }
     }
   };
 
