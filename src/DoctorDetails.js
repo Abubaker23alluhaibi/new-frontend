@@ -254,7 +254,7 @@ function DoctorDetails() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: user._id,
+          userId: user?._id || profile?._id,
           doctorId: id,
           rating: rating,
           comment: ratingComment
@@ -469,10 +469,10 @@ function DoctorDetails() {
     const dateString = `${year}-${month}-${day}`;
     
     const bookingData = {
-      userId: user._id,
-      doctorId: doctor._id,
-      userName: profile?.first_name || 'مستخدم',
-      doctorName: doctor.name,
+      userId: user?._id || profile?._id,
+      doctorId: doctor?._id,
+      userName: profile?.first_name || user?.first_name || 'مستخدم',
+      doctorName: doctor?.name || 'طبيب',
       date: dateString,
       time: selectedTime,
       reason: reason || '',
@@ -481,7 +481,7 @@ function DoctorDetails() {
       isBookingForOther: isBookingForOther,
       patientName: isBookingForOther ? patientName : '',
       patientPhone: isBookingForOther ? patientPhone : '',
-      bookerName: profile?.first_name || 'مستخدم'
+      bookerName: profile?.first_name || user?.first_name || 'مستخدم'
     };
     
     try {
