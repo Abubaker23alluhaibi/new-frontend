@@ -1320,7 +1320,19 @@
       "medication_notes": "ملاحظات",
       "signature": "توقيع الطبيب",
       "date": "التاريخ",
-      "time": "الوقت"
+      "time": "الوقت",
+      "clinic_title": "منصة طبيب العراق",
+      "clinic_url": "www.tabibq.com",
+      "prescription_title": "وصفة طبية",
+      "patient_name_label": "الاسم:",
+      "medications_title": "الأدوية الموصوفة",
+      "individual_medications": "أدوية فردية",
+      "prescription_medications": "الوصفة الطبية",
+      "instructions_label": "التعليمات:",
+      "notes_label": "ملاحظات:",
+      "print_date_label": "تاريخ الطباعة:",
+      "clinic_footer_text": "هذه الوصفة الطبية صادرة من منصة طبيب العراق",
+      "clinic_footer_contact": "للاستفسارات: www.tabibq.com"
     }
   },
   "user_type_selector": {

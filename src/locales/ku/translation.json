@@ -1240,7 +1240,19 @@
       "medication_notes": "تێبینییەکان",
       "signature": "دەستخەتی پزیشک",
       "date": "بەروار",
-      "time": "کات"
+      "time": "کات",
+      "clinic_title": "پلاتفۆرمی پزیشکی عێراق",
+      "clinic_url": "www.tabibq.com",
+      "prescription_title": "نوسراوە پزیشکییە",
+      "patient_name_label": "ناو:",
+      "medications_title": "دەرمانە پێنوسراوەکان",
+      "individual_medications": "دەرمانە تاکەکان",
+      "prescription_medications": "نوسراوە پزیشکییە",
+      "instructions_label": "ڕێنماییەکان:",
+      "notes_label": "تێبینییەکان:",
+      "print_date_label": "بەرواری چاپ:",
+      "clinic_footer_text": "ئەم نوسراوە پزیشکییە لەلایەن پلاتفۆرمی پزیشکی عێراقەوە دەرکراوە",
+      "clinic_footer_contact": "بۆ پرسیارەکان: www.tabibq.com"
     }
   },
   "user_type_selector": {

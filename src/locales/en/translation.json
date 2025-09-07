@@ -1078,7 +1078,19 @@
       "medication_notes": "Notes",
       "signature": "Doctor's Signature",
       "date": "Date",
-      "time": "Time"
+      "time": "Time",
+      "clinic_title": "Iraqi Doctor Platform",
+      "clinic_url": "www.tabibq.com",
+      "prescription_title": "Medical Prescription",
+      "patient_name_label": "Name:",
+      "medications_title": "Prescribed Medications",
+      "individual_medications": "Individual Medications",
+      "prescription_medications": "Prescription",
+      "instructions_label": "Instructions:",
+      "notes_label": "Notes:",
+      "print_date_label": "Print Date:",
+      "clinic_footer_text": "This prescription is issued by Iraqi Doctor Platform",
+      "clinic_footer_contact": "For inquiries: www.tabibq.com"
     }
   },
   "user_type_selector": {
