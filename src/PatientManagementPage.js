@@ -561,7 +561,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
       const secureUrl = await getPdfWithAuth(fileUrl);
       setViewingPdf({ url: secureUrl, name: fileName });
     } catch (error) {
-      console.error('Error opening PDF:', error);
+      // في حالة فشل الحصول على URL آمن، استخدم URL الأصلي
       setViewingPdf({ url: fileUrl, name: fileName });
     } finally {
       setPdfLoading(false);
@@ -580,8 +580,8 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
       const secureUrl = `${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(fileUrl)}?token=${encodeURIComponent(token)}`;
       return secureUrl;
     } catch (error) {
-      console.error('Error getting PDF with auth:', error);
-      return fileUrl; // العودة للرابط الأصلي في حالة الخطأ
+      // في حالة فشل الحصول على URL آمن، استخدم URL الأصلي
+      return fileUrl;
     }
   };
 
@@ -1185,14 +1185,27 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                   </a>
                 </div>
                 
-                {/* PDF Viewer - Fallback to direct link */}
+                {/* PDF Viewer - iframe for direct viewing */}
                 <div className="pdf-iframe-container">
+                  <iframe
+                    src={viewingPdf.url}
+                    title={viewingPdf.name}
+                    className="pdf-iframe"
+                    onLoad={() => setPdfLoading(false)}
+                    onError={() => {
+                      setPdfLoading(false);
+                    }}
+                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                    allow="fullscreen"
+                  />
+                  
+                  {/* Fallback options if iframe fails */}
                   <div className="pdf-fallback">
                     <p className="pdf-fallback-text">
                       📄 <strong>{viewingPdf.name}</strong>
                     </p>
                     <p className="pdf-fallback-instruction">
-                      اضغط على الأزرار أدناه لفتح أو تحميل الملف
+                      إذا لم يظهر الملف أعلاه، استخدم الأزرار أدناه
                     </p>
                     <div className="pdf-fallback-buttons">
                       <a 
