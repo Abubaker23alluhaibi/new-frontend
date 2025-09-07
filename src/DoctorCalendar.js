@@ -114,34 +114,75 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
     return getAppointmentsForDate(dateStr).length;
   };
 
-  // دالة إلغاء مواعيد اليوم المحدد فقط
+  // دالة للتحقق من أن الموعد في المستقبل
+  const isFutureAppointment = (appointment) => {
+    const appointmentDate = new Date(appointment.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // إذا كان الموعد بعد اليوم
+    if (appointmentDate > today) {
+      return true;
+    }
+    
+    // إذا كان الموعد اليوم، تحقق من الوقت
+    if (appointmentDate.getTime() === today.getTime()) {
+      const now = new Date();
+      const appointmentTime = new Date(`${appointment.date}T${appointment.time}`);
+      return appointmentTime > now;
+    }
+    
+    return false;
+  };
+
+  // دالة للتحقق من وجود مواعيد قادمة في اليوم المحدد
+  const hasFutureAppointments = () => {
+    const selectedDayAppointments = getAppointmentsForDate(_selectedDate);
+    return selectedDayAppointments.some(isFutureAppointment);
+  };
+
+  // دالة إلغاء مواعيد اليوم المحدد فقط (المواعيد القادمة فقط)
   const cancelSelectedDayAppointments = async () => {
     const selectedDayAppointments = getAppointmentsForDate(_selectedDate);
+    
+    // تصفية المواعيد القادمة فقط
+    const futureAppointments = selectedDayAppointments.filter(isFutureAppointment);
 
-    if (selectedDayAppointments.length === 0) {
-      alert(t('no_appointments_selected_day') || 'لا توجد مواعيد في اليوم المحدد');
+    if (futureAppointments.length === 0) {
+      alert(t('no_future_appointments_selected_day') || 'لا توجد مواعيد قادمة في اليوم المحدد');
       return;
     }
 
-    const confirmMessage = t('confirm_cancel_selected_day') || 'هل أنت متأكد من إلغاء جميع مواعيد اليوم المحدد؟';
+    const confirmMessage = t('confirm_cancel_future_appointments') || `هل أنت متأكد من إلغاء جميع المواعيد القادمة في اليوم المحدد؟ (${futureAppointments.length} موعد)`;
     
     if (window.confirm(confirmMessage)) {
       try {
-        // إلغاء كل موعد في اليوم المحدد
-        const cancelPromises = selectedDayAppointments.map(appointment => 
-          fetch(`${process.env.REACT_APP_API_URL}/cancel-appointment/${appointment._id}`, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          })
-        );
+        // إلغاء كل موعد قادم في اليوم المحدد
+        const cancelPromises = futureAppointments.map(async appointment => {
+          try {
+            // جلب التوكن
+            const token = localStorage.getItem('token') || 
+                         (JSON.parse(localStorage.getItem('user') || '{}')).token ||
+                         (JSON.parse(localStorage.getItem('profile') || '{}')).token;
+            
+            return fetch(`${process.env.REACT_APP_API_URL}/appointments/${appointment._id}`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+            });
+          } catch (error) {
+            console.error('خطأ في إلغاء الموعد:', error);
+            return { ok: false };
+          }
+        });
 
         const results = await Promise.all(cancelPromises);
         const successCount = results.filter(response => response.ok).length;
 
-        if (successCount === selectedDayAppointments.length) {
-          alert(t('selected_day_appointments_cancelled') || 'تم إلغاء مواعيد اليوم المحدد بنجاح');
+        if (successCount === futureAppointments.length) {
+          alert(t('future_appointments_cancelled') || `تم إلغاء ${successCount} موعد قادم بنجاح`);
           // إعادة تحميل المواعيد
           window.location.reload();
         } else {
@@ -190,35 +231,37 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
           <h3 style={{color:'#0A8F82', fontWeight:800, fontSize:22, margin:0, flex:1, textAlign:'center'}}>
             📅 {t('my_calendar')}
           </h3>
-          <button 
-            onClick={cancelSelectedDayAppointments}
-            style={{
-              background:'#ff4444',
-              color:'#fff',
-              border:'none',
-              borderRadius:12,
-              padding:'0.8rem 1rem',
-              fontSize:12,
-              fontWeight:700,
-              cursor:'pointer',
-              display:'flex',
-              alignItems:'center',
-              gap:6,
-              transition:'all 0.3s ease',
-              boxShadow:'0 4px 12px rgba(255, 68, 68, 0.3)'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 6px 16px rgba(255, 68, 68, 0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 4px 12px rgba(255, 68, 68, 0.3)';
-            }}
-            title={t('cancel_selected_day') || 'إلغاء مواعيد اليوم المحدد'}
-          >
-            🗑️ {t('cancel_selected_day') || 'إلغاء اليوم'}
-          </button>
+          {hasFutureAppointments() && (
+            <button 
+              onClick={cancelSelectedDayAppointments}
+              style={{
+                background:'#ff4444',
+                color:'#fff',
+                border:'none',
+                borderRadius:12,
+                padding:'0.8rem 1rem',
+                fontSize:12,
+                fontWeight:700,
+                cursor:'pointer',
+                display:'flex',
+                alignItems:'center',
+                gap:6,
+                transition:'all 0.3s ease',
+                boxShadow:'0 4px 12px rgba(255, 68, 68, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 6px 16px rgba(255, 68, 68, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 4px 12px rgba(255, 68, 68, 0.3)';
+              }}
+              title={t('cancel_future_appointments') || 'إلغاء المواعيد القادمة'}
+            >
+              🗑️ {t('cancel_future_appointments') || 'إلغاء القادمة'}
+            </button>
+          )}
         </div>
         {/* معلومات الشهر مع أزرار التنقل */}
         <div style={{background:'#0A8F82', color:'#fff', borderRadius:12, padding:'1rem', marginBottom:20, fontWeight:700, fontSize:16, display:'flex', alignItems:'center', justifyContent:'space-between', boxShadow:'0 4px 12px rgba(10, 143, 130, 0.3)'}}>
