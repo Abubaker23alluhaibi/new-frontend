@@ -1768,9 +1768,349 @@ const PatientManagementPage = () => {
     // مستمع لطباعة وصفة محددة
     const handlePrintSpecificPrescription = (event) => {
       const { prescriptionId, medications, patient, doctor } = event.detail;
-      setShowPrintPrescription(true);
-      // يمكن إضافة منطق إضافي هنا لطباعة وصفة محددة
-      console.log('Printing specific prescription:', { prescriptionId, medications, patient, doctor });
+      
+      // طباعة الوصفة المحددة مباشرة
+      const printWindow = window.open('', '_blank');
+      
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html dir="rtl" lang="ar">
+        <head>
+          <meta charset="UTF-8">
+          <title>الوصفة الطبية</title>
+          <style>
+            @page {
+              size: A4;
+              margin: 20mm;
+            }
+            
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            
+            body {
+              font-family: 'Arial', 'Tahoma', sans-serif;
+              line-height: 1.6;
+              color: #333;
+              background: #fff;
+              position: relative;
+            }
+            
+            .prescription-container {
+              position: relative;
+              min-height: 100vh;
+              padding: 20px;
+              background: #fff;
+            }
+            
+            .watermark {
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="120" font-weight="bold" fill="rgba(52,152,219,0.05)" transform="rotate(-45 100 100)">طبيك</text></svg>') repeat;
+              pointer-events: none;
+              z-index: 1;
+            }
+            
+            .prescription-content {
+              position: relative;
+              z-index: 2;
+              background: #fff;
+            }
+            
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              padding-bottom: 20px;
+              border-bottom: 3px solid #3498db;
+            }
+            
+            .clinic-name {
+              font-size: 28px;
+              font-weight: bold;
+              color: #2c3e50;
+              margin-bottom: 10px;
+            }
+            
+            .clinic-url {
+              font-size: 14px;
+              color: #7f8c8d;
+              margin-bottom: 20px;
+            }
+            
+            .prescription-title {
+              font-size: 24px;
+              font-weight: bold;
+              color: #e74c3c;
+              margin-bottom: 20px;
+            }
+            
+            .patient-info {
+              background: #f8f9fa;
+              padding: 20px;
+              border-radius: 10px;
+              margin-bottom: 30px;
+              border: 2px solid #e9ecef;
+            }
+            
+            .patient-info h3 {
+              color: #2c3e50;
+              margin-bottom: 15px;
+              font-size: 18px;
+            }
+            
+            .info-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+              gap: 15px;
+            }
+            
+            .info-item {
+              display: flex;
+              justify-content: space-between;
+              padding: 8px 0;
+              border-bottom: 1px solid #dee2e6;
+            }
+            
+            .info-label {
+              font-weight: bold;
+              color: #495057;
+            }
+            
+            .info-value {
+              color: #2c3e50;
+            }
+            
+            .medications-section {
+              margin-bottom: 30px;
+            }
+            
+            .medications-title {
+              font-size: 20px;
+              font-weight: bold;
+              color: #2c3e50;
+              margin-bottom: 20px;
+              text-align: center;
+              background: #3498db;
+              color: white;
+              padding: 10px;
+              border-radius: 8px;
+            }
+            
+            .medication-group {
+              margin-bottom: 25px;
+              border: 2px solid #e9ecef;
+              border-radius: 10px;
+              overflow: hidden;
+            }
+            
+            .group-header {
+              background: #3498db;
+              color: white;
+              padding: 15px;
+              font-weight: bold;
+              font-size: 16px;
+            }
+            
+            .medication-list {
+              padding: 20px;
+            }
+            
+            .medication-item {
+              margin-bottom: 20px;
+              padding: 15px;
+              background: #f8f9fa;
+              border-radius: 8px;
+              border-left: 4px solid #3498db;
+            }
+            
+            .medication-item:last-child {
+              margin-bottom: 0;
+            }
+            
+            .medication-name {
+              font-size: 18px;
+              font-weight: bold;
+              color: #2c3e50;
+              margin-bottom: 10px;
+            }
+            
+            .medication-details {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+              gap: 10px;
+              margin-bottom: 10px;
+            }
+            
+            .detail-item {
+              display: flex;
+              justify-content: space-between;
+              padding: 5px 0;
+            }
+            
+            .detail-label {
+              font-weight: bold;
+              color: #495057;
+            }
+            
+            .detail-value {
+              color: #2c3e50;
+            }
+            
+            .instructions {
+              background: #fff3cd;
+              padding: 10px;
+              border-radius: 5px;
+              border-left: 4px solid #ffc107;
+              margin-top: 10px;
+            }
+            
+            .instructions strong {
+              color: #856404;
+            }
+            
+            .footer {
+              margin-top: 40px;
+              text-align: center;
+              padding-top: 20px;
+              border-top: 2px solid #e9ecef;
+            }
+            
+            .doctor-signature {
+              margin-bottom: 20px;
+            }
+            
+            .doctor-name {
+              font-size: 18px;
+              font-weight: bold;
+              color: #2c3e50;
+              margin-bottom: 5px;
+            }
+            
+            .doctor-specialty {
+              color: #7f8c8d;
+              margin-bottom: 20px;
+            }
+            
+            .signature-line {
+              border-bottom: 2px solid #333;
+              width: 200px;
+              margin: 0 auto 10px;
+              height: 40px;
+            }
+            
+            .print-date {
+              color: #7f8c8d;
+              font-size: 14px;
+            }
+            
+            .clinic-footer {
+              margin-top: 30px;
+              text-align: center;
+              color: #7f8c8d;
+              font-size: 12px;
+            }
+            
+            @media print {
+              .no-print {
+                display: none !important;
+              }
+              
+              body {
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="watermark"></div>
+          <div class="prescription-container">
+            <div class="prescription-content">
+              <div class="header">
+                <div class="clinic-name">طبيك - منصة الرعاية الصحية</div>
+                <div class="clinic-url">www.tabibq.com</div>
+                <div class="prescription-title">وصفة طبية</div>
+              </div>
+              
+              <div class="patient-info">
+                <h3>معلومات المريض</h3>
+                <div class="info-grid">
+                  <div class="info-item">
+                    <span class="info-label">الاسم:</span>
+                    <span class="info-value">${patient.name}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="medications-section">
+                <div class="medications-title">الأدوية الموصوفة</div>
+                <div class="medication-group">
+                  <div class="group-header">
+                    ${prescriptionId === 'individual' ? 'أدوية فردية' : 'الوصفة الطبية - ' + prescriptionId}
+                  </div>
+                  <div class="medication-list">
+                    ${medications.map((medication, index) => `
+                      <div class="medication-item">
+                        <div class="medication-name">${index + 1}. ${medication.name}</div>
+                        <div class="medication-details">
+                          <div class="detail-item">
+                            <span class="detail-label">الجرعة:</span>
+                            <span class="detail-value">${medication.dosage}</span>
+                          </div>
+                          <div class="detail-item">
+                            <span class="detail-label">التكرار:</span>
+                            <span class="detail-value">${medication.frequency}</span>
+                          </div>
+                          ${medication.duration ? `
+                            <div class="detail-item">
+                              <span class="detail-label">المدة:</span>
+                              <span class="detail-value">${medication.duration}</span>
+                            </div>
+                          ` : ''}
+                        </div>
+                        ${medication.instructions ? `
+                          <div class="instructions">
+                            <strong>التعليمات:</strong> ${medication.instructions}
+                          </div>
+                        ` : ''}
+                        ${medication.notes ? `
+                          <div class="instructions">
+                            <strong>ملاحظات:</strong> ${medication.notes}
+                          </div>
+                        ` : ''}
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="footer">
+                <div class="doctor-signature">
+                  <div class="doctor-name">د. ${doctor.name}</div>
+                  <div class="doctor-specialty">${doctor.specialty || 'طبيب عام'}</div>
+                  <div class="signature-line"></div>
+                  <div class="print-date">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')}</div>
+                </div>
+                
+                <div class="clinic-footer">
+                  <p>هذه الوصفة الطبية صادرة من منصة طبيك للرعاية الصحية</p>
+                  <p>للاستفسارات: www.tabibq.com</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </body>
+        </html>
+      `);
+      
+      printWindow.document.close();
+      printWindow.print();
+      printWindow.close();
     };
 
     window.addEventListener('openAddMedication', handleOpenAddMedication);
@@ -2614,26 +2954,6 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
                 <div class="info-item">
                   <span class="info-label">الاسم:</span>
                   <span class="info-value">${patient.name}</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">العمر:</span>
-                  <span class="info-value">${patient.age} سنة</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">الجنس:</span>
-                  <span class="info-value">${patient.gender === 'male' ? 'ذكر' : 'أنثى'}</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">رقم الهاتف:</span>
-                  <span class="info-value">${patient.phone}</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">فصيلة الدم:</span>
-                  <span class="info-value">${patient.bloodType || 'غير محدد'}</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">التاريخ:</span>
-                  <span class="info-value">${new Date().toLocaleDateString('ar-EG')}</span>
                 </div>
               </div>
             </div>
