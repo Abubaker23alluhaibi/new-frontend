@@ -201,42 +201,42 @@
 .employee-info {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .employee-avatar {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: #0A8F82;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: bold;
   flex-shrink: 0;
 }
 
 .employee-details h3 {
-  margin: 0 0 4px 0;
+  margin: 0 0 2px 0;
   color: #2c3e50;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 
 .employee-type,
 .employee-status {
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .type-badge,
 .status-badge {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.7rem;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 0.6rem;
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -702,7 +702,13 @@
   .employee-info {
     flex-direction: column;
     text-align: center;
-    gap: 8px;
+    gap: 4px;
+  }
+  
+  .employee-avatar {
+    width: 25px;
+    height: 25px;
+    font-size: 0.7rem;
   }
   
   .employee-actions {
