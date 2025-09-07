@@ -208,6 +208,8 @@ function DoctorDetails() {
   }, [id]);
 
   const fetchUserRating = useCallback(async () => {
+    if (!user?._id) return;
+    
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/ratings/doctor/${id}?userId=${user._id}`);
       const data = await response.json();
@@ -217,7 +219,7 @@ function DoctorDetails() {
     } catch (err) {
       console.error('Error fetching user rating:', err);
     }
-  }, [id, user._id]);
+  }, [id, user?._id]);
 
   // جلب التقييمات
   useEffect(() => {
