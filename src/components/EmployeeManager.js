@@ -26,7 +26,8 @@ const EmployeeManager = () => {
       MANAGE_SPECIAL_APPOINTMENTS: false,
       MANAGE_APPOINTMENT_DURATION: false,
       VIEW_BOOKINGS_STATS: false,
-      VIEW_PRIVATE_COMMENTS: false
+      VIEW_PRIVATE_COMMENTS: false,
+      ACCESS_DASHBOARD: true // صلاحية الوصول للصفحة الرئيسية
     }
   });
 
@@ -101,7 +102,8 @@ const EmployeeManager = () => {
             MANAGE_SPECIAL_APPOINTMENTS: false,
             MANAGE_APPOINTMENT_DURATION: false,
             VIEW_BOOKINGS_STATS: false,
-            VIEW_PRIVATE_COMMENTS: false
+            VIEW_PRIVATE_COMMENTS: false,
+            ACCESS_DASHBOARD: true // صلاحية الوصول للصفحة الرئيسية
           }
         });
         fetchEmployees();

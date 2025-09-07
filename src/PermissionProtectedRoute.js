@@ -77,6 +77,21 @@ const PermissionProtectedRoute = ({
     return children;
   }
 
+  // إذا كان الموظف، اسمح له بالوصول للصفحة الرئيسية تلقائياً
+  if (currentUserType && currentUserType !== 'doctor' && currentUserType !== 'user' && currentUserType !== 'admin') {
+    // إذا كان يطلب الوصول للصفحة الرئيسية (doctor-dashboard)، اسمح له بالدخول تلقائياً
+    if (requiredPermission === 'VIEW_APPOINTMENTS') {
+      console.log('✅ الموظف - له صلاحية الوصول للصفحة الرئيسية تلقائياً');
+      return children;
+    }
+    
+    // إذا كان لديه صلاحية الوصول للصفحة الرئيسية أو لم يتم تعيين أي صلاحيات
+    if (currentPermissions.ACCESS_DASHBOARD || Object.keys(currentPermissions).length === 0) {
+      console.log('✅ الموظف - له صلاحية الوصول للصفحة الرئيسية');
+      return children;
+    }
+  }
+
   // إذا كان الموظف ولكن لم يتم تحميل الصلاحيات بعد، انتظر قليلاً
   if (currentUserType && currentUserType !== 'doctor' && Object.keys(currentPermissions).length === 0) {
     console.log('⏳ انتظار تحميل صلاحيات الموظف...');

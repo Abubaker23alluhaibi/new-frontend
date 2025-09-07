@@ -155,11 +155,41 @@ const UserTypeSelector = () => {
         console.log('🔍 UserTypeSelector - profile:', profile);
         console.log('🔍 UserTypeSelector - profile.token:', profile.token);
         
+        // الصلاحيات الافتراضية للموظفين
+        const defaultEmployeePermissions = {
+          VIEW_APPOINTMENTS: true,
+          VIEW_CALENDAR: true,
+          VIEW_PROFILE: true,
+          ACCESS_DASHBOARD: true, // صلاحية الوصول للصفحة الرئيسية
+          MANAGE_APPOINTMENTS: false,
+          MANAGE_WORK_TIMES: false,
+          VIEW_ANALYTICS: false,
+          MANAGE_EMPLOYEES: false,
+          MANAGE_SPECIAL_APPOINTMENTS: false,
+          MANAGE_APPOINTMENT_DURATION: false,
+          VIEW_BOOKINGS_STATS: false,
+          MANAGE_PATIENTS: false
+        };
+        
+        // دمج الصلاحيات من الخادم مع الصلاحيات الافتراضية
+        // إذا لم تكن هناك صلاحيات من الخادم، استخدم الصلاحيات الافتراضية فقط
+        const serverPermissions = data.permissions || {};
+        const finalPermissions = { 
+          ...defaultEmployeePermissions, 
+          ...serverPermissions 
+        };
+        
+        console.log('🔍 UserTypeSelector - الصلاحيات النهائية:', {
+          defaultPermissions: defaultEmployeePermissions,
+          serverPermissions: serverPermissions,
+          finalPermissions: finalPermissions
+        });
+        
         // حفظ نوع المستخدم الحالي والصلاحيات
         const userData = {
           ...profile,
           currentUserType: selectedType,
-          permissions: data.permissions || {},
+          permissions: finalPermissions,
           employeeInfo: data.employeeInfo || null
         };
 
@@ -182,11 +212,11 @@ const UserTypeSelector = () => {
         
         // تحديث AuthContext مباشرة
         setCurrentUserType(selectedType);
-        setCurrentPermissions(data.permissions || {});
+        setCurrentPermissions(finalPermissions);
         
         console.log('🔍 UserTypeSelector: تم تعيين الصلاحيات:', {
           selectedType,
-          permissions: data.permissions,
+          permissions: finalPermissions,
           employeeInfo: data.employeeInfo
         });
         
@@ -194,7 +224,7 @@ const UserTypeSelector = () => {
         const updatedUserData = {
           ...userData,
           currentUserType: selectedType,
-          permissions: data.permissions || {}
+          permissions: finalPermissions
         };
         localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
         console.log('💾 تم حفظ الصلاحيات المحدثة في localStorage:', updatedUserData);
