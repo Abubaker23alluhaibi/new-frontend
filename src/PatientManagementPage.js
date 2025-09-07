@@ -694,6 +694,8 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
         const updatedPatient = await fetchPatientDetails(patient._id);
         if (updatedPatient) {
           setSelectedPatient(updatedPatient);
+          // تحديث قائمة المرضى أيضاً
+          onUpdate(patient._id, updatedPatient);
         }
         toast.success(t('patient_management.file_uploaded_successfully'));
       } else {
@@ -740,6 +742,8 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
         const updatedPatient = await fetchPatientDetails(patient._id);
         if (updatedPatient) {
           setSelectedPatient(updatedPatient);
+          // تحديث قائمة المرضى أيضاً
+          onUpdate(patient._id, updatedPatient);
         }
         toast.success(t('patient_management.file_deleted_successfully'));
       } else {
