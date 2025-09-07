@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import DatePicker from 'react-datepicker';
 import { ar } from 'date-fns/locale';
@@ -10,7 +10,7 @@ import './BookForOtherPage.css';
 function BookForOtherPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
   const { user, profile } = useAuth();
   
   const [doctor, setDoctor] = useState(null);
@@ -34,21 +34,38 @@ function BookForOtherPage() {
   const [isLoadingAppointments, setIsLoadingAppointments] = useState(false);
   
   // أيام الأسبوع والشهور
-  const weekdays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-  const months = [
+  const weekdays = useMemo(() => ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'], []);
+  const months = useMemo(() => [
     'كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران',
     'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'
-  ];
+  ], []);
 
   // دالة للحصول على رابط الصورة
   const getImageUrl = (doctor) => {
     if (!doctor) return '/logo.png';
-    const img = doctor.image || doctor.profileImage;
+    const img = doctor?.image || doctor?.profileImage;
     if (!img) return '/logo.png';
     if (img.startsWith('/uploads/')) return process.env.REACT_APP_API_URL + img;
     if (img.startsWith('http')) return img;
     return '/logo.png';
   };
+
+  const fetchDoctorDetails = useCallback(async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors`);
+      const data = await response.json();
+      const found = data.find(d => d._id === id);
+      if (found) {
+        setDoctor(found);
+      } else {
+        setError('الطبيب غير موجود');
+      }
+    } catch (err) {
+      setError('خطأ في جلب بيانات الطبيب');
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
 
   useEffect(() => {
     // التحقق من تسجيل الدخول
@@ -64,29 +81,12 @@ function BookForOtherPage() {
     }
     
     fetchDoctorDetails();
-  }, [id, user, profile, navigate]);
+  }, [id, user, profile, navigate, fetchDoctorDetails]);
 
-  const fetchDoctorDetails = async () => {
-    try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors`);
-      const data = await response.json();
-      const found = data.find(d => d._id === id);
-      if (found) {
-        setDoctor(found);
-      } else {
-        setError('الطبيب غير موجود');
-      }
-    } catch (err) {
-      setError('خطأ في جلب بيانات الطبيب');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getAvailableDays = () => {
+  const getAvailableDays = useCallback(() => {
     if (!doctor?.workTimes || !Array.isArray(doctor.workTimes)) return [];
     return doctor.workTimes.map(wt => wt.day).filter(Boolean);
-  };
+  }, [doctor?.workTimes]);
 
   const generateTimeSlots = useCallback((from, to) => {
     const slots = [];
@@ -160,7 +160,7 @@ function BookForOtherPage() {
       }
     }
     return true;
-  }, [doctor?.workTimes, doctor?.vacationDays]);
+  }, [doctor?.vacationDays, getAvailableDays]);
 
   // useEffect للتقويم والأوقات المتاحة
   useEffect(() => {
@@ -177,14 +177,14 @@ function BookForOtherPage() {
     }
     
     const dayName = weekdays[selectedDate.getDay()];
-    const workTime = doctor.workTimes.find(wt => wt.day === dayName);
+    const workTime = doctor?.workTimes?.find(wt => wt.day === dayName);
     
     if (workTime && workTime.from && workTime.to) {
       const slots = generateTimeSlots(workTime.from, workTime.to);
       setAvailableTimes(slots);
       
       // جلب المواعيد المحجوزة فقط إذا لم تكن جارية بالفعل
-      if (!isLoadingAppointments) {
+      if (!isLoadingAppointments && doctor?._id) {
         const year = selectedDate.getFullYear();
         const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
         const day = String(selectedDate.getDate()).padStart(2, '0');
@@ -196,7 +196,7 @@ function BookForOtherPage() {
       setAvailableTimes([]);
       setBookedTimes([]);
     }
-  }, [selectedDate, doctor, generateTimeSlots, isDayAvailable, fetchBookedAppointments, isLoadingAppointments]);
+  }, [selectedDate, doctor, generateTimeSlots, isDayAvailable, fetchBookedAppointments, isLoadingAppointments, weekdays]);
 
   const handleBooking = async (e) => {
     e.preventDefault();
@@ -232,6 +232,11 @@ function BookForOtherPage() {
     const dateString = `${year}-${month}-${day}`;
     
     try {
+      if (!doctor?._id) {
+        setSuccess('خطأ: بيانات الطبيب غير متوفرة');
+        return;
+      }
+
       const appointmentData = {
         userId: user?._id || profile?._id,
         doctorId: doctor._id,
@@ -318,15 +323,15 @@ function BookForOtherPage() {
           <div className="doctor-info">
             <img 
               src={getImageUrl(doctor)} 
-              alt={doctor.name} 
+              alt={doctor?.name || 'طبيب'} 
               onError={(e) => {
                 e.target.src = '/logo.png';
               }}
               className="doctor-avatar"
             />
             <div className="doctor-details">
-              <h2>{doctor.name}</h2>
-              <p>{doctor.specialty}</p>
+              <h2>{doctor?.name || 'طبيب'}</h2>
+              <p>{doctor?.specialty || 'تخصص'}</p>
             </div>
           </div>
         )}
