@@ -120,35 +120,6 @@ const PermissionProtectedRoute = ({
       }
     }
   }
-    
-    return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
-        flexDirection: 'column',
-        gap: '1rem'
-      }}>
-        <div style={{ 
-          width: '40px', 
-          height: '40px', 
-          border: '4px solid rgba(10, 143, 130, 0.3)', 
-          borderTop: '4px solid #0A8F82', 
-          borderRadius: '50%', 
-          animation: 'spin 1s linear infinite' 
-        }}></div>
-        <div style={{ color: '#0A8F82', fontSize: '1.2rem', fontWeight: '600' }}>جاري تحميل الصلاحيات...</div>
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
-      </div>
-    );
-  }
 
   // التحقق من الصلاحية المطلوبة
   const permissionValue = currentPermissions[requiredPermission];
