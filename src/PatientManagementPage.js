@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -505,8 +505,9 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
   const [uploading, setUploading] = useState(false);
   const [viewingPdf, setViewingPdf] = useState(null);
   const [pdfLoading, setPdfLoading] = useState(false);
-  const medicalReportsFileInputRef = useRef(null);
-  const examinationsFileInputRef = useRef(null);
+  const [medicalReportsFileInput, setMedicalReportsFileInput] = useState(null);
+  const [examinationsFileInput, setExaminationsFileInput] = useState(null);
+
 
   // دالة مساعدة للحصول على التوكن
   const getAuthToken = useCallback(() => {
@@ -861,14 +862,18 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
               <div className="upload-section">
                 <h4>{t('patient_management.upload_medical_report')}</h4>
                 <input
-                  ref={medicalReportsFileInputRef}
+                  ref={setMedicalReportsFileInput}
                   type="file"
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                   onChange={(e) => handleFileUpload(e, 'medical-reports')}
                   style={{ display: 'none' }}
                 />
                 <button
-                  onClick={() => medicalReportsFileInputRef.current?.click()}
+                  onClick={() => {
+                    if (medicalReportsFileInput) {
+                      medicalReportsFileInput.click();
+                    }
+                  }}
                   disabled={uploading}
                   className="btn-upload"
                 >
@@ -938,14 +943,18 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
               <div className="upload-section">
                 <h4>{t('patient_management.upload_examination')}</h4>
                 <input
-                  ref={examinationsFileInputRef}
+                  ref={setExaminationsFileInput}
                   type="file"
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                   onChange={(e) => handleFileUpload(e, 'examinations')}
                   style={{ display: 'none' }}
                 />
                 <button
-                  onClick={() => examinationsFileInputRef.current?.click()}
+                  onClick={() => {
+                    if (examinationsFileInput) {
+                      examinationsFileInput.click();
+                    }
+                  }}
                   disabled={uploading}
                   className="btn-upload"
                 >
