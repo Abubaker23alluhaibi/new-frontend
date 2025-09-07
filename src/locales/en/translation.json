@@ -200,7 +200,8 @@
       "MANAGE_EMPLOYEES": "Manage Employees",
       "MANAGE_SPECIAL_APPOINTMENTS": "Manage Special Appointments",
       "MANAGE_APPOINTMENT_DURATION": "Manage Appointment Duration",
-      "VIEW_BOOKINGS_STATS": "View Booking Statistics"
+      "VIEW_BOOKINGS_STATS": "View Booking Statistics",
+      "ACCESS_DASHBOARD": "Access Dashboard"
     },
     "messages": {
       "enter_access_code": "Please enter the employee's access code",

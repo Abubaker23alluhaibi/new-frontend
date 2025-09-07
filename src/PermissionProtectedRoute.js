@@ -77,18 +77,61 @@ const PermissionProtectedRoute = ({
     return children;
   }
 
-  // إذا كان الموظف، اسمح له بالوصول للصفحة الرئيسية تلقائياً
+  // إذا كان الموظف، تحقق من صلاحية الوصول للصفحة الرئيسية
   if (currentUserType && currentUserType !== 'doctor' && currentUserType !== 'user' && currentUserType !== 'admin') {
-    // إذا كان يطلب الوصول للصفحة الرئيسية (doctor-dashboard)، اسمح له بالدخول تلقائياً
-    if (requiredPermission === 'VIEW_APPOINTMENTS') {
-      console.log('✅ الموظف - له صلاحية الوصول للصفحة الرئيسية تلقائياً');
-      return children;
-    }
-    
-    // إذا كان لديه صلاحية الوصول للصفحة الرئيسية أو لم يتم تعيين أي صلاحيات
-    if (currentPermissions.ACCESS_DASHBOARD || Object.keys(currentPermissions).length === 0) {
-      console.log('✅ الموظف - له صلاحية الوصول للصفحة الرئيسية');
-      return children;
+    // إذا كان يطلب الوصول للصفحة الرئيسية، تحقق من صلاحية ACCESS_DASHBOARD
+    if (requiredPermission === 'VIEW_APPOINTMENTS' || requiredPermission === null) {
+      if (currentPermissions.ACCESS_DASHBOARD) {
+        console.log('✅ الموظف - له صلاحية الوصول للصفحة الرئيسية');
+        return children;
+      } else {
+        console.log('❌ الموظف - لا يملك صلاحية الوصول للصفحة الرئيسية');
+        return (
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+            background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
+            flexDirection: 'column',
+            gap: '2rem',
+            padding: '2rem'
+          }}>
+            <div style={{
+              background: 'white',
+              padding: '3rem',
+              borderRadius: '20px',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+              textAlign: 'center',
+              maxWidth: '500px'
+            }}>
+              <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔒</div>
+              <h2 style={{ color: '#333', marginBottom: '1rem', fontSize: '1.8rem' }}>
+                وصول مقيد
+              </h2>
+              <p style={{ color: '#666', marginBottom: '1rem', lineHeight: '1.6' }}>
+                عذراً، لا تملك صلاحية الوصول للصفحة الرئيسية. يرجى التواصل مع الدكتور لإعطائك الصلاحيات المناسبة.
+              </p>
+              <button 
+                onClick={() => window.history.back()}
+                style={{
+                  background: 'linear-gradient(135deg, #00bcd4 0%, #009688 100%)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 24px',
+                  borderRadius: '25px',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  fontWeight: '600',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                العودة للصفحة السابقة
+              </button>
+            </div>
+          </div>
+        );
+      }
     }
   }
 

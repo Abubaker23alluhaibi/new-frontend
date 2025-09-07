@@ -811,33 +811,38 @@ function DoctorDashboard() {
             }}>
             {/* زر التقويم */}
             <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-              <button style={{
-                background:'#0A8F82',
-                color:'#fff',
-                border:'none',
-                borderRadius:'50%',
-                width: isMobile ? 60 : 80,
-                height: isMobile ? 60 : 80,
-                cursor:'pointer',
-                transition:'all 0.3s ease',
-                display:'flex',
-                flexDirection:'column',
-                alignItems:'center',
-                justifyContent:'center',
-                gap:4,
-                boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
-                marginBottom: isMobile ? 8 : 12
-              }} onClick={()=>{
-            navigate('/doctor-calendar');
-          }}>
+              <SecureButton 
+                permission="VIEW_CALENDAR"
+                onClick={()=>{
+                  navigate('/doctor-calendar');
+                }}
+                style={{
+                  background:'#0A8F82',
+                  color:'#fff',
+                  border:'none',
+                  borderRadius:'50%',
+                  width: isMobile ? 60 : 80,
+                  height: isMobile ? 60 : 80,
+                  cursor:'pointer',
+                  transition:'all 0.3s ease',
+                  display:'flex',
+                  flexDirection:'column',
+                  alignItems:'center',
+                  justifyContent:'center',
+                  gap:4,
+                  boxShadow:'0 4px 16px rgba(10, 143, 130, 0.3)',
+                  marginBottom: isMobile ? 8 : 12
+                }}
+              >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📅</div>
-              </button>
+              </SecureButton>
               <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.calendar')}</div>
             </div>
             
             {/* زر كل المواعيد */}
             <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-              <button 
+              <SecureButton 
+                permission="VIEW_APPOINTMENTS"
                 onClick={() => {
                   navigate('/doctor-appointments');
                   // إعادة تحميل المواعيد عند فتح جميع المواعيد
@@ -862,16 +867,17 @@ function DoctorDashboard() {
                 }}
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📋</div>
-              </button>
+              </SecureButton>
               <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.all_appointments')}</div>
             </div>
 
             {/* زر تحليل المواعيد */}
             <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-              <button 
+              <SecureButton 
+                permission="VIEW_ANALYTICS"
                 onClick={() => {
-      navigate('/doctor-analytics');
-    }}
+                  navigate('/doctor-analytics');
+                }}
                 style={{
                   background:'#0A8F82',
                   color:'#fff',
@@ -894,7 +900,7 @@ function DoctorDashboard() {
                 }}
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
-              </button>
+              </SecureButton>
               <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('doctor_dashboard.appointment_analysis')}</div>
             </div>
 

@@ -446,7 +446,8 @@
       "MANAGE_EMPLOYEES": "بەڕێوەبردنی کارمەندان",
       "MANAGE_SPECIAL_APPOINTMENTS": "بەڕێوەبردنی چاوپێکەوتنە تایبەتەکان",
       "MANAGE_APPOINTMENT_DURATION": "بەڕێوەبردنی ماوەی چاوپێکەوتن",
-      "VIEW_BOOKINGS_STATS": "بینینی ئامارەکانی حجزکردن"
+      "VIEW_BOOKINGS_STATS": "بینینی ئامارەکانی حجزکردن",
+      "ACCESS_DASHBOARD": "دەستپێگەیشتن بە پەڕەی سەرەکی"
     },
     "messages": {
       "enter_access_code": "تکایە کۆدی چوونەژوورەوەی کارمەند بنووسە",

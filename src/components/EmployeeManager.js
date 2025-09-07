@@ -580,7 +580,8 @@ const getPermissionLabel = (permission, t) => {
     MANAGE_EMPLOYEES: t('employee_management.permissions.MANAGE_EMPLOYEES'),
     MANAGE_SPECIAL_APPOINTMENTS: t('employee_management.permissions.MANAGE_SPECIAL_APPOINTMENTS'),
     MANAGE_APPOINTMENT_DURATION: t('employee_management.permissions.MANAGE_APPOINTMENT_DURATION'),
-    VIEW_BOOKINGS_STATS: t('employee_management.permissions.VIEW_BOOKINGS_STATS')
+    VIEW_BOOKINGS_STATS: t('employee_management.permissions.VIEW_BOOKINGS_STATS'),
+    ACCESS_DASHBOARD: t('employee_management.permissions.ACCESS_DASHBOARD')
   };
   return labels[permission] || permission;
 };

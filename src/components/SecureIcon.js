@@ -280,7 +280,8 @@ const getPermissionLabel = (permission) => {
     MANAGE_EMPLOYEES: 'إدارة الموظفين',
     MANAGE_SPECIAL_APPOINTMENTS: 'إدارة المواعيد الخاصة',
     MANAGE_APPOINTMENT_DURATION: 'إدارة مدة المواعيد',
-    VIEW_BOOKINGS_STATS: 'عرض إحصائيات الحجز'
+    VIEW_BOOKINGS_STATS: 'عرض إحصائيات الحجز',
+    ACCESS_DASHBOARD: 'الوصول للصفحة الرئيسية'
   };
   return labels[permission] || permission;
 };
