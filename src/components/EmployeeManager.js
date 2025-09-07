@@ -14,7 +14,6 @@ const EmployeeManager = () => {
   const [formData, setFormData] = useState({
     name: '',
     employeeType: 'secretary', // secretary, employee, assistant
-    accessCode: '',
     permissions: {
       VIEW_APPOINTMENTS: true,
       MANAGE_APPOINTMENTS: false,
@@ -67,15 +66,6 @@ const EmployeeManager = () => {
   // إضافة موظف جديد
   const handleAddEmployee = async (e) => {
     e.preventDefault();
-    
-    // التأكد من وجود رمز، وإذا لم يكن موجوداً، إنشاؤه تلقائياً
-    if (!formData.accessCode) {
-      const autoCode = generateAccessCode();
-      setFormData(prev => ({
-        ...prev,
-        accessCode: autoCode
-      }));
-    }
 
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/employees`, {
@@ -89,12 +79,11 @@ const EmployeeManager = () => {
       });
       
       if (response.ok) {
-        alert(`${t('employee_management.messages.employee_added_success')}\n${t('employee_management.access_code')} ${formData.accessCode}\n${t('employee_management.messages.access_code_info')}`);
+        alert(t('employee_management.messages.employee_added_success'));
         setShowAddModal(false);
         setFormData({
           name: '',
           employeeType: 'secretary',
-          accessCode: '',
           permissions: {
             VIEW_APPOINTMENTS: true,
             MANAGE_APPOINTMENTS: false,
@@ -262,15 +251,7 @@ const EmployeeManager = () => {
           </button>
           <button 
             className="btn-add-employee"
-            onClick={() => {
-              // إنشاء رمز تلقائياً عند فتح النموذج
-              const autoCode = generateAccessCode();
-              setFormData(prev => ({
-                ...prev,
-                accessCode: autoCode
-              }));
-              setShowAddModal(true);
-            }}
+            onClick={() => setShowAddModal(true)}
           >
             + {t('employee_management.add_new_employee')}
           </button>
@@ -402,22 +383,6 @@ const EmployeeManager = () => {
                 </select>
               </div>
               
-              <div className="form-group">
-                <label>{t('employee_management.add_employee_modal.access_code')} *</label>
-                <div className="access-code-display">
-                  <div className="generated-code">
-                    {formData.accessCode || 'سيتم إنشاء الرمز تلقائياً'}
-                  </div>
-                  <button
-                    type="button"
-                    className="btn-generate-code"
-                    onClick={() => setFormData({...formData, accessCode: generateAccessCode()})}
-                  >
-                    {t('employee_management.add_employee_modal.generate_code')}
-                  </button>
-                </div>
-                <small>{t('employee_management.add_employee_modal.access_code_help')}</small>
-              </div>
               
               <div className="form-group">
                 <label>{t('employee_management.add_employee_modal.permissions')}</label>
