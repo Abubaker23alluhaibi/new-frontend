@@ -127,6 +127,9 @@
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 15px;
 }
 
 /* حالة عدم وجود موظفين */
@@ -179,12 +182,14 @@
 /* بطاقة الموظف */
 .employee-card {
   background: white;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 12px;
+  border-radius: 12px;
+  padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .employee-card:hover {
@@ -193,52 +198,52 @@
   border-color: #0A8F82;
 }
 
-.employee-card:last-child {
-  margin-bottom: 0;
-}
-
 /* معلومات الموظف */
 .employee-info {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 12px;
 }
 
 .employee-avatar {
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: #0A8F82;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  font-size: 1rem;
   font-weight: bold;
   flex-shrink: 0;
 }
 
+.employee-details {
+  flex: 1;
+}
+
 .employee-details h3 {
-  margin: 0 0 2px 0;
+  margin: 0 0 4px 0;
   color: #2c3e50;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
 .employee-type,
 .employee-status {
-  margin-bottom: 1px;
+  margin-bottom: 2px;
 }
 
 .type-badge,
 .status-badge {
   display: inline-block;
-  padding: 1px 6px;
-  border-radius: 8px;
-  font-size: 0.6rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
+  margin-right: 4px;
 }
 
 .type-badge {
@@ -258,19 +263,18 @@
 
 /* قسم رمز الدخول */
 .employee-access {
-  margin-bottom: 12px;
-  padding: 10px;
+  padding: 12px;
   background: #f8f9fa;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #e9ecef;
 }
 
 .access-code-section label {
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   color: #2c3e50;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
 }
 
 .access-code-display {
@@ -281,28 +285,30 @@
 
 .access-code {
   background: white;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 8px 12px;
+  border-radius: 6px;
   font-family: 'Courier New', monospace;
   font-size: 0.9rem;
   font-weight: bold;
   color: #0A8F82;
   border: 1px solid #0A8F82;
   letter-spacing: 1px;
+  flex: 1;
 }
 
 .btn-regenerate-code {
   background: #17a2b8;
   color: white;
   border: none;
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 40px;
 }
 
 .btn-regenerate-code:hover {
@@ -312,20 +318,18 @@
 
 /* أزرار الإجراءات */
 .employee-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
-  flex-wrap: wrap;
 }
 
 .btn-edit-permissions,
 .btn-toggle,
 .btn-delete {
-  flex: 1;
-  min-width: 100px;
   padding: 8px 12px;
   border: none;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -333,6 +337,12 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
+  min-height: 36px;
+}
+
+.btn-delete {
+  grid-column: 1 / -1;
+  margin-top: 4px;
 }
 
 .btn-edit-permissions {
@@ -695,31 +705,37 @@
     gap: 16px;
   }
   
+  .employees-list {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
   .employee-card {
-    padding: 10px;
+    padding: 12px;
   }
   
   .employee-info {
-    flex-direction: column;
-    text-align: center;
-    gap: 4px;
+    gap: 8px;
   }
   
   .employee-avatar {
-    width: 25px;
-    height: 25px;
-    font-size: 0.7rem;
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+  
+  .employee-details h3 {
+    font-size: 0.9rem;
   }
   
   .employee-actions {
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    gap: 6px;
   }
   
-  .btn-edit-permissions,
-  .btn-toggle,
   .btn-delete {
-    flex: none;
-    width: 100%;
+    grid-column: 1;
+    margin-top: 0;
   }
   
   .permissions-grid {
@@ -758,14 +774,41 @@
     padding: 10px 16px;
   }
   
+  .employees-list {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .employee-card {
+    padding: 10px;
+  }
+  
   .employee-avatar {
-    width: 40px;
-    height: 40px;
-    font-size: 1rem;
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+  
+  .employee-details h3 {
+    font-size: 0.85rem;
+  }
+  
+  .type-badge,
+  .status-badge {
+    font-size: 0.6rem;
+    padding: 1px 6px;
   }
   
   .access-code {
-    font-size: 1rem;
-    padding: 6px 12px;
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+  
+  .btn-edit-permissions,
+  .btn-toggle,
+  .btn-delete {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    min-height: 32px;
   }
 }
