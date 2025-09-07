@@ -179,17 +179,17 @@
 /* بطاقة الموظف */
 .employee-card {
   background: white;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid #e9ecef;
 }
 
 .employee-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   border-color: #0A8F82;
 }
 
@@ -201,42 +201,42 @@
 .employee-info {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .employee-avatar {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: #0A8F82;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
   flex-shrink: 0;
 }
 
 .employee-details h3 {
-  margin: 0 0 8px 0;
+  margin: 0 0 4px 0;
   color: #2c3e50;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 600;
 }
 
 .employee-type,
 .employee-status {
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .type-badge,
 .status-badge {
   display: inline-block;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -258,46 +258,46 @@
 
 /* قسم رمز الدخول */
 .employee-access {
-  margin-bottom: 20px;
-  padding: 16px;
+  margin-bottom: 12px;
+  padding: 10px;
   background: #f8f9fa;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid #e9ecef;
 }
 
 .access-code-section label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   color: #2c3e50;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .access-code-display {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .access-code {
   background: white;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 6px 12px;
+  border-radius: 4px;
   font-family: 'Courier New', monospace;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-weight: bold;
   color: #0A8F82;
-  border: 2px solid #0A8F82;
-  letter-spacing: 2px;
+  border: 1px solid #0A8F82;
+  letter-spacing: 1px;
 }
 
 .btn-regenerate-code {
   background: #17a2b8;
   color: white;
   border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -313,7 +313,7 @@
 /* أزرار الإجراءات */
 .employee-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -321,18 +321,18 @@
 .btn-toggle,
 .btn-delete {
   flex: 1;
-  min-width: 120px;
-  padding: 10px 16px;
+  min-width: 100px;
+  padding: 8px 12px;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 6px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .btn-edit-permissions {
@@ -551,16 +551,16 @@
 /* شبكة الصلاحيات */
 .permissions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 12px;
-  margin-top: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .permission-item {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 6px;
+  padding: 8px;
   transition: all 0.3s ease;
 }
 
@@ -696,13 +696,13 @@
   }
   
   .employee-card {
-    padding: 16px;
+    padding: 10px;
   }
   
   .employee-info {
     flex-direction: column;
     text-align: center;
-    gap: 12px;
+    gap: 8px;
   }
   
   .employee-actions {
