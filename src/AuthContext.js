@@ -230,7 +230,8 @@ export const AuthProvider = ({ children }) => {
       
       if (res.ok) {
         // حفظ بيانات المستخدم في localStorage
-        const userData = loginType === 'doctor' ? data.doctor : data.user;
+        // السيرفر يرجع البيانات في 'user' حتى للأطباء
+        const userData = data.user || data.doctor;
         
         // التحقق من وجود userData قبل إضافة الـ token
         if (userData && data.token) {
