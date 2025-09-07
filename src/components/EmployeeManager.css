@@ -128,7 +128,7 @@
   padding: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 
@@ -226,7 +226,7 @@
 .employee-details h3 {
   margin: 0 0 2px 0;
   color: #2c3e50;
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
@@ -238,9 +238,9 @@
 .type-badge,
 .status-badge {
   display: inline-block;
-  padding: 1px 6px;
+  padding: 2px 8px;
   border-radius: 8px;
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   margin-right: 3px;
@@ -274,7 +274,7 @@
   margin-bottom: 4px;
   color: #2c3e50;
   font-weight: 600;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
 .access-code-display {
@@ -285,10 +285,10 @@
 
 .access-code {
   background: white;
-  padding: 6px 8px;
+  padding: 8px 10px;
   border-radius: 4px;
   font-family: 'Courier New', monospace;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: bold;
   color: #0A8F82;
   border: 1px solid #0A8F82;
@@ -706,7 +706,7 @@
   }
   
   .employees-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
   
@@ -725,7 +725,7 @@
   }
   
   .employee-details h3 {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
   
   .employee-actions {
@@ -790,18 +790,18 @@
   }
   
   .employee-details h3 {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
   }
   
   .type-badge,
   .status-badge {
-    font-size: 0.55rem;
-    padding: 1px 4px;
+    font-size: 0.65rem;
+    padding: 2px 6px;
   }
   
   .access-code {
-    font-size: 0.7rem;
-    padding: 4px 6px;
+    font-size: 0.8rem;
+    padding: 6px 8px;
   }
   
   .btn-edit-permissions,
