@@ -922,7 +922,8 @@ function DoctorDashboard() {
           }}>
             {/* زر إدارة المرضى */}
             <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-              <button 
+              <SecureButton 
+                permission="MANAGE_PATIENTS"
                 onClick={() => {
                   navigate('/patient-management');
                 }}
@@ -948,13 +949,14 @@ function DoctorDashboard() {
                 }}
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>🏥</div>
-              </button>
+              </SecureButton>
               <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('patient_management_title')}</div>
             </div>
 
             {/* زر إدارة الموظفين */}
             <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-              <button 
+              <SecureButton 
+                permission="MANAGE_EMPLOYEES"
                 onClick={() => {
                   navigate('/employee-manager');
                 }}
@@ -980,13 +982,14 @@ function DoctorDashboard() {
                 }}
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>👥</div>
-              </button>
+              </SecureButton>
               <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>{t('employee_management_title')}</div>
             </div>
 
             {/* زر إدارة الحجز لمستخدم آخر */}
             <div style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-              <button 
+              <SecureButton 
+                permission="MANAGE_BOOKINGS_FOR_OTHERS"
                 onClick={() => {
                   navigate('/bookings-for-others-stats');
                 }}
@@ -1012,7 +1015,7 @@ function DoctorDashboard() {
                 }}
               >
                 <div style={{fontSize: isMobile ? '1.2rem' : '1.6rem', color:'#fff'}}>📊</div>
-              </button>
+              </SecureButton>
               <div style={{fontSize: isMobile ? 11 : 13, fontWeight:700, color:'#0A8F82', marginTop:4}}>إدارة الحجز لمستخدم آخر</div>
             </div>
           </div>

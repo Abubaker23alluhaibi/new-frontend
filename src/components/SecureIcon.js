@@ -129,7 +129,8 @@ export const SecureButton = ({
   className = '',
   disabled = false,
   variant = 'primary',
-  showAccessDenied = true
+  showAccessDenied = true,
+  style = {}
 }) => {
   const { currentUserType, currentPermissions } = useAuth();
   const [showModal, setShowModal] = useState(false);
@@ -178,7 +179,7 @@ export const SecureButton = ({
         className={`secure-button ${className} ${!hasPermission() ? 'restricted' : ''}`}
         onClick={handleClick}
         disabled={disabled}
-        style={buttonStyles[variant]}
+        style={{...buttonStyles[variant], ...style}}
       >
         {children}
       </button>
