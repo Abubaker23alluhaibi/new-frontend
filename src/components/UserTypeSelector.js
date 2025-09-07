@@ -15,11 +15,20 @@ const UserTypeSelector = () => {
   const [error, setError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
 
+  // فحص profile في بداية المكون - بعد تعريف الـ hooks
+
   const checkDoctorEmployees = useCallback(async () => {
     try {
       // التأكد من وجود profile قبل المتابعة
       if (!profile || !profile._id) {
-        console.error('❌ UserTypeSelector - profile or profile._id is undefined in checkDoctorEmployees');
+        setError('خطأ: بيانات المستخدم غير متوفرة. يرجى إعادة تسجيل الدخول.');
+        setLoading(false);
+        return;
+      }
+
+      // التأكد من أن profile هو object صالح
+      if (typeof profile !== 'object' || profile === null) {
+        setError('خطأ: بيانات المستخدم غير صالحة. يرجى إعادة تسجيل الدخول.');
         setLoading(false);
         return;
       }
@@ -67,14 +76,14 @@ const UserTypeSelector = () => {
           const data = await response.json();
           setEmployees(data);
         } catch (error) {
-          console.error('خطأ في جلب الموظفين:', error);
+          setError('خطأ في تحميل قائمة الموظفين. يرجى المحاولة مرة أخرى.');
         } finally {
           setLoading(false);
         }
       };
       fetchEmployees();
     } catch (error) {
-      console.error('خطأ في التحقق من وجود موظفين:', error);
+      setError('خطأ في تحميل بيانات الموظفين. سيتم توجيهك للوحة التحكم.');
       // في حالة الخطأ، تعيين الصلاحيات الكاملة للدكتور
       const fullPermissions = {
         VIEW_APPOINTMENTS: true,
@@ -108,7 +117,6 @@ const UserTypeSelector = () => {
     if (profile?._id) {
       checkDoctorEmployees();
     } else {
-      console.log('⏳ UserTypeSelector - waiting for profile to load...');
       setLoading(false);
     }
   }, [profile?._id, checkDoctorEmployees]);
@@ -131,8 +139,13 @@ const UserTypeSelector = () => {
 
     // التأكد من وجود profile قبل المتابعة
     if (!profile) {
-      console.error('❌ UserTypeSelector - profile is undefined in handleAccessCodeSubmit');
-      setError('خطأ في بيانات المستخدم. يرجى إعادة تسجيل الدخول.');
+      setError('خطأ: بيانات المستخدم غير متوفرة. يرجى إعادة تسجيل الدخول.');
+      return;
+    }
+
+    // التأكد من أن profile هو object صالح
+    if (typeof profile !== 'object' || profile === null) {
+      setError('خطأ: بيانات المستخدم غير صالحة. يرجى إعادة تسجيل الدخول.');
       return;
     }
 
@@ -204,8 +217,13 @@ const UserTypeSelector = () => {
         
         // التأكد من وجود profile قبل استخدامه
         if (!profile) {
-          console.error('❌ UserTypeSelector - profile is undefined');
-          setError('خطأ في بيانات المستخدم. يرجى إعادة تسجيل الدخول.');
+          setError('خطأ: بيانات المستخدم غير متوفرة. يرجى إعادة تسجيل الدخول.');
+          return;
+        }
+
+        // التأكد من أن profile يحتوي على الخصائص المطلوبة
+        if (typeof profile !== 'object' || profile === null) {
+          setError('خطأ: بيانات المستخدم غير صالحة. يرجى إعادة تسجيل الدخول.');
           return;
         }
 
@@ -216,6 +234,12 @@ const UserTypeSelector = () => {
           permissions: finalPermissions,
           employeeInfo: data.employeeInfo || null
         };
+
+        // التأكد من أن userData تم إنشاؤه بنجاح
+        if (!userData) {
+          setError('خطأ: فشل في إنشاء بيانات المستخدم. يرجى إعادة تسجيل الدخول.');
+          return;
+        }
 
         // التأكد من نقل الـ token الأصلي
         if (profile.token) {
@@ -262,8 +286,7 @@ const UserTypeSelector = () => {
         setError(data.message || t('user_type_selector.access_code_section.error_invalid'));
       }
     } catch (error) {
-      console.error('خطأ في التحقق من الرمز:', error);
-      setError(t('user_type_selector.access_code_section.error_connection'));
+      setError('خطأ في الاتصال بالخادم. يرجى المحاولة مرة أخرى.');
     } finally {
       setIsVerifying(false);
     }
@@ -300,6 +323,28 @@ const UserTypeSelector = () => {
 
     return types;
   };
+
+  // فحص profile قبل عرض المكون
+  if (!profile) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: 'linear-gradient(90deg, #7c4dff 0%, #00bcd4 100%)',
+        flexDirection: 'column',
+        gap: '1rem'
+      }}>
+        <div style={{ color: 'white', fontSize: '1.2rem', fontWeight: '600' }}>
+          جاري تحميل بيانات المستخدم...
+        </div>
+        <div style={{ color: 'white', fontSize: '0.9rem', opacity: 0.8 }}>
+          إذا استمر التحميل، يرجى إعادة تسجيل الدخول
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
