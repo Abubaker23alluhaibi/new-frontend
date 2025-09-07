@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './UserTypeSelector.css';
 
 const UserTypeSelector = () => {
   const { profile, setCurrentUserType, setCurrentPermissions } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState('');
@@ -113,7 +115,7 @@ const UserTypeSelector = () => {
     e.preventDefault();
     
     if (!selectedType || !accessCode) {
-      setError('يرجى اختيار نوع المستخدم وإدخال الرمز');
+      setError(t('user_type_selector.access_code_section.error_required'));
       return;
     }
 
@@ -181,23 +183,39 @@ const UserTypeSelector = () => {
         // تحديث AuthContext مباشرة
         setCurrentUserType(selectedType);
         setCurrentPermissions(data.permissions || {});
+        
+        console.log('🔍 UserTypeSelector: تم تعيين الصلاحيات:', {
+          selectedType,
+          permissions: data.permissions,
+          employeeInfo: data.employeeInfo
+        });
 
         // التوجيه للوحة التحكم
         navigate('/doctor-dashboard');
       } else {
-        setError(data.message || 'رمز الدخول غير صحيح');
+        setError(data.message || t('user_type_selector.access_code_section.error_invalid'));
       }
     } catch (error) {
       console.error('خطأ في التحقق من الرمز:', error);
-      setError('خطأ في الاتصال بالخادم');
+      setError(t('user_type_selector.access_code_section.error_connection'));
     } finally {
       setIsVerifying(false);
     }
   };
 
+  // دالة لترجمة نوع الموظف
+  const getEmployeeTypeLabel = (type) => {
+    const labels = {
+      secretary: t('user_type_selector.user_types.secretary'),
+      assistant: t('user_type_selector.user_types.assistant'),
+      employee: t('user_type_selector.user_types.employee')
+    };
+    return labels[type] || type;
+  };
+
   const getAvailableTypes = () => {
     const types = [
-      { type: 'doctor', label: 'دكتور', icon: '👨‍⚕️', color: '#00bcd4' }
+      { type: 'doctor', label: t('user_type_selector.user_types.doctor'), icon: '👨‍⚕️', color: '#00bcd4' }
     ];
 
     // إضافة الموظفين المتاحين
@@ -221,7 +239,7 @@ const UserTypeSelector = () => {
     return (
       <div className="user-type-selector-loading">
         <div className="loading-spinner"></div>
-        <p>جاري تحميل بيانات المستخدمين...</p>
+        <p>{t('user_type_selector.loading_users')}</p>
       </div>
     );
   }
@@ -233,8 +251,8 @@ const UserTypeSelector = () => {
       <div className="selector-container">
         <div className="selector-header">
           <div className="welcome-icon">👋</div>
-          <h1>مرحباً بك في نظام إدارة العيادة</h1>
-          <p>اختر نوع المستخدم وأدخل الرمز الخاص بك</p>
+          <h1>{t('user_type_selector.title')}</h1>
+          <p>{t('user_type_selector.subtitle')}</p>
         </div>
 
         <div className="user-types-grid">
@@ -258,14 +276,14 @@ const UserTypeSelector = () => {
 
         {selectedType && (
           <div className="access-code-section">
-            <h3>أدخل رمز الدخول</h3>
+            <h3>{t('user_type_selector.access_code_section.title')}</h3>
             <form onSubmit={handleAccessCodeSubmit} className="access-code-form">
               <div className="code-input-group">
                 <input
                   type="text"
                   value={accessCode}
                   onChange={(e) => setAccessCode(e.target.value.toUpperCase())}
-                  placeholder="أدخل الرمز المكون من 6 أحرف"
+                  placeholder={t('user_type_selector.access_code_section.placeholder')}
                   maxLength={6}
                   style={{ textTransform: 'uppercase' }}
                   className="access-code-input"
@@ -276,7 +294,7 @@ const UserTypeSelector = () => {
                   disabled={isVerifying || !accessCode}
                   className="btn-verify-code"
                 >
-                  {isVerifying ? 'جاري التحقق...' : 'دخول'}
+                  {isVerifying ? t('user_type_selector.access_code_section.verifying') : t('user_type_selector.access_code_section.verify_button')}
                 </button>
               </div>
               
@@ -294,11 +312,11 @@ const UserTypeSelector = () => {
           <div className="info-card">
             <div className="info-icon">🔐</div>
             <div className="info-content">
-              <h3>معلومات مهمة</h3>
+              <h3>{t('user_type_selector.info_section.title')}</h3>
               <ul>
-                <li>الرمز مكون من 6 أحرف وأرقام</li>
-                <li>تأكد من إدخال الرمز الصحيح</li>
-                <li>يمكنك تغيير نوع المستخدم في أي وقت</li>
+                <li>{t('user_type_selector.info_section.code_length')}</li>
+                <li>{t('user_type_selector.info_section.code_correct')}</li>
+                <li>{t('user_type_selector.info_section.change_type')}</li>
               </ul>
             </div>
           </div>
@@ -308,15 +326,6 @@ const UserTypeSelector = () => {
   );
 };
 
-// دالة لترجمة نوع الموظف
-const getEmployeeTypeLabel = (type) => {
-  const labels = {
-    secretary: 'سكرتير',
-    assistant: 'مساعد',
-    employee: 'موظف'
-  };
-  return labels[type] || type;
-};
 
 // دالة لإعطاء أيقونة الموظف
 const getEmployeeIcon = (type) => {

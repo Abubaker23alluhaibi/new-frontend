@@ -1079,5 +1079,31 @@
       "date": "Date",
       "time": "Time"
     }
+  },
+  "user_type_selector": {
+    "title": "Welcome to Clinic Management System",
+    "subtitle": "Choose user type and enter your access code",
+    "loading_users": "Loading user data...",
+    "access_code_section": {
+      "title": "Enter Access Code",
+      "placeholder": "Enter 6-character code",
+      "verify_button": "Login",
+      "verifying": "Verifying...",
+      "error_required": "Please select user type and enter access code",
+      "error_invalid": "Invalid access code",
+      "error_connection": "Connection error"
+    },
+    "user_types": {
+      "doctor": "Doctor",
+      "secretary": "Secretary",
+      "assistant": "Assistant",
+      "employee": "Employee"
+    },
+    "info_section": {
+      "title": "Important Information",
+      "code_length": "Code consists of 6 letters and numbers",
+      "code_correct": "Make sure to enter the correct code",
+      "change_type": "You can change user type at any time"
+    }
   }
 } 

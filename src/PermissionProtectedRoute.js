@@ -18,8 +18,21 @@ const PermissionProtectedRoute = ({
     currentPermissions,
     hasPermission: currentPermissions[requiredPermission],
     user: user?.user_type,
-    profile: profile?.user_type
+    profile: profile?.user_type,
+    userData: user,
+    profileData: profile
   });
+  
+  // تشخيص إضافي للصلاحيات
+  if (currentUserType && currentUserType !== 'doctor') {
+    console.log('🔍 Employee Debug:', {
+      currentUserType,
+      permissionsKeys: Object.keys(currentPermissions),
+      permissionsValues: Object.values(currentPermissions),
+      requiredPermission,
+      hasRequiredPermission: currentPermissions[requiredPermission]
+    });
+  }
 
   // إظهار شاشة تحميل أثناء التحقق من حالة المستخدم
   if (loading) {
@@ -64,9 +77,44 @@ const PermissionProtectedRoute = ({
     return children;
   }
 
+  // إذا كان الموظف ولكن لم يتم تحميل الصلاحيات بعد، انتظر قليلاً
+  if (currentUserType && currentUserType !== 'doctor' && Object.keys(currentPermissions).length === 0) {
+    console.log('⏳ انتظار تحميل صلاحيات الموظف...');
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
+        flexDirection: 'column',
+        gap: '1rem'
+      }}>
+        <div style={{ 
+          width: '40px', 
+          height: '40px', 
+          border: '4px solid rgba(10, 143, 130, 0.3)', 
+          borderTop: '4px solid #0A8F82', 
+          borderRadius: '50%', 
+          animation: 'spin 1s linear infinite' 
+        }}></div>
+        <div style={{ color: '#0A8F82', fontSize: '1.2rem', fontWeight: '600' }}>جاري تحميل الصلاحيات...</div>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
   // التحقق من الصلاحية المطلوبة
   if (requiredPermission && !currentPermissions[requiredPermission]) {
     console.log('❌ لا توجد صلاحية:', requiredPermission);
+    console.log('🔍 currentPermissions:', currentPermissions);
+    console.log('🔍 requiredPermission:', requiredPermission);
+    console.log('🔍 hasPermission:', currentPermissions[requiredPermission]);
     
     // إذا كان هناك مكون بديل، اعرضه
     if (fallbackComponent) {
@@ -78,7 +126,7 @@ const PermissionProtectedRoute = ({
       return <Navigate to={redirectTo} replace />;
     }
     
-    // عرض رسالة "غير مصرح"
+    // عرض رسالة "غير مصرح" مع تفاصيل أكثر للتشخيص
     return (
       <div style={{
         display: 'flex',
@@ -109,7 +157,7 @@ const PermissionProtectedRoute = ({
           }}>غير مصرح بالوصول</h2>
           <p style={{
             color: '#666',
-            marginBottom: '2rem',
+            marginBottom: '1rem',
             lineHeight: '1.6'
           }}>
             {currentUserType === 'secretary' 
@@ -117,6 +165,20 @@ const PermissionProtectedRoute = ({
               : 'عذراً، لا تملك الصلاحيات الكافية للوصول لهذه الصفحة.'
             }
           </p>
+          <div style={{ 
+            background: '#f8f9fa', 
+            padding: '1rem', 
+            borderRadius: '8px', 
+            marginBottom: '2rem',
+            fontSize: '0.9rem',
+            color: '#666',
+            textAlign: 'right'
+          }}>
+            <strong>تفاصيل التشخيص:</strong><br/>
+            نوع المستخدم: {currentUserType || 'غير محدد'}<br/>
+            الصلاحية المطلوبة: {requiredPermission}<br/>
+            الصلاحيات المتاحة: {Object.keys(currentPermissions).join(', ') || 'لا توجد'}
+          </div>
           <button 
             onClick={() => window.history.back()}
             style={{

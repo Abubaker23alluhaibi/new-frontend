@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
     // إعادة تحميل البيانات من localStorage
     const savedUser = localStorage.getItem('user');
     const savedProfile = localStorage.getItem('profile');
+    const savedCurrentUser = localStorage.getItem('currentUser');
     
     if (savedUser) {
       try {
@@ -57,6 +58,19 @@ export const AuthProvider = ({ children }) => {
         secureLog('❌ خطأ في تحليل بيانات الملف الشخصي:', error);
         localStorage.removeItem('profile');
         setProfile(null);
+      }
+    }
+    
+    // إعادة تحميل بيانات المستخدم الحالي والصلاحيات
+    if (savedCurrentUser) {
+      try {
+        const currentUserData = JSON.parse(savedCurrentUser);
+        setCurrentUserType(currentUserData.currentUserType);
+        setCurrentPermissions(currentUserData.permissions || {});
+        console.log('🔄 تم تحديث الصلاحيات:', currentUserData.permissions);
+      } catch (error) {
+        secureLog('❌ خطأ في تحليل بيانات المستخدم الحالي:', error);
+        localStorage.removeItem('currentUser');
       }
     }
   }, []);
@@ -129,6 +143,10 @@ export const AuthProvider = ({ children }) => {
         const currentUserData = JSON.parse(savedCurrentUser);
         setCurrentUserType(currentUserData.currentUserType);
         setCurrentPermissions(currentUserData.permissions || {});
+        console.log('🔍 AuthContext: تم تحميل بيانات المستخدم الحالي:', {
+          currentUserType: currentUserData.currentUserType,
+          permissions: currentUserData.permissions
+        });
       } catch (error) {
         secureLog('❌ AuthContext: خطأ في تحليل بيانات المستخدم الحالي:', error);
         localStorage.removeItem('currentUser');
@@ -166,6 +184,8 @@ export const AuthProvider = ({ children }) => {
       };
       localStorage.setItem('currentUser', JSON.stringify(currentUserData));
       secureLog('💾 AuthContext: تم حفظ بيانات المستخدم الحالي:', currentUserData);
+      console.log('🔍 AuthContext: currentUserType:', currentUserType);
+      console.log('🔍 AuthContext: currentPermissions:', currentPermissions);
     }
   }, [currentUserType, currentPermissions]);
 
@@ -313,6 +333,7 @@ export const AuthProvider = ({ children }) => {
     setCurrentUserType,
     currentPermissions,
     setCurrentPermissions,
+    refreshAuthData,
   };
 
   return (

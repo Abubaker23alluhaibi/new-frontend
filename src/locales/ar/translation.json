@@ -1321,5 +1321,31 @@
       "date": "التاريخ",
       "time": "الوقت"
     }
+  },
+  "user_type_selector": {
+    "title": "مرحباً بك في نظام إدارة العيادة",
+    "subtitle": "اختر نوع المستخدم وأدخل الرمز الخاص بك",
+    "loading_users": "جاري تحميل بيانات المستخدمين...",
+    "access_code_section": {
+      "title": "أدخل رمز الدخول",
+      "placeholder": "أدخل الرمز المكون من 6 أحرف",
+      "verify_button": "دخول",
+      "verifying": "جاري التحقق...",
+      "error_required": "يرجى اختيار نوع المستخدم وإدخال الرمز",
+      "error_invalid": "رمز الدخول غير صحيح",
+      "error_connection": "خطأ في الاتصال بالخادم"
+    },
+    "user_types": {
+      "doctor": "دكتور",
+      "secretary": "سكرتير",
+      "assistant": "مساعد",
+      "employee": "موظف"
+    },
+    "info_section": {
+      "title": "معلومات مهمة",
+      "code_length": "الرمز مكون من 6 أحرف وأرقام",
+      "code_correct": "تأكد من إدخال الرمز الصحيح",
+      "change_type": "يمكنك تغيير نوع المستخدم في أي وقت"
+    }
   }
 }
