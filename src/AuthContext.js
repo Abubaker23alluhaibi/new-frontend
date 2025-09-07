@@ -232,16 +232,25 @@ export const AuthProvider = ({ children }) => {
         // حفظ بيانات المستخدم في localStorage
         const userData = loginType === 'doctor' ? data.doctor : data.user;
         
-        // إضافة الـ token إلى بيانات المستخدم
-        if (data.token) {
+        // التحقق من وجود userData قبل إضافة الـ token
+        if (userData && data.token) {
           userData.token = data.token;
         }
         
-        setUser(userData);
-        setProfile(userData);
+        // التحقق من وجود userData قبل تعيينه
+        if (userData) {
+          setUser(userData);
+          setProfile(userData);
+        } else {
+          return { data: null, error: 'فشل في الحصول على بيانات المستخدم' };
+        }
         
-        localStorage.setItem('user', JSON.stringify(userData));
-        localStorage.setItem('profile', JSON.stringify(userData));
+        // حفظ البيانات في localStorage فقط إذا كانت موجودة
+        if (userData) {
+          localStorage.setItem('user', JSON.stringify(userData));
+          localStorage.setItem('profile', JSON.stringify(userData));
+        }
+        
         // حفظ الـ token بشكل منفصل للوصول السريع
         if (data.token) {
           localStorage.setItem('token', data.token);
