@@ -143,7 +143,7 @@ function DoctorDashboard() {
       }
       
       setNotifications(data);
-      setNotifCount(data.filter(n => !n.read).length);
+      setNotifCount(data.filter(n => !n.isRead).length);
     } catch (error) {
       console.error('❌ خطأ في جلب الإشعارات:', error);
     }

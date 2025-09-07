@@ -194,7 +194,7 @@ function UserHome() {
         }
         
         setNotifications(data);
-        setNotifCount(data.filter(n => !n.read).length);
+        setNotifCount(data.filter(n => !n.isRead).length);
         
         // إعداد الخدمات مرة واحدة فقط - الإشعارات الفورية معطلة مؤقتاً
         if (!servicesInitialized && isComponentMounted) {
