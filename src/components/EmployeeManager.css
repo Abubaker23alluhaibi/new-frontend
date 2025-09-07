@@ -498,6 +498,31 @@
   letter-spacing: 2px;
 }
 
+/* عرض الرمز المولد */
+.access-code-display {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.generated-code {
+  flex: 1;
+  background: #f8f9fa;
+  border: 2px solid #0A8F82;
+  border-radius: 8px;
+  padding: 12px 16px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #0A8F82;
+  letter-spacing: 2px;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .btn-generate-code {
   background: #17a2b8;
   color: white;

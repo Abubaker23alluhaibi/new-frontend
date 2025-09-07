@@ -68,9 +68,13 @@ const EmployeeManager = () => {
   const handleAddEmployee = async (e) => {
     e.preventDefault();
     
+    // التأكد من وجود رمز، وإذا لم يكن موجوداً، إنشاؤه تلقائياً
     if (!formData.accessCode) {
-      alert(t('employee_management.messages.enter_access_code'));
-      return;
+      const autoCode = generateAccessCode();
+      setFormData(prev => ({
+        ...prev,
+        accessCode: autoCode
+      }));
     }
 
     try {
@@ -258,7 +262,15 @@ const EmployeeManager = () => {
           </button>
           <button 
             className="btn-add-employee"
-            onClick={() => setShowAddModal(true)}
+            onClick={() => {
+              // إنشاء رمز تلقائياً عند فتح النموذج
+              const autoCode = generateAccessCode();
+              setFormData(prev => ({
+                ...prev,
+                accessCode: autoCode
+              }));
+              setShowAddModal(true);
+            }}
           >
             + {t('employee_management.add_new_employee')}
           </button>
@@ -392,16 +404,10 @@ const EmployeeManager = () => {
               
               <div className="form-group">
                 <label>{t('employee_management.add_employee_modal.access_code')} *</label>
-                <div className="access-code-input">
-                  <input
-                    type="text"
-                    value={formData.accessCode}
-                    onChange={e => setFormData({...formData, accessCode: e.target.value.toUpperCase()})}
-                    required
-                    placeholder={t('employee_management.add_employee_modal.access_code_placeholder')}
-                    maxLength={6}
-                    style={{textTransform: 'uppercase'}}
-                  />
+                <div className="access-code-display">
+                  <div className="generated-code">
+                    {formData.accessCode || 'سيتم إنشاء الرمز تلقائياً'}
+                  </div>
                   <button
                     type="button"
                     className="btn-generate-code"
