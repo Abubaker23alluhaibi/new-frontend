@@ -158,35 +158,26 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
     if (window.confirm(confirmMessage)) {
       try {
         // إلغاء كل موعد قادم في اليوم المحدد
-        const cancelPromises = futureAppointments.map(async appointment => {
-          try {
-            // جلب التوكن
-            const token = localStorage.getItem('token') || 
-                         (JSON.parse(localStorage.getItem('user') || '{}')).token ||
-                         (JSON.parse(localStorage.getItem('profile') || '{}')).token;
-            
-            return fetch(`${process.env.REACT_APP_API_URL}/appointments/${appointment._id}`, {
-              method: 'DELETE',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              },
-            });
-          } catch (error) {
-            console.error('خطأ في إلغاء الموعد:', error);
-            return { ok: false };
-          }
-        });
+        const cancelPromises = futureAppointments.map(appointment => 
+          fetch(`${process.env.REACT_APP_API_URL}/appointments/${appointment._id}`, {
+            method: 'DELETE'
+          })
+        );
 
         const results = await Promise.all(cancelPromises);
         const successCount = results.filter(response => response.ok).length;
+        const failedCount = results.length - successCount;
 
-        if (successCount === futureAppointments.length) {
-          alert(t('future_appointments_cancelled') || `تم إلغاء ${successCount} موعد قادم بنجاح`);
+        if (successCount > 0) {
+          if (successCount === futureAppointments.length) {
+            alert(t('future_appointments_cancelled') || `تم إلغاء ${successCount} موعد قادم بنجاح`);
+          } else {
+            alert(`تم إلغاء ${successCount} موعد من ${futureAppointments.length} موعد. ${failedCount} موعد لم يتم إلغاؤه.`);
+          }
           // إعادة تحميل المواعيد
           window.location.reload();
         } else {
-          throw new Error('Some appointments could not be cancelled');
+          alert('فشل في إلغاء جميع المواعيد. يرجى المحاولة مرة أخرى.');
         }
       } catch (error) {
         console.error('خطأ في إلغاء المواعيد:', error);
