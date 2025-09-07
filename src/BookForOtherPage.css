@@ -407,8 +407,15 @@
     width: 100%;
   }
   
-  .time-slots {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  .time-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+  
+  .time-slot {
+    padding: 8px 4px;
+    font-size: 12px;
+    min-height: 40px;
   }
   
   .back-button {
@@ -433,5 +440,19 @@
   
   .doctor-details p {
     font-size: 1.1rem;
+  }
+}
+
+/* تحسينات إضافية للشاشات الصغيرة */
+@media (max-width: 480px) {
+  .time-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+  }
+  
+  .time-slot {
+    padding: 4px 2px;
+    font-size: 10px;
+    min-height: 30px;
   }
 }
