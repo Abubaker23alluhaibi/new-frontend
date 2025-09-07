@@ -323,7 +323,29 @@ function DoctorDashboard() {
   useEffect(() => {
     if (showNotif && profile?._id && notifCount > 0) {
       setNotifCount(0); // تصفير العداد فوراً
-      fetch(`${process.env.REACT_APP_API_URL}/notifications/mark-read?doctorId=${profile._id}`, { method: 'PUT' });
+      
+      // جلب التوكن وإرسال الطلب مع المصادقة
+      const markAsRead = async () => {
+        try {
+          const token = localStorage.getItem('token') || 
+                       (JSON.parse(localStorage.getItem('user') || '{}')).token ||
+                       (JSON.parse(localStorage.getItem('profile') || '{}')).token;
+          
+          if (token) {
+            await fetch(`${process.env.REACT_APP_API_URL}/notifications/mark-read?doctorId=${profile._id}`, { 
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+          }
+        } catch (error) {
+          console.error('خطأ في تعليم الإشعارات كمقروءة:', error);
+        }
+      };
+      
+      markAsRead();
     }
   }, [showNotif, profile?._id, notifCount]);
 

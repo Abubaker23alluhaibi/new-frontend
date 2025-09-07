@@ -323,9 +323,31 @@ function UserHome() {
   useEffect(() => {
     if (showNotif && user?._id && notifCount > 0) {
       setNotifCount(0); // تصفير العداد فوراً
-      fetch(`${process.env.REACT_APP_API_URL}/notifications/mark-read?userId=${user._id}`, { method: 'PUT' });
+      
+      // جلب التوكن وإرسال الطلب مع المصادقة
+      const markAsRead = async () => {
+        try {
+          const token = localStorage.getItem('token') || 
+                       (JSON.parse(localStorage.getItem('user') || '{}')).token ||
+                       (JSON.parse(localStorage.getItem('profile') || '{}')).token;
+          
+          if (token) {
+            await fetch(`${process.env.REACT_APP_API_URL}/notifications/mark-read?userId=${user._id}`, { 
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+          }
+        } catch (error) {
+          console.error('خطأ في تعليم الإشعارات كمقروءة:', error);
+        }
+      };
+      
+      markAsRead();
     }
-  }, [showNotif, user?._id]);
+  }, [showNotif, user?._id, notifCount]);
   const loadFavoriteDoctors = async () => {
     try {
       // معلق مؤقتاً - endpoint غير موجود
