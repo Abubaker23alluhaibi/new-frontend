@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import './UserTypeSelector.css';
 
 const UserTypeSelector = () => {
-  const { profile, setCurrentUserType, setCurrentPermissions } = useAuth();
+  const { profile, setCurrentUserType, setCurrentPermissions, refreshAuthData } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [employees, setEmployees] = useState([]);
@@ -189,6 +189,18 @@ const UserTypeSelector = () => {
           permissions: data.permissions,
           employeeInfo: data.employeeInfo
         });
+        
+        // التأكد من تحديث الصلاحيات في localStorage
+        const updatedUserData = {
+          ...userData,
+          currentUserType: selectedType,
+          permissions: data.permissions || {}
+        };
+        localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
+        console.log('💾 تم حفظ الصلاحيات المحدثة في localStorage:', updatedUserData);
+        
+        // إعادة تحميل البيانات في AuthContext
+        refreshAuthData();
 
         // التوجيه للوحة التحكم
         navigate('/doctor-dashboard');

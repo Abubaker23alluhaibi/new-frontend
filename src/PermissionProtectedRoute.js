@@ -80,6 +80,24 @@ const PermissionProtectedRoute = ({
   // إذا كان الموظف ولكن لم يتم تحميل الصلاحيات بعد، انتظر قليلاً
   if (currentUserType && currentUserType !== 'doctor' && Object.keys(currentPermissions).length === 0) {
     console.log('⏳ انتظار تحميل صلاحيات الموظف...');
+    
+    // محاولة إعادة تحميل الصلاحيات من localStorage
+    const savedCurrentUser = localStorage.getItem('currentUser');
+    if (savedCurrentUser) {
+      try {
+        const currentUserData = JSON.parse(savedCurrentUser);
+        if (currentUserData.permissions) {
+          console.log('🔄 تم العثور على صلاحيات في localStorage:', currentUserData.permissions);
+          // إعادة تحميل الصفحة للتأكد من تحديث الصلاحيات
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        }
+      } catch (error) {
+        console.error('❌ خطأ في تحليل بيانات المستخدم الحالي:', error);
+      }
+    }
+    
     return (
       <div style={{
         display: 'flex',
@@ -110,11 +128,24 @@ const PermissionProtectedRoute = ({
   }
 
   // التحقق من الصلاحية المطلوبة
-  if (requiredPermission && !currentPermissions[requiredPermission]) {
+  const permissionValue = currentPermissions[requiredPermission];
+  const hasPermission = permissionValue === true || permissionValue === 'true' || permissionValue === 1;
+  
+  console.log('🔍 Permission Check Details:', {
+    requiredPermission,
+    currentPermissions,
+    hasPermission,
+    permissionValue,
+    permissionType: typeof permissionValue,
+    allPermissions: Object.keys(currentPermissions),
+    permissionValues: Object.values(currentPermissions)
+  });
+  
+  if (requiredPermission && !hasPermission) {
     console.log('❌ لا توجد صلاحية:', requiredPermission);
     console.log('🔍 currentPermissions:', currentPermissions);
     console.log('🔍 requiredPermission:', requiredPermission);
-    console.log('🔍 hasPermission:', currentPermissions[requiredPermission]);
+    console.log('🔍 hasPermission:', hasPermission);
     
     // إذا كان هناك مكون بديل، اعرضه
     if (fallbackComponent) {

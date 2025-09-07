@@ -61,18 +61,24 @@ export const AuthProvider = ({ children }) => {
       }
     }
     
-    // إعادة تحميل بيانات المستخدم الحالي والصلاحيات
-    if (savedCurrentUser) {
-      try {
-        const currentUserData = JSON.parse(savedCurrentUser);
-        setCurrentUserType(currentUserData.currentUserType);
-        setCurrentPermissions(currentUserData.permissions || {});
-        console.log('🔄 تم تحديث الصلاحيات:', currentUserData.permissions);
-      } catch (error) {
-        secureLog('❌ خطأ في تحليل بيانات المستخدم الحالي:', error);
-        localStorage.removeItem('currentUser');
-      }
+  // إعادة تحميل بيانات المستخدم الحالي والصلاحيات
+  if (savedCurrentUser) {
+    try {
+      const currentUserData = JSON.parse(savedCurrentUser);
+      setCurrentUserType(currentUserData.currentUserType);
+      setCurrentPermissions(currentUserData.permissions || {});
+      console.log('🔄 تم تحديث الصلاحيات:', currentUserData.permissions);
+      console.log('🔍 تفاصيل الصلاحيات:', {
+        currentUserType: currentUserData.currentUserType,
+        permissions: currentUserData.permissions,
+        permissionKeys: Object.keys(currentUserData.permissions || {}),
+        permissionValues: Object.values(currentUserData.permissions || {})
+      });
+    } catch (error) {
+      secureLog('❌ خطأ في تحليل بيانات المستخدم الحالي:', error);
+      localStorage.removeItem('currentUser');
     }
+  }
   }, []);
 
   useEffect(() => {
