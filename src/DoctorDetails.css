@@ -441,8 +441,15 @@
   }
   
   .time-grid {
-    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
     max-width: 100%;
+  }
+  
+  .time-slot {
+    padding: 6px 4px;
+    font-size: 11px;
+    min-height: 35px;
   }
   
   .calendar-container,
@@ -508,4 +515,18 @@
 .react-datepicker__navigation:hover {
   background: rgba(255, 255, 255, 0.1) !important;
   border-radius: 4px !important;
+}
+
+/* تحسينات إضافية للشاشات الصغيرة */
+@media (max-width: 480px) {
+  .time-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+  }
+  
+  .time-slot {
+    padding: 4px 2px;
+    font-size: 10px;
+    min-height: 30px;
+  }
 }
