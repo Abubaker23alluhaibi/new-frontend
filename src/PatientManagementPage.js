@@ -522,9 +522,9 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
       try {
         const userData = JSON.parse(savedUser);
         const token = userData.token || userData.accessToken;
-        if (token) return token;
+        if (token && token.length > 10) return token;
       } catch (error) {
-        console.error('❌ خطأ في قراءة التوكن من user:', error);
+        // تجاهل الخطأ
       }
     }
     
@@ -534,9 +534,9 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
       try {
         const profileData = JSON.parse(savedProfile);
         const token = profileData.token || profileData.accessToken;
-        if (token) return token;
+        if (token && token.length > 10) return token;
       } catch (error) {
-        console.error('❌ خطأ في قراءة التوكن من profile:', error);
+        // تجاهل الخطأ
       }
     }
     
@@ -546,14 +546,37 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
       try {
         const currentUserData = JSON.parse(currentUser);
         const token = currentUserData.token || currentUserData.accessToken;
-        if (token) return token;
+        if (token && token.length > 10) return token;
       } catch (error) {
-        console.error('❌ خطأ في قراءة التوكن من currentUser:', error);
+        // تجاهل الخطأ
       }
     }
     
     return null;
   }, [user]);
+
+  // دالة لإعادة تحميل التوكن
+  const refreshToken = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.token) {
+          // حفظ التوكن الجديد
+          const userData = { ...user, token: data.token };
+          localStorage.setItem('user', JSON.stringify(userData));
+          return data.token;
+        }
+      }
+    } catch (error) {
+      // تجاهل الخطأ
+    }
+    return null;
+  };
 
   // دالة لفتح PDF في modal
   const openPdfViewer = async (fileUrl, fileName) => {
@@ -688,10 +711,18 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
         return;
       }
 
+      // التحقق من صحة التوكن
+      if (token.length < 10) {
+        toast.error('توكن غير صحيح، يرجى تسجيل الدخول مرة أخرى');
+        setUploading(false);
+        return;
+      }
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${fileType}`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
         },
         body: formData,
         credentials: 'include'
@@ -713,10 +744,53 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
         if (fileInput) fileInput.value = '';
         if (fileInputExaminations) fileInputExaminations.value = '';
       } else {
-        throw new Error('Upload failed');
+        const errorData = await response.json().catch(() => ({}));
+        if (errorData.error === 'Invalid token') {
+          // محاولة إعادة تحميل التوكن
+          toast.info('جاري إعادة تحميل الجلسة...');
+          const newToken = await refreshToken();
+          if (newToken) {
+            // إعادة المحاولة مع التوكن الجديد
+            const retryResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${fileType}`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${newToken}`,
+                'Accept': 'application/json'
+              },
+              body: formData,
+              credentials: 'include'
+            });
+            
+            if (retryResponse.ok) {
+              await retryResponse.json();
+              const updatedPatient = await fetchPatientDetails(patient._id);
+              if (updatedPatient) {
+                setSelectedPatient(updatedPatient);
+                onUpdate(patient._id, updatedPatient);
+              }
+              toast.success('تم رفع الملف بنجاح');
+              setSelectedFile(null);
+              setFileType('');
+              // إعادة تعيين inputs
+              const fileInput = document.getElementById('fileInput');
+              const fileInputExaminations = document.getElementById('fileInputExaminations');
+              if (fileInput) fileInput.value = '';
+              if (fileInputExaminations) fileInputExaminations.value = '';
+              return;
+            }
+          }
+          
+          toast.error('انتهت صلاحية الجلسة، يرجى تسجيل الدخول مرة أخرى');
+          // إعادة توجيه إلى صفحة تسجيل الدخول
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 2000);
+        } else {
+          toast.error(`خطأ في رفع الملف: ${errorData.message || 'خطأ غير معروف'}`);
+        }
       }
     } catch (error) {
-      toast.error('خطأ في رفع الملف');
+      toast.error('خطأ في الاتصال بالخادم');
     } finally {
       setUploading(false);
     }
@@ -1360,72 +1434,45 @@ const PatientManagementPage = () => {
   const getAuthToken = useCallback(() => {
     // أولاً: جرب الحصول على الـ token من AuthContext
     if (user && user.token) {
-      console.log('🔍 getAuthToken - token from AuthContext:', user.token);
       return user.token;
     }
     
     // ثانياً: جرب الحصول على الـ token من localStorage (user)
     const savedUser = localStorage.getItem('user');
-    console.log('🔍 getAuthToken - savedUser:', savedUser);
-    
     if (savedUser) {
       try {
         const userData = JSON.parse(savedUser);
-        console.log('🔍 getAuthToken - userData:', userData);
-        console.log('🔍 getAuthToken - token:', userData.token);
-        console.log('🔍 getAuthToken - accessToken:', userData.accessToken);
-        
         const token = userData.token || userData.accessToken;
-        if (token) {
-          console.log('🔍 getAuthToken - final token from user:', token);
-          return token;
-        }
+        if (token && token.length > 10) return token;
       } catch (error) {
-        console.error('❌ خطأ في قراءة التوكن من user:', error);
+        // تجاهل الخطأ
       }
     }
     
-    // ثالثاً: جرب الحصول على الـ token من localStorage (currentUser)
-    const currentUser = localStorage.getItem('currentUser');
-    console.log('🔍 getAuthToken - currentUser:', currentUser);
-    
-    if (currentUser) {
-      try {
-        const currentUserData = JSON.parse(currentUser);
-        console.log('🔍 getAuthToken - currentUserData:', currentUserData);
-        console.log('🔍 getAuthToken - currentUserData.token:', currentUserData.token);
-        
-        const token = currentUserData.token || currentUserData.accessToken;
-        if (token) {
-          console.log('🔍 getAuthToken - final token from currentUser:', token);
-          return token;
-        }
-      } catch (error) {
-        console.error('❌ خطأ في قراءة التوكن من currentUser:', error);
-      }
-    }
-    
-    // رابعاً: جرب الحصول على الـ token من localStorage (profile)
+    // ثالثاً: جرب الحصول على الـ token من localStorage (profile)
     const savedProfile = localStorage.getItem('profile');
-    console.log('🔍 getAuthToken - savedProfile:', savedProfile);
-    
     if (savedProfile) {
       try {
         const profileData = JSON.parse(savedProfile);
-        console.log('🔍 getAuthToken - profileData:', profileData);
-        console.log('🔍 getAuthToken - profileData.token:', profileData.token);
-        
         const token = profileData.token || profileData.accessToken;
-        if (token) {
-          console.log('🔍 getAuthToken - final token from profile:', token);
-          return token;
-        }
+        if (token && token.length > 10) return token;
       } catch (error) {
-        console.error('❌ خطأ في قراءة التوكن من profile:', error);
+        // تجاهل الخطأ
       }
     }
     
-    console.log('❌ لا يوجد token في أي مكان');
+    // رابعاً: جرب الحصول على الـ token من localStorage (currentUser)
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+      try {
+        const currentUserData = JSON.parse(currentUser);
+        const token = currentUserData.token || currentUserData.accessToken;
+        if (token && token.length > 10) return token;
+      } catch (error) {
+        // تجاهل الخطأ
+      }
+    }
+    
     return null;
   }, [user]);
 
