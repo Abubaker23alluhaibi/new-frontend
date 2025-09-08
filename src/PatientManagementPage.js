@@ -502,8 +502,8 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
   console.log('🔍 PatientDetails - Component rendered with patient:', patient);
   console.log('🔍 PatientDetails - User:', user);
   const [activeTab, setActiveTab] = useState('basic');
-  const [viewingPdf, setViewingPdf] = useState(null);
-  const [pdfLoading, setPdfLoading] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
 
   // دالة مساعدة للحصول على التوكن
@@ -553,42 +553,72 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
   }, [user]);
 
 
-  // دالة لفتح PDF في modal
-  const openPdfViewer = async (fileUrl, fileName) => {
-    setPdfLoading(true);
-    try {
-      const secureUrl = await getPdfWithAuth(fileUrl);
-      setViewingPdf({ url: secureUrl, name: fileName });
-    } catch (error) {
-      // في حالة فشل الحصول على URL آمن، استخدم URL الأصلي
-      setViewingPdf({ url: fileUrl, name: fileName });
-    } finally {
-      setPdfLoading(false);
-    }
-  };
 
-  // دالة لتحميل PDF مع التوكن
-  const getPdfWithAuth = async (fileUrl) => {
+
+
+
+  // دالة بسيطة لرفع الملفات
+  const handleFileUpload = async (file, type) => {
+    if (!file || !patient?._id) {
+      toast.error('يرجى اختيار ملف ومريض أولاً');
+      return;
+    }
+
+    toast.info(`بدء رفع الملف: ${file.name} (النوع: ${type})`);
+    setUploadingFile(true);
+    
     try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('title', file.name);
+      formData.append('description', '');
+
       const token = getAuthToken();
       if (!token) {
-        throw new Error('No authentication token');
+        toast.error('يرجى تسجيل الدخول مرة أخرى');
+        setUploadingFile(false);
+        return;
       }
 
-      // استخدام الـ endpoint الآمن الجديد مع التوكن في الـ query parameter
-      const secureUrl = `${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(fileUrl)}?token=${encodeURIComponent(token)}`;
-      return secureUrl;
+      toast.info(`جاري إرسال الطلب إلى: ${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${type}`);
+      
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${type}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      toast.info(`استجابة الخادم: ${response.status} ${response.statusText}`);
+
+      if (response.ok) {
+        const result = await response.json();
+        toast.success('تم رفع الملف بنجاح');
+        toast.info(`نتيجة الرفع: ${JSON.stringify(result)}`);
+        
+        // إعادة تحميل بيانات المريض
+        const updatedPatient = await fetchPatientDetails(patient._id);
+        if (updatedPatient) {
+          setSelectedPatient(updatedPatient);
+          onUpdate(patient._id, updatedPatient);
+          toast.success('تم تحديث بيانات المريض');
+        }
+        setSelectedFile(null);
+        
+        // إعادة تعيين input
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => input.value = '');
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(`خطأ في رفع الملف: ${JSON.stringify(errorData)}`);
+      }
     } catch (error) {
-      // في حالة فشل الحصول على URL آمن، استخدم URL الأصلي
-      return fileUrl;
+      toast.error(`خطأ في الاتصال بالخادم: ${error.message}`);
+    } finally {
+      setUploadingFile(false);
     }
   };
-
-  // دالة لإغلاق PDF viewer
-  const closePdfViewer = () => {
-    setViewingPdf(null);
-  };
-
 
   // حذف دواء
   const deleteMedication = async (medicationId) => {
@@ -818,8 +848,8 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                     onChange={(e) => {
                       const file = e.target.files[0];
                       if (file) {
+                        setSelectedFile(file);
                         toast.success(`تم اختيار الملف: ${file.name}`);
-                        // هنا يمكن إضافة منطق رفع الملف لاحقاً
                       }
                     }}
                     style={{
@@ -830,18 +860,35 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                       marginBottom: '10px'
                     }}
                   />
+                  {selectedFile && (
+                    <div style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#e8f5e8', borderRadius: '4px' }}>
+                      <strong>الملف المختار:</strong> {selectedFile.name}
+                      <br />
+                      <small>الحجم: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</small>
+                    </div>
+                  )}
                   <button
-                    onClick={() => toast.info('ميزة رفع الملفات قيد التطوير')}
+                    onClick={() => {
+                      if (selectedFile) {
+                        handleFileUpload(selectedFile, 'medical-reports');
+                      } else {
+                        toast.error('يرجى اختيار ملف أولاً');
+                      }
+                    }}
+                    disabled={uploadingFile}
                     style={{
-                      backgroundColor: '#0A8F82',
+                      backgroundColor: uploadingFile ? '#ccc' : '#0A8F82',
                       color: 'white',
                       border: 'none',
                       padding: '10px 20px',
                       borderRadius: '4px',
-                      cursor: 'pointer'
+                      cursor: uploadingFile ? 'not-allowed' : 'pointer',
+                      width: '100%',
+                      fontSize: '16px',
+                      fontWeight: 'bold'
                     }}
                   >
-                    رفع الملف
+                    {uploadingFile ? 'جاري الرفع...' : 'رفع الملف'}
                   </button>
                 </div>
               </div>
@@ -852,26 +899,20 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                     <div key={index} className="file-item">
                       <div className="file-info">
                         <h5>
-                          {report.fileType === 'application/pdf' || report.title.includes('.pdf') ? '📄' : '📎'} 
-                          {report.title}
+                          📎 {report.title}
                         </h5>
                         <p>{report.description}</p>
                         <small>{new Date(report.uploadDate).toLocaleDateString('ar-EG')}</small>
                       </div>
                       <div className="file-actions">
-                        <button 
-                          onClick={() => {
-                            if (report.fileType === 'application/pdf' || report.title.includes('.pdf')) {
-                              openPdfViewer(report.fileUrl, report.title);
-                            } else {
-                              const token = getAuthToken();
-                              window.open(`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(report.fileUrl)}?token=${encodeURIComponent(token || '')}`, '_blank');
-                            }
-                          }}
+                        <a 
+                          href={report.fileUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
                           className="btn-view"
                         >
                           👁️ {t('patient_management.view_file')}
-                        </button>
+                        </a>
                         <a 
                           href={`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(report.fileUrl)}?token=${encodeURIComponent(getAuthToken() || '')}`}
                           download={report.title}
@@ -879,14 +920,6 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                         >
                           ⬇️ تحميل
                         </a>
-                        {(report.fileType === 'application/pdf' || report.title.includes('.pdf')) && (
-                          <button 
-                            onClick={() => openPdfViewer(report.fileUrl, report.title)}
-                            className="btn-pdf"
-                          >
-                            📄 فتح PDF
-                          </button>
-                        )}
                         <button
                           onClick={() => handleDeleteFile(report._id, 'medical-reports')}
                           className="btn-delete"
@@ -920,8 +953,8 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                     onChange={(e) => {
                       const file = e.target.files[0];
                       if (file) {
+                        setSelectedFile(file);
                         toast.success(`تم اختيار الملف: ${file.name}`);
-                        // هنا يمكن إضافة منطق رفع الملف لاحقاً
                       }
                     }}
                     style={{
@@ -932,18 +965,35 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                       marginBottom: '10px'
                     }}
                   />
+                  {selectedFile && (
+                    <div style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#e8f5e8', borderRadius: '4px' }}>
+                      <strong>الملف المختار:</strong> {selectedFile.name}
+                      <br />
+                      <small>الحجم: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</small>
+                    </div>
+                  )}
                   <button
-                    onClick={() => toast.info('ميزة رفع الملفات قيد التطوير')}
+                    onClick={() => {
+                      if (selectedFile) {
+                        handleFileUpload(selectedFile, 'examinations');
+                      } else {
+                        toast.error('يرجى اختيار ملف أولاً');
+                      }
+                    }}
+                    disabled={uploadingFile}
                     style={{
-                      backgroundColor: '#0A8F82',
+                      backgroundColor: uploadingFile ? '#ccc' : '#0A8F82',
                       color: 'white',
                       border: 'none',
                       padding: '10px 20px',
                       borderRadius: '4px',
-                      cursor: 'pointer'
+                      cursor: uploadingFile ? 'not-allowed' : 'pointer',
+                      width: '100%',
+                      fontSize: '16px',
+                      fontWeight: 'bold'
                     }}
                   >
-                    رفع الملف
+                    {uploadingFile ? 'جاري الرفع...' : 'رفع الملف'}
                   </button>
                 </div>
               </div>
@@ -954,26 +1004,20 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                     <div key={index} className="file-item">
                       <div className="file-info">
                         <h5>
-                          {examination.fileType === 'application/pdf' || examination.title.includes('.pdf') ? '📄' : '📎'} 
-                          {examination.title}
+                          📎 {examination.title}
                         </h5>
                         <p>{examination.description}</p>
                         <small>{new Date(examination.uploadDate).toLocaleDateString('ar-EG')}</small>
                       </div>
                       <div className="file-actions">
-                        <button 
-                          onClick={() => {
-                            if (examination.fileType === 'application/pdf' || examination.title.includes('.pdf')) {
-                              openPdfViewer(examination.fileUrl, examination.title);
-                            } else {
-                              const token = getAuthToken();
-                              window.open(`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(examination.fileUrl)}?token=${encodeURIComponent(token || '')}`, '_blank');
-                            }
-                          }}
+                        <a 
+                          href={examination.fileUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
                           className="btn-view"
                         >
                           👁️ {t('patient_management.view_file')}
-                        </button>
+                        </a>
                         <a 
                           href={`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(examination.fileUrl)}?token=${encodeURIComponent(getAuthToken() || '')}`}
                           download={examination.title}
@@ -981,14 +1025,6 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                         >
                           ⬇️ تحميل
                         </a>
-                        {(examination.fileType === 'application/pdf' || examination.title.includes('.pdf')) && (
-                          <button 
-                            onClick={() => openPdfViewer(examination.fileUrl, examination.title)}
-                            className="btn-pdf"
-                          >
-                            📄 فتح PDF
-                          </button>
-                        )}
                         <button
                           onClick={() => handleDeleteFile(examination._id, 'examinations')}
                           className="btn-delete"
@@ -1148,129 +1184,6 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
         </div>
       </div>
 
-      {/* PDF Viewer Modal */}
-      {viewingPdf && (
-        <div className="pdf-viewer-modal">
-          <div className="pdf-viewer-content">
-            <div className="pdf-viewer-header">
-              <h3>📄 {viewingPdf.name}</h3>
-              <button onClick={closePdfViewer} className="btn-close">×</button>
-            </div>
-            <div className="pdf-viewer-body">
-              {pdfLoading && (
-                <div className="pdf-loading">
-                  <div className="loading-spinner"></div>
-                  <p>جاري تحميل الملف...</p>
-                </div>
-              )}
-              <div className="pdf-viewer-options">
-                <div className="pdf-viewer-buttons">
-                  <a 
-                    href={viewingPdf.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="btn-open-browser"
-                    onClick={() => setPdfLoading(false)}
-                  >
-                    🌐 فتح في المتصفح
-                  </a>
-                  <a 
-                    href={viewingPdf.url} 
-                    download={viewingPdf.name}
-                    className="btn-download-pdf"
-                    onClick={() => setPdfLoading(false)}
-                  >
-                    ⬇️ تحميل الملف
-                  </a>
-                </div>
-                
-                {/* PDF Viewer - iframe for direct viewing */}
-                <div className="pdf-iframe-container">
-                  <iframe
-                    src={viewingPdf.url}
-                    title={viewingPdf.name}
-                    className="pdf-iframe"
-                    onLoad={() => setPdfLoading(false)}
-                    onError={() => {
-                      setPdfLoading(false);
-                    }}
-                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                    allow="fullscreen"
-                  />
-                  
-                  {/* Fallback options if iframe fails */}
-                  <div className="pdf-fallback">
-                    <p className="pdf-fallback-text">
-                      📄 <strong>{viewingPdf.name}</strong>
-                    </p>
-                    <p className="pdf-fallback-instruction">
-                      إذا لم يظهر الملف أعلاه، استخدم الأزرار أدناه
-                    </p>
-                    <div className="pdf-fallback-buttons">
-                      <a 
-                        href={viewingPdf.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="btn-open-browser"
-                        onClick={() => setPdfLoading(false)}
-                      >
-                        🌐 فتح في نافذة جديدة
-                      </a>
-                      <a 
-                        href={viewingPdf.url} 
-                        download={viewingPdf.name}
-                        className="btn-download-pdf"
-                        onClick={() => setPdfLoading(false)}
-                      >
-                        ⬇️ تحميل الملف
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="pdf-preview">
-                  <p className="pdf-info">
-                    📄 <strong>{viewingPdf.name}</strong>
-                  </p>
-                  <p className="pdf-instructions">
-                    إذا لم يظهر الملف أعلاه، استخدم الأزرار أدناه
-                  </p>
-                  <div className="pdf-alternatives">
-                    <h4>خيارات أخرى:</h4>
-                    <ul>
-                      <li>{t('patient_management.file_view_instructions')[0]}</li>
-                      <li>{t('patient_management.file_view_instructions')[1]}</li>
-                      <li>اضغط على "فتح في نافذة جديدة" في الأسفل</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="pdf-viewer-footer">
-              <div className="footer-left">
-                <a 
-                  href={viewingPdf.url} 
-                  download={viewingPdf.name}
-                  className="btn-download"
-                >
-                  ⬇️ تحميل الملف
-                </a>
-                <a 
-                  href={viewingPdf.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-open-new"
-                >
-                  🔗 فتح في نافذة جديدة
-                </a>
-              </div>
-              <button onClick={closePdfViewer} className="btn-cancel">
-                إغلاق
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
