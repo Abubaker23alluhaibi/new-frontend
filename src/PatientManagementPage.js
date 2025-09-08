@@ -505,6 +505,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
   const [uploadingFile, setUploadingFile] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileType, setFileType] = useState(''); // 'pdf' or 'image'
+  const [viewingPdf, setViewingPdf] = useState(null);
 
 
   // دالة مساعدة للحصول على التوكن
@@ -570,6 +571,16 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
     if (file) {
       setSelectedFile(file);
     }
+  };
+
+  // دالة لعرض PDF
+  const openPdfViewer = (fileUrl, fileName) => {
+    setViewingPdf({ url: fileUrl, name: fileName });
+  };
+
+  // دالة لإغلاق عارض PDF
+  const closePdfViewer = () => {
+    setViewingPdf(null);
   };
 
   // دالة رفع الملف الجديدة
@@ -952,14 +963,18 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                         <small>{new Date(report.uploadDate).toLocaleDateString('ar-EG')}</small>
                       </div>
                       <div className="file-actions">
-                        <a 
-                          href={report.fileUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
+                        <button 
+                          onClick={() => {
+                            if (report.fileType === 'application/pdf' || report.title.includes('.pdf')) {
+                              openPdfViewer(report.fileUrl, report.title);
+                            } else {
+                              window.open(report.fileUrl, '_blank');
+                            }
+                          }}
                           className="btn-view"
                         >
                           👁️ {t('patient_management.view_file')}
-                        </a>
+                        </button>
                         <a 
                           href={report.fileUrl}
                           download={report.title}
@@ -1101,14 +1116,18 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                         <small>{new Date(examination.uploadDate).toLocaleDateString('ar-EG')}</small>
                       </div>
                       <div className="file-actions">
-                        <a 
-                          href={examination.fileUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
+                        <button 
+                          onClick={() => {
+                            if (examination.fileType === 'application/pdf' || examination.title.includes('.pdf')) {
+                              openPdfViewer(examination.fileUrl, examination.title);
+                            } else {
+                              window.open(examination.fileUrl, '_blank');
+                            }
+                          }}
                           className="btn-view"
                         >
                           👁️ {t('patient_management.view_file')}
-                        </a>
+                        </button>
                         <a 
                           href={examination.fileUrl}
                           download={examination.title}
@@ -1275,6 +1294,110 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
         </div>
       </div>
 
+      {/* PDF Viewer Modal */}
+      {viewingPdf && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.8)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            width: '90%',
+            height: '90%',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <div style={{
+              padding: '15px',
+              borderBottom: '1px solid #ddd',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <h3 style={{ margin: 0 }}>📄 {viewingPdf.name}</h3>
+              <button 
+                onClick={closePdfViewer}
+                style={{
+                  background: '#ff4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '8px 12px',
+                  cursor: 'pointer',
+                  fontSize: '18px'
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <div style={{ flex: 1, padding: '15px' }}>
+              <iframe
+                src={`https://docs.google.com/gview?url=${encodeURIComponent(viewingPdf.url)}&embedded=true`}
+                title={viewingPdf.name}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                  borderRadius: '4px'
+                }}
+                onError={() => {
+                  // إذا فشل Google Docs، جرب PDF.js
+                  const iframe = document.querySelector('iframe[title="' + viewingPdf.name + '"]');
+                  if (iframe) {
+                    iframe.src = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(viewingPdf.url)}`;
+                  }
+                }}
+              />
+            </div>
+            <div style={{
+              padding: '15px',
+              borderTop: '1px solid #ddd',
+              display: 'flex',
+              gap: '10px',
+              justifyContent: 'center'
+            }}>
+              <a 
+                href={viewingPdf.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  backgroundColor: '#0A8F82',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  textDecoration: 'none',
+                  fontWeight: 'bold'
+                }}
+              >
+                🌐 فتح في نافذة جديدة
+              </a>
+              <a 
+                href={viewingPdf.url}
+                download={viewingPdf.name}
+                style={{
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  textDecoration: 'none',
+                  fontWeight: 'bold'
+                }}
+              >
+                ⬇️ تحميل الملف
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
