@@ -656,11 +656,12 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
 
   const handleFileUpload = async (e, type) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     // التحقق من وجود المريض ومعرفه
     if (!patient || !patient._id) {
-      console.error('❌ لا يوجد مريض محدد أو معرف المريض مفقود');
       toast.error(t('patient_management.error_no_patient_selected'));
       return;
     }
@@ -674,13 +675,10 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
     try {
       const token = getAuthToken();
       if (!token) {
-        console.error('❌ لا يوجد token في handleFileUpload');
         toast.error('يرجى تسجيل الدخول مرة أخرى');
         setUploading(false);
         return;
       }
-
-      console.log('🔍 رفع ملف للمريض:', patient._id, 'النوع:', type);
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${type}`, {
         method: 'POST',
         headers: {
@@ -704,7 +702,6 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
         throw new Error('Upload failed');
       }
     } catch (error) {
-      console.error('Error uploading file:', error);
       toast.error(t('patient_management.error_uploading_file'));
     } finally {
       setUploading(false);
@@ -870,13 +867,22 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                   style={{ display: 'none' }}
                 />
                 <button
-                  onClick={() => {
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     if (medicalReportsFileInput.current) {
                       medicalReportsFileInput.current.click();
+                    } else {
+                      toast.error('خطأ في فتح نافذة اختيار الملف');
                     }
                   }}
                   disabled={uploading}
                   className="btn-upload"
+                  style={{ 
+                    cursor: uploading ? 'not-allowed' : 'pointer',
+                    opacity: uploading ? 0.6 : 1
+                  }}
                 >
                   {uploading ? t('patient_management.uploading') : t('patient_management.choose_file')}
                 </button>
@@ -951,13 +957,22 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                   style={{ display: 'none' }}
                 />
                 <button
-                  onClick={() => {
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     if (examinationsFileInput.current) {
                       examinationsFileInput.current.click();
+                    } else {
+                      toast.error('خطأ في فتح نافذة اختيار الملف');
                     }
                   }}
                   disabled={uploading}
                   className="btn-upload"
+                  style={{ 
+                    cursor: uploading ? 'not-allowed' : 'pointer',
+                    opacity: uploading ? 0.6 : 1
+                  }}
                 >
                   {uploading ? t('patient_management.uploading') : t('patient_management.choose_file')}
                 </button>
