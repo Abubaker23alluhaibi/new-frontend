@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import DoctorCard from './DoctorCard';
@@ -10,17 +10,14 @@ import AdvertisementSlider from './components/AdvertisementSlider';
 
 function UserHome() {
   const navigate = useNavigate();
-  const { signOut, profile, user } = useAuth();
+  const { signOut, user } = useAuth();
   const [doctors, setDoctors] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-  const [favoriteIds, setFavoriteIds] = useState([]);
   const [showNotif, setShowNotif] = useState(false);
 
   const [showFavorites, setShowFavorites] = useState(false);
-  const [favoriteDoctors, setFavoriteDoctors] = useState([]);
   const [suggestedDoctors, setSuggestedDoctors] = useState([]);
   const [province, setProvince] = useState('');
-  const [specialty, setSpecialty] = useState('');
   const [search, setSearch] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [notifications, setNotifications] = useState([]);
@@ -30,7 +27,7 @@ function UserHome() {
   const { t } = useTranslation();
   const provinces = t('provinces', { returnObjects: true });
   // جلب التخصصات من الترجمة حسب اللغة
-  const specialtiesGrouped = t('specialty_categories', { returnObjects: true }) || [];
+  const specialtiesGrouped = useMemo(() => t('specialty_categories', { returnObjects: true }) || [], [t]);
   
   // التأكد من أن specialtiesGrouped مصفوفة
   if (!Array.isArray(specialtiesGrouped)) {
@@ -45,7 +42,6 @@ function UserHome() {
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [showQuickSearch, setShowQuickSearch] = useState(false);
 
   // دالة اختيار من البحث
   function handleSearchSelect(value) {
@@ -160,7 +156,7 @@ function UserHome() {
     filtered = filtered.filter(Boolean);
     
     setSuggestions(filtered.slice(0, 7));
-  }, [search, selectedSpecialty, selectedCategory, province, suggestedDoctors]);
+  }, [search, selectedSpecialty, selectedCategory, province, suggestedDoctors, specialtiesGrouped]);
 
   // ربط البحث السريع مع الفلترة الفعلية
   useEffect(() => {
@@ -179,7 +175,6 @@ function UserHome() {
     if (!user?._id) return;
     
     let isComponentMounted = true;
-    let servicesInitialized = false;
     
     const fetchNotifications = async () => {
       if (!isComponentMounted) return;
@@ -196,100 +191,7 @@ function UserHome() {
         setNotifications(data);
         setNotifCount(data.filter(n => !n.isRead).length);
         
-        // إعداد الخدمات مرة واحدة فقط - الإشعارات الفورية معطلة مؤقتاً
-        if (!servicesInitialized && isComponentMounted) {
-          try {
-            // إعداد الإشعارات الفورية - معطل مؤقتاً
-            // const notificationService = (await import('./utils/notificationService')).default;
-            // if (notificationService.permission !== 'granted') {
-            //   await notificationService.requestPermission();
-            // }
-            // if (!notificationService.registration) {
-            //   await notificationService.setupServiceWorker();
-            // }
-            
-            // إعداد WebSocket - معطل مؤقتاً
-            // const socketService = (await import('./utils/socketService')).default;
-            // if (!socketService.getConnectionStatus().isConnected) {
-            //   socketService.connect();
-            // }
-            // socketService.joinUserRoom(user._id);
-        
-            // الاستماع لإشعارات إلغاء الموعد - معطل مؤقتاً
-            // if (!socketService._appointmentCancelledListener) {
-            //   socketService.onAppointmentCancelled((data) => {
-            //     if (!isComponentMounted) return;
-            //     
-            //     // إرسال إشعار فوري
-            //     notificationService.sendAppointmentCancellationNotification(
-            //       data.doctorName,
-            //       data.date,
-            //       data.time
-            //     );
-            //     
-            //     // تحديث قائمة الإشعارات
-            //     const updateNotifications = async () => {
-            //       if (!isComponentMounted) return;
-            //       
-            //       try {
-            //         const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?userId=${user._id}`);
-            //         const data = await res.json();
-            //         
-            //         if (isComponentMounted && Array.isArray(data)) {
-            //           setNotifications(data);
-            //           setNotifCount(data.filter(n => !n.read).length);
-            //         }
-            //       } catch (error) {
-            //         console.error('خطأ في تحديث الإشعارات:', error);
-            //       }
-            //     };
-            //     
-            //     updateNotifications();
-            //   });
-            //   socketService._appointmentCancelledListener = true;
-            // }
-
-            // الاستماع لإشعارات المواعيد الخاصة - معطل مؤقتاً
-            // if (!socketService._specialAppointmentListener) {
-            //   socketService.onSpecialAppointment((data) => {
-            //     if (!isComponentMounted) return;
-            //     
-            //     // إرسال إشعار فوري
-            //     notificationService.sendSpecialAppointmentNotification(
-            //       data.doctorName,
-            //       data.date,
-            //       data.time,
-            //       data.reason,
-            //       data.notes
-            //     );
-            //     
-            //     // تحديث قائمة الإشعارات
-            //     const updateNotifications = async () => {
-            //       if (!isComponentMounted) return;
-            //       
-            //       try {
-            //         const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?userId=${user._id}`);
-            //         const data = await res.json();
-            //         
-            //         if (isComponentMounted && Array.isArray(data)) {
-            //           setNotifications(data);
-            //           setNotifCount(data.filter(n => !n.read).length);
-            //         }
-            //       } catch (error) {
-            //         console.error('خطأ في تحديث الإشعارات:', error);
-            //       }
-            //     };
-            //     
-            //     updateNotifications();
-            //   });
-            //   socketService._specialAppointmentListener = true;
-            // }
-            
-            servicesInitialized = true;
-          } catch (error) {
-            console.error('خطأ في إعداد الخدمات:', error);
-          }
-        }
+        // تم حذف نظام الإشعارات الفورية - الإشعارات العامة تعمل عبر قاعدة البيانات
         
       } catch (error) {
         console.error('خطأ في جلب الإشعارات:', error);
@@ -309,13 +211,7 @@ function UserHome() {
       isComponentMounted = false;
       clearInterval(interval);
       
-      // قطع الاتصال بـ WebSocket عند إلغاء المكون
-      import('./utils/socketService').then(module => {
-        const socketService = module.default;
-        if (socketService.getConnectionStatus().isConnected) {
-          socketService.disconnect();
-        }
-      });
+      // تم حذف WebSocket - لا حاجة لقطع الاتصال
     };
   }, [user?._id]);
 
@@ -348,84 +244,11 @@ function UserHome() {
       markAsRead();
     }
   }, [showNotif, user?._id, notifCount]);
-  const loadFavoriteDoctors = async () => {
-    try {
-      // معلق مؤقتاً - endpoint غير موجود
-      return;
-      
-      // const response = await fetch('http://localhost:5000/api/favorites', {
-      //   headers: {
-      //     'Authorization': `Bearer ${user.access_token}`
-      //   }
-      //   });
 
-      //   if (response.ok) {
-      //     const { favorites } = await response.json();
-      //     setFavoriteDoctors(favorites);
-      //     setFavoriteIds(favorites.map(doc => doc.id));
-      //   }
-    } catch (error) {
-      // Error loading favorites
-    }
-  };
 
-  const toggleFavorite = async (doctorId) => {
-    try {
-      const response = await fetch(process.env.REACT_APP_API_URL + '/favorites', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.access_token}`
-        },
-        body: JSON.stringify({ doctor_id: doctorId })
-      });
-
-      if (response.ok) {
-        setFavoriteIds(fav => [...fav, doctorId]);
-        // إضافة الطبيب لقائمة المفضلين
-        const doctor = doctors.find(d => d.id === doctorId);
-        if (doctor) {
-          setFavoriteDoctors(fav => [...fav, doctor]);
-        }
-      }
-    } catch (error) {
-      // Error toggling favorite
-    }
-  };
-
-  // دالة مساعدة لمسار صورة الدكتور
-  const getImageUrl = img => {
-    if (!img) return 'https://randomuser.me/api/portraits/men/32.jpg';
-    
-    // إذا كانت الصورة من Cloudinary (تبدأ بـ https://res.cloudinary.com)
-    if (img.startsWith('https://res.cloudinary.com')) {
-      return img;
-    }
-    
-    // إذا كانت الصورة محلية (تبدأ بـ /uploads/)
-    if (img.startsWith('/uploads/')) {
-      return process.env.REACT_APP_API_URL + img;
-    }
-    
-    // إذا كانت الصورة رابط كامل
-    if (img.startsWith('http')) {
-      return img;
-    }
-    
-    return 'https://randomuser.me/api/portraits/men/32.jpg';
-  };
 
   // دالة مساعدة للتصميم المتجاوب
   const isMobile = () => window.innerWidth <= 768;
-  
-  // دالة مساعدة لحجم الصورة
-  const getImageSize = () => isMobile() ? 50 : 70;
-  
-  // دالة مساعدة لحجم الخط
-  const getFontSize = (mobile, desktop) => isMobile() ? mobile : desktop;
-  
-  // دالة مساعدة للتباعد
-  const getGap = (mobile, desktop) => isMobile() ? mobile : desktop;
 
   // دالة تعريب التاريخ والوقت للإشعارات - إصلاح مشكلة اللغة
   function formatDateTime(dateString) {
@@ -498,7 +321,7 @@ function UserHome() {
     // معالجة النصوص باللغة الكردية
     if (i18n.language === 'ku') {
       // مثال: "چاوپێکەوتنی نوێ لەلایەن ali abbas للمريض 784642110 (عمر: 19) لە 2025-09-03 کاتژمێر 09:15 تۆمارکرا"
-      const match = message.match(/لەلایەن (.+) للمريض (.+) \(عمر: (\d+)\) لە ([0-9\-]+) کاتژمێر ([0-9:]+)/);
+      const match = message.match(/لەلایەن (.+) للمريض (.+) \(عمر: (\d+)\) لە ([0-9-]+) کاتژمێر ([0-9:]+)/);
       if (match) {
         const [, name, phone, age, date, time] = match;
         return t('notification_new_appointment', { 
@@ -512,7 +335,7 @@ function UserHome() {
     }
     
     // معالجة النصوص باللغة العربية
-    const match = message.match(/من قبل (.+) في ([0-9\-]+) الساعة ([0-9:]+)/);
+    const match = message.match(/من قبل (.+) في ([0-9-]+) الساعة ([0-9:]+)/);
     if (match) {
       const [, name, date, time] = match;
       return t('notification_new_appointment', { name, date, time });
@@ -522,7 +345,7 @@ function UserHome() {
 
   function renderSpecialAppointmentNotification(message, t) {
     // مثال: "تم حجز موعد خاص لك مع الطبيب ابوبكر كسار بتاريخ 2025-07-26 الساعة 09:00"
-    const match = message.match(/مع الطبيب (.+) بتاريخ ([0-9\-]+) الساعة ([0-9:]+)/);
+    const match = message.match(/مع الطبيب (.+) بتاريخ ([0-9-]+) الساعة ([0-9:]+)/);
     if (match) {
       const [, doctor, date, time] = match;
       return t('notification_special_appointment', { doctor, date, time });
@@ -1040,29 +863,6 @@ function UserHome() {
       )}
       {/* بعد أيقونات الأدوية والمواعيد مباشرة، أضف الزر في المنتصف */}
       <div style={{width:'100%', display:'flex', justifyContent:'center', margin:'1.5rem 0'}}>
-        <button
-          onClick={() => setShowQuickSearch(true)}
-          style={{
-            background: '#fff',
-            border: '2px solid #0A8F82',
-            borderRadius: '50%',
-            width: 60,
-            height: 60,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(10, 143, 130, 0.2)',
-            cursor: 'pointer',
-            fontWeight: 700,
-            fontSize: 24,
-            color: '#0A8F82',
-            transition: 'all 0.3s',
-            margin: '0 auto'
-          }}
-          title="بحث سريع"
-        >
-          🔍
-        </button>
       </div>
     </div>
   );

@@ -182,24 +182,7 @@ function DoctorAppointments() {
       if (res.ok) {
         setAppointments(appointments.filter(apt => apt._id !== appointmentId));
         
-        // إرسال إشعار فوري للمريض - معطل مؤقتاً
-        // if (appointment) {
-        //   try {
-        //     // استيراد خدمة الإشعارات
-        //     const notificationService = (await import('../utils/notificationService')).default;
-        //     
-        //     // إرسال إشعار فوري
-        //     await notificationService.sendAppointmentCancellationNotification(
-        //       appointment.doctorName || 'الدكتور',
-        //       appointment.date,
-        //       appointment.time
-        //     );
-        //     
-        //     console.log('✅ تم إرسال إشعار إلغاء الموعد فوراً');
-        //   } catch (notificationError) {
-        //     console.error('❌ خطأ في إرسال الإشعار الفوري:', notificationError);
-        //   }
-        // }
+        // تم حذف الإشعارات الفورية - الإشعارات محفوظة في قاعدة البيانات فقط
         
         alert(t('appointment_cancelled_success'));
       } else {

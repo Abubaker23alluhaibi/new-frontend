@@ -54,7 +54,6 @@ function DoctorDashboard() {
   // حالات البحث
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
 
   // دالة لتسجيل المواعيد السابقة تلقائياً كـ غائب
   const processPastAppointments = async (appointments) => {
@@ -177,17 +176,14 @@ function DoctorDashboard() {
     } catch (err) {
       console.error('خطأ في جلب المواعيد:', err);
     }
-  }, [profile?._id]);
+  }, [profile]);
 
   // دالة البحث في مواعيد اليوم
   const searchTodayAppointments = useCallback((query) => {
     if (!query.trim()) {
       setSearchResults([]);
-      setIsSearching(false);
       return;
     }
-
-    setIsSearching(true);
     
     const today = getToday();
     const todayAppointments = appointments.filter(apt => apt.date === today);
@@ -199,8 +195,8 @@ function DoctorDashboard() {
       const patientName = (apt.patientName || apt.userId?.first_name || apt.userName || '').toLowerCase();
       
       // البحث في رقم الهاتف (إزالة المسافات والرموز)
-      const patientPhone = (apt.patientPhone || apt.userId?.phone || '').replace(/[\s\-\(\)]/g, '');
-      const searchPhone = queryLower.replace(/[\s\-\(\)]/g, '');
+      const patientPhone = (apt.patientPhone || apt.userId?.phone || '').replace(/[\s\-()]/g, '');
+      const searchPhone = queryLower.replace(/[\s\-()]/g, '');
       
       // فحص إذا كان البحث عن اسم أو رقم
       const nameMatch = patientName.includes(queryLower);
@@ -213,7 +209,6 @@ function DoctorDashboard() {
     
     console.log(`📊 نتائج البحث: ${results.length} من أصل ${todayAppointments.length} مواعيد`);
     setSearchResults(results);
-    setIsSearching(false);
   }, [appointments]);
 
   // دالة لتحديث البيانات
@@ -234,16 +229,15 @@ function DoctorDashboard() {
     // إعادة جلب البيانات
     fetchAllAppointments();
     fetchNotifications();
-  }, [profile?._id]);
+  }, [fetchAllAppointments, fetchNotifications]);
 
-  // جلب إشعارات الدكتور وإعداد WebSocket
+  // جلب إشعارات الدكتور
   useEffect(() => {
     if (!profile?._id) return;
     
     let isComponentMounted = true;
-    let servicesInitialized = false;
     
-    console.log('🔄 DoctorDashboard: useEffect - جلب الإشعارات وإعداد WebSocket');
+    console.log('🔄 DoctorDashboard: useEffect - جلب الإشعارات');
     
     const setupNotifications = async () => {
       if (!isComponentMounted) return;
@@ -252,64 +246,7 @@ function DoctorDashboard() {
         // جلب الإشعارات
         await fetchNotifications();
         
-        // إعداد الخدمات مرة واحدة فقط - الإشعارات الفورية معطلة مؤقتاً
-        if (!servicesInitialized && isComponentMounted) {
-          try {
-            // إعداد الإشعارات الفورية - معطل مؤقتاً
-            // const notificationService = (await import('./utils/notificationService')).default;
-            // await notificationService.requestPermission();
-            // await notificationService.setupServiceWorker();
-            
-            // إعداد WebSocket - معطل مؤقتاً
-            // const socketService = (await import('./utils/socketService')).default;
-            // if (!socketService.getConnectionStatus().isConnected) {
-            //   socketService.connect();
-            // }
-            // socketService.joinDoctorRoom(profile._id);
-            
-            // الاستماع لإشعارات المواعيد الجديدة - معطل مؤقتاً
-            // if (!socketService._newAppointmentListener) {
-            //   socketService.onNewAppointment((data) => {
-            //     if (!isComponentMounted) return;
-            //     
-            //     // إرسال إشعار فوري
-            //     notificationService.sendNewAppointmentNotification(
-            //       data.patientName,
-            //       data.bookerName,
-            //       data.date,
-            //       data.time,
-            //       data.reason,
-            //       data.patientAge,
-            //       data.isBookingForOther
-            //     );
-            //     
-            //     // تحديث قائمة الإشعارات
-            //     const updateNotifications = async () => {
-            //       if (!isComponentMounted) return;
-            //       
-            //       try {
-            //         const res = await fetch(`${process.env.REACT_APP_API_URL}/notifications?doctorId=${profile._id}`);
-            //         const data = await res.json();
-            //         
-            //         if (isComponentMounted && Array.isArray(data)) {
-            //           setNotifications(data);
-            //           setNotifCount(data.filter(n => !n.read).length);
-            //         }
-            //       } catch (error) {
-            //         console.error('خطأ في تحديث الإشعارات:', error);
-            //       }
-            //     };
-            //     
-            //     updateNotifications();
-            //   });
-            //   socketService._newAppointmentListener = true;
-            // }
-            
-            servicesInitialized = true;
-          } catch (error) {
-            console.error('خطأ في إعداد الخدمات:', error);
-          }
-        }
+        // تم حذف نظام الإشعارات الفورية - الإشعارات العامة تعمل عبر قاعدة البيانات
         
       } catch (error) {
         console.error('خطأ في إعداد الإشعارات:', error);
@@ -321,12 +258,8 @@ function DoctorDashboard() {
     // تنظيف عند إلغاء المكون
     return () => {
       isComponentMounted = false;
-      const socketService = require('./utils/socketService').default;
-      if (socketService.getConnectionStatus().isConnected) {
-        socketService.disconnect();
-      }
     };
-  }, [profile?._id]);
+  }, [profile?._id, fetchNotifications]);
 
   // تعليم كل الإشعارات كمقروءة عند فتح نافذة الإشعارات
   useEffect(() => {
@@ -362,7 +295,7 @@ function DoctorDashboard() {
   useEffect(() => {
     console.log('🔄 DoctorDashboard: useEffect - جلب المواعيد');
     fetchAllAppointments();
-  }, [profile?._id]);
+  }, [profile?._id, fetchAllAppointments]);
 
   // تنظيف نتائج البحث عند تغيير المواعيد
   useEffect(() => {
@@ -384,7 +317,7 @@ function DoctorDashboard() {
       isComponentMounted = false;
       clearInterval(interval);
     };
-  }, []);
+  }, [refreshData]);
 
   // تحديث عند تغيير اللغة
   useEffect(() => {
@@ -472,9 +405,7 @@ function DoctorDashboard() {
   console.log('🔍 مواعيد اليوم (بعد إزالة التكرار):', todayAppointments);
   console.log('🔍 جميع المواعيد:', appointmentsArray.map(a => ({ date: a.date, time: a.time, name: a.userId?.first_name || a.userName, type: a.type })));
   
-  // حساب إحصائيات سريعة
-  const totalAppointments = appointmentsArray.length;
-  const upcomingAppointments = appointmentsArray.filter(a => new Date(a.date) > new Date(today));
+  // تم حذف الإحصائيات غير المستخدمة
 
   // دالة تنسيق التاريخ - إصلاح مشكلة اللغة
   const formatDate = (dateString) => {
@@ -562,45 +493,7 @@ function DoctorDashboard() {
     }
   };
 
-  // دالة حذف الموعد
-  const handleDeleteAppointment = async (appointmentId) => {
-    if (!window.confirm('هل أنت متأكد من حذف هذا الموعد؟')) return;
-    
-    try {
-      const token = localStorage.getItem('token') || 
-                   (JSON.parse(localStorage.getItem('user') || '{}')).token ||
-                   (JSON.parse(localStorage.getItem('profile') || '{}')).token;
-      
-      console.log('🔍 Frontend Debug - DoctorDashboard handleDeleteAppointment:');
-      console.log('  - appointmentId:', appointmentId);
-      console.log('  - token exists:', !!token);
-      console.log('  - token preview:', token ? token.substring(0, 20) + '...' : 'null');
-      
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/appointments/${appointmentId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      console.log('  - response status:', response.status);
-      console.log('  - response ok:', response.ok);
-
-      if (response.ok) {
-        // إعادة تحميل جميع المواعيد
-        fetchAllAppointments();
-        toast.success('تم حذف الموعد بنجاح');
-      } else {
-        const errorData = await response.json();
-        console.log('  - error response:', errorData);
-        toast.error(errorData.error || 'خطأ في حذف الموعد');
-      }
-    } catch (error) {
-      console.error('  - catch error:', error);
-      toast.error('خطأ في حذف الموعد');
-    }
-  };
+  // تم حذف دالة حذف الموعد - غير مستخدمة
 
   return (
     <div style={{
@@ -2676,7 +2569,7 @@ function renderNewAppointmentNotification(message, t, i18n) {
   // معالجة النصوص باللغة الكردية
   if (i18n.language === 'ku') {
     // مثال: "چاوپێکەوتنی نوێ لەلایەن ali abbas للمريض 784642110 (عمر: 19) لە 2025-09-03 کاتژمێر 09:15 تۆمارکرا"
-    const match = message.match(/لەلایەن (.+) للمريض (.+) \(عمر: (\d+)\) لە ([0-9\-]+) کاتژمێر ([0-9:]+)/);
+    const match = message.match(/لەلایەن (.+) للمريض (.+) \(عمر: (\d+)\) لە ([0-9-]+) کاتژمێر ([0-9:]+)/);
     if (match) {
       const [, name, phone, age, date, time] = match;
       return t('notification_new_appointment', { 
