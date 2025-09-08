@@ -504,9 +504,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
   const [activeTab, setActiveTab] = useState('basic');
   const [uploadingFile, setUploadingFile] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [fileType, setFileType] = useState(''); // 'pdf' or 'image'
-  const [viewingPdf, setViewingPdf] = useState(null);
-  const [pdfError, setPdfError] = useState(false);
+  const [fileType, setFileType] = useState(''); // 'image' only
 
 
   // دالة مساعدة للحصول على التوكن
@@ -560,11 +558,6 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
 
 
 
-  // دالة اختيار نوع الملف
-  const handleFileTypeSelect = (type) => {
-    setFileType(type);
-    setSelectedFile(null);
-  };
 
   // دالة اختيار الملف
   const handleFileSelect = (event) => {
@@ -574,17 +567,6 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
     }
   };
 
-  // دالة لعرض PDF
-  const openPdfViewer = (fileUrl, fileName) => {
-    setPdfError(false);
-    setViewingPdf({ url: fileUrl, name: fileName });
-  };
-
-  // دالة لإغلاق عارض PDF
-  const closePdfViewer = () => {
-    setViewingPdf(null);
-    setPdfError(false);
-  };
 
   // دالة رفع الملف الجديدة
   const handleFileUpload = async () => {
@@ -859,64 +841,47 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                   textAlign: 'center',
                   backgroundColor: '#f8f9fa'
                 }}>
-                  {/* اختيار نوع الملف */}
+                  {/* رفع الصور فقط */}
                   <div style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                      اختر نوع الملف:
+                      {t('patient_management.upload_images')}:
                     </label>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      <button
-                        onClick={() => handleFileTypeSelect('pdf')}
-                        style={{
-                          backgroundColor: fileType === 'pdf' ? '#0A8F82' : '#f0f0f0',
-                          color: fileType === 'pdf' ? 'white' : 'black',
-                          border: 'none',
-                          padding: '10px 20px',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontWeight: 'bold'
-                        }}
-                      >
-                        📄 PDF
-                      </button>
-                      <button
-                        onClick={() => handleFileTypeSelect('image')}
-                        style={{
-                          backgroundColor: fileType === 'image' ? '#0A8F82' : '#f0f0f0',
-                          color: fileType === 'image' ? 'white' : 'black',
-                          border: 'none',
-                          padding: '10px 20px',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontWeight: 'bold'
-                        }}
-                      >
-                        🖼️ صورة
-                      </button>
+                    <div style={{ 
+                      padding: '15px', 
+                      backgroundColor: '#e8f5e8', 
+                      borderRadius: '8px',
+                      border: '1px solid #4caf50',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ fontSize: '24px', marginBottom: '10px' }}>🖼️</div>
+                      <p style={{ margin: 0, color: '#2e7d32', fontWeight: 'bold' }}>
+                        {t('patient_management.images_only_notice')}
+                      </p>
+                      <p style={{ margin: '5px 0 0 0', color: '#1b5e20', fontSize: '14px' }}>
+                        {t('patient_management.supported_formats')}: JPG, PNG, GIF
+                      </p>
                     </div>
                   </div>
                   
                   {/* اختيار الملف */}
-                  {fileType && (
-                    <div style={{ marginBottom: '15px' }}>
-                      <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                        اختر الملف:
-                      </label>
-                      <input
-                        type="file"
-                        onChange={handleFileSelect}
-                        accept={fileType === 'pdf' ? '.pdf' : '.jpg,.jpeg,.png,.gif'}
-                        style={{ 
-                          width: '100%',
-                          padding: '8px',
-                          border: '1px solid #ddd',
-                          borderRadius: '4px'
-                        }}
-                      />
-                    </div>
-                  )}
+                  <div style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+{t('patient_management.select_image')}:
+                    </label>
+                    <input
+                      type="file"
+                      onChange={handleFileSelect}
+                      accept=".jpg,.jpeg,.png,.gif"
+                      style={{ 
+                        width: '100%',
+                        padding: '8px',
+                        border: '1px solid #ddd',
+                        borderRadius: '4px'
+                      }}
+                    />
+                  </div>
                   
-                  {/* عرض الملف المختار */}
+                  {/* عرض الصورة المختارة */}
                   {selectedFile && (
                     <div style={{ 
                       marginBottom: '15px', 
@@ -925,11 +890,11 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                       borderRadius: '4px',
                       border: '1px solid #4caf50'
                     }}>
-                      <strong>✅ الملف المختار:</strong> {selectedFile.name}
+                      <strong>✅ {t('patient_management.selected_image')}:</strong> {selectedFile.name}
                       <br />
-                      <small>الحجم: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</small>
+                      <small>{t('patient_management.file_size')}: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</small>
                       <br />
-                      <small>النوع: {fileType === 'pdf' ? 'PDF' : 'صورة'}</small>
+                      <small>{t('patient_management.file_type')}: {t('patient_management.image')}</small>
                     </div>
                   )}
                   
@@ -949,7 +914,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                       fontWeight: 'bold'
                     }}
                   >
-                    {uploadingFile ? '⏳ جاري الرفع...' : '📤 رفع الملف'}
+                    {uploadingFile ? `⏳ ${t('patient_management.uploading')}...` : `📤 ${t('patient_management.upload_image')}`}
                   </button>
                 </div>
               </div>
@@ -966,18 +931,14 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                         <small>{new Date(report.uploadDate).toLocaleDateString('ar-EG')}</small>
                       </div>
                       <div className="file-actions">
-                        <button 
-                          onClick={() => {
-                            if (report.fileType === 'application/pdf' || report.title.includes('.pdf')) {
-                              openPdfViewer(report.fileUrl, report.title);
-                            } else {
-                              window.open(report.fileUrl, '_blank');
-                            }
-                          }}
+                        <a 
+                          href={report.fileUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
                           className="btn-view"
                         >
                           👁️ {t('patient_management.view_file')}
-                        </button>
+                        </a>
                         <a 
                           href={report.fileUrl}
                           download={report.title}
@@ -1012,64 +973,47 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                   textAlign: 'center',
                   backgroundColor: '#f8f9fa'
                 }}>
-                  {/* اختيار نوع الملف */}
+                  {/* رفع الصور فقط */}
                   <div style={{ marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                      اختر نوع الملف:
+                      {t('patient_management.upload_images')}:
                     </label>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                      <button
-                        onClick={() => handleFileTypeSelect('pdf')}
-                        style={{
-                          backgroundColor: fileType === 'pdf' ? '#0A8F82' : '#f0f0f0',
-                          color: fileType === 'pdf' ? 'white' : 'black',
-                          border: 'none',
-                          padding: '10px 20px',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontWeight: 'bold'
-                        }}
-                      >
-                        📄 PDF
-                      </button>
-                      <button
-                        onClick={() => handleFileTypeSelect('image')}
-                        style={{
-                          backgroundColor: fileType === 'image' ? '#0A8F82' : '#f0f0f0',
-                          color: fileType === 'image' ? 'white' : 'black',
-                          border: 'none',
-                          padding: '10px 20px',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontWeight: 'bold'
-                        }}
-                      >
-                        🖼️ صورة
-                      </button>
+                    <div style={{ 
+                      padding: '15px', 
+                      backgroundColor: '#e8f5e8', 
+                      borderRadius: '8px',
+                      border: '1px solid #4caf50',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ fontSize: '24px', marginBottom: '10px' }}>🖼️</div>
+                      <p style={{ margin: 0, color: '#2e7d32', fontWeight: 'bold' }}>
+                        {t('patient_management.images_only_notice')}
+                      </p>
+                      <p style={{ margin: '5px 0 0 0', color: '#1b5e20', fontSize: '14px' }}>
+                        {t('patient_management.supported_formats')}: JPG, PNG, GIF
+                      </p>
                     </div>
                   </div>
                   
                   {/* اختيار الملف */}
-                  {fileType && (
-                    <div style={{ marginBottom: '15px' }}>
-                      <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-                        اختر الملف:
-                      </label>
-                      <input
-                        type="file"
-                        onChange={handleFileSelect}
-                        accept={fileType === 'pdf' ? '.pdf' : '.jpg,.jpeg,.png,.gif'}
-                        style={{ 
-                          width: '100%',
-                          padding: '8px',
-                          border: '1px solid #ddd',
-                          borderRadius: '4px'
-                        }}
-                      />
-                    </div>
-                  )}
+                  <div style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+{t('patient_management.select_image')}:
+                    </label>
+                    <input
+                      type="file"
+                      onChange={handleFileSelect}
+                      accept=".jpg,.jpeg,.png,.gif"
+                      style={{ 
+                        width: '100%',
+                        padding: '8px',
+                        border: '1px solid #ddd',
+                        borderRadius: '4px'
+                      }}
+                    />
+                  </div>
                   
-                  {/* عرض الملف المختار */}
+                  {/* عرض الصورة المختارة */}
                   {selectedFile && (
                     <div style={{ 
                       marginBottom: '15px', 
@@ -1078,11 +1022,11 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                       borderRadius: '4px',
                       border: '1px solid #4caf50'
                     }}>
-                      <strong>✅ الملف المختار:</strong> {selectedFile.name}
+                      <strong>✅ {t('patient_management.selected_image')}:</strong> {selectedFile.name}
                       <br />
-                      <small>الحجم: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</small>
+                      <small>{t('patient_management.file_size')}: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</small>
                       <br />
-                      <small>النوع: {fileType === 'pdf' ? 'PDF' : 'صورة'}</small>
+                      <small>{t('patient_management.file_type')}: {t('patient_management.image')}</small>
                     </div>
                   )}
                   
@@ -1102,7 +1046,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                       fontWeight: 'bold'
                     }}
                   >
-                    {uploadingFile ? '⏳ جاري الرفع...' : '📤 رفع الملف'}
+                    {uploadingFile ? `⏳ ${t('patient_management.uploading')}...` : `📤 ${t('patient_management.upload_image')}`}
                   </button>
                 </div>
               </div>
@@ -1119,18 +1063,14 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                         <small>{new Date(examination.uploadDate).toLocaleDateString('ar-EG')}</small>
                       </div>
                       <div className="file-actions">
-                        <button 
-                          onClick={() => {
-                            if (examination.fileType === 'application/pdf' || examination.title.includes('.pdf')) {
-                              openPdfViewer(examination.fileUrl, examination.title);
-                            } else {
-                              window.open(examination.fileUrl, '_blank');
-                            }
-                          }}
+                        <a 
+                          href={examination.fileUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
                           className="btn-view"
                         >
                           👁️ {t('patient_management.view_file')}
-                        </button>
+                        </a>
                         <a 
                           href={examination.fileUrl}
                           download={examination.title}
@@ -1296,329 +1236,6 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
 
         </div>
       </div>
-
-      {/* PDF Viewer Modal */}
-      {viewingPdf && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.8)',
-          zIndex: 9999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            width: '90%',
-            height: '90%',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <div style={{
-              padding: '15px',
-              borderBottom: '1px solid #ddd',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-              <h3 style={{ margin: 0 }}>📄 {viewingPdf.name}</h3>
-              <button 
-                onClick={closePdfViewer}
-                style={{
-                  background: '#ff4444',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  padding: '8px 12px',
-                  cursor: 'pointer',
-                  fontSize: '18px'
-                }}
-              >
-                ×
-              </button>
-            </div>
-            <div style={{ flex: 1, padding: '15px' }}>
-              {pdfError ? (
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  height: '100%',
-                  textAlign: 'center',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  padding: '20px'
-                }}>
-                  <div style={{ fontSize: '48px', marginBottom: '20px' }}>📄</div>
-                  <h3 style={{ color: '#666', marginBottom: '10px' }}>لا يمكن عرض PDF</h3>
-                  <p style={{ color: '#888', marginBottom: '20px' }}>
-                    الملف محمي أو لا يمكن عرضه مباشرة
-                  </p>
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <a 
-                      href={viewingPdf.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        backgroundColor: '#0A8F82',
-                        color: 'white',
-                        padding: '10px 20px',
-                        borderRadius: '4px',
-                        textDecoration: 'none',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      🌐 فتح في نافذة جديدة
-                    </a>
-                    <a 
-                      href={viewingPdf.url}
-                      download={viewingPdf.name}
-                      style={{
-                        backgroundColor: '#007bff',
-                        color: 'white',
-                        padding: '10px 20px',
-                        borderRadius: '4px',
-                        textDecoration: 'none',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      ⬇️ تحميل الملف
-                    </a>
-                  </div>
-                </div>
-              ) : (
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  height: '100%',
-                  textAlign: 'center',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '8px',
-                  padding: '20px'
-                }}>
-                  <div style={{ fontSize: '48px', marginBottom: '20px' }}>📄</div>
-                  <h3 style={{ color: '#333', marginBottom: '10px' }}>{viewingPdf.name}</h3>
-                  <p style={{ color: '#666', marginBottom: '20px' }}>
-                    ملف PDF - اضغط على أحد الأزرار أدناه لعرضه
-                  </p>
-                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    <a 
-                      href={viewingPdf.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        backgroundColor: '#0A8F82',
-                        color: 'white',
-                        padding: '12px 24px',
-                        borderRadius: '6px',
-                        textDecoration: 'none',
-                        fontWeight: 'bold',
-                        fontSize: '16px'
-                      }}
-                    >
-                      🌐 فتح في نافذة جديدة
-                    </a>
-                    <a 
-                      href={viewingPdf.url}
-                      download={viewingPdf.name}
-                      style={{
-                        backgroundColor: '#007bff',
-                        color: 'white',
-                        padding: '12px 24px',
-                        borderRadius: '6px',
-                        textDecoration: 'none',
-                        fontWeight: 'bold',
-                        fontSize: '16px'
-                      }}
-                    >
-                      ⬇️ تحميل الملف
-                    </a>
-                    <button
-                      onClick={() => {
-                        // محاولة فتح PDF في iframe مباشر
-                        const iframe = document.createElement('iframe');
-                        iframe.src = viewingPdf.url;
-                        iframe.style.width = '100%';
-                        iframe.style.height = '100%';
-                        iframe.style.border = 'none';
-                        iframe.style.borderRadius = '4px';
-                        
-                        const container = document.querySelector('.pdf-container');
-                        if (container) {
-                          container.innerHTML = '';
-                          container.appendChild(iframe);
-                        }
-                      }}
-                      style={{
-                        backgroundColor: '#28a745',
-                        color: 'white',
-                        padding: '12px 24px',
-                        borderRadius: '6px',
-                        border: 'none',
-                        fontWeight: 'bold',
-                        fontSize: '16px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      🔄 محاولة عرض مباشر
-                    </button>
-                  </div>
-                  <div className="pdf-container" style={{ 
-                    width: '100%', 
-                    height: '500px', 
-                    marginTop: '20px',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    overflow: 'hidden',
-                    backgroundColor: '#f8f9fa'
-                  }}>
-                    <div style={{
-                      padding: '20px',
-                      textAlign: 'center',
-                      color: '#666',
-                      fontSize: '18px'
-                    }}>
-                      <div style={{ fontSize: '48px', marginBottom: '15px' }}>📄</div>
-                      <h4 style={{ marginBottom: '10px' }}>عرض PDF</h4>
-                      <p style={{ marginBottom: '20px' }}>
-                        اختر طريقة العرض المناسبة لك:
-                      </p>
-                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                        <button
-                          onClick={() => {
-                            // الحل الأول: فتح في نافذة جديدة
-                            window.open(viewingPdf.url, '_blank');
-                          }}
-                          style={{
-                            backgroundColor: '#0A8F82',
-                            color: 'white',
-                            padding: '10px 20px',
-                            borderRadius: '6px',
-                            border: 'none',
-                            fontWeight: 'bold',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          🌐 فتح في نافذة جديدة
-                        </button>
-                        <button
-                          onClick={() => {
-                            // الحل الثاني: تحميل الملف
-                            const link = document.createElement('a');
-                            link.href = viewingPdf.url;
-                            link.download = viewingPdf.name;
-                            link.click();
-                          }}
-                          style={{
-                            backgroundColor: '#007bff',
-                            color: 'white',
-                            padding: '10px 20px',
-                            borderRadius: '6px',
-                            border: 'none',
-                            fontWeight: 'bold',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          ⬇️ تحميل الملف
-                        </button>
-                        <button
-                          onClick={() => {
-                            // الحل الثالث: Google Drive Viewer
-                            const googleViewerUrl = `https://drive.google.com/viewerng/viewer?url=${encodeURIComponent(viewingPdf.url)}&embedded=true`;
-                            window.open(googleViewerUrl, '_blank');
-                          }}
-                          style={{
-                            backgroundColor: '#28a745',
-                            color: 'white',
-                            padding: '10px 20px',
-                            borderRadius: '6px',
-                            border: 'none',
-                            fontWeight: 'bold',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          🔍 عرض عبر Google
-                        </button>
-                        <button
-                          onClick={() => {
-                            // الحل الرابع: نسخ الرابط
-                            navigator.clipboard.writeText(viewingPdf.url).then(() => {
-                              toast.success('تم نسخ رابط الملف');
-                            });
-                          }}
-                          style={{
-                            backgroundColor: '#6c757d',
-                            color: 'white',
-                            padding: '10px 20px',
-                            borderRadius: '6px',
-                            border: 'none',
-                            fontWeight: 'bold',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          📋 نسخ الرابط
-                        </button>
-                      </div>
-                      <div style={{ marginTop: '20px', fontSize: '14px', color: '#888' }}>
-                        <p>💡 <strong>نصائح:</strong></p>
-                        <p>• <strong>فتح في نافذة جديدة:</strong> يعرض PDF مباشرة في المتصفح</p>
-                        <p>• <strong>تحميل الملف:</strong> يحفظ PDF في جهازك</p>
-                        <p>• <strong>عرض عبر Google:</strong> يستخدم Google Drive لعرض PDF</p>
-                        <p>• <strong>نسخ الرابط:</strong> لمشاركة الملف مع الآخرين</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-            <div style={{
-              padding: '15px',
-              borderTop: '1px solid #ddd',
-              display: 'flex',
-              gap: '10px',
-              justifyContent: 'center'
-            }}>
-              <a 
-                href={viewingPdf.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  backgroundColor: '#0A8F82',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '4px',
-                  textDecoration: 'none',
-                  fontWeight: 'bold'
-                }}
-              >
-                🌐 فتح في نافذة جديدة
-              </a>
-              <a 
-                href={viewingPdf.url}
-                download={viewingPdf.name}
-                style={{
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '4px',
-                  textDecoration: 'none',
-                  fontWeight: 'bold'
-                }}
-              >
-                ⬇️ تحميل الملف
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );

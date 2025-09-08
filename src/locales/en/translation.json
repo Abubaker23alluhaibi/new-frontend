@@ -1091,7 +1091,18 @@
       "print_date_label": "Print Date:",
       "clinic_footer_text": "This prescription is issued by Iraqi Doctor Platform",
       "clinic_footer_contact": "For inquiries: www.tabibq.com"
-    }
+    },
+    "upload_medical_report": "Upload Medical Report",
+    "upload_examination": "Upload Examination",
+    "upload_images": "Upload Images",
+    "images_only_notice": "You can upload images only",
+    "supported_formats": "Supported formats",
+    "select_image": "Select Image",
+    "selected_image": "Selected Image",
+    "file_size": "Size",
+    "file_type": "Type",
+    "image": "Image",
+    "upload_image": "Upload Image"
   },
   "user_type_selector": {
     "title": "Welcome to Clinic Management System",

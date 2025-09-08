@@ -1253,7 +1253,18 @@
       "print_date_label": "بەرواری چاپ:",
       "clinic_footer_text": "ئەم نوسراوە پزیشکییە لەلایەن پلاتفۆرمی پزیشکی عێراقەوە دەرکراوە",
       "clinic_footer_contact": "بۆ پرسیارەکان: www.tabibq.com"
-    }
+    },
+    "upload_medical_report": "بارکردنی ڕاپۆرتی پزیشکی",
+    "upload_examination": "بارکردنی پشکنین",
+    "upload_images": "بارکردنی وێنەکان",
+    "images_only_notice": "تەنها دەتوانیت وێنە بار بکەیت",
+    "supported_formats": "جۆرە پاڵپشتکراوەکان",
+    "select_image": "وێنە هەلبژێرە",
+    "selected_image": "وێنەی هەلبژاردوو",
+    "file_size": "قەبارە",
+    "file_type": "جۆر",
+    "image": "وێنە",
+    "upload_image": "بارکردنی وێنە"
   },
   "user_type_selector": {
     "title": "بەخێربێیت بۆ سیستەمی بەڕێوەبردنی کلینیک",
