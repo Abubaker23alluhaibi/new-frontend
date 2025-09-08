@@ -558,10 +558,15 @@ function DoctorDashboard() {
     if (!window.confirm('هل أنت متأكد من حذف هذا الموعد؟')) return;
     
     try {
+      const token = localStorage.getItem('token') || 
+                   (JSON.parse(localStorage.getItem('user') || '{}')).token ||
+                   (JSON.parse(localStorage.getItem('profile') || '{}')).token;
+      
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/appointments/${appointmentId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${profile?.token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
 
@@ -1289,7 +1294,7 @@ function DoctorDashboard() {
                                 transition:'all 0.3s ease'
                               }}
                             >
-                              ✅ {t('present')}
+                              ✅ {t('confirm_attendance')}
                             </button>
                           )}
                         </div>
@@ -1440,7 +1445,7 @@ function DoctorDashboard() {
                             transition:'all 0.3s ease'
                           }}
                         >
-                          ✅ حاضر
+                          ✅ {t('confirm_attendance')}
                         </button>
                       )}
 

@@ -159,8 +159,16 @@ function DoctorAppointments() {
 
   const cancelAppointment = async (appointmentId) => {
     try {
+      const token = localStorage.getItem('token') || 
+                   (JSON.parse(localStorage.getItem('user') || '{}')).token ||
+                   (JSON.parse(localStorage.getItem('profile') || '{}')).token;
+      
       const res = await fetch(`${process.env.REACT_APP_API_URL}/appointments/${appointmentId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       if (res.ok) {
         setAppointments(appointments.filter(apt => apt._id !== appointmentId));

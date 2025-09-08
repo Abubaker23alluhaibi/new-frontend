@@ -158,9 +158,17 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
     if (window.confirm(confirmMessage)) {
       try {
         // إلغاء كل موعد قادم في اليوم المحدد
+        const token = localStorage.getItem('token') || 
+                     (JSON.parse(localStorage.getItem('user') || '{}')).token ||
+                     (JSON.parse(localStorage.getItem('profile') || '{}')).token;
+        
         const cancelPromises = futureAppointments.map(appointment => 
           fetch(`${process.env.REACT_APP_API_URL}/appointments/${appointment._id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
           })
         );
 
