@@ -961,7 +961,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                           👁️ {t('patient_management.view_file')}
                         </a>
                         <a 
-                          href={`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(report.fileUrl)}?token=${encodeURIComponent(getAuthToken() || '')}`}
+                          href={report.fileUrl}
                           download={report.title}
                           className="btn-download"
                         >
@@ -1110,7 +1110,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                           👁️ {t('patient_management.view_file')}
                         </a>
                         <a 
-                          href={`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(examination.fileUrl)}?token=${encodeURIComponent(getAuthToken() || '')}`}
+                          href={examination.fileUrl}
                           download={examination.title}
                           className="btn-download"
                         >
