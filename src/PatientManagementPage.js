@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -505,8 +505,8 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
   const [uploading, setUploading] = useState(false);
   const [viewingPdf, setViewingPdf] = useState(null);
   const [pdfLoading, setPdfLoading] = useState(false);
-  const [medicalReportsFileInput, setMedicalReportsFileInput] = useState(null);
-  const [examinationsFileInput, setExaminationsFileInput] = useState(null);
+  const medicalReportsFileInput = useRef(null);
+  const examinationsFileInput = useRef(null);
 
 
   // دالة مساعدة للحصول على التوكن
@@ -676,6 +676,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
       if (!token) {
         console.error('❌ لا يوجد token في handleFileUpload');
         toast.error('يرجى تسجيل الدخول مرة أخرى');
+        setUploading(false);
         return;
       }
 
@@ -862,7 +863,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
               <div className="upload-section">
                 <h4>{t('patient_management.upload_medical_report')}</h4>
                 <input
-                  ref={setMedicalReportsFileInput}
+                  ref={medicalReportsFileInput}
                   type="file"
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                   onChange={(e) => handleFileUpload(e, 'medical-reports')}
@@ -870,8 +871,8 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                 />
                 <button
                   onClick={() => {
-                    if (medicalReportsFileInput) {
-                      medicalReportsFileInput.click();
+                    if (medicalReportsFileInput.current) {
+                      medicalReportsFileInput.current.click();
                     }
                   }}
                   disabled={uploading}
@@ -943,7 +944,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
               <div className="upload-section">
                 <h4>{t('patient_management.upload_examination')}</h4>
                 <input
-                  ref={setExaminationsFileInput}
+                  ref={examinationsFileInput}
                   type="file"
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                   onChange={(e) => handleFileUpload(e, 'examinations')}
@@ -951,8 +952,8 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                 />
                 <button
                   onClick={() => {
-                    if (examinationsFileInput) {
-                      examinationsFileInput.click();
+                    if (examinationsFileInput.current) {
+                      examinationsFileInput.current.click();
                     }
                   }}
                   disabled={uploading}
