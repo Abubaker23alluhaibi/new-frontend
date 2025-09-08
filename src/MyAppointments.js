@@ -82,6 +82,11 @@ function MyAppointments() {
                    (JSON.parse(localStorage.getItem('user') || '{}')).token ||
                    (JSON.parse(localStorage.getItem('profile') || '{}')).token;
       
+      console.log('🔍 Frontend Debug - cancelAppointment:');
+      console.log('  - appointmentId:', appointmentId);
+      console.log('  - token exists:', !!token);
+      console.log('  - token preview:', token ? token.substring(0, 20) + '...' : 'null');
+      
       const res = await fetch(`${process.env.REACT_APP_API_URL}/appointments/${appointmentId}`, {
         method: 'DELETE',
         headers: {
@@ -89,13 +94,20 @@ function MyAppointments() {
           'Content-Type': 'application/json'
         }
       });
+      
+      console.log('  - response status:', res.status);
+      console.log('  - response ok:', res.ok);
+      
       if (res.ok) {
         setAppointments(appointments.filter(apt => apt._id !== appointmentId));
         alert(t('appointment_cancelled_success'));
       } else {
-        alert(t('appointment_cancelled_fail'));
+        const errorData = await res.json();
+        console.log('  - error response:', errorData);
+        alert(t('appointment_cancelled_fail') + ': ' + (errorData.error || 'Unknown error'));
       }
     } catch (err) {
+      console.error('  - catch error:', err);
       alert(t('appointment_cancelled_error'));
     }
     setShowConfirm(false);

@@ -162,6 +162,11 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
                      (JSON.parse(localStorage.getItem('user') || '{}')).token ||
                      (JSON.parse(localStorage.getItem('profile') || '{}')).token;
         
+        console.log('🔍 Frontend Debug - DoctorCalendar cancelSelectedDayAppointments:');
+        console.log('  - futureAppointments count:', futureAppointments.length);
+        console.log('  - token exists:', !!token);
+        console.log('  - token preview:', token ? token.substring(0, 20) + '...' : 'null');
+        
         const cancelPromises = futureAppointments.map(appointment => 
           fetch(`${process.env.REACT_APP_API_URL}/appointments/${appointment._id}`, {
             method: 'DELETE',
@@ -173,6 +178,7 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
         );
 
         const results = await Promise.all(cancelPromises);
+        console.log('  - results:', results.map(r => ({ status: r.status, ok: r.ok })));
         const successCount = results.filter(response => response.ok).length;
         const failedCount = results.length - successCount;
 

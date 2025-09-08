@@ -562,6 +562,11 @@ function DoctorDashboard() {
                    (JSON.parse(localStorage.getItem('user') || '{}')).token ||
                    (JSON.parse(localStorage.getItem('profile') || '{}')).token;
       
+      console.log('🔍 Frontend Debug - DoctorDashboard handleDeleteAppointment:');
+      console.log('  - appointmentId:', appointmentId);
+      console.log('  - token exists:', !!token);
+      console.log('  - token preview:', token ? token.substring(0, 20) + '...' : 'null');
+      
       const response = await fetch(`${process.env.REACT_APP_API_URL}/appointments/${appointmentId}`, {
         method: 'DELETE',
         headers: {
@@ -570,16 +575,20 @@ function DoctorDashboard() {
         }
       });
 
+      console.log('  - response status:', response.status);
+      console.log('  - response ok:', response.ok);
+
       if (response.ok) {
         // إعادة تحميل جميع المواعيد
         fetchAllAppointments();
         toast.success('تم حذف الموعد بنجاح');
       } else {
         const errorData = await response.json();
+        console.log('  - error response:', errorData);
         toast.error(errorData.error || 'خطأ في حذف الموعد');
       }
     } catch (error) {
-      console.error('Error deleting appointment:', error);
+      console.error('  - catch error:', error);
       toast.error('خطأ في حذف الموعد');
     }
   };
