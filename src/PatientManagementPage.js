@@ -506,6 +506,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileType, setFileType] = useState(''); // 'pdf' or 'image'
   const [viewingPdf, setViewingPdf] = useState(null);
+  const [pdfError, setPdfError] = useState(false);
 
 
   // دالة مساعدة للحصول على التوكن
@@ -575,12 +576,14 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
 
   // دالة لعرض PDF
   const openPdfViewer = (fileUrl, fileName) => {
+    setPdfError(false);
     setViewingPdf({ url: fileUrl, name: fileName });
   };
 
   // دالة لإغلاق عارض PDF
   const closePdfViewer = () => {
     setViewingPdf(null);
+    setPdfError(false);
   };
 
   // دالة رفع الملف الجديدة
@@ -1340,23 +1343,70 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
               </button>
             </div>
             <div style={{ flex: 1, padding: '15px' }}>
-              <iframe
-                src={`https://docs.google.com/gview?url=${encodeURIComponent(viewingPdf.url)}&embedded=true`}
-                title={viewingPdf.name}
-                style={{
-                  width: '100%',
+              {pdfError ? (
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   height: '100%',
-                  border: 'none',
-                  borderRadius: '4px'
-                }}
-                onError={() => {
-                  // إذا فشل Google Docs، جرب PDF.js
-                  const iframe = document.querySelector('iframe[title="' + viewingPdf.name + '"]');
-                  if (iframe) {
-                    iframe.src = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(viewingPdf.url)}`;
-                  }
-                }}
-              />
+                  textAlign: 'center',
+                  backgroundColor: '#f8f9fa',
+                  borderRadius: '8px',
+                  padding: '20px'
+                }}>
+                  <div style={{ fontSize: '48px', marginBottom: '20px' }}>📄</div>
+                  <h3 style={{ color: '#666', marginBottom: '10px' }}>لا يمكن عرض PDF</h3>
+                  <p style={{ color: '#888', marginBottom: '20px' }}>
+                    الملف محمي أو لا يمكن عرضه مباشرة
+                  </p>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <a 
+                      href={viewingPdf.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        backgroundColor: '#0A8F82',
+                        color: 'white',
+                        padding: '10px 20px',
+                        borderRadius: '4px',
+                        textDecoration: 'none',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      🌐 فتح في نافذة جديدة
+                    </a>
+                    <a 
+                      href={viewingPdf.url}
+                      download={viewingPdf.name}
+                      style={{
+                        backgroundColor: '#007bff',
+                        color: 'white',
+                        padding: '10px 20px',
+                        borderRadius: '4px',
+                        textDecoration: 'none',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      ⬇️ تحميل الملف
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <iframe
+                  src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(viewingPdf.url)}`}
+                  title={viewingPdf.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none',
+                    borderRadius: '4px'
+                  }}
+                  onError={() => {
+                    setPdfError(true);
+                  }}
+                />
+              )}
             </div>
             <div style={{
               padding: '15px',
