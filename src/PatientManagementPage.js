@@ -1393,19 +1393,109 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                   </div>
                 </div>
               ) : (
-                <iframe
-                  src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(viewingPdf.url)}`}
-                  title={viewingPdf.name}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    border: 'none',
-                    borderRadius: '4px'
-                  }}
-                  onError={() => {
-                    setPdfError(true);
-                  }}
-                />
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '100%',
+                  textAlign: 'center',
+                  backgroundColor: '#f8f9fa',
+                  borderRadius: '8px',
+                  padding: '20px'
+                }}>
+                  <div style={{ fontSize: '48px', marginBottom: '20px' }}>📄</div>
+                  <h3 style={{ color: '#333', marginBottom: '10px' }}>{viewingPdf.name}</h3>
+                  <p style={{ color: '#666', marginBottom: '20px' }}>
+                    ملف PDF - اضغط على أحد الأزرار أدناه لعرضه
+                  </p>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <a 
+                      href={viewingPdf.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        backgroundColor: '#0A8F82',
+                        color: 'white',
+                        padding: '12px 24px',
+                        borderRadius: '6px',
+                        textDecoration: 'none',
+                        fontWeight: 'bold',
+                        fontSize: '16px'
+                      }}
+                    >
+                      🌐 فتح في نافذة جديدة
+                    </a>
+                    <a 
+                      href={viewingPdf.url}
+                      download={viewingPdf.name}
+                      style={{
+                        backgroundColor: '#007bff',
+                        color: 'white',
+                        padding: '12px 24px',
+                        borderRadius: '6px',
+                        textDecoration: 'none',
+                        fontWeight: 'bold',
+                        fontSize: '16px'
+                      }}
+                    >
+                      ⬇️ تحميل الملف
+                    </a>
+                    <button
+                      onClick={() => {
+                        // محاولة فتح PDF في iframe مباشر
+                        const iframe = document.createElement('iframe');
+                        iframe.src = viewingPdf.url;
+                        iframe.style.width = '100%';
+                        iframe.style.height = '100%';
+                        iframe.style.border = 'none';
+                        iframe.style.borderRadius = '4px';
+                        
+                        const container = document.querySelector('.pdf-container');
+                        if (container) {
+                          container.innerHTML = '';
+                          container.appendChild(iframe);
+                        }
+                      }}
+                      style={{
+                        backgroundColor: '#28a745',
+                        color: 'white',
+                        padding: '12px 24px',
+                        borderRadius: '6px',
+                        border: 'none',
+                        fontWeight: 'bold',
+                        fontSize: '16px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      🔄 محاولة عرض مباشر
+                    </button>
+                  </div>
+                  <div className="pdf-container" style={{ 
+                    width: '100%', 
+                    height: '400px', 
+                    marginTop: '20px',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                    overflow: 'hidden'
+                  }}>
+                    <iframe
+                      src={viewingPdf.url}
+                      title={`PDF Viewer - ${viewingPdf.name}`}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        border: 'none'
+                      }}
+                      onError={() => {
+                        const container = document.querySelector('.pdf-container');
+                        if (container) {
+                          container.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">لا يمكن عرض PDF مباشرة. يرجى استخدام الأزرار أعلاه.</div>';
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
               )}
             </div>
             <div style={{
