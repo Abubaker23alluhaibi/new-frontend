@@ -9,6 +9,7 @@ import { formatNotificationDate } from './utils/dateUtils';
 import StarRating from './components/StarRating';
 import './DoctorDetails.css';
 import { getTranslatedSpecialty } from './utils/specialtyTranslation';
+import i18n from './i18n';
 
 function DoctorDetails() {
   const { id } = useParams();

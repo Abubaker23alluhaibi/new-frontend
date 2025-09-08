@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import StarRating from './components/StarRating';
 import { formatNotificationDate } from './utils/dateUtils';
 import './Login.css';
+import i18n from './i18n';
 
 function DoctorComments() {
   const { user, profile } = useAuth();

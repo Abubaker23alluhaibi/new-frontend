@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { formatNotificationDate } from '../utils/dateUtils';
+import i18n from '../i18n';
 
 const AdvertisementManager = () => {
   const [advertisements, setAdvertisements] = useState([]);
