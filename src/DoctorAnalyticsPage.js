@@ -265,7 +265,7 @@ function DoctorAnalyticsPage() {
       {/* Content */}
       <div style={{
         padding: isMobile ? '0.5rem 0.4rem' : '1rem',
-        maxWidth: 600,
+        maxWidth: 1400,
         margin: '0 auto'
       }}>
         <AnalyticsView 
@@ -409,7 +409,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
       {/* الإحصائيات الرئيسية */}
       <div style={{
         display:'grid', 
-        gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(180px, 1fr))', 
+        gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(6, 1fr)', 
         gap: isMobile ? '0.6rem' : '0.8rem'
       }}>
         <div style={{
@@ -643,49 +643,11 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
         
         {/* جدول منظم للساعات */}
         <div style={{
-          display: 'table',
-          width: '100%',
-          borderCollapse: 'collapse',
+          display: 'grid',
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+          gap: isMobile ? '0.4rem' : '0.6rem',
           marginTop: '0.8rem'
         }}>
-          <div style={{
-            display: 'table-header-group',
-            background: '#f8f9fa',
-            fontWeight: 700,
-            fontSize: isMobile ? '0.7rem' : '0.8rem'
-          }}>
-            <div style={{
-              display: 'table-row'
-            }}>
-              <div style={{
-                display: 'table-cell',
-                padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 0.6rem',
-                borderBottom: '1px solid #0A8F82',
-                textAlign: 'center',
-                color: '#0A8F82'
-              }}>
-                {t('hour') || 'الساعة'}
-              </div>
-              <div style={{
-                display: 'table-cell',
-                padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 0.6rem',
-                borderBottom: '1px solid #0A8F82',
-                textAlign: 'center',
-                color: '#0A8F82'
-              }}>
-                {t('appointments_count') || 'عدد المواعيد'}
-              </div>
-              <div style={{
-                display: 'table-cell',
-                padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 0.6rem',
-                borderBottom: '1px solid #0A8F82',
-                textAlign: 'center',
-                color: '#0A8F82'
-              }}>
-                {t('status') || 'الحالة'}
-              </div>
-            </div>
-          </div>
           
           <div style={{display: 'table-row-group'}}>
             {Object.entries(analytics.appointmentsByHour)
@@ -711,7 +673,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
                     padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 0.6rem',
                     textAlign: 'center',
                     fontWeight: 700,
-                    fontSize: isMobile ? '0.55rem' : '0.6rem',
+                    fontSize: isMobile ? '1.2rem' : '1.5rem',
                     color: '#0A8F82'
                   }}>
                     {count}
@@ -791,7 +753,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
         {/* ترتيب أيام الأسبوع */}
         <div style={{
           display:'grid', 
-          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(120px, 1fr))', 
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(7, 1fr)', 
           gap: isMobile ? '0.6rem' : '0.8rem'
         }}>
           {Object.entries(analytics.appointmentsByDay)
@@ -862,7 +824,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
         }}>{t('appointments_by_month')}</h3>
         <div style={{
           display:'grid', 
-          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(150px, 1fr))', 
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(6, 1fr)', 
           gap: isMobile ? '0.6rem' : '0.8rem'
         }}>
           {Object.entries(analytics.appointmentsByMonth).map(([month, count]) => (
