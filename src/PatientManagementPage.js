@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -505,8 +505,8 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
   const [uploading, setUploading] = useState(false);
   const [viewingPdf, setViewingPdf] = useState(null);
   const [pdfLoading, setPdfLoading] = useState(false);
-  const medicalReportsFileInput = useRef(null);
-  const examinationsFileInput = useRef(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileType, setFileType] = useState('');
 
 
   // دالة مساعدة للحصول على التوكن
@@ -654,21 +654,29 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
     );
   }
 
-  const handleFileUpload = async (e, type) => {
+  const handleFileSelect = (e, type) => {
     const file = e.target.files[0];
-    if (!file) {
+    if (file) {
+      setSelectedFile(file);
+      setFileType(type);
+      toast.success(`تم اختيار الملف: ${file.name}`);
+    }
+  };
+
+  const handleFileUpload = async () => {
+    if (!selectedFile || !fileType) {
+      toast.error('يرجى اختيار ملف أولاً');
       return;
     }
 
-    // التحقق من وجود المريض ومعرفه
     if (!patient || !patient._id) {
-      toast.error(t('patient_management.error_no_patient_selected'));
+      toast.error('يرجى اختيار مريض أولاً');
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('title', file.name);
+    formData.append('file', selectedFile);
+    formData.append('title', selectedFile.name);
     formData.append('description', '');
 
     setUploading(true);
@@ -679,7 +687,8 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
         setUploading(false);
         return;
       }
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${type}`, {
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${fileType}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -689,20 +698,25 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
       });
 
       if (response.ok) {
-        await response.json(); // تجاهل النتيجة
-        // إعادة تحميل بيانات المريض المحدثة
+        await response.json();
         const updatedPatient = await fetchPatientDetails(patient._id);
         if (updatedPatient) {
           setSelectedPatient(updatedPatient);
-          // تحديث قائمة المرضى أيضاً
           onUpdate(patient._id, updatedPatient);
         }
-        toast.success(t('patient_management.file_uploaded_successfully'));
+        toast.success('تم رفع الملف بنجاح');
+        setSelectedFile(null);
+        setFileType('');
+        // إعادة تعيين inputs
+        const fileInput = document.getElementById('fileInput');
+        const fileInputExaminations = document.getElementById('fileInputExaminations');
+        if (fileInput) fileInput.value = '';
+        if (fileInputExaminations) fileInputExaminations.value = '';
       } else {
         throw new Error('Upload failed');
       }
     } catch (error) {
-      toast.error(t('patient_management.error_uploading_file'));
+      toast.error('خطأ في رفع الملف');
     } finally {
       setUploading(false);
     }
@@ -859,32 +873,40 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
             <div className="files-section">
               <div className="upload-section">
                 <h4>{t('patient_management.upload_medical_report')}</h4>
-                <input
-                  ref={medicalReportsFileInput}
-                  type="file"
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                  onChange={(e) => handleFileUpload(e, 'medical-reports')}
-                  style={{ display: 'none' }}
-                />
+                <div style={{ marginBottom: '15px' }}>
+                  <input
+                    id="fileInput"
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    onChange={(e) => handleFileSelect(e, 'medical-reports')}
+                    style={{ 
+                      width: '100%', 
+                      padding: '10px', 
+                      border: '2px dashed #0A8F82', 
+                      borderRadius: '8px',
+                      backgroundColor: '#f8f9fa'
+                    }}
+                  />
+                </div>
+                {selectedFile && fileType === 'medical-reports' && (
+                  <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#e8f5e8', borderRadius: '5px' }}>
+                    <strong>الملف المختار:</strong> {selectedFile.name}
+                    <br />
+                    <small>الحجم: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</small>
+                  </div>
+                )}
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (medicalReportsFileInput.current) {
-                      medicalReportsFileInput.current.click();
-                    } else {
-                      toast.error('خطأ في فتح نافذة اختيار الملف');
-                    }
-                  }}
-                  disabled={uploading}
+                  onClick={handleFileUpload}
+                  disabled={uploading || !selectedFile || fileType !== 'medical-reports'}
                   className="btn-upload"
                   style={{ 
-                    cursor: uploading ? 'not-allowed' : 'pointer',
-                    opacity: uploading ? 0.6 : 1
+                    width: '100%',
+                    cursor: (uploading || !selectedFile || fileType !== 'medical-reports') ? 'not-allowed' : 'pointer',
+                    opacity: (uploading || !selectedFile || fileType !== 'medical-reports') ? 0.6 : 1
                   }}
                 >
-                  {uploading ? t('patient_management.uploading') : t('patient_management.choose_file')}
+                  {uploading ? 'جاري الرفع...' : 'رفع الملف'}
                 </button>
               </div>
 
@@ -949,32 +971,40 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
             <div className="files-section">
               <div className="upload-section">
                 <h4>{t('patient_management.upload_examination')}</h4>
-                <input
-                  ref={examinationsFileInput}
-                  type="file"
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                  onChange={(e) => handleFileUpload(e, 'examinations')}
-                  style={{ display: 'none' }}
-                />
+                <div style={{ marginBottom: '15px' }}>
+                  <input
+                    id="fileInputExaminations"
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    onChange={(e) => handleFileSelect(e, 'examinations')}
+                    style={{ 
+                      width: '100%', 
+                      padding: '10px', 
+                      border: '2px dashed #0A8F82', 
+                      borderRadius: '8px',
+                      backgroundColor: '#f8f9fa'
+                    }}
+                  />
+                </div>
+                {selectedFile && fileType === 'examinations' && (
+                  <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#e8f5e8', borderRadius: '5px' }}>
+                    <strong>الملف المختار:</strong> {selectedFile.name}
+                    <br />
+                    <small>الحجم: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</small>
+                  </div>
+                )}
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (examinationsFileInput.current) {
-                      examinationsFileInput.current.click();
-                    } else {
-                      toast.error('خطأ في فتح نافذة اختيار الملف');
-                    }
-                  }}
-                  disabled={uploading}
+                  onClick={handleFileUpload}
+                  disabled={uploading || !selectedFile || fileType !== 'examinations'}
                   className="btn-upload"
                   style={{ 
-                    cursor: uploading ? 'not-allowed' : 'pointer',
-                    opacity: uploading ? 0.6 : 1
+                    width: '100%',
+                    cursor: (uploading || !selectedFile || fileType !== 'examinations') ? 'not-allowed' : 'pointer',
+                    opacity: (uploading || !selectedFile || fileType !== 'examinations') ? 0.6 : 1
                   }}
                 >
-                  {uploading ? t('patient_management.uploading') : t('patient_management.choose_file')}
+                  {uploading ? 'جاري الرفع...' : 'رفع الملف'}
                 </button>
               </div>
 
