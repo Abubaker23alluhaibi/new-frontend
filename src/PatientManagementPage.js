@@ -1473,27 +1473,108 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                   </div>
                   <div className="pdf-container" style={{ 
                     width: '100%', 
-                    height: '400px', 
+                    height: '500px', 
                     marginTop: '20px',
                     border: '1px solid #ddd',
                     borderRadius: '4px',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    backgroundColor: '#f8f9fa'
                   }}>
-                    <iframe
-                      src={viewingPdf.url}
-                      title={`PDF Viewer - ${viewingPdf.name}`}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        border: 'none'
-                      }}
-                      onError={() => {
-                        const container = document.querySelector('.pdf-container');
-                        if (container) {
-                          container.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">لا يمكن عرض PDF مباشرة. يرجى استخدام الأزرار أعلاه.</div>';
-                        }
-                      }}
-                    />
+                    <div style={{
+                      padding: '20px',
+                      textAlign: 'center',
+                      color: '#666',
+                      fontSize: '18px'
+                    }}>
+                      <div style={{ fontSize: '48px', marginBottom: '15px' }}>📄</div>
+                      <h4 style={{ marginBottom: '10px' }}>عرض PDF</h4>
+                      <p style={{ marginBottom: '20px' }}>
+                        اختر طريقة العرض المناسبة لك:
+                      </p>
+                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => {
+                            // الحل الأول: فتح في نافذة جديدة
+                            window.open(viewingPdf.url, '_blank');
+                          }}
+                          style={{
+                            backgroundColor: '#0A8F82',
+                            color: 'white',
+                            padding: '10px 20px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            fontWeight: 'bold',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          🌐 فتح في نافذة جديدة
+                        </button>
+                        <button
+                          onClick={() => {
+                            // الحل الثاني: تحميل الملف
+                            const link = document.createElement('a');
+                            link.href = viewingPdf.url;
+                            link.download = viewingPdf.name;
+                            link.click();
+                          }}
+                          style={{
+                            backgroundColor: '#007bff',
+                            color: 'white',
+                            padding: '10px 20px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            fontWeight: 'bold',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          ⬇️ تحميل الملف
+                        </button>
+                        <button
+                          onClick={() => {
+                            // الحل الثالث: Google Drive Viewer
+                            const googleViewerUrl = `https://drive.google.com/viewerng/viewer?url=${encodeURIComponent(viewingPdf.url)}&embedded=true`;
+                            window.open(googleViewerUrl, '_blank');
+                          }}
+                          style={{
+                            backgroundColor: '#28a745',
+                            color: 'white',
+                            padding: '10px 20px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            fontWeight: 'bold',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          🔍 عرض عبر Google
+                        </button>
+                        <button
+                          onClick={() => {
+                            // الحل الرابع: نسخ الرابط
+                            navigator.clipboard.writeText(viewingPdf.url).then(() => {
+                              toast.success('تم نسخ رابط الملف');
+                            });
+                          }}
+                          style={{
+                            backgroundColor: '#6c757d',
+                            color: 'white',
+                            padding: '10px 20px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            fontWeight: 'bold',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          📋 نسخ الرابط
+                        </button>
+                      </div>
+                      <div style={{ marginTop: '20px', fontSize: '14px', color: '#888' }}>
+                        <p>💡 <strong>نصائح:</strong></p>
+                        <p>• <strong>فتح في نافذة جديدة:</strong> يعرض PDF مباشرة في المتصفح</p>
+                        <p>• <strong>تحميل الملف:</strong> يحفظ PDF في جهازك</p>
+                        <p>• <strong>عرض عبر Google:</strong> يستخدم Google Drive لعرض PDF</p>
+                        <p>• <strong>نسخ الرابط:</strong> لمشاركة الملف مع الآخرين</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
