@@ -562,7 +562,7 @@ function DoctorDashboard() {
                    (JSON.parse(localStorage.getItem('user') || '{}')).token ||
                    (JSON.parse(localStorage.getItem('profile') || '{}')).token;
       
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/appointments/${appointmentId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/appointments/${appointmentId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -462,6 +462,8 @@
   "upcoming_appointments": "المواعيد القادمة",
   "today_appointments": "مواعيد اليوم",
   "past_appointments": "المواعيد السابقة",
+  "present_appointments": "المواعيد الحاضرة",
+  "absent_appointments": "المواعيد الغائبة",
   "displayed_appointments": "المواعيد المعروضة",
   "no_appointments": "لا توجد مواعيد",
   "no_appointments_yet": "لم تقم بأي موعد بعد",
