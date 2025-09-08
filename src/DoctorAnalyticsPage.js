@@ -205,7 +205,7 @@ function DoctorAnalyticsPage() {
       {/* Header */}
       <div style={{
         background: '#ffffff',
-        padding: isMobile ? '0.4rem 0.5rem' : '0.5rem 1rem',
+        padding: isMobile ? '1rem 1.2rem' : '1.5rem 2rem',
         boxShadow: '0 1px 5px rgba(0,0,0,0.1)',
         display: 'flex',
         justifyContent: 'space-between',
@@ -215,20 +215,20 @@ function DoctorAnalyticsPage() {
         zIndex: 1000,
         borderBottom: '1px solid #0A8F82'
       }}>
-        <div style={{display: 'flex', alignItems: 'center', gap: isMobile ? '0.25rem' : '0.5rem'}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: isMobile ? '0.8rem' : '1.2rem'}}>
           <button
             onClick={() => navigate('/doctor-dashboard')}
             style={{
               background: 'linear-gradient(135deg, #e53935 0%, #c62828 100%)',
               color: '#fff',
               border: 'none',
-              borderRadius: isMobile ? 4 : 6,
-              padding: isMobile ? '0.3rem 0.5rem' : '0.4rem 0.75rem',
+              borderRadius: isMobile ? 8 : 12,
+              padding: isMobile ? '0.8rem 1rem' : '1rem 1.5rem',
               fontWeight: 700,
-              fontSize: isMobile ? 7 : 8,
+              fontSize: isMobile ? '1rem' : '1.2rem',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
-              boxShadow: '0 1px 4px rgba(229, 57, 53, 0.3)'
+              boxShadow: '0 2px 8px rgba(229, 57, 53, 0.3)'
             }}
           >
             ← {t('back')}
@@ -236,7 +236,7 @@ function DoctorAnalyticsPage() {
           <h1 style={{
             color: '#0A8F82',
             fontWeight: 800,
-            fontSize: isMobile ? 8 : 14,
+            fontSize: isMobile ? '1.2rem' : '1.8rem',
             margin: 0
           }}>
             📊 {t('analytics_full_title')}
@@ -249,13 +249,13 @@ function DoctorAnalyticsPage() {
             background: 'linear-gradient(135deg, #ff5722 0%, #e64a19 100%)',
             color: '#fff',
             border: 'none',
-            borderRadius: isMobile ? 4 : 6,
-            padding: isMobile ? '0.3rem 0.5rem' : '0.4rem 0.75rem',
+            borderRadius: isMobile ? 8 : 12,
+            padding: isMobile ? '0.8rem 1rem' : '1rem 1.5rem',
             fontWeight: 700,
-            fontSize: isMobile ? 7 : 8,
+            fontSize: isMobile ? '1rem' : '1.2rem',
             cursor: 'pointer',
             transition: 'all 0.3s ease',
-            boxShadow: '0 1px 4px rgba(255, 87, 34, 0.3)'
+            boxShadow: '0 2px 8px rgba(255, 87, 34, 0.3)'
           }}
         >
           {t('logout')}
