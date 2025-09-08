@@ -504,7 +504,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
   const [activeTab, setActiveTab] = useState('basic');
   const [uploadingFile, setUploadingFile] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [viewingPdf, setViewingPdf] = useState(null);
+  const [fileType, setFileType] = useState(''); // 'pdf' or 'image'
 
 
   // دالة مساعدة للحصول على التوكن
@@ -558,50 +558,45 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
 
 
 
-  // دالة لعرض PDF مع التوكن
-  const openPdfWithAuth = (fileUrl, fileName) => {
-    const token = getAuthToken();
-    if (!token) {
-      toast.error('يرجى تسجيل الدخول مرة أخرى');
-      return;
+  // دالة اختيار نوع الملف
+  const handleFileTypeSelect = (type) => {
+    setFileType(type);
+    setSelectedFile(null);
+  };
+
+  // دالة اختيار الملف
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
     }
-    
-    // إنشاء URL آمن مع التوكن
-    const secureUrl = `${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(fileUrl)}?token=${encodeURIComponent(token)}`;
-    setViewingPdf({ url: secureUrl, name: fileName });
   };
 
-  // دالة لإغلاق عارض PDF
-  const closePdfViewer = () => {
-    setViewingPdf(null);
-  };
-
-  // دالة بسيطة لرفع الملفات
-  const handleFileUpload = async (file, type) => {
-    if (!file || !patient?._id) {
+  // دالة رفع الملف الجديدة
+  const handleFileUpload = async () => {
+    if (!selectedFile || !patient?._id) {
       toast.error('يرجى اختيار ملف ومريض أولاً');
       return;
     }
 
-    toast.info(`بدء رفع الملف: ${file.name} (النوع: ${type})`);
     setUploadingFile(true);
     
+    // الحصول على التوكن من localStorage مباشرة
+    const token = localStorage.getItem('token') || localStorage.getItem('userToken');
+    
+    if (!token) {
+      toast.error('يرجى تسجيل الدخول مرة أخرى');
+      setUploadingFile(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    formData.append('title', selectedFile.name);
+    formData.append('description', `ملف ${fileType === 'pdf' ? 'PDF' : 'صورة'}`);
+
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('title', file.name);
-      formData.append('description', '');
-
-      const token = getAuthToken();
-      if (!token) {
-        toast.error('يرجى تسجيل الدخول مرة أخرى');
-        setUploadingFile(false);
-        return;
-      }
-
-      toast.info(`جاري إرسال الطلب إلى: ${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${type}`);
-      
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${type}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/medical-reports`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -609,31 +604,20 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
         body: formData
       });
 
-      toast.info(`استجابة الخادم: ${response.status} ${response.statusText}`);
+      const result = await response.json();
 
       if (response.ok) {
-        const result = await response.json();
         toast.success('تم رفع الملف بنجاح');
-        toast.info(`نتيجة الرفع: ${JSON.stringify(result)}`);
-        
-        // إعادة تحميل بيانات المريض
-        const updatedPatient = await fetchPatientDetails(patient._id);
-        if (updatedPatient) {
-          setSelectedPatient(updatedPatient);
-          onUpdate(patient._id, updatedPatient);
-          toast.success('تم تحديث بيانات المريض');
+        if (onUpdate) {
+          onUpdate(patient._id, patient);
         }
         setSelectedFile(null);
-        
-        // إعادة تعيين input
-        const fileInputs = document.querySelectorAll('input[type="file"]');
-        fileInputs.forEach(input => input.value = '');
+        setFileType('');
       } else {
-        const errorData = await response.json().catch(() => ({}));
-        toast.error(`خطأ في رفع الملف: ${JSON.stringify(errorData)}`);
+        toast.error(`خطأ: ${result.error || 'فشل في رفع الملف'}`);
       }
     } catch (error) {
-      toast.error(`خطأ في الاتصال بالخادم: ${error.message}`);
+      toast.error('خطأ في الاتصال');
     } finally {
       setUploadingFile(false);
     }
@@ -861,53 +845,97 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                   textAlign: 'center',
                   backgroundColor: '#f8f9fa'
                 }}>
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        setSelectedFile(file);
-                        toast.success(`تم اختيار الملف: ${file.name}`);
-                      }
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      marginBottom: '10px'
-                    }}
-                  />
-                  {selectedFile && (
-                    <div style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#e8f5e8', borderRadius: '4px' }}>
-                      <strong>الملف المختار:</strong> {selectedFile.name}
-                      <br />
-                      <small>الحجم: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</small>
+                  {/* اختيار نوع الملف */}
+                  <div style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+                      اختر نوع الملف:
+                    </label>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button
+                        onClick={() => handleFileTypeSelect('pdf')}
+                        style={{
+                          backgroundColor: fileType === 'pdf' ? '#0A8F82' : '#f0f0f0',
+                          color: fileType === 'pdf' ? 'white' : 'black',
+                          border: 'none',
+                          padding: '10px 20px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        📄 PDF
+                      </button>
+                      <button
+                        onClick={() => handleFileTypeSelect('image')}
+                        style={{
+                          backgroundColor: fileType === 'image' ? '#0A8F82' : '#f0f0f0',
+                          color: fileType === 'image' ? 'white' : 'black',
+                          border: 'none',
+                          padding: '10px 20px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        🖼️ صورة
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* اختيار الملف */}
+                  {fileType && (
+                    <div style={{ marginBottom: '15px' }}>
+                      <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+                        اختر الملف:
+                      </label>
+                      <input
+                        type="file"
+                        onChange={handleFileSelect}
+                        accept={fileType === 'pdf' ? '.pdf' : '.jpg,.jpeg,.png,.gif'}
+                        style={{ 
+                          width: '100%',
+                          padding: '8px',
+                          border: '1px solid #ddd',
+                          borderRadius: '4px'
+                        }}
+                      />
                     </div>
                   )}
+                  
+                  {/* عرض الملف المختار */}
+                  {selectedFile && (
+                    <div style={{ 
+                      marginBottom: '15px', 
+                      padding: '10px', 
+                      backgroundColor: '#e8f5e8', 
+                      borderRadius: '4px',
+                      border: '1px solid #4caf50'
+                    }}>
+                      <strong>✅ الملف المختار:</strong> {selectedFile.name}
+                      <br />
+                      <small>الحجم: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</small>
+                      <br />
+                      <small>النوع: {fileType === 'pdf' ? 'PDF' : 'صورة'}</small>
+                    </div>
+                  )}
+                  
+                  {/* زر الرفع */}
                   <button
-                    onClick={() => {
-                      if (selectedFile) {
-                        handleFileUpload(selectedFile, 'medical-reports');
-                      } else {
-                        toast.error('يرجى اختيار ملف أولاً');
-                      }
-                    }}
-                    disabled={uploadingFile}
+                    onClick={handleFileUpload}
+                    disabled={uploadingFile || !selectedFile}
                     style={{
-                      backgroundColor: uploadingFile ? '#ccc' : '#0A8F82',
+                      backgroundColor: uploadingFile || !selectedFile ? '#ccc' : '#0A8F82',
                       color: 'white',
                       border: 'none',
-                      padding: '10px 20px',
+                      padding: '12px 24px',
                       borderRadius: '4px',
-                      cursor: uploadingFile ? 'not-allowed' : 'pointer',
+                      cursor: uploadingFile || !selectedFile ? 'not-allowed' : 'pointer',
                       width: '100%',
                       fontSize: '16px',
                       fontWeight: 'bold'
                     }}
                   >
-                    {uploadingFile ? 'جاري الرفع...' : 'رفع الملف'}
+                    {uploadingFile ? '⏳ جاري الرفع...' : '📤 رفع الملف'}
                   </button>
                 </div>
               </div>
@@ -924,18 +952,14 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                         <small>{new Date(report.uploadDate).toLocaleDateString('ar-EG')}</small>
                       </div>
                       <div className="file-actions">
-                        <button 
-                          onClick={() => {
-                            if (report.fileType === 'application/pdf' || report.title.includes('.pdf')) {
-                              openPdfWithAuth(report.fileUrl, report.title);
-                            } else {
-                              window.open(report.fileUrl, '_blank');
-                            }
-                          }}
+                        <a 
+                          href={report.fileUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
                           className="btn-view"
                         >
                           👁️ {t('patient_management.view_file')}
-                        </button>
+                        </a>
                         <a 
                           href={`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(report.fileUrl)}?token=${encodeURIComponent(getAuthToken() || '')}`}
                           download={report.title}
@@ -970,53 +994,97 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                   textAlign: 'center',
                   backgroundColor: '#f8f9fa'
                 }}>
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        setSelectedFile(file);
-                        toast.success(`تم اختيار الملف: ${file.name}`);
-                      }
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid #ddd',
-                      borderRadius: '4px',
-                      marginBottom: '10px'
-                    }}
-                  />
-                  {selectedFile && (
-                    <div style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#e8f5e8', borderRadius: '4px' }}>
-                      <strong>الملف المختار:</strong> {selectedFile.name}
-                      <br />
-                      <small>الحجم: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</small>
+                  {/* اختيار نوع الملف */}
+                  <div style={{ marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+                      اختر نوع الملف:
+                    </label>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button
+                        onClick={() => handleFileTypeSelect('pdf')}
+                        style={{
+                          backgroundColor: fileType === 'pdf' ? '#0A8F82' : '#f0f0f0',
+                          color: fileType === 'pdf' ? 'white' : 'black',
+                          border: 'none',
+                          padding: '10px 20px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        📄 PDF
+                      </button>
+                      <button
+                        onClick={() => handleFileTypeSelect('image')}
+                        style={{
+                          backgroundColor: fileType === 'image' ? '#0A8F82' : '#f0f0f0',
+                          color: fileType === 'image' ? 'white' : 'black',
+                          border: 'none',
+                          padding: '10px 20px',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        🖼️ صورة
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* اختيار الملف */}
+                  {fileType && (
+                    <div style={{ marginBottom: '15px' }}>
+                      <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+                        اختر الملف:
+                      </label>
+                      <input
+                        type="file"
+                        onChange={handleFileSelect}
+                        accept={fileType === 'pdf' ? '.pdf' : '.jpg,.jpeg,.png,.gif'}
+                        style={{ 
+                          width: '100%',
+                          padding: '8px',
+                          border: '1px solid #ddd',
+                          borderRadius: '4px'
+                        }}
+                      />
                     </div>
                   )}
+                  
+                  {/* عرض الملف المختار */}
+                  {selectedFile && (
+                    <div style={{ 
+                      marginBottom: '15px', 
+                      padding: '10px', 
+                      backgroundColor: '#e8f5e8', 
+                      borderRadius: '4px',
+                      border: '1px solid #4caf50'
+                    }}>
+                      <strong>✅ الملف المختار:</strong> {selectedFile.name}
+                      <br />
+                      <small>الحجم: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</small>
+                      <br />
+                      <small>النوع: {fileType === 'pdf' ? 'PDF' : 'صورة'}</small>
+                    </div>
+                  )}
+                  
+                  {/* زر الرفع */}
                   <button
-                    onClick={() => {
-                      if (selectedFile) {
-                        handleFileUpload(selectedFile, 'examinations');
-                      } else {
-                        toast.error('يرجى اختيار ملف أولاً');
-                      }
-                    }}
-                    disabled={uploadingFile}
+                    onClick={handleFileUpload}
+                    disabled={uploadingFile || !selectedFile}
                     style={{
-                      backgroundColor: uploadingFile ? '#ccc' : '#0A8F82',
+                      backgroundColor: uploadingFile || !selectedFile ? '#ccc' : '#0A8F82',
                       color: 'white',
                       border: 'none',
-                      padding: '10px 20px',
+                      padding: '12px 24px',
                       borderRadius: '4px',
-                      cursor: uploadingFile ? 'not-allowed' : 'pointer',
+                      cursor: uploadingFile || !selectedFile ? 'not-allowed' : 'pointer',
                       width: '100%',
                       fontSize: '16px',
                       fontWeight: 'bold'
                     }}
                   >
-                    {uploadingFile ? 'جاري الرفع...' : 'رفع الملف'}
+                    {uploadingFile ? '⏳ جاري الرفع...' : '📤 رفع الملف'}
                   </button>
                 </div>
               </div>
@@ -1033,18 +1101,14 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                         <small>{new Date(examination.uploadDate).toLocaleDateString('ar-EG')}</small>
                       </div>
                       <div className="file-actions">
-                        <button 
-                          onClick={() => {
-                            if (examination.fileType === 'application/pdf' || examination.title.includes('.pdf')) {
-                              openPdfWithAuth(examination.fileUrl, examination.title);
-                            } else {
-                              window.open(examination.fileUrl, '_blank');
-                            }
-                          }}
+                        <a 
+                          href={examination.fileUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
                           className="btn-view"
                         >
                           👁️ {t('patient_management.view_file')}
-                        </button>
+                        </a>
                         <a 
                           href={`${process.env.REACT_APP_API_URL}/api/secure-files/${encodeURIComponent(examination.fileUrl)}?token=${encodeURIComponent(getAuthToken() || '')}`}
                           download={examination.title}
@@ -1211,106 +1275,6 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
         </div>
       </div>
 
-      {/* PDF Viewer Modal */}
-      {viewingPdf && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.8)',
-          zIndex: 9999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            width: '90%',
-            height: '90%',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <div style={{
-              padding: '15px',
-              borderBottom: '1px solid #ddd',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-              <h3 style={{ margin: 0 }}>📄 {viewingPdf.name}</h3>
-              <button 
-                onClick={closePdfViewer}
-                style={{
-                  background: '#ff4444',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  padding: '8px 12px',
-                  cursor: 'pointer',
-                  fontSize: '18px'
-                }}
-              >
-                ×
-              </button>
-            </div>
-            <div style={{ flex: 1, padding: '15px' }}>
-              <iframe
-                src={viewingPdf.url}
-                title={viewingPdf.name}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  border: 'none',
-                  borderRadius: '4px'
-                }}
-                onError={() => {
-                  toast.error('خطأ في تحميل الملف');
-                }}
-              />
-            </div>
-            <div style={{
-              padding: '15px',
-              borderTop: '1px solid #ddd',
-              display: 'flex',
-              gap: '10px',
-              justifyContent: 'center'
-            }}>
-              <a 
-                href={viewingPdf.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  backgroundColor: '#0A8F82',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '4px',
-                  textDecoration: 'none',
-                  fontWeight: 'bold'
-                }}
-              >
-                🌐 فتح في نافذة جديدة
-              </a>
-              <a 
-                href={viewingPdf.url}
-                download={viewingPdf.name}
-                style={{
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  padding: '10px 20px',
-                  borderRadius: '4px',
-                  textDecoration: 'none',
-                  fontWeight: 'bold'
-                }}
-              >
-                ⬇️ تحميل الملف
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
