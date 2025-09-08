@@ -682,7 +682,7 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
     if (file) {
       setSelectedFile(file);
       setFileType(type);
-      toast.success(`تم اختيار الملف: ${file.name}`);
+      toast.success(`تم اختيار الملف: ${file.name} (النوع: ${type})`);
     }
   };
 
@@ -717,8 +717,15 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
         setUploading(false);
         return;
       }
+      
+      toast.info(`التوكن: ${token.substring(0, 20)}...`);
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${fileType}`, {
+      const url = `${process.env.REACT_APP_API_URL}/api/patients/${patient._id}/${fileType}`;
+      toast.info(`جاري رفع الملف إلى: ${url}`);
+      toast.info(`معرف المريض: ${patient._id}`);
+      toast.info(`نوع الملف: ${fileType}`);
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -745,7 +752,8 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
         if (fileInputExaminations) fileInputExaminations.value = '';
       } else {
         const errorData = await response.json().catch(() => ({}));
-        if (errorData.error === 'Invalid token') {
+        toast.error(`خطأ من الخادم: ${JSON.stringify(errorData)}`);
+        if (errorData.error === 'Invalid token' || errorData.error === 'Invalid or expired token') {
           // محاولة إعادة تحميل التوكن
           toast.info('جاري إعادة تحميل الجلسة...');
           const newToken = await refreshToken();
