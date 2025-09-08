@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-// import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import DatePicker from 'react-datepicker';
 import { ar } from 'date-fns/locale';
@@ -10,7 +10,7 @@ import './BookForOtherPage.css';
 function BookForOtherPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
   const { user, profile } = useAuth();
   
   const [doctor, setDoctor] = useState(null);
@@ -22,6 +22,12 @@ function BookForOtherPage() {
   const [patientPhone, setPatientPhone] = useState('');
   const [patientAge, setPatientAge] = useState('');
   const [reason, setReason] = useState('');
+  
+  // البحث في أسماء المرضى
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   
   // حالات الحجز والتقويم
   const [selectedDate, setSelectedDate] = useState(null);
@@ -67,6 +73,43 @@ function BookForOtherPage() {
     }
   }, [id]);
 
+  // دالة البحث في أسماء المرضى
+  const searchPatients = useCallback(async (searchTerm) => {
+    if (!searchTerm || searchTerm.length < 2) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/search-patients?q=${encodeURIComponent(searchTerm)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setSearchResults(data);
+        setShowSearchResults(true);
+      } else {
+        setSearchResults([]);
+        setShowSearchResults(false);
+      }
+    } catch (err) {
+      console.error('خطأ في البحث:', err);
+      setSearchResults([]);
+      setShowSearchResults(false);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  // دالة اختيار مريض من نتائج البحث
+  const selectPatient = (patient) => {
+    setPatientName(patient.name);
+    setPatientPhone(patient.phone);
+    setPatientAge(patient.age || '');
+    setSearchTerm('');
+    setShowSearchResults(false);
+  };
+
   useEffect(() => {
     // التحقق من تسجيل الدخول
     const savedUser = localStorage.getItem('user');
@@ -82,6 +125,34 @@ function BookForOtherPage() {
     
     fetchDoctorDetails();
   }, [id, user, profile, navigate, fetchDoctorDetails]);
+
+  // useEffect للبحث في أسماء المرضى
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchTerm) {
+        searchPatients(searchTerm);
+      } else {
+        setSearchResults([]);
+        setShowSearchResults(false);
+      }
+    }, 300); // تأخير 300ms لتجنب البحث المتكرر
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, searchPatients]);
+
+  // إغلاق نتائج البحث عند النقر خارجها
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showSearchResults && !event.target.closest('.search-container')) {
+        setShowSearchResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSearchResults]);
 
   const getAvailableDays = useCallback(() => {
     if (!doctor?.workTimes || !Array.isArray(doctor.workTimes)) return [];
@@ -346,6 +417,98 @@ function BookForOtherPage() {
       <div className="booking-form">
         <div className="form-section">
           <h3>معلومات المريض</h3>
+          
+          {/* البحث في أسماء المرضى */}
+          <div className="form-group">
+            <label>{t('search_patients')}</label>
+            <div className="search-container" style={{position: 'relative'}}>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={t('search_patients_placeholder')}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '1rem'
+                }}
+              />
+              {isSearching && (
+                <div style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#7c4dff'
+                }}>
+                  {t('searching_patients')}
+                </div>
+              )}
+              
+              {/* نتائج البحث */}
+              {showSearchResults && searchResults.length > 0 && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  right: 0,
+                  background: '#fff',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  zIndex: 1000,
+                  maxHeight: '200px',
+                  overflowY: 'auto'
+                }}>
+                  {searchResults.map((patient, index) => (
+                    <div
+                      key={index}
+                      onClick={() => selectPatient(patient)}
+                      style={{
+                        padding: '0.75rem',
+                        cursor: 'pointer',
+                        borderBottom: '1px solid #eee',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                      onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
+                      onMouseLeave={(e) => e.target.style.background = '#fff'}
+                    >
+                      <div>
+                        <div style={{fontWeight: '600', color: '#7c4dff'}}>{patient.name}</div>
+                        <div style={{fontSize: '0.9rem', color: '#666'}}>{patient.phone}</div>
+                      </div>
+                      <div style={{fontSize: '0.8rem', color: '#999'}}>
+                        {patient.age ? `${patient.age} ${t('years_old')}` : t('patient_age_unknown')}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {showSearchResults && searchResults.length === 0 && !isSearching && searchTerm && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  right: 0,
+                  background: '#fff',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  zIndex: 1000,
+                  padding: '0.75rem',
+                  textAlign: 'center',
+                  color: '#666'
+                }}>
+                  {t('no_patients_found')}
+                </div>
+              )}
+            </div>
+          </div>
           
           <div className="form-group">
             <label>الاسم الكامل *</label>

@@ -434,6 +434,11 @@ function MyAppointments() {
                     <div style={{color:'#666', marginBottom:'0.5rem'}}>
                       🕐 {appointment.time}
                     </div>
+                    {appointment.patientName && appointment.isBookingForOther && (
+                      <div style={{color:'#7c4dff', marginBottom:'0.5rem', fontSize:'0.9rem', fontWeight:600}}>
+                        👤 {t('patient_name')}: {appointment.patientName}
+                      </div>
+                    )}
                     {appointment.reason && (
                       <div style={{color:'#666', fontSize:'0.9rem'}}>
                         💬 {appointment.reason}
@@ -447,7 +452,29 @@ function MyAppointments() {
                     )}
                   </div>
                   <div style={{display:'flex', gap:'0.5rem'}}>
-
+                    {/* Cancel button for upcoming and today's appointments */}
+                    {(status === 'upcoming' || status === 'today') && (
+                      <button 
+                        onClick={() => {
+                          setSelectedAppointmentId(appointment._id);
+                          setShowConfirm(true);
+                        }}
+                        style={{
+                          background:'#e53935',
+                          color:'#fff',
+                          border:'none',
+                          borderRadius:8,
+                          padding:'0.5rem 1rem',
+                          fontWeight:700,
+                          cursor:'pointer',
+                          fontSize:'0.9rem'
+                        }}
+                      >
+                        {t('cancel_appointment')}
+                      </button>
+                    )}
+                    
+                    {/* Book new appointment button for past appointments */}
                     {status === 'past' && (
                       <button 
                         onClick={() => navigate(`/doctor/${appointment.doctorId}`)}
