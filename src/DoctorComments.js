@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useTranslation } from 'react-i18next';
 import StarRating from './components/StarRating';
+import { formatNotificationDate } from './utils/dateUtils';
 import './Login.css';
 
 function DoctorComments() {
@@ -292,7 +293,7 @@ function DoctorComments() {
                             fontSize: '12px',
                             color: '#666'
                           }}>
-                            {new Date(rating.createdAt).toLocaleDateString('ar-EG')}
+                            {formatNotificationDate(rating.createdAt, i18n.language)}
                           </div>
                         </div>
                       </div>
@@ -374,7 +375,7 @@ function DoctorComments() {
                         fontSize: '12px',
                         color: '#666'
                       }}>
-                        {new Date(notification.createdAt).toLocaleDateString('ar-EG')}
+                        {formatNotificationDate(notification.createdAt, i18n.language)}
                       </div>
                     </div>
                     

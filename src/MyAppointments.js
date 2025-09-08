@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { formatNotificationDate } from './utils/dateUtils';
 import i18n from './i18n';
 
 function MyAppointments() {
@@ -117,58 +118,7 @@ function MyAppointments() {
 
 
   const formatDate = (dateString) => {
-    // إصلاح مشكلة المنطقة الزمنية - معالجة التاريخ بشكل صحيح
-    let date;
-    if (typeof dateString === 'string' && dateString.includes('-')) {
-      // إذا كان التاريخ بصيغة YYYY-MM-DD، قم بإنشاء تاريخ محلي
-      const [year, month, day] = dateString.split('-').map(Number);
-      date = new Date(year, month - 1, day); // month - 1 لأن getMonth() يبدأ من 0
-    } else {
-      date = new Date(dateString);
-    }
-    
-    // استخدم اللغة من i18n مباشرة
-    const lang = i18n.language || 'ar';
-    
-    try {
-      // محاولة الحصول على أيام الأسبوع والشهور من ملف الترجمة
-      let weekdays, months;
-      
-      weekdays = t('weekdays', { returnObjects: true });
-      months = t('months', { returnObjects: true });
-      
-      if (Array.isArray(weekdays) && Array.isArray(months)) {
-        const dayIndex = date.getDay();
-        const monthIndex = date.getMonth();
-        
-        if (dayIndex >= 0 && dayIndex < weekdays.length && monthIndex >= 0 && monthIndex < months.length) {
-          const weekday = weekdays[dayIndex];
-          const day = date.getDate();
-          const month = months[monthIndex];
-          const year = date.getFullYear();
-          
-          // تنسيق مختلف حسب اللغة
-          if (lang.startsWith('ku')) {
-            return `${weekday}، ${day}ی ${month} ${year}`;
-          } else {
-            return `${weekday}، ${day} ${month} ${year}`;
-          }
-        }
-      }
-    } catch (error) {
-      console.log('Error in formatDate:', error);
-    }
-    
-    // استخدام التنسيق الافتراضي إذا فشل الحصول من الترجمة
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    
-    if (lang.startsWith('ku')) {
-      return `${day}ی ${month} ${year}`;
-    } else {
-      return `${day}/${month}/${year}`;
-    }
+    return formatNotificationDate(dateString, i18n.language);
   };
 
   const isPastAppointment = (dateString) => {

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { useTranslation } from 'react-i18next';
+import { formatNotificationDate } from './utils/dateUtils';
 import AdvertisementManager from './components/AdvertisementManager';
+import i18n from './i18n';
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
@@ -1537,7 +1539,7 @@ function AdminDashboard() {
                           <p style={{margin:'0.5rem 0', color:'#666'}}>🏥 {doctor.specialty}</p>
                           <p style={{margin:'0.5rem 0', color:'#666'}}>📍 {doctor.province} - {doctor.area}</p>
                           <p style={{margin:'0.5rem 0', color:'#666'}}>🏢 {doctor.clinicLocation}</p>
-                          <p style={{margin:'0.5rem 0', color:'#666'}}>📅 تاريخ التسجيل: {doctor.createdAtFormatted || new Date(doctor.createdAt).toLocaleDateString('ar-EG')}</p>
+                          <p style={{margin:'0.5rem 0', color:'#666'}}>📅 تاريخ التسجيل: {doctor.createdAtFormatted || formatNotificationDate(doctor.createdAt, i18n.language)}</p>
                         </div>
                           <div style={{display:'flex', gap:'0.5rem'}}>
                             <button
@@ -3067,7 +3069,7 @@ function AdminDashboard() {
                   </div>
                   <div>
                     <strong>تاريخ الإنشاء:</strong>
-                    <p>{new Date(selectedAppointment.createdAt).toLocaleDateString('ar-EG')}</p>
+                    <p>{formatNotificationDate(selectedAppointment.createdAt, i18n.language)}</p>
                   </div>
                 </div>
               </div>

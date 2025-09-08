@@ -6,10 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { normalizePhone } from './utils/phoneUtils';
+import { formatNotificationDate } from './utils/dateUtils';
 import WorkTimesEditor from './WorkTimesEditor';
 import AppointmentDurationEditor from './AppointmentDurationEditor';
 import AdvertisementSlider from './components/AdvertisementSlider';
 import { SecureButton, SecureSection } from './components/SecureIcon';
+import i18n from './i18n';
 
 function getToday() {
   const d = new Date();
@@ -1931,22 +1933,7 @@ function SpecialAppointmentsList({ appointments, onDelete, onEdit, onOpenNote })
   };
 
   const formatDate = (dateString) => {
-    // إصلاح مشكلة المنطقة الزمنية - معالجة التاريخ بشكل صحيح
-    let date;
-    if (typeof dateString === 'string' && dateString.includes('-')) {
-      // إذا كان التاريخ بصيغة YYYY-MM-DD، قم بإنشاء تاريخ محلي
-      const [year, month, day] = dateString.split('-').map(Number);
-      date = new Date(year, month - 1, day); // month - 1 لأن getMonth() يبدأ من 0
-    } else {
-      date = new Date(dateString);
-    }
-    
-    return date.toLocaleDateString('ar-EG', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    return formatNotificationDate(dateString, i18n.language);
   };
 
   if (appointments.length === 0) {

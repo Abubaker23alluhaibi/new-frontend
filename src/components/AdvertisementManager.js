@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { formatNotificationDate } from '../utils/dateUtils';
 
 const AdvertisementManager = () => {
   const [advertisements, setAdvertisements] = useState([]);
@@ -680,8 +681,8 @@ const AdvertisementManager = () => {
                     </td>
                     <td style={{ padding: '1rem', borderBottom: '1px solid #e0e0e0' }}>
                       <div style={{ fontSize: '0.875rem' }}>
-                        <div>من: {new Date(ad.startDate).toLocaleDateString('ar-EG')}</div>
-                        <div>إلى: {new Date(ad.endDate).toLocaleDateString('ar-EG')}</div>
+                        <div>من: {formatNotificationDate(ad.startDate, i18n.language)}</div>
+                        <div>إلى: {formatNotificationDate(ad.endDate, i18n.language)}</div>
                       </div>
                     </td>
                     <td style={{ padding: '1rem', borderBottom: '1px solid #e0e0e0' }}>

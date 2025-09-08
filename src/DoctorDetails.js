@@ -5,6 +5,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ar } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
+import { formatNotificationDate } from './utils/dateUtils';
 import StarRating from './components/StarRating';
 import './DoctorDetails.css';
 import { getTranslatedSpecialty } from './utils/specialtyTranslation';
@@ -986,7 +987,7 @@ function DoctorDetails() {
                           fontSize: '12px',
                           color: '#666'
                         }}>
-                          {new Date(rating.createdAt).toLocaleDateString('ar-EG')}
+                          {formatNotificationDate(rating.createdAt, i18n.language)}
                         </span>
                       </div>
                       {/* التعليقات مخفية من العرض العام - تظهر للطبيب فقط */}

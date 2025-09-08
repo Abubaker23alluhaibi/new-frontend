@@ -328,7 +328,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
               borderRadius: isMobile ? 6 : 8,
               padding: isMobile ? '0.5rem 0.8rem' : '0.7rem 1.2rem',
               fontWeight: 700,
-              fontSize: isMobile ? '0.7rem' : '0.8rem',
+              fontSize: isMobile ? '0.9rem' : '1rem',
               cursor: 'pointer',
               transition: 'all 0.3s ease'
             }}
@@ -345,7 +345,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
               borderRadius: isMobile ? 6 : 8,
               padding: isMobile ? '0.5rem 0.8rem' : '0.7rem 1.2rem',
               fontWeight: 700,
-              fontSize: isMobile ? '0.7rem' : '0.8rem',
+              fontSize: isMobile ? '0.9rem' : '1rem',
               cursor: 'pointer',
               transition: 'all 0.3s ease'
             }}
@@ -362,7 +362,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
               borderRadius: isMobile ? 6 : 8,
               padding: isMobile ? '0.5rem 0.8rem' : '0.7rem 1.2rem',
               fontWeight: 700,
-              fontSize: isMobile ? '0.7rem' : '0.8rem',
+              fontSize: isMobile ? '0.9rem' : '1rem',
               cursor: 'pointer',
               transition: 'all 0.3s ease'
             }}
@@ -379,7 +379,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
               borderRadius: isMobile ? 6 : 8,
               padding: isMobile ? '0.5rem 0.8rem' : '0.7rem 1.2rem',
               fontWeight: 700,
-              fontSize: isMobile ? '0.7rem' : '0.8rem',
+              fontSize: isMobile ? '0.9rem' : '1rem',
               cursor: 'pointer',
               transition: 'all 0.3s ease'
             }}
@@ -399,7 +399,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
           <span style={{
             color:'#0A8F82',
             fontWeight:700,
-            fontSize: isMobile ? '0.7rem' : '0.8rem'
+            fontSize: isMobile ? '0.9rem' : '1rem'
           }}>
             📊 {getTimeFilterText()}
           </span>
@@ -664,7 +664,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
                     padding: isMobile ? '0.6rem 0.4rem' : '0.8rem 0.6rem',
                     textAlign: 'center',
                     fontWeight: 600,
-                    fontSize: isMobile ? '0.7rem' : '0.8rem'
+                    fontSize: isMobile ? '0.9rem' : '1rem'
                   }}>
                     {hour}
                   </div>
@@ -687,9 +687,9 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
                       <span style={{
                         background: '#0A8F82',
                         color: '#fff',
-                        padding: isMobile ? '0.1rem 0.25rem' : '0.15rem 0.4rem',
+                        padding: isMobile ? '0.3rem 0.6rem' : '0.4rem 0.8rem',
                         borderRadius: isMobile ? 4 : 6,
-                        fontSize: isMobile ? '0.35rem' : '0.4rem',
+                        fontSize: isMobile ? '0.9rem' : '1rem',
                         fontWeight: 600
                       }}>
                         🔥 {t('most_requested') || 'الأكثر طلباً'}
@@ -720,13 +720,13 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
                 background: '#0A8F82',
                 color: '#fff',
                 border: 'none',
-                borderRadius: isMobile ? 4 : 6,
-                padding: isMobile ? '0.3rem 0.6rem' : '0.4rem 0.75rem',
-                fontWeight: 600,
-                fontSize: isMobile ? '0.225rem' : '0.25rem',
+                borderRadius: isMobile ? 8 : 12,
+                padding: isMobile ? '0.8rem 1.2rem' : '1rem 1.5rem',
+                fontWeight: 700,
+                fontSize: isMobile ? '0.9rem' : '1rem',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
-                boxShadow: '0 1px 4px rgba(10, 143, 130, 0.3)'
+                boxShadow: '0 2px 8px rgba(10, 143, 130, 0.3)'
               }}
             >
               {showMoreTimes ? t('show_less') || 'عرض أقل' : t('show_more') || 'عرض المزيد'} ({Object.entries(analytics.appointmentsByHour).length - 5} {t('more') || 'أكثر'})
@@ -795,7 +795,7 @@ function AnalyticsView({ analytics, timeFilter, setTimeFilter, getTimeFilterText
                 }}>{count}</div>
                 {day === analytics.mostBusyDay?.[0] && (
                   <div style={{
-                    fontSize: isMobile ? '0.7rem' : '0.8rem',
+                    fontSize: isMobile ? '0.9rem' : '1rem',
                     color: '#856404',
                     fontWeight: 600,
                     marginTop: '0.3rem'
