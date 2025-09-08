@@ -26,7 +26,21 @@ function DoctorCalendar({ appointments, year, month, daysArr, selectedDate, setS
         try {
           // استخدام نفس الطريقة المستخدمة في DoctorDashboard
           const profile = JSON.parse(localStorage.getItem('user') || '{}');
-          const doctorId = profile._id || user?._id || 1;
+          const doctorId = profile._id || user?._id;
+          
+          console.log('🔍 DoctorCalendar Debug:', { 
+            profile: profile, 
+            user: user, 
+            doctorId: doctorId,
+            profile_id: profile._id,
+            user_id: user?._id
+          });
+          
+          if (!doctorId) {
+            console.error('❌ DoctorCalendar: لا يوجد doctorId صحيح');
+            setInternalAppointments([]);
+            return;
+          }
           
           const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/${doctorId}?t=${Date.now()}`);
           

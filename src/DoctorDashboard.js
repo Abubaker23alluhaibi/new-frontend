@@ -152,12 +152,19 @@ function DoctorDashboard() {
   // دالة موحدة لجلب جميع مواعيد الطبيب
   const fetchAllAppointments = useCallback(async () => {
     console.log('📅 DoctorDashboard: محاولة جلب المواعيد');
+    console.log('🔍 DoctorDashboard Debug:', { 
+      profile: profile, 
+      profile_id: profile?._id,
+      profile_type: typeof profile?._id
+    });
+    
     if (!profile?._id) {
       console.log('❌ DoctorDashboard: لا يوجد profile._id');
       return;
     }
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/${profile._id}?t=${Date.now()}`);
+      console.log('📅 DoctorDashboard: response status:', res.status);
       const data = await res.json();
       const appointmentsData = Array.isArray(data) ? data : [];
       
