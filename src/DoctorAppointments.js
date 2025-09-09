@@ -182,7 +182,68 @@ function DoctorAppointments() {
       if (res.ok) {
         setAppointments(appointments.filter(apt => apt._id !== appointmentId));
         
-        // تم حذف الإشعارات الفورية - الإشعارات محفوظة في قاعدة البيانات فقط
+        // إرسال إشعار فوري للمريض
+        try {
+          const appointment = appointments.find(apt => apt._id === appointmentId);
+          if (appointment && appointment.userId) {
+            console.log('📱 إرسال إشعار فوري للمريض:', appointment.userId);
+            
+            // إرسال إشعار فوري عبر API
+            await fetch(`${process.env.REACT_APP_API_URL}/notifications/send-push-user`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                userId: appointment.userId,
+                title: 'تم إلغاء الموعد',
+                body: `تم إلغاء موعدك مع د. ${profile?.full_name || 'الطبيب'} في ${appointment.date} الساعة ${appointment.time}. يرجى اختيار موعد آخر.`,
+                data: {
+                  type: 'appointment_cancelled',
+                  appointmentId: appointmentId,
+                  doctorName: profile?.full_name || 'الطبيب',
+                  date: appointment.date,
+                  time: appointment.time
+                },
+                timestamp: new Date().toISOString()
+              })
+            });
+            
+            console.log('✅ تم إرسال الإشعار الفوري للمريض');
+            
+            // إرسال إشعار إضافي للتأكد من الظهور
+            try {
+              await fetch(`${process.env.REACT_APP_API_URL}/notifications/send-push-user`, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  userId: appointment.userId,
+                  title: '🚨 تم إلغاء الموعد',
+                  body: `تم إلغاء موعدك مع د. ${profile?.full_name || 'الطبيب'} في ${appointment.date} الساعة ${appointment.time}. يرجى اختيار موعد آخر.`,
+                  data: {
+                    type: 'appointment_cancelled',
+                    appointmentId: appointmentId,
+                    doctorName: profile?.full_name || 'الطبيب',
+                    date: appointment.date,
+                    time: appointment.time,
+                    urgent: true,
+                    isPushNotification: true
+                  },
+                  timestamp: new Date().toISOString()
+                })
+              });
+              console.log('✅ تم إرسال الإشعار الإضافي');
+            } catch (additionalError) {
+              console.error('⚠️ فشل في إرسال الإشعار الإضافي:', additionalError);
+            }
+          }
+        } catch (notificationError) {
+          console.error('⚠️ فشل في إرسال الإشعار الفوري:', notificationError);
+        }
         
         alert(t('appointment_cancelled_success'));
       } else {
