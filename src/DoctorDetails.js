@@ -145,31 +145,27 @@ function DoctorDetails() {
     return '/logo.png';
   };
 
-  // إزالة التحقق من تسجيل الدخول - السماح بالوصول المباشر
-  // useEffect(() => {
-  //   // لا نتحقق من المصادقة إلا بعد انتهاء التحميل
-  //   if (authLoading) return;
-    
-  //   // انتظار قليل للتأكد من تحميل البيانات من localStorage
-  //   const checkAuth = () => {
-  //     const savedUser = localStorage.getItem('user');
-  //     const savedProfile = localStorage.getItem('profile');
-  //     const hasUser = user || profile;
-  //     const hasSavedData = savedUser || savedProfile;
+  useEffect(() => {
+    // التحقق من حالة تسجيل الدخول
+    const checkAuthAndRedirect = () => {
+      const savedUser = localStorage.getItem('user');
+      const savedProfile = localStorage.getItem('profile');
+      const hasUser = user || profile;
+      const hasSavedData = (savedUser && savedUser !== 'null' && savedUser !== 'undefined') || 
+                          (savedProfile && savedProfile !== 'null' && savedProfile !== 'undefined');
       
-  //     // إذا لم تكن هناك بيانات محفوظة ولا مستخدم حالي، أعد التوجيه
-  //     if (!hasSavedData && !hasUser) {
-  //       const currentUrl = window.location.pathname + window.location.search;
-  //       navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
-  //       return;
-  //     }
-  //   };
+      // إذا لم يكن المستخدم مسجلاً دخول، وجهه مباشرة إلى صفحة الحجز لشخص آخر
+      if (!hasSavedData && !hasUser) {
+        navigate(`/book-for-other/${id}`);
+        return;
+      }
+    };
     
-  //   // تأخير قصير للتأكد من تحميل البيانات
-  //   const timeoutId = setTimeout(checkAuth, 100);
+    // تأخير قصير للتأكد من تحميل البيانات
+    const timeoutId = setTimeout(checkAuthAndRedirect, 100);
     
-  //   return () => clearTimeout(timeoutId);
-  // }, [user, profile, navigate, authLoading]);
+    return () => clearTimeout(timeoutId);
+  }, [user, profile, navigate, id]);
 
   useEffect(() => {
     // حفظ معرف الطبيب في localStorage للاستخدام عند إعادة التحميل
@@ -512,24 +508,33 @@ function DoctorDetails() {
     setBooking(false);
   };
 
-  // إزالة رسالة تحميل تسجيل الدخول - السماح بالوصول المباشر
-  // const hasStoredData = localStorage.getItem('user') || localStorage.getItem('profile');
+  // عرض رسالة تحميل أثناء التحقق من تسجيل الدخول
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
-  // if (authLoading && !hasStoredData) {
-  //   return (
-  //     <div style={{
-  //       textAlign: 'center', 
-  //       marginTop: 40, 
-  //       padding: '20px',
-  //       background: 'white',
-  //       borderRadius: '12px',
-  //       boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-  //       margin: '20px'
-  //     }}>
-  //       جاري التحقق من حالة تسجيل الدخول...
-  //     </div>
-  //   );
-  // }
+  useEffect(() => {
+    // إخفاء رسالة التحميل بعد التحقق من تسجيل الدخول
+    const timer = setTimeout(() => {
+      setIsCheckingAuth(false);
+    }, 200);
+    
+    return () => clearTimeout(timer);
+  }, [user, profile]);
+  
+  if (isCheckingAuth) {
+    return (
+      <div style={{
+        textAlign: 'center', 
+        marginTop: 40, 
+        padding: '20px',
+        background: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        margin: '20px'
+      }}>
+        جاري التوجيه إلى صفحة الحجز...
+      </div>
+    );
+  }
   
   if (loading) {
     return (
@@ -772,24 +777,6 @@ function DoctorDetails() {
                 فتح الخريطة
               </button>
             )}
-          </div>
-          
-          {/* رسالة توضيحية */}
-          <div style={{
-            background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
-            border: '2px solid #2196f3',
-            borderRadius: '12px',
-            padding: '1rem',
-            margin: '1rem',
-            textAlign: 'center',
-            boxShadow: '0 2px 8px rgba(33, 150, 243, 0.2)'
-          }}>
-            <div style={{fontSize: '16px', fontWeight: '600', color: '#1976d2', marginBottom: '0.5rem'}}>
-              💡 يمكنك حجز موعد مباشرة دون تسجيل الدخول
-            </div>
-            <div style={{fontSize: '14px', color: '#1976d2'}}>
-              اضغط على "حجز لشخص آخر" لبدء عملية الحجز
-            </div>
           </div>
         </>
       )}
