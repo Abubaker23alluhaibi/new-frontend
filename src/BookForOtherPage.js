@@ -204,6 +204,17 @@ function BookForOtherPage() {
       return;
     }
     
+    // التحقق من صحة البيانات
+    if (patientName.trim().length < 2) {
+      setSuccess('اسم المريض يجب أن يكون أكثر من حرفين');
+      return;
+    }
+
+    if (patientPhone.trim().length < 10) {
+      setSuccess('رقم الهاتف يجب أن يكون صحيحاً');
+      return;
+    }
+    
     const ageNum = parseInt(patientAge);
     if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
       setSuccess('يرجى إدخال عمر صحيح');
@@ -242,23 +253,26 @@ function BookForOtherPage() {
       }
 
       const appointmentData = {
-        userId: currentUser?._id || 'guest',
+        userId: currentUser?._id || null, // استخدام null بدلاً من 'guest'
         doctorId: doctor._id,
-        userName: currentUser?.first_name || 'مستخدم',
+        userName: currentUser?.first_name || 'مستخدم غير مسجل',
         doctorName: doctor.name,
-        patientName,
-        patientPhone,
+        patientName: patientName.trim(),
+        patientPhone: patientPhone.trim(),
         patientAge: parseInt(patientAge),
-        reason: reason || '',
+        reason: reason?.trim() || '',
         date: dateString,
         time: selectedTime,
         isBookingForOther: true,
-        bookerName: currentUser?.first_name || 'مستخدم',
+        bookerName: currentUser?.first_name || 'مستخدم غير مسجل',
         duration: doctor?.appointmentDuration || 30
       };
 
       // إضافة رسالة تشخيصية
       setSuccess('جاري إرسال طلب الحجز...');
+      
+      // طباعة البيانات للتشخيص
+      console.log('📤 بيانات الحجز المرسلة:', appointmentData);
       
       const response = await fetch(`${process.env.REACT_APP_API_URL}/appointments`, {
         method: 'POST',
@@ -268,7 +282,11 @@ function BookForOtherPage() {
         body: JSON.stringify(appointmentData)
       });
 
+      console.log('📥 استجابة الخادم:', response.status, response.statusText);
+
       if (response.ok) {
+        const result = await response.json();
+        console.log('✅ نتيجة الحجز:', result);
         setBookingSuccess(true);
         setSuccess('تم الحجز بنجاح!');
         // إظهار رسالة تأكيد قبل الانتقال
@@ -277,16 +295,18 @@ function BookForOtherPage() {
           navigate(`/doctor/${id}`);
         } else {
           // إخفاء رسالة النجاح بعد 5 ثوانٍ
-        setTimeout(() => {
-          setBookingSuccess(false);
+          setTimeout(() => {
+            setBookingSuccess(false);
             setSuccess('');
           }, 5000);
         }
       } else {
         const errorData = await response.json();
+        console.error('❌ خطأ في الحجز:', errorData);
         setSuccess(`خطأ في الحجز: ${errorData.message || errorData.error || 'خطأ غير معروف'}`);
       }
     } catch (err) {
+      console.error('❌ خطأ في الاتصال:', err);
       setSuccess(`خطأ في الاتصال: ${err.message}`);
     } finally {
       setBookingLoading(false);

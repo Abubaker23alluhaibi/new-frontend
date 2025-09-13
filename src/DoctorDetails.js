@@ -9,7 +9,6 @@ import { formatNotificationDate } from './utils/dateUtils';
 import StarRating from './components/StarRating';
 import './DoctorDetails.css';
 import { getTranslatedSpecialty } from './utils/specialtyTranslation';
-import i18n from './i18n';
 
 function DoctorDetails() {
   const { id } = useParams();
@@ -157,9 +156,10 @@ function DoctorDetails() {
       const hasUser = user || profile;
       const hasSavedData = savedUser || savedProfile;
       
-      // إذا لم تكن هناك بيانات محفوظة ولا مستخدم حالي، توجه مباشرة لصفحة الحجز لشخص آخر
+      // إذا لم تكن هناك بيانات محفوظة ولا مستخدم حالي، أعد التوجيه
       if (!hasSavedData && !hasUser) {
-        navigate(`/book-for-other/${id}`);
+        const currentUrl = window.location.pathname + window.location.search;
+        navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
         return;
       }
     };
@@ -168,7 +168,7 @@ function DoctorDetails() {
     const timeoutId = setTimeout(checkAuth, 100);
     
     return () => clearTimeout(timeoutId);
-  }, [user, profile, navigate, authLoading, id]);
+  }, [user, profile, navigate, authLoading]);
 
   useEffect(() => {
     // حفظ معرف الطبيب في localStorage للاستخدام عند إعادة التحميل
@@ -323,12 +323,12 @@ function DoctorDetails() {
     }
   };
 
-  const getAvailableDays = () => {
+  const getAvailableDays = useCallback(() => {
     if (!doctor?.workTimes || !Array.isArray(doctor.workTimes)) return [];
     return doctor.workTimes.map(wt => wt.day).filter(Boolean);
-  };
+  }, [doctor?.workTimes]);
 
-  const generateTimeSlots = (from, to) => {
+  const generateTimeSlots = useCallback((from, to) => {
     const slots = [];
     if (typeof from !== 'string' || typeof to !== 'string') return [];
     try {
@@ -344,7 +344,7 @@ function DoctorDetails() {
       return [];
     }
     return slots;
-  };
+  }, [doctor?.appointmentDuration]);
 
   const fetchBookedAppointments = async (doctorId, date) => {
     try {
@@ -363,7 +363,7 @@ function DoctorDetails() {
     }
   };
 
-  const isDayAvailable = date => {
+  const isDayAvailable = useCallback(date => {
     const weekDays = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
     const dayName = weekDays[date.getDay()];
     
@@ -394,7 +394,7 @@ function DoctorDetails() {
       }
     }
     return true;
-  };
+  }, [doctor?.vacationDays, getAvailableDays]);
 
   useEffect(() => {
     if (!selectedDate || !doctor?.workTimes) {
@@ -429,7 +429,7 @@ function DoctorDetails() {
     const day = String(selectedDate.getDate()).padStart(2, '0');
     const dateString = `${year}-${month}-${day}`;
     fetchBookedAppointments(doctor._id, dateString);
-  }, [selectedDate, doctor]);
+  }, [selectedDate, doctor, generateTimeSlots, isDayAvailable]);
 
   const handleBook = async (e) => {
     e.preventDefault();
