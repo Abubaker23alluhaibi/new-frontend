@@ -210,8 +210,11 @@ function BookForOtherPage() {
       return;
     }
 
-    if (patientPhone.trim().length < 10) {
-      setSuccess('رقم الهاتف يجب أن يكون صحيحاً');
+    // التحقق من صحة رقم الهاتف - يجب أن يكون 9 أرقام ويبدأ بـ 7
+    const phoneRegex = /^7\d{8}$/;
+    const cleanedPhone = patientPhone.replace(/\D/g, '');
+    if (!phoneRegex.test(cleanedPhone)) {
+      setSuccess('رقم الهاتف يجب أن يكون صحيحاً (يبدأ بـ 07 أو 7)');
       return;
     }
     
