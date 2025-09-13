@@ -267,7 +267,10 @@ function BookForOtherPage() {
     }
     
     if (!isAuthenticated) {
-      setShowAppOptions(true);
+      // لا نعرض نافذة خيارات التطبيق إذا كان الحجز ناجح
+      if (!bookingSuccess) {
+        setShowAppOptions(true);
+      }
       return;
     }
     
@@ -331,11 +334,12 @@ function BookForOtherPage() {
         const shouldNavigate = window.confirm('تم الحجز بنجاح! هل تريد الانتقال إلى صفحة الطبيب؟');
         if (shouldNavigate) {
           navigate(`/doctor/${id}`);
+        } else {
+          // إخفاء رسالة النجاح بعد 3 ثوانٍ
+          setTimeout(() => {
+            setBookingSuccess(false);
+          }, 3000);
         }
-        // إخفاء رسالة النجاح بعد 3 ثوانٍ
-        setTimeout(() => {
-          setBookingSuccess(false);
-        }, 3000);
       } else {
         const errorData = await response.json();
         setSuccess(errorData.message || 'حدث خطأ في الحجز');
@@ -650,7 +654,7 @@ function BookForOtherPage() {
       </div>
 
       {/* نافذة خيارات التطبيق للمستخدمين غير المسجلين */}
-      {showAppOptions && (
+      {showAppOptions && !bookingSuccess && (
         <div style={{
           position: 'fixed',
           top: 0,

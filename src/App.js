@@ -106,22 +106,11 @@ function App() {
     applyLanguage();
   }, [lang]);
 
-  // جلب المواعيد عند الدخول
+  // جلب المواعيد عند الدخول - فقط إذا كان هناك طبيب محدد
   useEffect(() => {
-    console.log('📅 App: جلب المواعيد للطبيب...');
-    
-    const fetchAppointments = async () => {
-      try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/doctor-appointments/1?t=${Date.now()}`);
-        const data = await res.json();
-        console.log('✅ App: تم جلب المواعيد:', data);
-        setDoctorAppointments(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error('❌ App: خطأ في جلب المواعيد:', error);
-      }
-    };
-    
-    fetchAppointments();
+    // لا نحتاج لجلب مواعيد طبيب محدد في App.js
+    // هذا سيتم في الصفحات المحددة التي تحتاج هذه البيانات
+    setDoctorAppointments([]);
   }, []);
 
   // إضافة console.log عند تحميل التطبيق
