@@ -224,10 +224,27 @@ function BookForOtherPage() {
         return;
       }
 
+      // الحصول على بيانات المستخدم من localStorage إذا لم تكن متوفرة في state
+      const savedUser = localStorage.getItem('user');
+      const savedProfile = localStorage.getItem('profile');
+      let currentUser = user || profile;
+      
+      if (!currentUser) {
+        try {
+          if (savedUser && savedUser !== 'null' && savedUser !== 'undefined') {
+            currentUser = JSON.parse(savedUser);
+          } else if (savedProfile && savedProfile !== 'null' && savedProfile !== 'undefined') {
+            currentUser = JSON.parse(savedProfile);
+          }
+        } catch (e) {
+          // تجاهل خطأ التحليل
+        }
+      }
+
       const appointmentData = {
-        userId: user?._id || profile?._id,
+        userId: currentUser?._id || 'guest',
         doctorId: doctor._id,
-        userName: profile?.first_name || user?.first_name || 'مستخدم',
+        userName: currentUser?.first_name || 'مستخدم',
         doctorName: doctor.name,
         patientName,
         patientPhone,
@@ -236,10 +253,13 @@ function BookForOtherPage() {
         date: dateString,
         time: selectedTime,
         isBookingForOther: true,
-        bookerName: profile?.first_name || user?.first_name || 'مستخدم',
+        bookerName: currentUser?.first_name || 'مستخدم',
         duration: doctor?.appointmentDuration || 30
       };
 
+      // إضافة رسالة تشخيصية
+      setSuccess('جاري إرسال طلب الحجز...');
+      
       const response = await fetch(`${process.env.REACT_APP_API_URL}/appointments`, {
         method: 'POST',
         headers: {
@@ -264,10 +284,10 @@ function BookForOtherPage() {
         }
       } else {
         const errorData = await response.json();
-        setSuccess(errorData.message || 'حدث خطأ في الحجز');
+        setSuccess(`خطأ في الحجز: ${errorData.message || errorData.error || 'خطأ غير معروف'}`);
       }
     } catch (err) {
-      setSuccess('حدث خطأ في الحجز');
+      setSuccess(`خطأ في الاتصال: ${err.message}`);
     } finally {
       setBookingLoading(false);
     }
