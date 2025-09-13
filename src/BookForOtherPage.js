@@ -230,10 +230,43 @@ function BookForOtherPage() {
     // التحقق من تسجيل الدخول - إذا لم يكن مسجل، نعرض خيارات التطبيق
     const savedUser = localStorage.getItem('user');
     const savedProfile = localStorage.getItem('profile');
-    const hasUser = user || profile;
-    const hasSavedData = savedUser || savedProfile;
     
-    if (!hasSavedData && !hasUser) {
+    // التحقق من وجود بيانات صحيحة في localStorage أو state
+    let isAuthenticated = false;
+    
+    // فحص البيانات في state
+    if ((user && user._id) || (profile && profile._id)) {
+      isAuthenticated = true;
+    }
+    
+    // فحص البيانات في localStorage
+    if (!isAuthenticated) {
+      try {
+        if (savedUser && savedUser !== 'null' && savedUser !== 'undefined') {
+          const userData = JSON.parse(savedUser);
+          if (userData && userData._id) {
+            isAuthenticated = true;
+          }
+        }
+      } catch (e) {
+        // تجاهل خطأ التحليل
+      }
+    }
+    
+    if (!isAuthenticated) {
+      try {
+        if (savedProfile && savedProfile !== 'null' && savedProfile !== 'undefined') {
+          const profileData = JSON.parse(savedProfile);
+          if (profileData && profileData._id) {
+            isAuthenticated = true;
+          }
+        }
+      } catch (e) {
+        // تجاهل خطأ التحليل
+      }
+    }
+    
+    if (!isAuthenticated) {
       setShowAppOptions(true);
       return;
     }
@@ -352,9 +385,41 @@ function BookForOtherPage() {
       {(() => {
         const savedUser = localStorage.getItem('user');
         const savedProfile = localStorage.getItem('profile');
-        const hasUser = user || profile;
-        const hasSavedData = savedUser || savedProfile;
-        return (!hasSavedData && !hasUser);
+        
+        // فحص البيانات في state
+        let isAuthenticated = false;
+        if ((user && user._id) || (profile && profile._id)) {
+          isAuthenticated = true;
+        }
+        
+        // فحص البيانات في localStorage
+        if (!isAuthenticated) {
+          try {
+            if (savedUser && savedUser !== 'null' && savedUser !== 'undefined') {
+              const userData = JSON.parse(savedUser);
+              if (userData && userData._id) {
+                isAuthenticated = true;
+              }
+            }
+          } catch (e) {
+            // تجاهل خطأ التحليل
+          }
+        }
+        
+        if (!isAuthenticated) {
+          try {
+            if (savedProfile && savedProfile !== 'null' && savedProfile !== 'undefined') {
+              const profileData = JSON.parse(savedProfile);
+              if (profileData && profileData._id) {
+                isAuthenticated = true;
+              }
+            }
+          } catch (e) {
+            // تجاهل خطأ التحليل
+          }
+        }
+        
+        return !isAuthenticated;
       })() && (
         <div style={{
           background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
