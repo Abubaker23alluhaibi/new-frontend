@@ -157,10 +157,9 @@ function DoctorDetails() {
       const hasUser = user || profile;
       const hasSavedData = savedUser || savedProfile;
       
-      // إذا لم تكن هناك بيانات محفوظة ولا مستخدم حالي، أعد التوجيه
+      // إذا لم تكن هناك بيانات محفوظة ولا مستخدم حالي، توجه مباشرة لصفحة الحجز لشخص آخر
       if (!hasSavedData && !hasUser) {
-        const currentUrl = window.location.pathname + window.location.search;
-        navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
+        navigate(`/book-for-other/${id}`);
         return;
       }
     };
@@ -169,7 +168,7 @@ function DoctorDetails() {
     const timeoutId = setTimeout(checkAuth, 100);
     
     return () => clearTimeout(timeoutId);
-  }, [user, profile, navigate, authLoading]);
+  }, [user, profile, navigate, authLoading, id]);
 
   useEffect(() => {
     // حفظ معرف الطبيب في localStorage للاستخدام عند إعادة التحميل
