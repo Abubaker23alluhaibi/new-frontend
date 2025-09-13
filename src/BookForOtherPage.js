@@ -228,7 +228,12 @@ function BookForOtherPage() {
     e.preventDefault();
     
     // التحقق من تسجيل الدخول - إذا لم يكن مسجل، نعرض خيارات التطبيق
-    if (!user?._id && !profile?._id) {
+    const savedUser = localStorage.getItem('user');
+    const savedProfile = localStorage.getItem('profile');
+    const hasUser = user || profile;
+    const hasSavedData = savedUser || savedProfile;
+    
+    if (!hasSavedData && !hasUser) {
       setShowAppOptions(true);
       return;
     }
@@ -344,7 +349,13 @@ function BookForOtherPage() {
   return (
     <div className="book-for-other-container">
       {/* رسالة توجيهية للمستخدمين غير المسجلين */}
-      {(!user?._id && !profile?._id) && (
+      {(() => {
+        const savedUser = localStorage.getItem('user');
+        const savedProfile = localStorage.getItem('profile');
+        const hasUser = user || profile;
+        const hasSavedData = savedUser || savedProfile;
+        return (!hasSavedData && !hasUser);
+      })() && (
         <div style={{
           background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
           border: '2px solid #2196f3',
