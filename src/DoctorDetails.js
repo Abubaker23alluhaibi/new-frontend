@@ -12,7 +12,7 @@ import { getTranslatedSpecialty } from './utils/specialtyTranslation';
 
 function DoctorDetails() {
   const { id } = useParams();
-  const { user, profile, loading: authLoading } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [doctor, setDoctor] = useState(() => {
     // محاولة استرجاع بيانات الطبيب من localStorage عند إعادة التحميل
@@ -145,30 +145,31 @@ function DoctorDetails() {
     return '/logo.png';
   };
 
-  useEffect(() => {
-    // لا نتحقق من المصادقة إلا بعد انتهاء التحميل
-    if (authLoading) return;
+  // إزالة التحقق من تسجيل الدخول - السماح بالوصول المباشر
+  // useEffect(() => {
+  //   // لا نتحقق من المصادقة إلا بعد انتهاء التحميل
+  //   if (authLoading) return;
     
-    // انتظار قليل للتأكد من تحميل البيانات من localStorage
-    const checkAuth = () => {
-      const savedUser = localStorage.getItem('user');
-      const savedProfile = localStorage.getItem('profile');
-      const hasUser = user || profile;
-      const hasSavedData = savedUser || savedProfile;
+  //   // انتظار قليل للتأكد من تحميل البيانات من localStorage
+  //   const checkAuth = () => {
+  //     const savedUser = localStorage.getItem('user');
+  //     const savedProfile = localStorage.getItem('profile');
+  //     const hasUser = user || profile;
+  //     const hasSavedData = savedUser || savedProfile;
       
-      // إذا لم تكن هناك بيانات محفوظة ولا مستخدم حالي، أعد التوجيه
-      if (!hasSavedData && !hasUser) {
-        const currentUrl = window.location.pathname + window.location.search;
-        navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
-        return;
-      }
-    };
+  //     // إذا لم تكن هناك بيانات محفوظة ولا مستخدم حالي، أعد التوجيه
+  //     if (!hasSavedData && !hasUser) {
+  //       const currentUrl = window.location.pathname + window.location.search;
+  //       navigate(`/login?redirect=${encodeURIComponent(currentUrl)}`);
+  //       return;
+  //     }
+  //   };
     
-    // تأخير قصير للتأكد من تحميل البيانات
-    const timeoutId = setTimeout(checkAuth, 100);
+  //   // تأخير قصير للتأكد من تحميل البيانات
+  //   const timeoutId = setTimeout(checkAuth, 100);
     
-    return () => clearTimeout(timeoutId);
-  }, [user, profile, navigate, authLoading]);
+  //   return () => clearTimeout(timeoutId);
+  // }, [user, profile, navigate, authLoading]);
 
   useEffect(() => {
     // حفظ معرف الطبيب في localStorage للاستخدام عند إعادة التحميل
@@ -511,24 +512,24 @@ function DoctorDetails() {
     setBooking(false);
   };
 
-  // عرض رسالة تحميل فقط إذا لم تكن هناك بيانات محفوظة
-  const hasStoredData = localStorage.getItem('user') || localStorage.getItem('profile');
+  // إزالة رسالة تحميل تسجيل الدخول - السماح بالوصول المباشر
+  // const hasStoredData = localStorage.getItem('user') || localStorage.getItem('profile');
   
-  if (authLoading && !hasStoredData) {
-    return (
-      <div style={{
-        textAlign: 'center', 
-        marginTop: 40, 
-        padding: '20px',
-        background: 'white',
-        borderRadius: '12px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-        margin: '20px'
-      }}>
-        جاري التحقق من حالة تسجيل الدخول...
-      </div>
-    );
-  }
+  // if (authLoading && !hasStoredData) {
+  //   return (
+  //     <div style={{
+  //       textAlign: 'center', 
+  //       marginTop: 40, 
+  //       padding: '20px',
+  //       background: 'white',
+  //       borderRadius: '12px',
+  //       boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+  //       margin: '20px'
+  //     }}>
+  //       جاري التحقق من حالة تسجيل الدخول...
+  //     </div>
+  //   );
+  // }
   
   if (loading) {
     return (
@@ -746,6 +747,18 @@ function DoctorDetails() {
             <button
               onClick={() => navigate(`/book-for-other/${id}`)}
               className="btn-secondary"
+              style={{
+                background: 'linear-gradient(135deg, #4caf50 0%, #388e3c 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                padding: '1rem 1.5rem',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)',
+                transition: 'all 0.3s ease'
+              }}
             >
               <span>👥</span>
               حجز لشخص آخر
@@ -759,6 +772,24 @@ function DoctorDetails() {
                 فتح الخريطة
               </button>
             )}
+          </div>
+          
+          {/* رسالة توضيحية */}
+          <div style={{
+            background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+            border: '2px solid #2196f3',
+            borderRadius: '12px',
+            padding: '1rem',
+            margin: '1rem',
+            textAlign: 'center',
+            boxShadow: '0 2px 8px rgba(33, 150, 243, 0.2)'
+          }}>
+            <div style={{fontSize: '16px', fontWeight: '600', color: '#1976d2', marginBottom: '0.5rem'}}>
+              💡 يمكنك حجز موعد مباشرة دون تسجيل الدخول
+            </div>
+            <div style={{fontSize: '14px', color: '#1976d2'}}>
+              اضغط على "حجز لشخص آخر" لبدء عملية الحجز
+            </div>
           </div>
         </>
       )}
