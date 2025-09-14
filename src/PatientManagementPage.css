@@ -212,7 +212,7 @@
   margin-top: 16px;
 }
 
-.btn-view, .btn-delete {
+.btn-view, .btn-edit, .btn-delete {
   flex: 1;
   padding: 8px 16px;
   border: none;
@@ -230,6 +230,15 @@
 
 .btn-view:hover {
   background: #08796E;
+}
+
+.btn-edit {
+  background: #f39c12;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #e67e22;
 }
 
 .btn-delete {

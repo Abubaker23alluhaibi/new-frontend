@@ -1312,12 +1312,8 @@ const PatientManagementPage = () => {
     try {
       const token = getAuthToken();
       if (!token) {
-        console.error('❌ لا يوجد token في fetchPatients');
         return;
       }
-
-      console.log('🔍 fetchPatients - token found:', token.substring(0, 20) + '...');
-      console.log('🔍 fetchPatients - API URL:', process.env.REACT_APP_API_URL);
 
       const params = new URLSearchParams({
         page: page.toString(),
@@ -1326,7 +1322,6 @@ const PatientManagementPage = () => {
       });
 
       const url = `${process.env.REACT_APP_API_URL}/doctors/me/patients?${params}`;
-      console.log('🔍 fetchPatients - full URL:', url);
 
       const response = await fetch(url, {
         headers: {
@@ -1336,17 +1331,12 @@ const PatientManagementPage = () => {
         credentials: 'include'
       });
 
-      console.log('🔍 fetchPatients - response status:', response.status);
-      console.log('🔍 fetchPatients - response headers:', response.headers);
-
       if (response.ok) {
         const data = await response.json();
-        console.log('🔍 fetchPatients - response data:', data);
         setPatients(data.patients || []);
         setPagination(data.pagination || {});
       } else {
         const errorText = await response.text();
-        console.error('❌ fetchPatients - error response:', errorText);
         throw new Error(`Failed to fetch patients: ${response.status} ${errorText}`);
       }
     } catch (error) {
@@ -1362,13 +1352,10 @@ const PatientManagementPage = () => {
     try {
       const token = getAuthToken();
       if (!token) {
-        console.error('❌ لا يوجد token في fetchPatientStats');
         return;
       }
 
-      console.log('🔍 fetchPatientStats - token found:', token.substring(0, 20) + '...');
       const url = `${process.env.REACT_APP_API_URL}/doctors/me/patients/stats`;
-      console.log('🔍 fetchPatientStats - URL:', url);
 
       const response = await fetch(url, {
         headers: {
@@ -1378,15 +1365,9 @@ const PatientManagementPage = () => {
         credentials: 'include'
       });
 
-      console.log('🔍 fetchPatientStats - response status:', response.status);
-
       if (response.ok) {
         const stats = await response.json();
-        console.log('🔍 fetchPatientStats - stats:', stats);
         setPatientStats(stats);
-      } else {
-        const errorText = await response.text();
-        console.error('❌ fetchPatientStats - error response:', errorText);
       }
     } catch (error) {
       console.error('Error fetching patient stats:', error);
