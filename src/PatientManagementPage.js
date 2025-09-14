@@ -3282,7 +3282,7 @@ const PatientManagementPage = () => {
 
 
 
-      // إضافة كل دواء منفرداً
+      // إضافة كل دواء منفرداً مع التشخيص
 
       const promises = prescriptionData.medications.map(medication => 
 
@@ -3298,7 +3298,11 @@ const PatientManagementPage = () => {
 
           },
 
-          body: JSON.stringify(medication),
+          body: JSON.stringify({
+            ...medication,
+            diagnosis: prescriptionData.diagnosis,
+            prescriptionNotes: prescriptionData.notes
+          }),
 
           credentials: 'include'
 
@@ -4491,6 +4495,8 @@ const PatientManagementPage = () => {
 
           onCancel={() => setShowAddMedication(false)}
 
+          t={t}
+
         />
 
       )}
@@ -4545,7 +4551,7 @@ const PatientManagementPage = () => {
 
 // مكون إضافة وصفة طبية جديدة (عدة أدوية)
 
-const AddPrescriptionForm = ({ onAdd, onCancel }) => {
+const AddPrescriptionForm = ({ onAdd, onCancel, t }) => {
 
   const [prescriptionData, setPrescriptionData] = useState({
 
@@ -5499,6 +5505,23 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
           
 
+          .prescription-info {
+            margin-bottom: 15px;
+            border: 1px solid #000;
+            padding: 10px;
+          }
+
+          .prescription-info h3 {
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 10px;
+            text-align: center;
+            background: #fff;
+            padding: 5px;
+            border: 1px solid #000;
+          }
+
           .medications-section {
 
             margin-bottom: 15px;
@@ -5814,6 +5837,22 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
             </div>
 
             
+
+            <div class="prescription-info">
+              <h3>${currentLanguage === 'ar' ? 'معلومات الوصفة' : currentLanguage === 'en' ? 'Prescription Information' : 'زانیاری نوسراوە'}</h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">${currentLanguage === 'ar' ? 'التشخيص:' : currentLanguage === 'en' ? 'Diagnosis:' : 'دۆزینەوە:'}</span>
+                  <span class="info-value">${medications[0]?.diagnosis || 'غير محدد'}</span>
+                </div>
+                ${medications[0]?.prescriptionNotes ? `
+                <div class="info-item">
+                  <span class="info-label">${currentLanguage === 'ar' ? 'ملاحظات الطبيب:' : currentLanguage === 'en' ? 'Doctor Notes:' : 'تێبینی پزیشک:'}</span>
+                  <span class="info-value">${medications[0].prescriptionNotes}</span>
+                </div>
+                ` : ''}
+              </div>
+            </div>
 
             <div class="medications-section">
 
