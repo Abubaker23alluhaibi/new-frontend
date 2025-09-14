@@ -1138,5 +1138,26 @@
       "code_correct": "Make sure to enter the correct code",
       "change_type": "You can change user type at any time"
     }
-  }
+  },
+  "prescription_info": "Prescription Information",
+  "diagnosis": "Diagnosis",
+  "diagnosis_placeholder": "Enter diagnosis",
+  "doctor_notes": "Doctor's Notes",
+  "additional_notes": "Additional notes for prescription",
+  "medications": "Medications",
+  "add_another_medication": "Add another medication",
+  "medication_number": "Medication #{{number}}",
+  "medication_name": "Medication Name",
+  "medication_name_placeholder": "Enter medication name",
+  "medication_dosage": "Dosage",
+  "medication_dosage_placeholder": "Example: 500mg",
+  "medication_frequency": "Frequency",
+  "medication_frequency_placeholder": "Select frequency",
+  "medication_duration": "Duration",
+  "medication_duration_placeholder": "Example: 7 days",
+  "medication_instructions": "Instructions",
+  "medication_instructions_placeholder": "Special instructions for medication",
+  "medication_notes": "Additional notes",
+  "medication_notes_placeholder": "Additional notes",
+  "save_prescription": "Save Prescription"
 } 

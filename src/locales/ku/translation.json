@@ -1300,5 +1300,26 @@
       "code_correct": "دڵنیابە لە نووسینی کۆدی دروست",
       "change_type": "دەتوانیت جۆری بەکارهێنەر لە هەر کاتێکدا بگۆڕیت"
     }
-  }
+  },
+  "prescription_info": "زانیاری نوسراوە",
+  "diagnosis": "دەستنیشانکردن",
+  "diagnosis_placeholder": "دەستنیشانکردن بنووسە",
+  "doctor_notes": "تێبینییەکانی پزیشک",
+  "additional_notes": "تێبینییە زیادەکان بۆ نوسراوە",
+  "medications": "دەرمانەکان",
+  "add_another_medication": "دەرمانێکی تر زیاد بکە",
+  "medication_number": "دەرمان #{{number}}",
+  "medication_name": "ناوی دەرمان",
+  "medication_name_placeholder": "ناوی دەرمان بنووسە",
+  "medication_dosage": "دۆزە",
+  "medication_dosage_placeholder": "نموونە: 500 مجم",
+  "medication_frequency": "زۆری",
+  "medication_frequency_placeholder": "زۆری هەلبژێرە",
+  "medication_duration": "ماوە",
+  "medication_duration_placeholder": "نموونە: 7 ڕۆژ",
+  "medication_instructions": "ڕێنماییەکان",
+  "medication_instructions_placeholder": "ڕێنماییە تایبەتەکان بۆ دەرمان",
+  "medication_notes": "تێبینییە زیادەکان",
+  "medication_notes_placeholder": "تێبینییە زیادەکان",
+  "save_prescription": "پاشەکەوتکردنی نوسراوە"
 }

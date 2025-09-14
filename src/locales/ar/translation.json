@@ -1416,5 +1416,26 @@
       "code_correct": "تأكد من إدخال الرمز الصحيح",
       "change_type": "يمكنك تغيير نوع المستخدم في أي وقت"
     }
-  }
+  },
+  "prescription_info": "معلومات الوصفة",
+  "diagnosis": "التشخيص",
+  "diagnosis_placeholder": "أدخل التشخيص",
+  "doctor_notes": "ملاحظات الطبيب",
+  "additional_notes": "ملاحظات إضافية للوصفة",
+  "medications": "الأدوية",
+  "add_another_medication": "إضافة دواء آخر",
+  "medication_number": "دواء #{{number}}",
+  "medication_name": "اسم الدواء",
+  "medication_name_placeholder": "أدخل اسم الدواء",
+  "medication_dosage": "الجرعة",
+  "medication_dosage_placeholder": "مثال: 500 مجم",
+  "medication_frequency": "التكرار",
+  "medication_frequency_placeholder": "اختر التكرار",
+  "medication_duration": "المدة",
+  "medication_duration_placeholder": "مثال: 7 أيام",
+  "medication_instructions": "التعليمات",
+  "medication_instructions_placeholder": "تعليمات خاصة للدواء",
+  "medication_notes": "ملاحظات إضافية",
+  "medication_notes_placeholder": "ملاحظات إضافية",
+  "save_prescription": "حفظ الوصفة الطبية"
 }
