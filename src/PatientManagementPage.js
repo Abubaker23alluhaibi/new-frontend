@@ -3478,7 +3478,7 @@ const PatientManagementPage = () => {
 
         if (!printWindow) {
 
-          alert('لا يمكن فتح نافذة الطباعة. تأكد من السماح للنوافذ المنبثقة.');
+          alert(t('error_loading_image')); // استخدام الترجمة
 
           return;
 
@@ -3496,7 +3496,7 @@ const PatientManagementPage = () => {
 
           <meta charset="UTF-8">
 
-          <title>${currentLanguage === 'ar' ? 'الوصفة الطبية' : currentLanguage === 'en' ? 'Medical Prescription' : 'نوسراوە پزیشکییە'}</title>
+          <title>${t('print_prescription')}</title>
 
           <style>
 
@@ -3964,11 +3964,11 @@ const PatientManagementPage = () => {
 
               <div class="header">
 
-                <div class="clinic-name">${currentLanguage === 'ar' ? 'منصة طبيب العراق' : currentLanguage === 'en' ? 'Iraqi Doctor Platform' : 'پلاتفۆرمی پزیشکی عێراق'}</div>
+                <div class="clinic-name">${t('clinic_title')}</div>
 
                 <div class="clinic-url">www.tabibq.com</div>
 
-                <div class="prescription-title">${currentLanguage === 'ar' ? 'وصفة طبية' : currentLanguage === 'en' ? 'Medical Prescription' : 'نوسراوە پزیشکییە'}</div>
+                <div class="prescription-title">${t('prescription_title')}</div>
 
               </div>
 
@@ -3976,13 +3976,13 @@ const PatientManagementPage = () => {
 
               <div class="patient-info">
 
-                <h3>${currentLanguage === 'ar' ? 'معلومات المريض' : currentLanguage === 'en' ? 'Patient Information' : 'زانیاری نەخۆش'}</h3>
+                <h3>${t('patient_info')}</h3>
 
                 <div class="info-grid">
 
                   <div class="info-item">
 
-                    <span class="info-label">${currentLanguage === 'ar' ? 'الاسم:' : currentLanguage === 'en' ? 'Name:' : 'ناو:'}</span>
+                    <span class="info-label">${t('patient_name_label')}</span>
 
                     <span class="info-value">${patient.name}</span>
 
@@ -3996,7 +3996,7 @@ const PatientManagementPage = () => {
 
               <div class="medications-section">
 
-                <div class="medications-title">${currentLanguage === 'ar' ? 'الأدوية الموصوفة' : currentLanguage === 'en' ? 'Prescribed Medications' : 'دەرمانە پێنوسراوەکان'}</div>
+                <div class="medications-title">${t('medications_title')}</div>
 
                 <div class="medication-group">
 
@@ -4004,9 +4004,9 @@ const PatientManagementPage = () => {
 
                     ${prescriptionId === 'individual' ? 
 
-                      (currentLanguage === 'ar' ? 'أدوية فردية' : currentLanguage === 'en' ? 'Individual Medications' : 'دەرمانە تاکەکان') : 
+                      t('individual_medications') : 
 
-                      (currentLanguage === 'ar' ? 'الوصفة الطبية - ' + prescriptionId : currentLanguage === 'en' ? 'Prescription - ' + prescriptionId : 'نوسراوە پزیشکییە - ' + prescriptionId)
+                      t('prescription_medications') + ' - ' + prescriptionId
 
                     }
 
@@ -4034,7 +4034,7 @@ const PatientManagementPage = () => {
 
                           <div class="instructions">
 
-                            <strong>${currentLanguage === 'ar' ? 'التعليمات:' : currentLanguage === 'en' ? 'Instructions:' : 'ڕێنماییەکان:'}</strong> ${medication.instructions}
+                            <strong>${t('instructions_label')}</strong> ${medication.instructions}
 
                           </div>
 
@@ -4044,7 +4044,7 @@ const PatientManagementPage = () => {
 
                           <div class="instructions">
 
-                            <strong>${currentLanguage === 'ar' ? 'ملاحظات:' : currentLanguage === 'en' ? 'Notes:' : 'تێبینییەکان:'}</strong> ${medication.notes}
+                            <strong>${t('notes_label')}</strong> ${medication.notes}
 
                           </div>
 
@@ -4066,13 +4066,13 @@ const PatientManagementPage = () => {
 
                 <div class="doctor-signature">
 
-                  <div class="doctor-name">${currentLanguage === 'ar' ? 'د. ' : currentLanguage === 'en' ? 'Dr. ' : 'د. '}${doctor.name}</div>
+                  <div class="doctor-name">${t('doctor_name')}: ${doctor.name}</div>
 
-                  <div class="doctor-specialty">${doctor.specialty || (currentLanguage === 'ar' ? 'طبيب عام' : currentLanguage === 'en' ? 'General Practitioner' : 'پزیشکی گشتی')}</div>
+                  <div class="doctor-specialty">${doctor.specialty || t('general_practitioner')}</div>
 
                   <div class="signature-line"></div>
 
-                  <div class="print-date">${currentLanguage === 'ar' ? 'تاريخ الطباعة: ' : currentLanguage === 'en' ? 'Print Date: ' : 'بەرواری چاپ: '}${new Date().toLocaleDateString(currentLanguage === 'ar' ? 'ar-EG' : currentLanguage === 'en' ? 'en-US' : 'ku')}</div>
+                  <div class="print-date">${t('print_date_label')}${new Date().toLocaleDateString(currentLanguage === 'ar' ? 'ar-EG' : currentLanguage === 'en' ? 'en-US' : 'ku')}</div>
 
                 </div>
 
@@ -4080,9 +4080,9 @@ const PatientManagementPage = () => {
 
                 <div class="clinic-footer">
 
-                  <p>${currentLanguage === 'ar' ? 'هذه الوصفة الطبية صادرة من منصة طبيب العراق' : currentLanguage === 'en' ? 'This prescription is issued by Iraqi Doctor Platform' : 'ئەم نوسراوە پزیشکییە لەلایەن پلاتفۆرمی پزیشکی عێراقەوە دەرکراوە'}</p>
+                  <p>${t('clinic_footer_text')}</p>
 
-                  <p>${currentLanguage === 'ar' ? 'للاستفسارات: www.tabibq.com' : currentLanguage === 'en' ? 'For inquiries: www.tabibq.com' : 'بۆ پرسیارەکان: www.tabibq.com'}</p>
+                  <p>${t('clinic_footer_contact')}</p>
 
                 </div>
 
@@ -5299,7 +5299,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
     if (!printWindow) {
 
-      alert('لا يمكن فتح نافذة الطباعة. تأكد من السماح للنوافذ المنبثقة.');
+      alert(t('error_loading_image')); // استخدام الترجمة
 
       return;
 
@@ -5325,7 +5325,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
         <meta charset="UTF-8">
 
-        <title>${currentLanguage === 'ar' ? 'الوصفة الطبية' : currentLanguage === 'en' ? 'Medical Prescription' : 'نوسراوە پزیشکییە'}</title>
+        <title>${t('print_prescription')}</title>
 
         <style>
 
@@ -5808,11 +5808,11 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
             <div class="header">
 
-              <div class="clinic-name">${currentLanguage === 'ar' ? 'منصة طبيب العراق' : currentLanguage === 'en' ? 'Iraqi Doctor Platform' : 'پلاتفۆرمی پزیشکی عێراق'}</div>
+              <div class="clinic-name">${t('clinic_title')}</div>
 
               <div class="clinic-url">www.tabibq.com</div>
 
-              <div class="prescription-title">${currentLanguage === 'ar' ? 'وصفة طبية' : currentLanguage === 'en' ? 'Medical Prescription' : 'نوسراوە پزیشکییە'}</div>
+              <div class="prescription-title">${t('prescription_title')}</div>
 
             </div>
 
@@ -5820,13 +5820,13 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
             <div class="patient-info">
 
-              <h3>${currentLanguage === 'ar' ? 'معلومات المريض' : currentLanguage === 'en' ? 'Patient Information' : 'زانیاری نەخۆش'}</h3>
+              <h3>${t('patient_info')}</h3>
 
               <div class="info-grid">
 
                 <div class="info-item">
 
-                  <span class="info-label">${currentLanguage === 'ar' ? 'الاسم:' : currentLanguage === 'en' ? 'Name:' : 'ناو:'}</span>
+                  <span class="info-label">${t('patient_name_label')}</span>
 
                   <span class="info-value">${patient.name}</span>
 
@@ -5839,15 +5839,15 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
             
 
             <div class="prescription-info">
-              <h3>${currentLanguage === 'ar' ? 'معلومات الوصفة' : currentLanguage === 'en' ? 'Prescription Information' : 'زانیاری نوسراوە'}</h3>
+              <h3>${t('prescription_info')}</h3>
               <div class="info-grid">
                 <div class="info-item">
-                  <span class="info-label">${currentLanguage === 'ar' ? 'التشخيص:' : currentLanguage === 'en' ? 'Diagnosis:' : 'دۆزینەوە:'}</span>
+                  <span class="info-label">${t('diagnosis')}:</span>
                   <span class="info-value">${medications[0]?.diagnosis || 'غير محدد'}</span>
                 </div>
                 ${medications[0]?.prescriptionNotes ? `
                 <div class="info-item">
-                  <span class="info-label">${currentLanguage === 'ar' ? 'ملاحظات الطبيب:' : currentLanguage === 'en' ? 'Doctor Notes:' : 'تێبینی پزیشک:'}</span>
+                  <span class="info-label">${t('doctor_notes')}:</span>
                   <span class="info-value">${medications[0].prescriptionNotes}</span>
                 </div>
                 ` : ''}
@@ -5856,7 +5856,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
             <div class="medications-section">
 
-              <div class="medications-title">${currentLanguage === 'ar' ? 'الأدوية الموصوفة' : currentLanguage === 'en' ? 'Prescribed Medications' : 'دەرمانە پێنوسراوەکان'}</div>
+              <div class="medications-title">${t('medications_title')}</div>
 
               ${(() => {
 
@@ -5886,7 +5886,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
                     <div class="group-header">
 
-                      ${prescriptionId === 'individual' ? 'أدوية منفردة' : `الوصفة الطبية - ${meds[0].prescriptionId}`}
+                      ${prescriptionId === 'individual' ? t('individual_medications') : t('prescription_medications') + ' - ' + meds[0].prescriptionId}
 
                     </div>
 
@@ -5948,13 +5948,13 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
               <div class="doctor-signature">
 
-                <div class="doctor-name">د. ${doctor.name}</div>
+                <div class="doctor-name">${t('doctor_name')}: ${doctor.name}</div>
 
                 <div class="doctor-specialty">${doctor.specialty}</div>
 
                 <div class="signature-line"></div>
 
-                <div class="print-date">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')}</div>
+                <div class="print-date">${t('print_date_label')}${new Date().toLocaleDateString(currentLanguage === 'ar' ? 'ar-EG' : currentLanguage === 'en' ? 'en-US' : 'ku')}</div>
 
               </div>
 
@@ -5964,7 +5964,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
             <div class="clinic-footer">
 
-              <p>منصة طبيب العراق الرقمية</p>
+              <p>${t('clinic_footer_text')}</p>
 
               <p>www.tabibq.com | info@tabibq.com</p>
 
@@ -6012,7 +6012,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
         console.error('خطأ في الطباعة:', error);
 
-        alert('حدث خطأ في الطباعة. يرجى المحاولة مرة أخرى.');
+        alert(t('error_loading_image')); // استخدام الترجمة
 
       }
 
@@ -6026,7 +6026,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
       console.error('خطأ في تحميل نافذة الطباعة');
 
-      alert('حدث خطأ في تحميل نافذة الطباعة. يرجى المحاولة مرة أخرى.');
+      alert(t('error_loading_image')); // استخدام الترجمة
 
     };
 

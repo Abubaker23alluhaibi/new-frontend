@@ -1437,5 +1437,11 @@
   "medication_instructions_placeholder": "تعليمات خاصة للدواء",
   "medication_notes": "ملاحظات إضافية",
   "medication_notes_placeholder": "ملاحظات إضافية",
-  "save_prescription": "حفظ الوصفة الطبية"
+  "save_prescription": "حفظ الوصفة الطبية",
+  "print_prescription": "طباعة الوصفة الطبية",
+  "print_date_label": "تاريخ الطباعة:",
+  "doctor_signature": "توقيع الطبيب",
+  "clinic_footer_text": "هذه الوصفة الطبية صادرة من منصة طبيب العراق",
+  "clinic_footer_contact": "للاستفسارات: www.tabibq.com",
+  "general_practitioner": "طبيب عام"
 }

@@ -1159,5 +1159,11 @@
   "medication_instructions_placeholder": "Special instructions for medication",
   "medication_notes": "Additional notes",
   "medication_notes_placeholder": "Additional notes",
-  "save_prescription": "Save Prescription"
+  "save_prescription": "Save Prescription",
+  "print_prescription": "Print Prescription",
+  "print_date_label": "Print Date:",
+  "doctor_signature": "Doctor's Signature",
+  "clinic_footer_text": "This prescription is issued by Iraqi Doctor Platform",
+  "clinic_footer_contact": "For inquiries: www.tabibq.com",
+  "general_practitioner": "General Practitioner"
 } 

@@ -1321,5 +1321,11 @@
   "medication_instructions_placeholder": "ڕێنماییە تایبەتەکان بۆ دەرمان",
   "medication_notes": "تێبینییە زیادەکان",
   "medication_notes_placeholder": "تێبینییە زیادەکان",
-  "save_prescription": "پاشەکەوتکردنی نوسراوە"
+  "save_prescription": "پاشەکەوتکردنی نوسراوە",
+  "print_prescription": "چاپکردنی نوسراوە",
+  "print_date_label": "بەرواری چاپ:",
+  "doctor_signature": "دەستخەتی پزیشک",
+  "clinic_footer_text": "ئەم نوسراوە پزیشکییە لەلایەن پلاتفۆرمی پزیشکی عێراقەوە دەرکراوە",
+  "clinic_footer_contact": "بۆ پرسیارەکان: www.tabibq.com",
+  "general_practitioner": "پزیشکی گشتی"
 }
