@@ -18,7 +18,7 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
     bloodType: 'غير محدد',
     chiefComplaint: '',
     chronicDiseases: '',
-    otherConditions: '',
+    chronicMedications: '',
     emergencyContact: {
       name: '',
       phone: '',
@@ -62,7 +62,7 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
         bloodType: 'غير محدد',
         chiefComplaint: '',
         chronicDiseases: '',
-        otherConditions: '',
+        chronicMedications: '',
         emergencyContact: { name: '', phone: '', relationship: '' },
         notes: ''
       });
@@ -220,11 +220,11 @@ const AddPatientForm = ({ onAdd, onCancel, todayAppointments = [] }) => {
         </div>
 
         <div className="form-group">
-          <label>{t('patient_management.other_conditions')}</label>
+          <label>{t('patient_management.chronic_medications')}</label>
           <textarea
-            value={formData.otherConditions}
-            onChange={(e) => setFormData({...formData, otherConditions: e.target.value})}
-            placeholder="اكتب أي {t('patient_management.other_conditions')} أو حالات طبية..."
+            value={formData.chronicMedications}
+            onChange={(e) => setFormData({...formData, chronicMedications: e.target.value})}
+            placeholder="اكتب {t('patient_management.chronic_medications')} التي يتناولها المريض..."
             rows="3"
           />
         </div>
@@ -300,7 +300,7 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
     bloodType: patient.bloodType || 'غير محدد',
     chiefComplaint: patient.chiefComplaint || '',
     chronicDiseases: patient.chronicDiseases || '',
-    otherConditions: patient.otherConditions || '',
+    chronicMedications: patient.chronicMedications || '',
     emergencyContact: {
       name: patient.emergencyContact?.name || '',
       phone: patient.emergencyContact?.phone || '',
@@ -429,11 +429,11 @@ const EditPatientForm = ({ patient, onUpdate, onCancel }) => {
           </div>
 
           <div className="form-group">
-            <label>{t('patient_management.other_conditions')}</label>
+            <label>{t('patient_management.chronic_medications')}</label>
             <textarea
-              value={formData.otherConditions}
-              onChange={(e) => setFormData({...formData, otherConditions: e.target.value})}
-              placeholder="اكتب أي {t('patient_management.other_conditions')} أو حالات طبية..."
+              value={formData.chronicMedications}
+              onChange={(e) => setFormData({...formData, chronicMedications: e.target.value})}
+              placeholder="اكتب {t('patient_management.chronic_medications')} التي يتناولها المريض..."
               rows="3"
             />
           </div>
@@ -808,10 +808,10 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
                     <span>{patient.chronicDiseases}</span>
                   </div>
                 )}
-                {patient.otherConditions && (
+                {patient.chronicMedications && (
                   <div className="info-item full-width">
-                    <label>{t('patient_management.other_conditions')}:</label>
-                    <span>{patient.otherConditions}</span>
+                    <label>{t('patient_management.chronic_medications')}:</label>
+                    <span>{patient.chronicMedications}</span>
                   </div>
                 )}
                 {patient.emergencyContact?.name && (
