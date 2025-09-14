@@ -4761,7 +4761,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
         <div className="modal-header">
 
-          <h2>إضافة وصفة طبية جديدة</h2>
+          <h2>{t('add_new_prescription')}</h2>
 
           <button onClick={onCancel} className="btn-close">×</button>
 
@@ -4775,11 +4775,11 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
           <div className="prescription-info">
 
-            <h3>معلومات الوصفة</h3>
+            <h3>{t('prescription_info')}</h3>
 
             <div className="field-group full-width">
 
-              <label>التشخيص *</label>
+              <label>{t('diagnosis')} *</label>
 
               <textarea
 
@@ -4789,7 +4789,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                 required
 
-                placeholder="أدخل التشخيص"
+                placeholder={t('diagnosis_placeholder')}
 
                 rows="3"
 
@@ -4801,7 +4801,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
             <div className="field-group full-width">
 
-              <label>ملاحظات الطبيب</label>
+              <label>{t('doctor_notes')}</label>
 
               <textarea
 
@@ -4809,7 +4809,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                 onChange={(e) => setPrescriptionData({...prescriptionData, notes: e.target.value})}
 
-                placeholder="ملاحظات إضافية للوصفة"
+                placeholder={t('additional_notes')}
 
                 rows="2"
 
@@ -4827,11 +4827,11 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
             <div className="section-header">
 
-              <h3>الأدوية</h3>
+              <h3>{t('medications')}</h3>
 
               <button type="button" onClick={addMedication} className="btn-add-medication">
 
-                + إضافة دواء آخر
+                + {t('add_another_medication')}
 
               </button>
 
@@ -4845,7 +4845,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                 <div className="medication-form-header">
 
-                  <h5>دواء #{index + 1}</h5>
+                  <h5>{t('medication_number', { number: index + 1 })}</h5>
 
                   {prescriptionData.medications.length > 1 && (
 
@@ -4859,7 +4859,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                     >
 
-                      حذف
+                      {t('delete')}
 
                     </button>
 
@@ -4873,7 +4873,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                   <div className="field-group">
 
-                    <label>اسم الدواء *</label>
+                    <label>{t('medication_name')} *</label>
 
                     <input
 
@@ -4885,7 +4885,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                       required
 
-                      placeholder="أدخل اسم الدواء"
+                      placeholder={t('medication_name_placeholder')}
 
                     />
 
@@ -4895,7 +4895,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                   <div className="field-group">
 
-                    <label>الجرعة *</label>
+                    <label>{t('medication_dosage')} *</label>
 
                     <input
 
@@ -4907,7 +4907,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                       required
 
-                      placeholder="مثال: 500 مجم"
+                      placeholder={t('medication_dosage_placeholder')}
 
                     />
 
@@ -4917,7 +4917,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                   <div className="field-group">
 
-                    <label>التكرار *</label>
+                    <label>{t('medication_frequency')} *</label>
 
                     <select
 
@@ -4929,7 +4929,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                     >
 
-                      <option value="">اختر التكرار</option>
+                      <option value="">{t('medication_frequency_placeholder')}</option>
 
                       <option value="مرة واحدة يومياً">مرة واحدة يومياً</option>
 
@@ -4955,7 +4955,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                   <div className="field-group">
 
-                    <label>المدة</label>
+                    <label>{t('medication_duration')}</label>
 
                     <input
 
@@ -4965,7 +4965,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                       onChange={(e) => updateMedication(index, 'duration', e.target.value)}
 
-                      placeholder="مثال: 7 أيام"
+                      placeholder={t('medication_duration_placeholder')}
 
                     />
 
@@ -4975,7 +4975,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                   <div className="field-group full-width">
 
-                    <label>التعليمات</label>
+                    <label>{t('medication_instructions')}</label>
 
                     <textarea
 
@@ -4983,7 +4983,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                       onChange={(e) => updateMedication(index, 'instructions', e.target.value)}
 
-                      placeholder="تعليمات خاصة للدواء"
+                      placeholder={t('medication_instructions_placeholder')}
 
                       rows="2"
 
@@ -4995,7 +4995,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                   <div className="field-group full-width">
 
-                    <label>ملاحظات إضافية</label>
+                    <label>{t('medication_notes')}</label>
 
                     <textarea
 
@@ -5003,7 +5003,7 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
                       onChange={(e) => updateMedication(index, 'notes', e.target.value)}
 
-                      placeholder="ملاحظات إضافية"
+                      placeholder={t('medication_notes_placeholder')}
 
                       rows="2"
 
@@ -5025,13 +5025,13 @@ const AddPrescriptionForm = ({ onAdd, onCancel }) => {
 
             <button type="button" onClick={onCancel} className="btn-cancel">
 
-              إلغاء
+              {t('cancel')}
 
             </button>
 
             <button type="submit" className="btn-save" disabled={loading}>
 
-              {loading ? 'جاري الحفظ...' : 'حفظ الوصفة الطبية'}
+              {loading ? t('saving') : t('save_prescription')}
 
             </button>
 
