@@ -3466,6 +3466,128 @@ const PatientManagementPage = () => {
 
       
 
+      // دالة ترجمة محلية
+
+      const getTranslation = (key) => {
+
+        const translations = {
+
+          ar: {
+
+            'clinic_title': 'منصة طبيب العراق',
+
+            'prescription_title': 'وصفة طبية',
+
+            'patient_info': 'معلومات المريض',
+
+            'patient_name_label': 'الاسم:',
+
+            'medications_title': 'الأدوية الموصوفة',
+
+            'individual_medications': 'أدوية فردية',
+
+            'prescription_medications': 'الوصفة الطبية',
+
+            'instructions_label': 'التعليمات:',
+
+            'notes_label': 'ملاحظات:',
+
+            'doctor_name': 'اسم الطبيب',
+
+            'general_practitioner': 'طبيب عام',
+
+            'print_date_label': 'تاريخ الطباعة:',
+
+            'clinic_footer_text': 'هذه الوصفة الطبية صادرة من منصة طبيب العراق',
+
+            'clinic_footer_contact': 'للاستفسارات: www.tabibq.com',
+
+            'print_prescription': 'طباعة الوصفة الطبية',
+
+            'error_loading_image': 'لا يمكن فتح نافذة الطباعة. تأكد من السماح للنوافذ المنبثقة.'
+
+          },
+
+          en: {
+
+            'clinic_title': 'Iraqi Doctor Platform',
+
+            'prescription_title': 'Medical Prescription',
+
+            'patient_info': 'Patient Information',
+
+            'patient_name_label': 'Name:',
+
+            'medications_title': 'Prescribed Medications',
+
+            'individual_medications': 'Individual Medications',
+
+            'prescription_medications': 'Prescription',
+
+            'instructions_label': 'Instructions:',
+
+            'notes_label': 'Notes:',
+
+            'doctor_name': 'Doctor Name',
+
+            'general_practitioner': 'General Practitioner',
+
+            'print_date_label': 'Print Date:',
+
+            'clinic_footer_text': 'This prescription is issued by Iraqi Doctor Platform',
+
+            'clinic_footer_contact': 'For inquiries: www.tabibq.com',
+
+            'print_prescription': 'Print Prescription',
+
+            'error_loading_image': 'Cannot open print window. Please allow popups.'
+
+          },
+
+          ku: {
+
+            'clinic_title': 'پلاتفۆرمی پزیشکی عێراق',
+
+            'prescription_title': 'نوسراوە پزیشکییە',
+
+            'patient_info': 'زانیاری نەخۆش',
+
+            'patient_name_label': 'ناو:',
+
+            'medications_title': 'دەرمانە پێنوسراوەکان',
+
+            'individual_medications': 'دەرمانە تاکەکان',
+
+            'prescription_medications': 'نوسراوە پزیشکییە',
+
+            'instructions_label': 'ڕێنماییەکان:',
+
+            'notes_label': 'تێبینییەکان:',
+
+            'doctor_name': 'ناوی پزیشک',
+
+            'general_practitioner': 'پزیشکی گشتی',
+
+            'print_date_label': 'بەرواری چاپ:',
+
+            'clinic_footer_text': 'ئەم نوسراوە پزیشکییە لەلایەن پلاتفۆرمی پزیشکی عێراقەوە دەرکراوە',
+
+            'clinic_footer_contact': 'بۆ پرسیارەکان: www.tabibq.com',
+
+            'print_prescription': 'چاپکردنی نوسراوە',
+
+            'error_loading_image': 'ناتوانرێت پەنجەرەی چاپ بکەرێتەوە. تکایە ڕێگە بدە بە پەنجەرە نوێکان.'
+
+          }
+
+        };
+
+        return translations[currentLanguage]?.[key] || key;
+
+      };
+
+      
+
       // طباعة الوصفة المحددة مباشرة باستخدام setTimeout لتجنب تجميد الصفحة
 
       setTimeout(() => {
@@ -3478,7 +3600,7 @@ const PatientManagementPage = () => {
 
         if (!printWindow) {
 
-          alert(t('error_loading_image')); // استخدام الترجمة
+          alert(getTranslation('error_loading_image')); // استخدام الترجمة
 
           return;
 
@@ -3496,7 +3618,7 @@ const PatientManagementPage = () => {
 
           <meta charset="UTF-8">
 
-          <title>${t('print_prescription')}</title>
+          <title>${getTranslation('print_prescription')}</title>
 
           <style>
 
@@ -3964,11 +4086,11 @@ const PatientManagementPage = () => {
 
               <div class="header">
 
-                <div class="clinic-name">${t('clinic_title')}</div>
+                <div class="clinic-name">${getTranslation('clinic_title')}</div>
 
                 <div class="clinic-url">www.tabibq.com</div>
 
-                <div class="prescription-title">${t('prescription_title')}</div>
+                <div class="prescription-title">${getTranslation('prescription_title')}</div>
 
               </div>
 
@@ -3976,13 +4098,13 @@ const PatientManagementPage = () => {
 
               <div class="patient-info">
 
-                <h3>${t('patient_info')}</h3>
+                <h3>${getTranslation('patient_info')}</h3>
 
                 <div class="info-grid">
 
                   <div class="info-item">
 
-                    <span class="info-label">${t('patient_name_label')}</span>
+                    <span class="info-label">${getTranslation('patient_name_label')}</span>
 
                     <span class="info-value">${patient.name}</span>
 
@@ -3996,7 +4118,7 @@ const PatientManagementPage = () => {
 
               <div class="medications-section">
 
-                <div class="medications-title">${t('medications_title')}</div>
+                <div class="medications-title">${getTranslation('medications_title')}</div>
 
                 <div class="medication-group">
 
@@ -4004,9 +4126,9 @@ const PatientManagementPage = () => {
 
                     ${prescriptionId === 'individual' ? 
 
-                      t('individual_medications') : 
+                      getTranslation('individual_medications') : 
 
-                      t('prescription_medications') + ' - ' + prescriptionId
+                      getTranslation('prescription_medications') + ' - ' + prescriptionId
 
                     }
 
@@ -4034,7 +4156,7 @@ const PatientManagementPage = () => {
 
                           <div class="instructions">
 
-                            <strong>${t('instructions_label')}</strong> ${medication.instructions}
+                            <strong>${getTranslation('instructions_label')}</strong> ${medication.instructions}
 
                           </div>
 
@@ -4044,7 +4166,7 @@ const PatientManagementPage = () => {
 
                           <div class="instructions">
 
-                            <strong>${t('notes_label')}</strong> ${medication.notes}
+                            <strong>${getTranslation('notes_label')}</strong> ${medication.notes}
 
                           </div>
 
@@ -4066,13 +4188,13 @@ const PatientManagementPage = () => {
 
                 <div class="doctor-signature">
 
-                  <div class="doctor-name">${t('doctor_name')}: ${doctor.name}</div>
+                  <div class="doctor-name">${getTranslation('doctor_name')}: ${doctor.name}</div>
 
-                  <div class="doctor-specialty">${doctor.specialty || t('general_practitioner')}</div>
+                  <div class="doctor-specialty">${doctor.specialty || getTranslation('general_practitioner')}</div>
 
                   <div class="signature-line"></div>
 
-                  <div class="print-date">${t('print_date_label')}${new Date().toLocaleDateString(currentLanguage === 'ar' ? 'ar-EG' : currentLanguage === 'en' ? 'en-US' : 'ku')}</div>
+                  <div class="print-date">${getTranslation('print_date_label')}${new Date().toLocaleDateString(currentLanguage === 'ar' ? 'ar-EG' : currentLanguage === 'en' ? 'en-US' : 'ku')}</div>
 
                 </div>
 
@@ -4080,9 +4202,9 @@ const PatientManagementPage = () => {
 
                 <div class="clinic-footer">
 
-                  <p>${t('clinic_footer_text')}</p>
+                  <p>${getTranslation('clinic_footer_text')}</p>
 
-                  <p>${t('clinic_footer_contact')}</p>
+                  <p>${getTranslation('clinic_footer_contact')}</p>
 
                 </div>
 
@@ -5295,23 +5417,145 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
     
 
-    // التأكد من أن النافذة فُتحت بنجاح
-
-    if (!printWindow) {
-
-      alert(t('error_loading_image')); // استخدام الترجمة
-
-      return;
-
-    }
-
-    
-
     // الحصول على اللغة الحالية
 
     const currentLanguage = localStorage.getItem('i18nextLng') || 'ar';
 
     const isRTL = currentLanguage === 'ar' || currentLanguage === 'ku';
+
+    
+
+    // دالة ترجمة محلية
+
+    const getTranslation = (key) => {
+
+      const translations = {
+
+        ar: {
+
+          'clinic_title': 'منصة طبيب العراق',
+
+          'prescription_title': 'وصفة طبية',
+
+          'patient_info': 'معلومات المريض',
+
+          'patient_name_label': 'الاسم:',
+
+          'medications_title': 'الأدوية الموصوفة',
+
+          'individual_medications': 'أدوية فردية',
+
+          'prescription_medications': 'الوصفة الطبية',
+
+          'instructions_label': 'التعليمات:',
+
+          'notes_label': 'ملاحظات:',
+
+          'doctor_name': 'اسم الطبيب',
+
+          'general_practitioner': 'طبيب عام',
+
+          'print_date_label': 'تاريخ الطباعة:',
+
+          'clinic_footer_text': 'هذه الوصفة الطبية صادرة من منصة طبيب العراق',
+
+          'clinic_footer_contact': 'للاستفسارات: www.tabibq.com',
+
+          'print_prescription': 'طباعة الوصفة الطبية',
+
+          'error_loading_image': 'لا يمكن فتح نافذة الطباعة. تأكد من السماح للنوافذ المنبثقة.'
+
+        },
+
+        en: {
+
+          'clinic_title': 'Iraqi Doctor Platform',
+
+          'prescription_title': 'Medical Prescription',
+
+          'patient_info': 'Patient Information',
+
+          'patient_name_label': 'Name:',
+
+          'medications_title': 'Prescribed Medications',
+
+          'individual_medications': 'Individual Medications',
+
+          'prescription_medications': 'Prescription',
+
+          'instructions_label': 'Instructions:',
+
+          'notes_label': 'Notes:',
+
+          'doctor_name': 'Doctor Name',
+
+          'general_practitioner': 'General Practitioner',
+
+          'print_date_label': 'Print Date:',
+
+          'clinic_footer_text': 'This prescription is issued by Iraqi Doctor Platform',
+
+          'clinic_footer_contact': 'For inquiries: www.tabibq.com',
+
+          'print_prescription': 'Print Prescription',
+
+          'error_loading_image': 'Cannot open print window. Please allow popups.'
+
+        },
+
+        ku: {
+
+          'clinic_title': 'پلاتفۆرمی پزیشکی عێراق',
+
+          'prescription_title': 'نوسراوە پزیشکییە',
+
+          'patient_info': 'زانیاری نەخۆش',
+
+          'patient_name_label': 'ناو:',
+
+          'medications_title': 'دەرمانە پێنوسراوەکان',
+
+          'individual_medications': 'دەرمانە تاکەکان',
+
+          'prescription_medications': 'نوسراوە پزیشکییە',
+
+          'instructions_label': 'ڕێنماییەکان:',
+
+          'notes_label': 'تێبینییەکان:',
+
+          'doctor_name': 'ناوی پزیشک',
+
+          'general_practitioner': 'پزیشکی گشتی',
+
+          'print_date_label': 'بەرواری چاپ:',
+
+          'clinic_footer_text': 'ئەم نوسراوە پزیشکییە لەلایەن پلاتفۆرمی پزیشکی عێراقەوە دەرکراوە',
+
+          'clinic_footer_contact': 'بۆ پرسیارەکان: www.tabibq.com',
+
+          'print_prescription': 'چاپکردنی نوسراوە',
+
+          'error_loading_image': 'ناتوانرێت پەنجەرەی چاپ بکەرێتەوە. تکایە ڕێگە بدە بە پەنجەرە نوێکان.'
+
+        }
+
+      };
+
+      return translations[currentLanguage]?.[key] || key;
+
+    };
+
+    
+
+    // التأكد من أن النافذة فُتحت بنجاح
+
+    if (!printWindow) {
+
+      alert(getTranslation('error_loading_image')); // استخدام الترجمة
+
+      return;
+
+    }
 
     
 
@@ -5325,7 +5569,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
         <meta charset="UTF-8">
 
-        <title>${t('print_prescription')}</title>
+        <title>${getTranslation('print_prescription')}</title>
 
         <style>
 
@@ -5808,11 +6052,11 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
             <div class="header">
 
-              <div class="clinic-name">${t('clinic_title')}</div>
+              <div class="clinic-name">${getTranslation('clinic_title')}</div>
 
               <div class="clinic-url">www.tabibq.com</div>
 
-              <div class="prescription-title">${t('prescription_title')}</div>
+              <div class="prescription-title">${getTranslation('prescription_title')}</div>
 
             </div>
 
@@ -5820,13 +6064,13 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
             <div class="patient-info">
 
-              <h3>${t('patient_info')}</h3>
+              <h3>${getTranslation('patient_info')}</h3>
 
               <div class="info-grid">
 
                 <div class="info-item">
 
-                  <span class="info-label">${t('patient_name_label')}</span>
+                  <span class="info-label">${getTranslation('patient_name_label')}</span>
 
                   <span class="info-value">${patient.name}</span>
 
@@ -5839,15 +6083,15 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
             
 
             <div class="prescription-info">
-              <h3>${t('prescription_info')}</h3>
+              <h3>${getTranslation('prescription_info')}</h3>
               <div class="info-grid">
                 <div class="info-item">
-                  <span class="info-label">${t('diagnosis')}:</span>
+                  <span class="info-label">${getTranslation('diagnosis')}:</span>
                   <span class="info-value">${medications[0]?.diagnosis || 'غير محدد'}</span>
                 </div>
                 ${medications[0]?.prescriptionNotes ? `
                 <div class="info-item">
-                  <span class="info-label">${t('doctor_notes')}:</span>
+                  <span class="info-label">${getTranslation('doctor_notes')}:</span>
                   <span class="info-value">${medications[0].prescriptionNotes}</span>
                 </div>
                 ` : ''}
@@ -5856,7 +6100,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
             <div class="medications-section">
 
-              <div class="medications-title">${t('medications_title')}</div>
+              <div class="medications-title">${getTranslation('medications_title')}</div>
 
               ${(() => {
 
@@ -5886,7 +6130,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
                     <div class="group-header">
 
-                      ${prescriptionId === 'individual' ? t('individual_medications') : t('prescription_medications') + ' - ' + meds[0].prescriptionId}
+                      ${prescriptionId === 'individual' ? getTranslation('individual_medications') : getTranslation('prescription_medications') + ' - ' + meds[0].prescriptionId}
 
                     </div>
 
@@ -5948,13 +6192,13 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
               <div class="doctor-signature">
 
-                <div class="doctor-name">${t('doctor_name')}: ${doctor.name}</div>
+                <div class="doctor-name">${getTranslation('doctor_name')}: ${doctor.name}</div>
 
                 <div class="doctor-specialty">${doctor.specialty}</div>
 
                 <div class="signature-line"></div>
 
-                <div class="print-date">${t('print_date_label')}${new Date().toLocaleDateString(currentLanguage === 'ar' ? 'ar-EG' : currentLanguage === 'en' ? 'en-US' : 'ku')}</div>
+                <div class="print-date">${getTranslation('print_date_label')}${new Date().toLocaleDateString(currentLanguage === 'ar' ? 'ar-EG' : currentLanguage === 'en' ? 'en-US' : 'ku')}</div>
 
               </div>
 
@@ -5964,7 +6208,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
             <div class="clinic-footer">
 
-              <p>${t('clinic_footer_text')}</p>
+              <p>${getTranslation('clinic_footer_text')}</p>
 
               <p>www.tabibq.com | info@tabibq.com</p>
 
@@ -6012,7 +6256,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
         console.error('خطأ في الطباعة:', error);
 
-        alert(t('error_loading_image')); // استخدام الترجمة
+        alert(getTranslation('error_loading_image')); // استخدام الترجمة
 
       }
 
@@ -6026,7 +6270,7 @@ const PrintPrescriptionModal = ({ patient, medications, doctor, onClose, t }) =>
 
       console.error('خطأ في تحميل نافذة الطباعة');
 
-      alert(t('error_loading_image')); // استخدام الترجمة
+      alert(getTranslation('error_loading_image')); // استخدام الترجمة
 
     };
 
