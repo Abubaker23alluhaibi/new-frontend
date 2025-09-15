@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -10,6 +10,12 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments, ref
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [activeTab, setActiveTab] = useState('workTimes'); // 'workTimes' or 'vacationDays'
+  const [isInitialized, setIsInitialized] = useState(false); // لتجنب إعادة التحميل المتكرر
+
+  // إعادة تعيين isInitialized عند تغيير profile
+  useEffect(() => {
+    setIsInitialized(false);
+  }, [profile?._id]);
   
   // حالات التقويم المتقدم
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -94,7 +100,7 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments, ref
   };
 
   // دالة لإعادة جلب البيانات من الخادم
-  const refreshDataFromServer = async () => {
+  const refreshDataFromServer = useCallback(async () => {
     if (!profile?._id) return;
     
     try {
@@ -135,16 +141,18 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments, ref
     } catch (error) {
       console.error('خطأ في جلب البيانات من الخادم في WorkTimesEditor:', error);
     }
-  };
+  }, [profile?._id, refreshDoctorData]);
+
+  // تهيئة البيانات مرة واحدة فقط عند فتح المودال
+  useEffect(() => {
+    if (!isInitialized) {
+      // إعادة جلب البيانات من الخادم عند فتح المودال لأول مرة فقط
+      refreshDataFromServer();
+      setIsInitialized(true);
+    }
+  }, [isInitialized, refreshDataFromServer]);
 
   useEffect(() => {
-    // إعادة جلب البيانات من الخادم عند فتح المودال
-    const initializeData = async () => {
-      await refreshDataFromServer();
-    };
-    
-    initializeData();
-    
     // تهيئة أوقات الدوام - تأكد من أنها دائماً مصفوفة
     if (profile?.workTimes && Array.isArray(profile.workTimes) && profile.workTimes.length > 0) {
       // التأكد من أن جميع أوقات الدوام تحتوي على الحقول المطلوبة
@@ -347,6 +355,9 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments, ref
     if (removedVacation) {
       setSelectedDates(selectedDates.filter(date => date !== removedVacation));
     }
+    
+    console.log('🗑️ تم حذف يوم الإجازة محلياً:', removedVacation);
+    console.log('📋 أيام الإجازات المتبقية:', vacationDays.filter((_, i) => i !== index));
   };
 
   const updateVacationDay = (index, value) => {
@@ -830,8 +841,16 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments, ref
           type="button"
           onClick={async () => {
             setActiveTab('vacationDays');
-            // إعادة جلب البيانات من الخادم عند فتح تبويب أيام الإجازات
-            await refreshDataFromServer();
+            // إعادة جلب البيانات من الخادم عند فتح تبويب أيام الإجازات فقط
+            // ولكن فقط إذا لم تكن البيانات محدثة مؤخراً
+            const lastUpdate = localStorage.getItem('profile_lastUpdated');
+            const now = new Date().getTime();
+            const lastUpdateTime = lastUpdate ? new Date(lastUpdate).getTime() : 0;
+            
+            // إذا كانت البيانات أقدم من 30 ثانية، أعد جلبها
+            if (now - lastUpdateTime > 30000) {
+              await refreshDataFromServer();
+            }
           }}
           style={{
             flex: 1,

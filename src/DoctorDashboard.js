@@ -1671,10 +1671,9 @@ function DoctorDashboard() {
             <SecureSection permission="MANAGE_WORK_TIMES">
               <WorkTimesEditor 
                 profile={profile} 
-                onClose={async ()=>{
+                onClose={()=>{
                   setShowWorkTimesModal(false);
-                  // إعادة جلب البيانات من الخادم عند إغلاق المودال
-                  await refreshDoctorData();
+                  // لا نعيد جلب البيانات عند الإغلاق لتجنب فقدان التغييرات غير المحفوظة
                 }}
                 onUpdate={(updatedData) => {
                   console.log('🔄 DoctorDashboard: استلام البيانات المحدثة:', updatedData);
