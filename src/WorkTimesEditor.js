@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import 'react-datepicker/dist/react-datepicker.css';
 
-function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
+function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments, refreshDoctorData }) {
   const { t } = useTranslation();
   const [workTimes, setWorkTimes] = useState([]);
   const [vacationDays, setVacationDays] = useState([]);
@@ -93,7 +93,58 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
     console.log('🔄 تم تحديث البيانات المحلية');
   };
 
+  // دالة لإعادة جلب البيانات من الخادم
+  const refreshDataFromServer = async () => {
+    if (!profile?._id) return;
+    
+    try {
+      // استخدام refreshDoctorData إذا كان متاحاً
+      if (refreshDoctorData) {
+        const updatedProfile = await refreshDoctorData();
+        if (updatedProfile) {
+          // تحديث البيانات المحلية
+          if (updatedProfile.workTimes && Array.isArray(updatedProfile.workTimes)) {
+            setWorkTimes(updatedProfile.workTimes);
+          }
+          
+          if (updatedProfile.vacationDays && Array.isArray(updatedProfile.vacationDays)) {
+            const convertedVacations = convertOldVacationData(updatedProfile.vacationDays);
+            setVacationDays(convertedVacations);
+          }
+        }
+      } else {
+        // الطريقة القديمة كبديل
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors`);
+        const doctors = await response.json();
+        const currentDoctor = doctors.find(d => d._id === profile._id);
+        
+        if (currentDoctor) {
+          console.log('🔄 تم جلب البيانات المحدثة من الخادم في WorkTimesEditor:', currentDoctor);
+          
+          // تحديث البيانات المحلية
+          if (currentDoctor.workTimes && Array.isArray(currentDoctor.workTimes)) {
+            setWorkTimes(currentDoctor.workTimes);
+          }
+          
+          if (currentDoctor.vacationDays && Array.isArray(currentDoctor.vacationDays)) {
+            const convertedVacations = convertOldVacationData(currentDoctor.vacationDays);
+            setVacationDays(convertedVacations);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('خطأ في جلب البيانات من الخادم في WorkTimesEditor:', error);
+    }
+  };
+
   useEffect(() => {
+    // إعادة جلب البيانات من الخادم عند فتح المودال
+    const initializeData = async () => {
+      await refreshDataFromServer();
+    };
+    
+    initializeData();
+    
     // تهيئة أوقات الدوام - تأكد من أنها دائماً مصفوفة
     if (profile?.workTimes && Array.isArray(profile.workTimes) && profile.workTimes.length > 0) {
       // التأكد من أن جميع أوقات الدوام تحتوي على الحقول المطلوبة
@@ -777,7 +828,11 @@ function WorkTimesEditor({ profile, onClose, onUpdate, fetchAllAppointments }) {
         </button>
         <button
           type="button"
-          onClick={() => setActiveTab('vacationDays')}
+          onClick={async () => {
+            setActiveTab('vacationDays');
+            // إعادة جلب البيانات من الخادم عند فتح تبويب أيام الإجازات
+            await refreshDataFromServer();
+          }}
           style={{
             flex: 1,
             padding: '0.7rem 1rem',

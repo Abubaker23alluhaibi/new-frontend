@@ -24,7 +24,7 @@ function getToday() {
 function DoctorDashboard() {
   console.log('🎬 DoctorDashboard: تم تحميل المكون');
   console.log('🎬 DoctorDashboard: سيتم عرض AdvertisementSlider في هذا المكون');
-  const { profile, setProfile, signOut } = useAuth();
+  const { profile, setProfile, signOut, refreshDoctorData } = useAuth();
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
 
@@ -599,9 +599,13 @@ function DoctorDashboard() {
               </button>
               <SecureButton 
                 permission="MANAGE_WORK_TIMES"
-                onClick={()=>{
+                onClick={async ()=>{
                   setShowWorkTimesModal(true); 
                   setShowSidebar(false);
+                  
+                  // إعادة جلب بيانات الطبيب من الخادم للتأكد من التزامن
+                  await refreshDoctorData();
+                  
                   // إعادة تحميل المواعيد عند فتح تعديل الدوام
                   fetchAllAppointments();
                 }} 
@@ -1667,7 +1671,11 @@ function DoctorDashboard() {
             <SecureSection permission="MANAGE_WORK_TIMES">
               <WorkTimesEditor 
                 profile={profile} 
-                onClose={()=>setShowWorkTimesModal(false)}
+                onClose={async ()=>{
+                  setShowWorkTimesModal(false);
+                  // إعادة جلب البيانات من الخادم عند إغلاق المودال
+                  await refreshDoctorData();
+                }}
                 onUpdate={(updatedData) => {
                   console.log('🔄 DoctorDashboard: استلام البيانات المحدثة:', updatedData);
                   setShowWorkTimesModal(false);
@@ -1697,6 +1705,7 @@ function DoctorDashboard() {
                   }
                 }}
                 fetchAllAppointments={fetchAllAppointments}
+                refreshDoctorData={refreshDoctorData}
               />
             </SecureSection>
           </div>

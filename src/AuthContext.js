@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { normalizePhone } from './utils/phoneUtils';
-import { secureLog, clearSensitiveData } from './utils/securityUtils';
+import { secureLog } from './utils/securityUtils';
 
 const AuthContext = createContext({});
 
@@ -16,6 +16,41 @@ export const AuthProvider = ({ children }) => {
   const [dataVersion, setDataVersion] = useState(0);
   const [currentUserType, setCurrentUserType] = useState(null);
   const [currentPermissions, setCurrentPermissions] = useState({});
+
+  // دالة لإعادة جلب بيانات الطبيب من الخادم
+  const refreshDoctorData = useCallback(async () => {
+    if (!profile?._id) return;
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/doctors`);
+      const doctors = await response.json();
+      const currentDoctor = doctors.find(d => d._id === profile._id);
+      
+      if (currentDoctor) {
+        secureLog('🔄 تم جلب بيانات الطبيب المحدثة من الخادم:', currentDoctor);
+        
+        // تحديث profile بالبيانات المحدثة
+        const updatedProfile = {
+          ...profile,
+          workTimes: currentDoctor.workTimes || profile.workTimes,
+          vacationDays: currentDoctor.vacationDays || profile.vacationDays,
+          lastUpdated: new Date().toISOString()
+        };
+        
+        // حفظ في localStorage
+        localStorage.setItem('profile', JSON.stringify(updatedProfile));
+        
+        // تحديث state
+        setProfile(updatedProfile);
+        
+        return updatedProfile;
+      }
+    } catch (error) {
+      secureLog('❌ خطأ في جلب بيانات الطبيب المحدثة:', error);
+    }
+    
+    return null;
+  }, [profile]);
 
   // دالة لتحديث البيانات
   const refreshAuthData = useCallback(() => {
@@ -345,11 +380,13 @@ export const AuthProvider = ({ children }) => {
     updateProfile,
     logout: signOut,
     setUser,
+    setProfile,
     currentUserType,
     setCurrentUserType,
     currentPermissions,
     setCurrentPermissions,
     refreshAuthData,
+    refreshDoctorData,
   };
 
   return (
