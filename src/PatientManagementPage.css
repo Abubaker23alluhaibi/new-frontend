@@ -1472,6 +1472,25 @@
   font-weight: bold;
 }
 
+.prescription-diagnosis {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin: 8px 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.prescription-notes {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin: 4px 0;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  font-style: italic;
+}
+
 .prescription-date {
   background: rgba(255, 255, 255, 0.2);
   padding: 4px 12px;

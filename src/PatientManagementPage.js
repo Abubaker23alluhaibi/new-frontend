@@ -2264,6 +2264,18 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
 
                             </h4>
 
+                            {/* عرض التشخيص والملاحظات */}
+                            {meds[0].diagnosis && (
+                              <div className="prescription-diagnosis">
+                                <strong>{t('patient_management.diagnosis')}:</strong> {meds[0].diagnosis}
+                              </div>
+                            )}
+                            {meds[0].prescriptionNotes && (
+                              <div className="prescription-notes">
+                                <strong>{t('patient_management.notes')}:</strong> {meds[0].prescriptionNotes}
+                              </div>
+                            )}
+
                             <div className="prescription-header-actions">
 
                               <span className="prescription-date">
