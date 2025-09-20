@@ -1593,6 +1593,31 @@
   transform: translateY(-2px);
 }
 
+/* زر الطباعة الصغير في أسفل الوصفة */
+.btn-print-prescription-small {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+}
+
+.btn-print-prescription-small:hover {
+  background: #229954;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+}
+
 /* أنماط نافذة طباعة الوصفة */
 .print-modal {
   max-width: 500px;
@@ -1784,5 +1809,250 @@
   .prescription-modal {
     margin: 5px;
     max-height: 95vh;
+  }
+}
+
+/* تحسينات إضافية لصفحة تفاصيل المريض على الهواتف المحمولة */
+@media (max-width: 768px) {
+  /* تحسين النافذة المنبثقة للهواتف */
+  .patient-details-modal {
+    padding: 0;
+    align-items: flex-start;
+  }
+  
+  .modal-content {
+    max-width: 100%;
+    width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* تحسين الهيدر */
+  .modal-header {
+    padding: 15px 20px;
+    flex-shrink: 0;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.2rem;
+    line-height: 1.3;
+  }
+  
+  /* تحسين التبويبات */
+  .modal-tabs {
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  
+  .modal-tabs button {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-bottom: none;
+    border-right: 3px solid transparent;
+    text-align: right;
+  }
+  
+  .modal-tabs button.active {
+    border-right-color: #0A8F82;
+    border-bottom-color: transparent;
+    background: rgba(10, 143, 130, 0.1);
+  }
+  
+  /* تحسين المحتوى */
+  .modal-body {
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    max-height: none;
+  }
+  
+  /* تحسين شبكة المعلومات */
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .info-item {
+    padding: 15px;
+    margin-bottom: 8px;
+  }
+  
+  .info-item label {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+  
+  .info-item span {
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  
+  /* تحسين قسم الأدوية */
+  .medications-section {
+    padding: 15px;
+  }
+  
+  .prescription-group {
+    margin-bottom: 20px;
+  }
+  
+  .prescription-group-header {
+    padding: 12px 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .prescription-group-header h4 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+  
+  .prescription-header-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .prescription-date {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+  }
+  
+  /* نقل زر الطباعة إلى أسفل الوصفة */
+  .prescription-group .btn-print-prescription-small {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    margin: 8px 0 0 0;
+    order: 2;
+  }
+  
+  .medications-in-prescription {
+    padding: 15px;
+  }
+  
+  .medication-card {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .medication-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .medication-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .medication-actions button {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 12px;
+    margin: 0 4px;
+  }
+  
+  /* تحسين قسم الملفات */
+  .files-section {
+    padding: 15px;
+  }
+  
+  .upload-section {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .file-item {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    padding: 12px;
+  }
+  
+  .file-actions {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .file-actions a,
+  .file-actions button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+/* تحسينات إضافية للشاشات الصغيرة جداً */
+@media (max-width: 480px) {
+  .modal-header {
+    padding: 12px 15px;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.1rem;
+  }
+  
+  .modal-tabs button {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .modal-body {
+    padding: 15px;
+  }
+  
+  .info-item {
+    padding: 12px;
+  }
+  
+  .prescription-group-header {
+    padding: 10px 12px;
+  }
+  
+  .prescription-group-header h4 {
+    font-size: 1rem;
+  }
+  
+  .medications-in-prescription {
+    padding: 12px;
+  }
+  
+  .medication-card {
+    padding: 10px;
+  }
+  
+  .medication-actions button {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  
+  .btn-print-prescription-small {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+  }
+}
+
+/* تحسينات للعرض العمودي على الهواتف */
+@media (max-width: 768px) and (orientation: portrait) {
+  .patient-details-modal {
+    padding: 0;
+  }
+  
+  .modal-content {
+    height: 100vh;
+    max-height: 100vh;
+  }
+  
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
