@@ -1931,6 +1931,104 @@
     margin: 8px 0 0 0;
     order: 2;
   }
+}
+
+/* نقل زر الطباعة إلى أسفل الوصفة على جميع الأجهزة */
+.prescription-group .btn-print-prescription-small {
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 14px;
+  margin: 15px 0 0 0;
+  order: 2;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+}
+
+.prescription-group .btn-print-prescription-small:hover {
+  background: #229954;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+}
+
+/* إخفاء زر الطباعة من الأعلى */
+.prescription-header-actions .btn-print-prescription-small {
+  display: none;
+}
+
+/* إظهار زر الطباعة في أسفل الوصفة */
+.prescription-group .medications-in-prescription::after {
+  content: '';
+  display: block;
+  margin-top: 15px;
+}
+
+/* تحسين تخطيط الوصفة */
+.prescription-group-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.prescription-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* إضافة مساحة في أسفل الوصفة لزر الطباعة */
+.prescription-group {
+  position: relative;
+}
+
+.prescription-group .medications-in-prescription {
+  padding-bottom: 60px; /* مساحة لزر الطباعة */
+}
+
+/* زر الطباعة في أسفل الوصفة */
+.prescription-group .btn-print-prescription-small {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  right: 15px;
+  z-index: 10;
+}
+
+/* إخفاء زر الطباعة من الهيدر على الكمبيوتر */
+@media (min-width: 769px) {
+  .prescription-header-actions .btn-print-prescription-small {
+    display: none;
+  }
+  
+  .prescription-group .btn-print-prescription-small {
+    display: flex;
+    margin: 20px 0 0 0;
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+}
+
+/* تحسينات للهواتف المحمولة */
+@media (max-width: 768px) {
+  .prescription-group .btn-print-prescription-small {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    margin: 8px 0 0 0;
+    order: 2;
+  }
   
   .medications-in-prescription {
     padding: 15px;
