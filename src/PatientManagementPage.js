@@ -4263,7 +4263,7 @@ const PatientManagementPage = () => {
 
               type="text"
 
-              placeholder={t('patient_management.search_by_name_phone')}
+              placeholder="البحث بالاسم أو رقم الهاتف (07, 7, +9647)"
 
               value={searchQuery}
 

@@ -85,13 +85,37 @@ function DoctorDetails() {
 
   const checkAppInstalled = useCallback(() => {
     const deepLink = `tabibiq://doctor/${id}`;
+    console.log('🔗 Website: Attempting to open deep link:', deepLink);
+    
+    // محاولة فتح التطبيق مباشرة
+    const openApp = () => {
+      try {
+        window.location.href = deepLink;
+        console.log('🔗 Website: Deep link opened successfully');
+      } catch (error) {
+        console.error('🔗 Website: Error opening deep link:', error);
+      }
+    };
+    
+    // محاولة فتح التطبيق مع iframe كـ fallback
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
     document.body.appendChild(iframe);
+    
+    // محاولة فتح التطبيق مباشرة
+    openApp();
+    
+    // محاولة إضافية مع iframe
     iframe.src = deepLink;
     
     setTimeout(() => {
-      document.body.removeChild(iframe);
+      try {
+        document.body.removeChild(iframe);
+      } catch (e) {
+        // تجاهل الخطأ إذا كان العنصر غير موجود
+      }
       setShowAppRedirect(true);
       
       setTimeout(() => {
