@@ -53,41 +53,6 @@
   margin: 0 auto;
 }
 
-/* إحصائيات المرضى */
-.stats-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-.stat-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 24px;
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-5px);
-}
-
-.stat-card h3 {
-  margin: 0 0 12px 0;
-  color: #7f8c8d;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.stat-number {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #2c3e50;
-  display: block;
-}
 
 /* شريط الإجراءات */
 .actions-bar {
@@ -665,9 +630,6 @@
     font-size: 2rem;
   }
   
-  .stats-section {
-    grid-template-columns: repeat(2, 1fr);
-  }
   
   .actions-bar {
     flex-direction: column;

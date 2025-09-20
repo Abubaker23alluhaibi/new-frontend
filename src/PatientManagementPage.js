@@ -2508,8 +2508,6 @@ const PatientManagementPage = () => {
 
   const [patients, setPatients] = useState([]);
 
-  const [patientStats, setPatientStats] = useState({});
-
   const [showAddForm, setShowAddForm] = useState(false);
 
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -2728,81 +2726,6 @@ const PatientManagementPage = () => {
 
 
 
-  // جلب إحصائيات المرضى
-
-  const fetchPatientStats = useCallback(async () => {
-
-    try {
-
-      const token = getAuthToken();
-
-      if (!token) {
-
-        console.error('❌ لا يوجد token في fetchPatientStats');
-
-        return;
-
-      }
-
-
-
-      console.log('🔍 fetchPatientStats - token found:', token.substring(0, 20) + '...');
-
-      const url = `${process.env.REACT_APP_API_URL}/doctors/me/patients/stats`;
-
-      console.log('🔍 fetchPatientStats - URL:', url);
-
-
-
-      const response = await fetch(url, {
-
-        headers: {
-
-          'Authorization': `Bearer ${token}`,
-
-          'Content-Type': 'application/json'
-
-        },
-
-        credentials: 'include'
-
-      });
-
-
-
-      console.log('🔍 fetchPatientStats - response status:', response.status);
-
-
-
-      if (response.ok) {
-
-        const stats = await response.json();
-
-        console.log('🔍 fetchPatientStats - stats:', stats);
-        console.log('📊 الإحصائيات المستلمة:', {
-          total: stats.total,
-          active: stats.active,
-          male: stats.male,
-          female: stats.female
-        });
-
-        setPatientStats(stats);
-
-      } else {
-
-        const errorText = await response.text();
-
-        console.error('❌ fetchPatientStats - error response:', errorText);
-
-      }
-
-    } catch (error) {
-
-      console.error('Error fetching patient stats:', error);
-
-    }
-
-  }, [getAuthToken]);
 
 
 
@@ -2920,8 +2843,6 @@ const PatientManagementPage = () => {
 
         fetchPatients();
 
-        fetchPatientStats();
-
         setShowAddForm(false);
 
       } else {
@@ -2987,8 +2908,6 @@ const PatientManagementPage = () => {
         toast.success(t('patient_management.delete_patient_success'));
 
         fetchPatients();
-
-        fetchPatientStats();
 
       } else {
 
@@ -3070,9 +2989,6 @@ const PatientManagementPage = () => {
 
         
 
-        // إعادة جلب الإحصائيات
-
-        fetchPatientStats();
 
       } else {
 
@@ -3418,11 +3334,9 @@ const PatientManagementPage = () => {
 
     fetchPatients();
 
-    fetchPatientStats();
-
     fetchTodayAppointments();
 
-  }, [fetchPatients, fetchPatientStats, fetchTodayAppointments]);
+  }, [fetchPatients, fetchTodayAppointments]);
 
 
 
@@ -4336,44 +4250,6 @@ const PatientManagementPage = () => {
 
       <div className="page-content">
 
-        {/* إحصائيات المرضى */}
-
-        <div className="stats-section">
-          {console.log('🔍 عرض الإحصائيات - patientStats:', patientStats)}
-
-          <div className="stat-card">
-
-            <h3>{t('patient_management.total_patients')}</h3>
-
-            <span className="stat-number">{patientStats.total || 0}</span>
-
-          </div>
-
-          <div className="stat-card">
-
-            <h3>{t('patient_management.active_patients')}</h3>
-
-            <span className="stat-number">{patientStats.active || 0}</span>
-
-          </div>
-
-          <div className="stat-card">
-
-            <h3>{t('patient_management.male_patients')}</h3>
-
-            <span className="stat-number">{patientStats.male || 0}</span>
-
-          </div>
-
-          <div className="stat-card">
-
-            <h3>{t('patient_management.female_patients')}</h3>
-
-            <span className="stat-number">{patientStats.female || 0}</span>
-
-          </div>
-
-        </div>
 
 
 
