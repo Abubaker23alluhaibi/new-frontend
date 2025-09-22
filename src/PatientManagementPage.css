@@ -1979,18 +1979,42 @@
     margin: 20px 0 0 0;
     padding: 12px 20px;
     font-size: 16px;
+    position: static;
+    width: auto;
   }
 }
 
-/* تحسينات للهواتف المحمولة */
+/* ضمان ظهور زر الطباعة على الهواتف المحمولة */
 @media (max-width: 768px) {
   .prescription-group .btn-print-prescription-small {
-    width: 100%;
-    padding: 8px 12px;
-    font-size: 14px;
-    margin: 8px 0 0 0;
-    order: 2;
+    display: flex !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 15px 0 0 0 !important;
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+    background: #27ae60 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3) !important;
   }
+  
+  .prescription-group .btn-print-prescription-small:hover {
+    background: #229954 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4) !important;
+  }
+}
+
+/* تحسينات إضافية للهواتف المحمولة */
+@media (max-width: 768px) {
   
   .medications-in-prescription {
     padding: 15px;

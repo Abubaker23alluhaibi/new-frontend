@@ -2456,6 +2456,42 @@ const PatientDetails = ({ patient, medications = [], onClose, onUpdate, fetchPat
 
                           </div>
 
+                          {/* زر الطباعة في أسفل الوصفة */}
+                          <button
+                            onClick={() => {
+                              // طباعة هذه الوصفة المحددة
+                              window.dispatchEvent(new CustomEvent('printSpecificPrescription', { 
+                                detail: { 
+                                  prescriptionId, 
+                                  medications: meds,
+                                  patient: patient,
+                                  doctor: user
+                                } 
+                              }));
+                            }}
+                            className="btn-print-prescription-small"
+                            style={{ 
+                              background: '#27ae60', 
+                              color: 'white', 
+                              border: 'none', 
+                              padding: '10px 16px', 
+                              borderRadius: '6px', 
+                              margin: '15px 0 0 0',
+                              fontSize: '14px',
+                              width: '100%',
+                              fontWeight: '600',
+                              cursor: 'pointer',
+                              transition: 'all 0.3s ease',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '6px',
+                              boxShadow: '0 2px 8px rgba(39, 174, 96, 0.3)'
+                            }}
+                          >
+                            🖨️ {t('patient_management.print_prescription')}
+                          </button>
+
                         </div>
 
                       ));
