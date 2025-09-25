@@ -585,15 +585,13 @@ const EmployeeManager = () => {
               <div className="form-group">
                 <label>الرمز الأصلي للحساب *</label>
                 <p className="form-help">
-                  أدخل الرمز الأصلي الذي تم إعطاؤه لك من إدارة النظام
+                  أدخل البريد الإلكتروني أو كلمة المرور التي تستخدمها لتسجيل الدخول
                 </p>
                 <input
                   type="text"
                   value={originalAccountCode}
-                  onChange={(e) => setOriginalAccountCode(e.target.value.toUpperCase())}
-                  placeholder="أدخل الرمز الأصلي للحساب"
-                  maxLength={6}
-                  style={{ textTransform: 'uppercase' }}
+                  onChange={(e) => setOriginalAccountCode(e.target.value)}
+                  placeholder="أدخل البريد الإلكتروني أو كلمة المرور"
                   required
                 />
               </div>
