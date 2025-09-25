@@ -33,6 +33,12 @@ const EmployeeManager = () => {
   const [showDoctorCodeModal, setShowDoctorCodeModal] = useState(false);
   const [doctorAccessCode, setDoctorAccessCode] = useState('');
   const [doctorCodeError, setDoctorCodeError] = useState('');
+  
+  // حالات إدارة الرموز المنسية
+  const [showRecoverModal, setShowRecoverModal] = useState(false);
+  const [originalAccountCode, setOriginalAccountCode] = useState('');
+  const [recoverError, setRecoverError] = useState('');
+  const [isRecovering, setIsRecovering] = useState(false);
 
   const fetchEmployees = useCallback(async () => {
     try {
@@ -195,6 +201,41 @@ const EmployeeManager = () => {
     }
   };
 
+  // دالة استعادة رمز الدكتور المنسي
+  const handleRecoverCode = async (e) => {
+    e.preventDefault();
+    setIsRecovering(true);
+    setRecoverError('');
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/recover-doctor-access-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          doctorId: profile._id,
+          originalAccountCode: originalAccountCode
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        // إغلاق المودال وإعادة تحميل الصفحة للعودة للوحة التحكم
+        setShowRecoverModal(false);
+        setOriginalAccountCode('');
+        alert('تم التحقق من الرمز الأصلي بنجاح! يمكنك الآن إنشاء رمز جديد للدكتور.');
+        // إعادة تحميل الصفحة للعودة للوحة التحكم
+        window.location.reload();
+      } else {
+        setRecoverError(data.error || 'حدث خطأ في التحقق من الرمز الأصلي');
+      }
+    } catch (error) {
+      setRecoverError('خطأ في الاتصال بالخادم. يرجى المحاولة مرة أخرى.');
+    } finally {
+      setIsRecovering(false);
+    }
+  };
+
   // إعداد رمز دخول للدكتور
   const handleSetupDoctorCode = async (e) => {
     e.preventDefault();
@@ -248,6 +289,12 @@ const EmployeeManager = () => {
             onClick={() => setShowDoctorCodeModal(true)}
           >
             🔐 {t('employee_management.setup_doctor_code')}
+          </button>
+          <button 
+            className="btn-recover-code"
+            onClick={() => setShowRecoverModal(true)}
+          >
+            🔑 نسيت الرمز؟
           </button>
           <button 
             className="btn-add-employee"
@@ -518,6 +565,60 @@ const EmployeeManager = () => {
                   }}
                 >
                   {t('employee_management.setup_doctor_code_modal.cancel')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      
+      {/* مودال استعادة الرمز المنسي */}
+      {showRecoverModal && (
+        <div className="modal-overlay" onClick={() => setShowRecoverModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>استعادة الرمز المنسي</h3>
+              <button className="modal-close" onClick={() => setShowRecoverModal(false)}>×</button>
+            </div>
+            
+            <form onSubmit={handleRecoverCode} className="recover-form">
+              <div className="form-group">
+                <label>الرمز الأصلي للحساب *</label>
+                <p className="form-help">
+                  أدخل الرمز الأصلي الذي تم إعطاؤه لك من إدارة النظام
+                </p>
+                <input
+                  type="text"
+                  value={originalAccountCode}
+                  onChange={(e) => setOriginalAccountCode(e.target.value.toUpperCase())}
+                  placeholder="أدخل الرمز الأصلي للحساب"
+                  maxLength={6}
+                  style={{ textTransform: 'uppercase' }}
+                  required
+                />
+              </div>
+              
+              {recoverError && (
+                <div className="error-message">
+                  <span className="error-icon">⚠️</span>
+                  {recoverError}
+                </div>
+              )}
+              
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={() => setShowRecoverModal(false)}
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="submit"
+                  disabled={isRecovering || !originalAccountCode}
+                  className="btn-recover"
+                >
+                  {isRecovering ? 'جاري التحقق...' : 'استعادة الرمز'}
                 </button>
               </div>
             </form>

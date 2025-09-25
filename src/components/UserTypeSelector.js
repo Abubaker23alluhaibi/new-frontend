@@ -14,6 +14,10 @@ const UserTypeSelector = () => {
   const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
+  const [showRecoverModal, setShowRecoverModal] = useState(false);
+  const [originalAccountCode, setOriginalAccountCode] = useState('');
+  const [recoverError, setRecoverError] = useState('');
+  const [isRecovering, setIsRecovering] = useState(false);
 
   // فحص profile في بداية المكون - بعد تعريف الـ hooks
 
@@ -292,6 +296,69 @@ const UserTypeSelector = () => {
     }
   };
 
+  // دالة استعادة رمز الدكتور المنسي
+  const handleRecoverCode = async (e) => {
+    e.preventDefault();
+    setIsRecovering(true);
+    setRecoverError('');
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/recover-doctor-access-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          doctorId: profile._id,
+          originalAccountCode: originalAccountCode
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        // تعيين الصلاحيات الكاملة للدكتور
+        const fullPermissions = {
+          VIEW_APPOINTMENTS: true,
+          MANAGE_APPOINTMENTS: true,
+          VIEW_CALENDAR: true,
+          MANAGE_WORK_TIMES: true,
+          VIEW_ANALYTICS: true,
+          VIEW_PROFILE: true,
+          MANAGE_EMPLOYEES: true,
+          MANAGE_SPECIAL_APPOINTMENTS: true,
+          MANAGE_APPOINTMENT_DURATION: true,
+          VIEW_BOOKINGS_STATS: true,
+          MANAGE_PATIENTS: true
+        };
+        
+        // حفظ البيانات في localStorage
+        const userData = {
+          ...profile,
+          currentUserType: 'doctor',
+          permissions: fullPermissions,
+          needsNewAccessCode: true // علامة أن الدكتور يحتاج لإنشاء رمز جديد
+        };
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        
+        // تحديث AuthContext
+        setCurrentUserType('doctor');
+        setCurrentPermissions(fullPermissions);
+        
+        // إغلاق المودال
+        setShowRecoverModal(false);
+        setOriginalAccountCode('');
+        
+        // التوجيه للوحة التحكم
+        navigate('/doctor-dashboard');
+      } else {
+        setRecoverError(data.error || 'حدث خطأ في التحقق من الرمز الأصلي');
+      }
+    } catch (error) {
+      setRecoverError('خطأ في الاتصال بالخادم. يرجى المحاولة مرة أخرى.');
+    } finally {
+      setIsRecovering(false);
+    }
+  };
+
   // دالة لترجمة نوع الموظف
   const getEmployeeTypeLabel = (type) => {
     const labels = {
@@ -415,6 +482,18 @@ const UserTypeSelector = () => {
                   {error}
                 </div>
               )}
+              
+              {selectedType === 'doctor' && (
+                <div className="forgot-code-section">
+                  <button
+                    type="button"
+                    className="forgot-code-link"
+                    onClick={() => setShowRecoverModal(true)}
+                  >
+                    نسيت الرمز؟
+                  </button>
+                </div>
+              )}
             </form>
           </div>
         )}
@@ -433,6 +512,60 @@ const UserTypeSelector = () => {
           </div>
         </div>
       </div>
+      
+      {/* مودال استعادة الرمز المنسي */}
+      {showRecoverModal && (
+        <div className="modal-overlay" onClick={() => setShowRecoverModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>استعادة الرمز المنسي</h3>
+              <button className="modal-close" onClick={() => setShowRecoverModal(false)}>×</button>
+            </div>
+            
+            <form onSubmit={handleRecoverCode} className="recover-form">
+              <div className="form-group">
+                <label>الرمز الأصلي للحساب *</label>
+                <p className="form-help">
+                  أدخل الرمز الأصلي الذي تم إعطاؤه لك من إدارة النظام
+                </p>
+                <input
+                  type="text"
+                  value={originalAccountCode}
+                  onChange={(e) => setOriginalAccountCode(e.target.value.toUpperCase())}
+                  placeholder="أدخل الرمز الأصلي للحساب"
+                  maxLength={6}
+                  style={{ textTransform: 'uppercase' }}
+                  required
+                />
+              </div>
+              
+              {recoverError && (
+                <div className="error-message">
+                  <span className="error-icon">⚠️</span>
+                  {recoverError}
+                </div>
+              )}
+              
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={() => setShowRecoverModal(false)}
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="submit"
+                  disabled={isRecovering || !originalAccountCode}
+                  className="btn-recover"
+                >
+                  {isRecovering ? 'جاري التحقق...' : 'استعادة الرمز'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

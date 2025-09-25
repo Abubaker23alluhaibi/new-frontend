@@ -54,6 +54,68 @@ function DoctorDashboard() {
   // حالات البحث
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  
+  // حالات إدارة الرموز
+  const [showAccessCodeModal, setShowAccessCodeModal] = useState(false);
+  const [newAccessCode, setNewAccessCode] = useState('');
+  const [accessCodeError, setAccessCodeError] = useState('');
+
+  // التحقق من الحاجة لإنشاء رمز جديد
+  useEffect(() => {
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+      try {
+        const userData = JSON.parse(currentUser);
+        if (userData.needsNewAccessCode) {
+          setShowAccessCodeModal(true);
+        }
+      } catch (error) {
+        console.error('خطأ في تحليل بيانات المستخدم:', error);
+      }
+    }
+  }, []);
+
+  // دالة إنشاء رمز جديد للدكتور
+  const handleCreateAccessCode = async (e) => {
+    e.preventDefault();
+    setAccessCodeError('');
+    
+    if (!newAccessCode || newAccessCode.length !== 6) {
+      setAccessCodeError('يجب أن يكون الرمز 6 أحرف');
+      return;
+    }
+    
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/setup-doctor-access-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          doctorId: profile._id,
+          accessCode: newAccessCode
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        // إزالة علامة needsNewAccessCode
+        const currentUser = localStorage.getItem('currentUser');
+        if (currentUser) {
+          const userData = JSON.parse(currentUser);
+          delete userData.needsNewAccessCode;
+          localStorage.setItem('currentUser', JSON.stringify(userData));
+        }
+        
+        setShowAccessCodeModal(false);
+        setNewAccessCode('');
+        toast.success('تم إنشاء رمز الدخول بنجاح!');
+      } else {
+        setAccessCodeError(data.error || 'حدث خطأ في إنشاء الرمز');
+      }
+    } catch (error) {
+      setAccessCodeError('خطأ في الاتصال بالخادم');
+    }
+  };
 
   // دالة لتسجيل المواعيد السابقة تلقائياً كـ غائب
   const processPastAppointments = async (appointments) => {
@@ -2530,6 +2592,166 @@ function EditSpecialAppointmentForm({ appointment, onSubmit, onClose }) {
     </form>
   );
 }
+
+// مودال إنشاء رمز جديد للدكتور
+const AccessCodeModal = ({ show, onClose, onSubmit, newAccessCode, setNewAccessCode, error }) => {
+  if (!show) return null;
+  
+  return (
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'rgba(0,0,0,0.7)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+      padding: '2rem'
+    }}>
+      <div style={{
+        background: 'white',
+        borderRadius: '15px',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+        maxWidth: '500px',
+        width: '100%',
+        maxHeight: '90vh',
+        overflow: 'auto'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '2rem 2rem 1rem 2rem',
+          borderBottom: '1px solid #eee'
+        }}>
+          <h3 style={{ margin: 0, color: '#333', fontSize: '1.5rem', fontWeight: 600 }}>
+            إنشاء رمز دخول جديد
+          </h3>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '2rem',
+              color: '#999',
+              cursor: 'pointer',
+              padding: 0,
+              width: '30px',
+              height: '30px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '50%',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            ×
+          </button>
+        </div>
+        
+        <form onSubmit={onSubmit} style={{ padding: '2rem' }}>
+          <div style={{ marginBottom: '1.5rem', textAlign: 'right' }}>
+            <label style={{
+              display: 'block',
+              marginBottom: '0.5rem',
+              color: '#333',
+              fontWeight: 600,
+              fontSize: '1rem'
+            }}>
+              رمز الدخول الجديد *
+            </label>
+            <p style={{
+              fontSize: '0.9rem',
+              color: '#666',
+              marginBottom: '1rem',
+              lineHeight: 1.4
+            }}>
+              أدخل رمز دخول جديد مكون من 6 أحرف (أحرف وأرقام)
+            </p>
+            <input
+              type="text"
+              value={newAccessCode}
+              onChange={(e) => setNewAccessCode(e.target.value.toUpperCase())}
+              placeholder="أدخل الرمز الجديد"
+              maxLength={6}
+              style={{
+                width: '100%',
+                padding: '1rem',
+                border: '2px solid #e0e0e0',
+                borderRadius: '10px',
+                fontSize: '1.1rem',
+                textAlign: 'center',
+                letterSpacing: '2px',
+                transition: 'all 0.3s ease',
+                textTransform: 'uppercase'
+              }}
+              required
+            />
+          </div>
+          
+          {error && (
+            <div style={{
+              color: '#e53935',
+              fontWeight: 600,
+              marginBottom: '1rem',
+              fontSize: '0.9rem',
+              textAlign: 'center'
+            }}>
+              ⚠️ {error}
+            </div>
+          )}
+          
+          <div style={{
+            display: 'flex',
+            gap: '1rem',
+            justifyContent: 'flex-end',
+            marginTop: '2rem'
+          }}>
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                padding: '0.8rem 2rem',
+                background: '#f5f5f5',
+                color: '#666',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              إلغاء
+            </button>
+            <button
+              type="submit"
+              disabled={!newAccessCode || newAccessCode.length !== 6}
+              style={{
+                padding: '0.8rem 2rem',
+                background: newAccessCode && newAccessCode.length === 6 
+                  ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+                  : '#ccc',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                fontWeight: 600,
+                cursor: newAccessCode && newAccessCode.length === 6 ? 'pointer' : 'not-allowed',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              إنشاء الرمز
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 export default DoctorDashboard;
 
