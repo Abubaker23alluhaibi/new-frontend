@@ -524,15 +524,15 @@ const UserTypeSelector = () => {
             
             <form onSubmit={handleRecoverCode} className="recover-form">
               <div className="form-group">
-                <label>الرمز الأصلي للحساب *</label>
+                <label>كلمة المرور للحساب *</label>
                 <p className="form-help">
-                  أدخل البريد الإلكتروني أو كلمة المرور التي تستخدمها لتسجيل الدخول
+                  أدخل كلمة المرور التي تستخدمها لتسجيل الدخول
                 </p>
                 <input
-                  type="text"
+                  type="password"
                   value={originalAccountCode}
                   onChange={(e) => setOriginalAccountCode(e.target.value)}
-                  placeholder="أدخل البريد الإلكتروني أو كلمة المرور"
+                  placeholder="أدخل كلمة المرور"
                   required
                 />
               </div>
