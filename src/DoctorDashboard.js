@@ -54,7 +54,7 @@ function DoctorDashboard() {
   // حالات البحث
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  
+
   // حالات إدارة الرموز
   const [showAccessCodeModal, setShowAccessCodeModal] = useState(false);
   const [newAccessCode, setNewAccessCode] = useState('');
